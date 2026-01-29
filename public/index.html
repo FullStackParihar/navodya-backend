@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Test Client</title>
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --surface: #1e293b;
+            --primary: #3b82f6;
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --danger: #ef4444;
+            --success: #22c55e;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 2rem;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 2rem;
+        }
+
+        .sidebar {
+            background: var(--surface);
+            padding: 1.5rem;
+            border-radius: 12px;
+            height: fit-content;
+            border: 1px solid var(--border);
+        }
+
+        .main {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        h1, h2, h3 { margin-top: 0; }
+        
+        .card {
+            background: var(--surface);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        input, button, select, textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--bg);
+            color: var(--text);
+            margin-bottom: 1rem;
+            box-sizing: border-box;
+        }
+
+        button {
+            background: var(--primary);
+            cursor: pointer;
+            font-weight: 600;
+            border: none;
+            transition: opacity 0.2s;
+        }
+
+        button:hover { opacity: 0.9; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .btn-small { width: auto; padding: 0.5rem 1rem; margin: 0; }
+        .btn-danger { background: var(--danger); }
+
+        pre {
+            background: #000;
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 0.9em;
+        }
+
+        .status-box {
+            padding: 1rem;
+            border-radius: 8px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            margin-bottom: 1rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .product-card {
+            background: var(--bg);
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .hidden { display: none; }
+        
+        #payment-element {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: white; /* Stripe needs white usually or custom styling */
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <h2>Auth</h2>
+            <div id="auth-forms">
+                <input type="email" id="email" placeholder="Email" value="admin@example.com">
+                <input type="password" id="password" placeholder="Password" value="password123">
+                <button onclick="login()">Login</button>
+                <button onclick="register()" style="background: var(--surface); border: 1px solid var(--border);">Register</button>
+            </div>
+            <div id="user-info" class="hidden">
+                <p>Logged in as: <span id="user-email"></span></p>
+                <p>Role: <span id="user-role"></span></p>
+                <button class="btn-danger" onclick="logout()">Logout</button>
+            </div>
+            <hr style="border-color: var(--border); margin: 2rem 0;">
+            <h3>Navigation</h3>
+            <button onclick="showSection('products')" class="btn-small">Products</button>
+            <br><br>
+            <button onclick="showSection('cart')" class="btn-small">Cart</button>
+            <br><br>
+            <button onclick="showSection('orders')" class="btn-small">Orders</button>
+        </aside>
+
+        <main class="main">
+            <!-- Products Section -->
+            <section id="products-section" class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h2>Products</h2>
+                    <button class="btn-small" onclick="fetchProducts()">Refresh</button>
+                </div>
+                <!-- Admin Create Product -->
+                <div id="admin-controls" class="hidden" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+                    <h3>Add Product (Admin)</h3>
+                    <input type="text" id="prod-name" placeholder="Name">
+                    <input type="text" id="prod-slug" placeholder="Slug">
+                    <input type="number" id="prod-price" placeholder="Price">
+                    <input type="text" id="prod-cat" placeholder="Category ID">
+                    <button onclick="createProduct()" class="btn-small">Create</button>
+                </div>
+                <div id="products-list" class="grid" style="margin-top: 1rem;"></div>
+            </section>
+
+            <!-- Cart Section -->
+            <section id="cart-section" class="card hidden">
+                <h2>Shopping Cart</h2>
+                <div id="cart-items"></div>
+                <div class="status-box">
+                    <h3>Checkout</h3>
+                    <input type="text" id="coupon-code" placeholder="Coupon Code">
+                    <button onclick="applyCoupon()" class="btn-small">Apply Coupon</button>
+                    <hr style="border-color: var(--border); margin: 1rem 0;">
+                    <div id="order-summary"></div>
+                    <button onclick="initiateCheckout()">Proceed to Pay</button>
+                </div>
+                
+                <!-- Payment Modal Area -->
+                <div id="payment-area" class="hidden">
+                    <h3>Payment</h3>
+                    <div id="payment-element"></div>
+                    <button id="pay-btn" onclick="confirmPayment()">Pay Now</button>
+                    <div id="payment-message"></div>
+                </div>
+            </section>
+
+            <!-- Orders Section -->
+            <section id="orders-section" class="card hidden">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h2>My Orders</h2>
+                    <button class="btn-small" onclick="fetchOrders()">Refresh</button>
+                </div>
+                <div id="orders-list" style="margin-top: 1rem;"></div>
+            </section>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
