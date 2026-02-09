@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { useToast } from '../context/ToastContext';
+import QuickViewModal from './QuickViewModal';
 
 const ProductCard = ({ product }) => {
   const { addToCart, isInCart } = useCart();
@@ -10,6 +11,7 @@ const ProductCard = ({ product }) => {
   const { success, error, info } = useToast();
   const [isAdding, setIsAdding] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
 
   const handleAddToCart = async () => {
     if (isInCart(product.id)) {
@@ -41,8 +43,7 @@ const ProductCard = ({ product }) => {
 
   const handleQuickView = (e) => {
     e.preventDefault();
-    // TODO: Implement quick view modal
-    info('Quick view feature coming soon!');
+    setIsQuickViewOpen(true);
   };
 
   const calculateDiscount = () => {
@@ -61,11 +62,15 @@ const ProductCard = ({ product }) => {
       onMouseLeave={() => setIsHovered(false)}
     >
       <div className="product-image">
-        <Link to={`/product/${product.id}`}>
+        <Link to={`/product/${product.id || product.dbId}`}>
           <img 
             src={product.image} 
             alt={product.name}
             loading="lazy"
+            onError={(e) => {
+              e.target.onerror = null; 
+              e.target.src = `https://picsum.photos/seed/${product.id || product.dbId}/300/300`;
+            }}
           />
         </Link>
         
@@ -144,6 +149,12 @@ const ProductCard = ({ product }) => {
           )}
         </button>
       </div>
+      
+      <QuickViewModal 
+        product={product} 
+        isOpen={isQuickViewOpen} 
+        onClose={() => setIsQuickViewOpen(false)} 
+      />
     </div>
   );
 };

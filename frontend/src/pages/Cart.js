@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
 import { useToast } from '../context/ToastContext';
 import ProductCard from '../components/ProductCard';
 import CartSummary from '../components/CartSummary';
@@ -52,6 +53,7 @@ const recommendedProducts = [
 
 const Cart = () => {
   const { items, totalAmount, updateQuantity, removeFromCart } = useCart();
+  const { addToWishlist } = useWishlist();
   const { success, error } = useToast();
   const [promoCode, setPromoCode] = useState('');
   const [discount, setDiscount] = useState(199);
@@ -65,6 +67,12 @@ const Cart = () => {
     }, 1000);
     return () => clearTimeout(timer);
   }, []);
+
+  const handleSaveForLater = (item) => {
+    addToWishlist(item);
+    removeFromCart(item.id);
+    success(`${item.name} moved to wishlist`);
+  };
 
   const handleQuantityChange = (id, newQuantity) => {
     if (newQuantity < 1) {
@@ -254,6 +262,7 @@ const Cart = () => {
                     <div className="item-actions-enhanced">
                       <button 
                         className="action-btn save"
+                        onClick={() => handleSaveForLater(item)}
                         title="Save for later"
                       >
                         <i className="far fa-heart"></i>
@@ -275,6 +284,7 @@ const Cart = () => {
                 <CartSummary 
                   cartItems={items} 
                   showCheckoutButton={true}
+                  discount={discount}
                   className="mobile-summary"
                 />
               </div>
@@ -282,11 +292,12 @@ const Cart = () => {
 
             {/* Order Summary - Desktop */}
             <div className="order-summary-enhanced animate-slideInRight">
-              <CartSummary 
-                cartItems={items} 
-                showCheckoutButton={true}
-                className="desktop-summary"
-              />
+                <CartSummary 
+                  cartItems={items} 
+                  showCheckoutButton={true}
+                  discount={discount}
+                  className="desktop-summary"
+                />
             </div>
           </div>
         </div>

@@ -24,6 +24,8 @@ import Wishlist from './pages/Wishlist';
 import Profile from './pages/Profile';
 import UserProfile from './pages/UserProfile';
 import AdminProfile from './pages/AdminProfile';
+import SearchPage from './pages/SearchPage';
+import ScrollToTop from './components/ScrollToTop';
 import ToastContainer from './components/ToastContainer';
 import './styles/ui-enhanced.css';
 import { CartProvider } from './context/CartContext';
@@ -37,6 +39,7 @@ const AppContent = () => {
   
   return (
     <Router>
+      <ScrollToTop />
       <div className="App">
         <ThemeSwitch />
         <Header />
@@ -53,10 +56,10 @@ const AppContent = () => {
             <Route path="/new-arrivals-enhanced" element={<NewArrivalsEnhanced />} />
             <Route path="/customize" element={<Customize />} />
             <Route path="/bulk-order" element={<BulkOrder />} />
-            <Route path="/payment" element={<Payment />} />
-            <Route path="/order/:orderId" element={<OrderTracking />} />
-            <Route path="/track/:orderId" element={<OrderTracking />} />
-            <Route path="/checkout" element={<CheckoutDashboard />} />
+            <Route path="/payment" element={<PrivateRoute><Payment /></PrivateRoute>} />
+            <Route path="/order/:orderId" element={<PrivateRoute><OrderTracking /></PrivateRoute>} />
+            <Route path="/track/:orderId" element={<PrivateRoute><OrderTracking /></PrivateRoute>} />
+            <Route path="/checkout" element={<PrivateRoute><CheckoutDashboard /></PrivateRoute>} />
             <Route path="/product/:id" element={<ProductDetailEnhanced />} />
             <Route path="/product-enhanced/:id" element={<ProductDetailEnhanced />} />
             <Route path="/cart" element={<Cart />} />
@@ -68,6 +71,7 @@ const AppContent = () => {
             <Route path="/account" element={<PrivateRoute><UserPanel /></PrivateRoute>} />
             <Route path="/faq" element={<FAQ />} />
             <Route path="/feedback" element={<Feedback />} />
+            <Route path="/search" element={<SearchPage />} />
           </Routes>
         </main>
         <FooterEnhanced />

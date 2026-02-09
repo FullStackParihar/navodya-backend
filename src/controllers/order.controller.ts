@@ -242,3 +242,14 @@ export const getOrders = asyncHandler(async (req: AuthRequest, res: Response) =>
     const orders = await Order.find({ user_id: req.userId }).sort({ created_at: -1 });
     res.status(200).json(new ApiResponse(200, orders, 'Orders retrieved successfully'));
 });
+
+export const getOrderById = asyncHandler(async (req: AuthRequest, res: Response) => {
+    const { id } = req.params;
+    const order = await Order.findOne({ _id: id, user_id: req.userId });
+
+    if (!order) {
+        throw new ApiError(404, 'Order not found');
+    }
+
+    res.status(200).json(new ApiResponse(200, order, 'Order retrieved successfully'));
+});

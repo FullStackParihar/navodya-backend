@@ -4,152 +4,11 @@ import SkeletonLoader from '../components/SkeletonLoader';
 import './TShirtsEnhanced.css';
 
 // Enhanced Hoodie products with more variety
-const hoodieProducts = [
-  {
-    id: 21,
-    name: 'JNV Classic Hoodie',
-    description: 'Premium Cotton | Fleece Lined | Custom Design',
-    price: 799,
-    originalPrice: 1199,
-    image: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=300&h=400&fit=crop',
-    badge: 'Bestseller',
-    reviews: 342,
-    rating: 4.6,
-    category: 'Classic',
-    sizes: ['S', 'M', 'L', 'XL', 'XXL'],
-    colors: ['Black', 'Navy', 'Gray', 'Maroon']
-  },
-  {
-    id: 22,
-    name: 'JNV Zipper Hoodie',
-    description: 'Full Zipper | Pockets | Embroidered Logo',
-    price: 899,
-    originalPrice: 1299,
-    image: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=300&h=400&fit=crop',
-    badge: 'Hot',
-    reviews: 278,
-    rating: 4.5,
-    category: 'Zipper',
-    sizes: ['S', 'M', 'L', 'XL'],
-    colors: ['Black', 'Gray', 'Navy', 'Forest Green']
-  },
-  {
-    id: 23,
-    name: 'JNV Sports Hoodie',
-    description: 'Performance Fabric | Moisture Wicking | Athletic Fit',
-    price: 849,
-    originalPrice: 1099,
-    image: 'https://images.unsplash.com/photo-1586790170083-2f9ceadc732d?w=300&h=400&fit=crop',
-    badge: 'New',
-    reviews: 189,
-    rating: 4.7,
-    category: 'Sports',
-    sizes: ['M', 'L', 'XL', 'XXL'],
-    colors: ['Black', 'Blue', 'Red', 'Gray']
-  },
-  {
-    id: 24,
-    name: 'JNV Alumni Hoodie',
-    description: 'Vintage Design | Premium Fleece | Alumni Badge',
-    price: 699,
-    originalPrice: 999,
-    image: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=300&h=400&fit=crop',
-    badge: 'Limited',
-    reviews: 412,
-    rating: 4.8,
-    category: 'Alumni',
-    sizes: ['S', 'M', 'L', 'XL'],
-    colors: ['Gray', 'Black', 'Navy', 'Burgundy']
-  },
-  {
-    id: 25,
-    name: 'JNV Girls Hoodie',
-    description: 'Slim Fit | Stylish Design | Soft Fabric',
-    price: 749,
-    originalPrice: 999,
-    image: 'https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=300&h=400&fit=crop',
-    reviews: 156,
-    rating: 4.4,
-    category: 'Girls',
-    sizes: ['XS', 'S', 'M', 'L'],
-    colors: ['Pink', 'White', 'Black', 'Purple']
-  },
-  {
-    id: 26,
-    name: 'JNV Pullover Hoodie',
-    description: 'Pullover Style | Kangaroo Pocket | Hooded',
-    price: 699,
-    originalPrice: 899,
-    image: 'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=300&h=400&fit=crop',
-    badge: 'Trending',
-    reviews: 223,
-    rating: 4.3,
-    category: 'Pullover',
-    sizes: ['S', 'M', 'L', 'XL', 'XXL'],
-    colors: ['Black', 'White', 'Gray', 'Navy']
-  },
-  {
-    id: 27,
-    name: 'JNV Graphic Hoodie',
-    description: 'Graphic Print | Modern Design | Premium Quality',
-    price: 899,
-    originalPrice: 1199,
-    image: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=300&h=400&fit=crop',
-    badge: 'Premium',
-    reviews: 198,
-    rating: 4.6,
-    category: 'Graphic',
-    sizes: ['S', 'M', 'L', 'XL'],
-    colors: ['Black', 'White', 'Gray']
-  },
-  {
-    id: 28,
-    name: 'JNV Winter Hoodie',
-    description: 'Thermal Lined | Heavy Duty | Winter Ready',
-    price: 999,
-    originalPrice: 1499,
-    image: 'https://images.unsplash.com/photo-1523381210434-274e6fd17544?w=300&h=400&fit=crop',
-    badge: 'Winter',
-    reviews: 167,
-    rating: 4.5,
-    category: 'Winter',
-    sizes: ['M', 'L', 'XL', 'XXL'],
-    colors: ['Black', 'Navy', 'Dark Gray', 'Forest Green']
-  },
-  {
-    id: 29,
-    name: 'JNV Batch Hoodie',
-    description: 'Custom Batch Year | Premium Print | Alumni Special',
-    price: 749,
-    originalPrice: 999,
-    image: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=300&h=400&fit=crop',
-    badge: 'Exclusive',
-    reviews: 289,
-    rating: 4.7,
-    category: 'Batch',
-    sizes: ['S', 'M', 'L', 'XL'],
-    colors: ['Navy', 'Black', 'Maroon', 'White']
-  },
-  {
-    id: 30,
-    name: 'JNV Lightweight Hoodie',
-    description: 'Lightweight | Breathable | All Season',
-    price: 599,
-    originalPrice: 799,
-    image: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=300&h=400&fit=crop',
-    badge: 'Summer',
-    reviews: 134,
-    rating: 4.2,
-    category: 'Lightweight',
-    sizes: ['S', 'M', 'L', 'XL'],
-    colors: ['White', 'Light Gray', 'Navy', 'Black']
-  }
-];
-
 const Hoodies = () => {
   const [activeTab, setActiveTab] = useState('all');
   const [sortBy, setSortBy] = useState('featured');
   const [isLoading, setIsLoading] = useState(true);
+  const [products, setProducts] = useState([]);
   const [selectedFilters, setSelectedFilters] = useState({
     categories: [],
     sizes: [],
@@ -157,12 +16,39 @@ const Hoodies = () => {
     priceRange: []
   });
 
-  // Simulate loading
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1500);
-    return () => clearTimeout(timer);
+    const fetchHoodies = async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetch('http://localhost:5000/api/products?category=hoodies');
+        const result = await response.json();
+        
+        if (result.success) {
+          const mapped = result.data.products.map(p => ({
+            id: p.slug,
+            dbId: p._id,
+            name: p.name,
+            description: p.description,
+            price: p.sale_price || p.price,
+            originalPrice: p.price,
+            image: p.images[0],
+            badge: (p.tags && p.tags.includes('trending')) ? 'Trending' : (p.tags && p.tags.includes('new')) ? 'New' : '',
+            reviews: p.review_count || 0,
+            rating: p.rating || 0,
+            category: p.subcategory || 'Hoodies',
+            sizes: p.sizes ? p.sizes.map(s => s.size) : [],
+            colors: p.colors ? p.colors.map(c => c.name) : []
+          }));
+          setProducts(mapped);
+        }
+      } catch (err) {
+        console.error('Error fetching hoodies:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchHoodies();
   }, []);
 
   const handleFilterChange = (filterType, value) => {
@@ -174,7 +60,7 @@ const Hoodies = () => {
     }));
   };
 
-  const filteredProducts = hoodieProducts.filter(product => {
+  const filteredProducts = products.filter(product => {
     // Tab filtering
     if (activeTab === 'trending' && product.badge !== 'Trending') return false;
     if (activeTab === 'new' && product.badge !== 'New') return false;
@@ -261,7 +147,7 @@ const Hoodies = () => {
             </p>
             <div className="hero-stats animate-slideUp" style={{ animationDelay: '0.4s' }}>
               <div className="stat">
-                <span className="stat-number">{hoodieProducts.length}+</span>
+                <span className="stat-number">{products.length}+</span>
                 <span className="stat-label">Designs</span>
               </div>
               <div className="stat">
@@ -304,7 +190,7 @@ const Hoodies = () => {
                       />
                       <span className="filter-text">{category}</span>
                       <span className="filter-count">
-                        {hoodieProducts.filter(p => p.category === category).length}
+                        {products.filter(p => p.category === category).length}
                       </span>
                     </label>
                   ))}

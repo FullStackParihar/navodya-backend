@@ -5,86 +5,7 @@ import { useWishlist } from '../context/WishlistContext';
 import { useToast } from '../context/ToastContext';
 import ProductCard from '../components/ProductCard';
 import SkeletonLoader from '../components/SkeletonLoader';
-import './TShirtsEnhanced.css';
-
-// Sample product data
-const productData = {
-  1: {
-    id: 1,
-    name: 'JNV Classic T-Shirt Premium Edition',
-    description: 'Experience the ultimate comfort with our premium JNV Classic T-Shirt. Made from 100% organic cotton with a perfect blend of style and comfort. Features our iconic JNV logo with premium embroidery.',
-    price: 599,
-    originalPrice: 899,
-    image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&h=600&fit=crop',
-    badge: 'Premium',
-    reviews: 1245,
-    rating: 4.7,
-    category: 'T-Shirts',
-    sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
-    colors: ['Black', 'White', 'Navy', 'Gray', 'Maroon', 'Forest Green'],
-    inStock: true,
-    stockCount: 156,
-    features: [
-      '100% Premium Cotton',
-      'Reinforced Stitching',
-      'Pre-shrunk Fabric',
-      'Tag-free Label',
-      'Machine Washable',
-      'Eco-friendly Dyes'
-    ],
-    specifications: {
-      material: '100% Organic Cotton',
-      weight: '180 GSM',
-      fit: 'Regular Fit',
-      neckline: 'Round Neck',
-      sleeve: 'Short Sleeve',
-      care: 'Machine Wash Cold',
-      origin: 'Made in India'
-    },
-    images: [
-      'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&h=600&fit=crop&auto=format&h=500',
-      'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&h=600&fit=crop&auto=format&w=400'
-    ]
-  }
-};
-
-// Related products
-const relatedProducts = [
-  {
-    id: 2,
-    name: 'JNV Premium Hoodie',
-    description: 'Premium fleece hoodie with JNV logo',
-    price: 899,
-    originalPrice: 1299,
-    image: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=300&h=400&fit=crop',
-    badge: 'Hot',
-    reviews: 892,
-    rating: 4.6
-  },
-  {
-    id: 3,
-    name: 'JNV Classic Cap',
-    description: 'Adjustable cap with embroidered logo',
-    price: 299,
-    originalPrice: 399,
-    image: 'https://images.unsplash.com/photo-1513519245088-0e7839c3c889?w=300&h=400&fit=crop',
-    badge: 'New',
-    reviews: 456,
-    rating: 4.5
-  },
-  {
-    id: 4,
-    name: 'JNV Sports Jersey',
-    description: 'Performance jersey for sports activities',
-    price: 749,
-    originalPrice: 999,
-    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=300&h=400&fit=crop',
-    badge: 'Limited',
-    reviews: 623,
-    rating: 4.8
-  }
-];
+import './ProductDetailEnhanced.css';
 
 const ProductDetailEnhanced = () => {
   const { id } = useParams();
@@ -94,6 +15,7 @@ const ProductDetailEnhanced = () => {
   const { success, error } = useToast();
   
   const [product, setProduct] = useState(null);
+  const [relatedProducts, setRelatedProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedSize, setSelectedSize] = useState('');
   const [selectedColor, setSelectedColor] = useState('');
@@ -101,20 +23,145 @@ const ProductDetailEnhanced = () => {
   const [selectedImage, setSelectedImage] = useState(0);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [activeTab, setActiveTab] = useState('description');
+  const [reviews, setReviews] = useState([]);
+  const [isSubmittingReview, setIsSubmittingReview] = useState(false);
+  const [reviewFormData, setReviewFormData] = useState({ rating: 5, comment: '' });
 
   useEffect(() => {
-    // Simulate loading product data
-    const timer = setTimeout(() => {
-      const productInfo = productData[id];
-      if (productInfo) {
-        setProduct(productInfo);
-        setSelectedSize(productInfo.sizes[0]);
-        setSelectedColor(productInfo.colors[0]);
+    const fetchProductAndRelated = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch(`http://localhost:5000/api/products/${id}`);
+        const result = await response.json();
+        
+        if (result.success) {
+          const p = result.data;
+          // Map backend product to frontend format
+          const mappedProduct = {
+            id: p.slug,
+            dbId: p._id,
+            name: p.name,
+            description: p.description,
+            price: p.sale_price || p.price,
+            originalPrice: p.sale_price ? p.price : null,
+            image: p.images[0] || 'https://via.placeholder.com/600x800?text=No+Image',
+            badge: p.sale_price ? 'Sale' : (p.rating > 4.5 ? 'Bestseller' : ''),
+            reviews: p.review_count || 0,
+            rating: p.rating || 0,
+            category: p.category_id?.name || 'T-Shirts',
+            categoryId: p.category_id?._id,
+            categorySlug: p.category_id?.slug,
+            sizes: p.sizes.map(s => s.size),
+            colors: p.colors.map(c => c.name),
+            colorMap: p.colors.reduce((acc, c) => ({ ...acc, [c.name]: c.hex }), {}),
+            inStock: p.is_active && p.sizes.some(s => s.stock > 0),
+            stockCount: p.sizes.reduce((total, s) => total + s.stock, 0),
+            features: p.features && p.features.length > 0 ? p.features : [
+              '100% Premium Quality',
+              'Official Alumni Merchandise',
+              'Durable and Comfortable',
+              'Easy Care Fabric'
+            ],
+            specifications: p.specifications || {
+              material: 'Premium Cotton/Fleece',
+              origin: 'Made in India',
+              fit: 'Standard Fit'
+            },
+            images: p.images.length > 0 ? p.images : ['https://via.placeholder.com/600x800?text=No+Image']
+          };
+          setProduct(mappedProduct);
+          if (mappedProduct.sizes.length > 0) setSelectedSize(mappedProduct.sizes[0]);
+          if (mappedProduct.colors.length > 0) setSelectedColor(mappedProduct.colors[0]);
+
+          // Fetch related products
+          if (mappedProduct.categorySlug) {
+            const relResponse = await fetch(`http://localhost:5000/api/products?category=${mappedProduct.categorySlug}&limit=4`);
+            const relResult = await relResponse.json();
+            if (relResult.success) {
+              const mappedRelated = relResult.data.products
+                .filter(item => item.slug !== id)
+                .map(item => ({
+                  id: item.slug,
+                  dbId: item._id, // Add dbId for wishlist backend sync
+                  name: item.name,
+                  description: item.description,
+                  price: item.sale_price || item.price,
+                  originalPrice: item.sale_price ? item.price : null,
+                  image: item.images[0],
+                  badge: item.sale_price ? 'Sale' : '',
+                  reviews: item.review_count || 0,
+                  rating: item.rating || 0
+                }));
+              setRelatedProducts(mappedRelated);
+            }
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching product:', err);
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(false);
-    }, 1000);
-    return () => clearTimeout(timer);
+    };
+
+    fetchProductAndRelated();
   }, [id]);
+
+  useEffect(() => {
+    if (product?.dbId) {
+      const fetchReviews = async () => {
+        try {
+          const response = await fetch(`http://localhost:5000/api/reviews/${product.dbId}`);
+          const result = await response.json();
+          if (result.success) {
+            setReviews(result.data);
+          }
+        } catch (err) {
+          console.error('Error fetching reviews:', err);
+        }
+      };
+      fetchReviews();
+    }
+  }, [product?.dbId]);
+
+  const handleReviewSubmit = async (e) => {
+    e.preventDefault();
+    const token = localStorage.getItem('token');
+    if (!token) {
+      error('Please login to submit a review');
+      navigate('/login');
+      return;
+    }
+
+    if (!reviewFormData.comment.trim()) {
+      error('Please enter a comment');
+      return;
+    }
+
+    try {
+      setIsSubmittingReview(true);
+      const response = await fetch(`http://localhost:5000/api/reviews/${product.dbId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(reviewFormData)
+      });
+      const result = await response.json();
+
+      if (result.success) {
+        success('Review submitted successfully!');
+        setReviews([result.data, ...reviews]);
+        setReviewFormData({ rating: 5, comment: '' });
+      } else {
+        error(result.message || 'Failed to submit review');
+      }
+    } catch (err) {
+      error('Error submitting review');
+    } finally {
+      setIsSubmittingReview(false);
+    }
+  };
 
   const handleAddToCart = () => {
     if (!selectedSize) {
@@ -237,6 +284,10 @@ const ProductDetailEnhanced = () => {
                 src={product.images[selectedImage]} 
                 alt={product.name}
                 className="main-image"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = `https://picsum.photos/seed/${product.id || product.dbId}/600/600`;
+                }}
               />
               {product.badge && (
                 <div className="product-badge-detail">{product.badge}</div>
@@ -250,12 +301,18 @@ const ProductDetailEnhanced = () => {
                   className={`thumbnail ${selectedImage === index ? 'active' : ''}`}
                   onClick={() => setSelectedImage(index)}
                 >
-                  <img src={image} alt={`${product.name} ${index + 1}`} />
+                  <img 
+                    src={image} 
+                    alt={`${product.name} ${index + 1}`} 
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = `https://picsum.photos/seed/${product.id || product.dbId || index}/100/100`;
+                    }}
+                  />
                 </div>
               ))}
             </div>
           </div>
-
           {/* Product Information */}
           <div className="product-info-section animate-slideInRight">
             <div className="product-header">
@@ -319,7 +376,7 @@ const ProductDetailEnhanced = () => {
                       key={color}
                       className={`color-option ${selectedColor === color ? 'active' : ''}`}
                       onClick={() => setSelectedColor(color)}
-                      style={{ backgroundColor: getColorHex(color) }}
+                      style={{ backgroundColor: product.colorMap?.[color] || getColorHex(color) }}
                       title={color}
                     >
                       {selectedColor === color && <i className="fas fa-check"></i>}
@@ -494,35 +551,59 @@ const ProductDetailEnhanced = () => {
                 </div>
 
                 <div className="reviews-list">
-                  <div className="review-item">
-                    <div className="review-header">
-                      <div className="reviewer-info">
-                        <span className="reviewer-name">Rahul Kumar</span>
-                        <div className="review-rating">
-                          {renderStars(5)}
+                  {/* Add Review Form */}
+                  <div className="add-review-section">
+                    <h4>Write a Review</h4>
+                    <form onSubmit={handleReviewSubmit} className="review-form">
+                      <div className="star-rating-input">
+                        {[1, 2, 3, 4, 5].map((s) => (
+                          <i 
+                            key={s} 
+                            className={`${reviewFormData.rating >= s ? 'fas' : 'far'} fa-star`}
+                            onClick={() => setReviewFormData({ ...reviewFormData, rating: s })}
+                          ></i>
+                        ))}
+                      </div>
+                      <textarea
+                        placeholder="Share your experience with this product..."
+                        value={reviewFormData.comment}
+                        onChange={(e) => setReviewFormData({ ...reviewFormData, comment: e.target.value })}
+                        required
+                      ></textarea>
+                      <button 
+                        type="submit" 
+                        className="btn-primary"
+                        disabled={isSubmittingReview}
+                      >
+                        {isSubmittingReview ? 'Submitting...' : 'Submit Review'}
+                      </button>
+                    </form>
+                  </div>
+
+                  {reviews.length > 0 ? (
+                    reviews.map((review) => (
+                      <div key={review._id} className="review-item">
+                        <div className="review-header">
+                          <div className="reviewer-info">
+                            <span className="reviewer-name">{review.user_id?.name || 'Anonymous User'}</span>
+                            <div className="review-rating">
+                              {renderStars(review.rating)}
+                            </div>
+                          </div>
+                          <span className="review-date">
+                            {new Date(review.created_at || review.createdAt).toLocaleDateString()}
+                          </span>
+                        </div>
+                        <div className="review-content">
+                          <p>{review.comment}</p>
                         </div>
                       </div>
-                      <span className="review-date">2 days ago</span>
+                    ))
+                  ) : (
+                    <div className="no-reviews">
+                      <p>No reviews yet. Be the first to review this product!</p>
                     </div>
-                    <div className="review-content">
-                      <p>Excellent quality T-shirt! The fabric is very comfortable and the fit is perfect. Highly recommend!</p>
-                    </div>
-                  </div>
-                  
-                  <div className="review-item">
-                    <div className="review-header">
-                      <div className="reviewer-info">
-                        <span className="reviewer-name">Priya Sharma</span>
-                        <div className="review-rating">
-                          {renderStars(4)}
-                        </div>
-                      </div>
-                      <span className="review-date">1 week ago</span>
-                    </div>
-                    <div className="review-content">
-                      <p>Good quality product. The color is exactly as shown in the picture. Slightly expensive but worth it.</p>
-                    </div>
-                  </div>
+                  )}
                 </div>
               </div>
             )}

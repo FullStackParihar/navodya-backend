@@ -4,229 +4,11 @@ import SkeletonLoader from '../components/SkeletonLoader';
 import './TShirtsEnhanced.css';
 
 // Enhanced New Arrivals products with latest collections
-const newArrivalsProducts = [
-  {
-    id: 103,
-    name: 'JNV Summer Collection T-Shirt',
-    description: 'Summer 2024 | Breathable Fabric | New Design | Limited Edition',
-    price: 449,
-    originalPrice: 599,
-    image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=300&h=400&fit=crop',
-    badge: 'Just In',
-    reviews: 45,
-    rating: 4.7,
-    category: 'T-Shirts',
-    sizes: ['S', 'M', 'L', 'XL'],
-    colors: ['White', 'Sky Blue', 'Mint', 'Coral', 'Lavender'],
-    arrivalDate: '2024-01-20',
-    isNew: true,
-    isTrending: true,
-    collection: 'Summer 2024'
-  },
-  {
-    id: 104,
-    name: 'JNV Tech Hoodie',
-    description: 'Tech Wear | Smart Fabric | Modern Fit | Innovation Series',
-    price: 899,
-    originalPrice: 1199,
-    image: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=300&h=400&fit=crop',
-    badge: 'New',
-    reviews: 38,
-    rating: 4.8,
-    category: 'Hoodies',
-    sizes: ['M', 'L', 'XL'],
-    colors: ['Black', 'Charcoal', 'Navy', 'Graphite'],
-    arrivalDate: '2024-01-19',
-    isNew: true,
-    isTrending: false,
-    collection: 'Tech Series'
-  },
-  {
-    id: 105,
-    name: 'JNV Smart Backpack',
-    description: 'Smart Features | USB Charging | Anti-Theft | Premium Quality',
-    price: 1299,
-    originalPrice: 1699,
-    image: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=300&h=400&fit=crop',
-    badge: 'Latest',
-    reviews: 52,
-    rating: 4.6,
-    category: 'Accessories',
-    sizes: ['One Size'],
-    colors: ['Black', 'Gray', 'Navy', 'Olive'],
-    arrivalDate: '2024-01-18',
-    isNew: true,
-    isTrending: true,
-    collection: 'Smart Series'
-  },
-  {
-    id: 106,
-    name: 'JNV Eco Water Bottle',
-    description: 'Eco Friendly | Bamboo Design | Sustainable | Earth Collection',
-    price: 299,
-    originalPrice: 399,
-    image: 'https://images.unsplash.com/photo-1602143403490-42c665fd7239?w=300&h=400&fit=crop',
-    badge: 'Eco',
-    reviews: 67,
-    rating: 4.5,
-    category: 'Accessories',
-    sizes: ['750ml'],
-    colors: ['Green', 'Bamboo', 'Natural', 'Earth'],
-    arrivalDate: '2024-01-17',
-    isNew: true,
-    isTrending: false,
-    collection: 'Earth Collection'
-  },
-  {
-    id: 107,
-    name: 'JNV Wireless Earbuds Case',
-    description: 'Wireless Compatible | Premium Leather | Magnetic | Modern',
-    price: 399,
-    originalPrice: 549,
-    image: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=300&h=400&fit=crop',
-    badge: 'Tech',
-    reviews: 41,
-    rating: 4.4,
-    category: 'Accessories',
-    sizes: ['Universal'],
-    colors: ['Black', 'Brown', 'Blue', 'Rose Gold'],
-    arrivalDate: '2024-01-16',
-    isNew: true,
-    isTrending: true,
-    collection: 'Tech Series'
-  },
-  {
-    id: 108,
-    name: 'JNV Minimalist Wallet',
-    description: 'Minimalist Design | RFID Protected | Slim | Urban Collection',
-    price: 349,
-    originalPrice: 499,
-    image: 'https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=300&h=400&fit=crop',
-    badge: 'Modern',
-    reviews: 58,
-    rating: 4.7,
-    category: 'Accessories',
-    sizes: ['One Size'],
-    colors: ['Black', 'Tan', 'Gray', 'Navy'],
-    arrivalDate: '2024-01-15',
-    isNew: true,
-    isTrending: false,
-    collection: 'Urban Collection'
-  },
-  {
-    id: 109,
-    name: 'JNV Sports Pro Jersey',
-    description: 'Pro Series | Performance Fabric | Limited Edition | Athletic',
-    price: 799,
-    originalPrice: 1099,
-    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=300&h=400&fit=crop',
-    badge: 'Limited',
-    reviews: 73,
-    rating: 4.9,
-    category: 'T-Shirts',
-    sizes: ['S', 'M', 'L', 'XL'],
-    colors: ['Navy', 'White', 'Red', 'Electric Blue'],
-    arrivalDate: '2024-01-14',
-    isNew: true,
-    isTrending: true,
-    collection: 'Sports Pro'
-  },
-  {
-    id: 110,
-    name: 'JNV Vintage Cap Collection',
-    description: 'Vintage Series | Retro Design | Premium Quality | Classic',
-    price: 349,
-    originalPrice: 449,
-    image: 'https://images.unsplash.com/photo-1513519245088-0e7839c3c889?w=300&h=400&fit=crop',
-    badge: 'Vintage',
-    reviews: 62,
-    rating: 4.6,
-    category: 'Accessories',
-    sizes: ['One Size'],
-    colors: ['Brown', 'Navy', 'Forest Green', 'Cream'],
-    arrivalDate: '2024-01-13',
-    isNew: true,
-    isTrending: false,
-    collection: 'Vintage Series'
-  },
-  {
-    id: 111,
-    name: 'JNV Premium Alumni Kit 2024',
-    description: '2024 Edition | Premium Items | Exclusive | Luxury Series',
-    price: 2499,
-    originalPrice: 3299,
-    image: 'https://images.unsplash.com/photo-1523381210434-274e6fd17544?w=300&h=400&fit=crop',
-    badge: 'Exclusive',
-    reviews: 89,
-    rating: 4.8,
-    category: 'Alumni Kits',
-    sizes: ['S', 'M', 'L', 'XL'],
-    colors: ['Black', 'Gold', 'Navy', 'Burgundy'],
-    arrivalDate: '2024-01-12',
-    isNew: true,
-    isTrending: true,
-    collection: 'Luxury Series'
-  },
-  {
-    id: 112,
-    name: 'JNV Athleisure Hoodie',
-    description: 'Athleisure Wear | Comfort Fit | Stylish | Lifestyle Collection',
-    price: 799,
-    originalPrice: 999,
-    image: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=300&h=400&fit=crop',
-    badge: 'Trending',
-    reviews: 94,
-    rating: 4.5,
-    category: 'Hoodies',
-    sizes: ['S', 'M', 'L', 'XL'],
-    colors: ['Gray', 'Black', 'Olive', 'Sage'],
-    arrivalDate: '2024-01-11',
-    isNew: true,
-    isTrending: true,
-    collection: 'Lifestyle'
-  },
-  {
-    id: 113,
-    name: 'JNV Smart Watch Band',
-    description: 'Smart Watch Compatible | Silicone | Sport | Fitness Series',
-    price: 199,
-    originalPrice: 299,
-    image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300&h=400&fit=crop',
-    badge: 'Smart',
-    reviews: 76,
-    rating: 4.3,
-    category: 'Accessories',
-    sizes: ['Universal'],
-    colors: ['Black', 'White', 'Blue', 'Pink', 'Neon Green'],
-    arrivalDate: '2024-01-10',
-    isNew: true,
-    isTrending: false,
-    collection: 'Fitness Series'
-  },
-  {
-    id: 114,
-    name: 'JNV Sustainable Notebook Set',
-    description: 'Sustainable Materials | Recycled Paper | Eco-Friendly | Green Series',
-    price: 199,
-    originalPrice: 299,
-    image: 'https://images.unsplash.com/photo-1563013544-b8e825b3e4c8?w=300&h=400&fit=crop',
-    badge: 'Sustainable',
-    reviews: 83,
-    rating: 4.6,
-    category: 'Accessories',
-    sizes: ['A5'],
-    colors: ['Kraft', 'Green', 'Blue', 'Recycled Brown'],
-    arrivalDate: '2024-01-09',
-    isNew: true,
-    isTrending: false,
-    collection: 'Green Series'
-  }
-];
-
 const NewArrivalsEnhanced = () => {
   const [activeTab, setActiveTab] = useState('all');
   const [sortBy, setSortBy] = useState('newest');
   const [isLoading, setIsLoading] = useState(true);
+  const [products, setProducts] = useState([]);
   const [selectedFilters, setSelectedFilters] = useState({
     categories: [],
     sizes: [],
@@ -237,20 +19,45 @@ const NewArrivalsEnhanced = () => {
   });
   const [currentTime, setCurrentTime] = useState(new Date());
 
-  // Update current time every hour
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 3600000);
-    return () => clearInterval(timer);
-  }, []);
+    const fetchNewArrivals = async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetch('http://localhost:5000/api/products');
+        const result = await response.json();
+        
+        if (result.success) {
+          // In a real app, we might want to filter by date or tag. 
+          // For now, we'll take all products and treat them as arrivals.
+          const mapped = result.data.products.map(p => ({
+            id: p.slug,
+            dbId: p._id,
+            name: p.name,
+            description: p.description,
+            price: p.sale_price || p.price,
+            originalPrice: p.price,
+            image: p.images[0],
+            badge: (p.tags && p.tags.includes('new')) ? 'Just In' : (p.tags && p.tags.includes('trending')) ? 'Trending' : 'Latest',
+            reviews: p.review_count || 0,
+            rating: p.rating || 0,
+            category: p.category,
+            sizes: p.sizes ? p.sizes.map(s => s.size) : [],
+            colors: p.colors ? p.colors.map(c => c.name) : [],
+            arrivalDate: p.createdAt || '2024-01-01',
+            isNew: true,
+            isTrending: !!(p.tags && p.tags.includes('trending')),
+            collection: p.subcategory || 'General'
+          }));
+          setProducts(mapped);
+        }
+      } catch (err) {
+        console.error('Error fetching new arrivals:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  // Simulate loading
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1500);
-    return () => clearTimeout(timer);
+    fetchNewArrivals();
   }, []);
 
   const handleFilterChange = (filterType, value) => {
@@ -262,7 +69,7 @@ const NewArrivalsEnhanced = () => {
     }));
   };
 
-  const filteredProducts = newArrivalsProducts.filter(product => {
+  const filteredProducts = products.filter(product => {
     // Tab filtering
     if (activeTab === 'just-in' && product.badge !== 'Just In') return false;
     if (activeTab === 'limited' && product.badge !== 'Limited') return false;
@@ -394,7 +201,7 @@ const NewArrivalsEnhanced = () => {
             </p>
             <div className="hero-stats animate-slideUp" style={{ animationDelay: '0.4s' }}>
               <div className="stat">
-                <span className="stat-number">{newArrivalsProducts.length}</span>
+                <span className="stat-number">{products.length}</span>
                 <span className="stat-label">New Items</span>
               </div>
               <div className="stat">
@@ -440,7 +247,7 @@ const NewArrivalsEnhanced = () => {
                         {collection}
                       </span>
                       <span className="filter-count">
-                        {newArrivalsProducts.filter(p => p.collection === collection).length}
+                        {products.filter(p => p.collection === collection).length}
                       </span>
                     </label>
                   ))}
@@ -459,7 +266,7 @@ const NewArrivalsEnhanced = () => {
                       />
                       <span className="filter-text">{arrivalType}</span>
                       <span className="filter-count">
-                        {newArrivalsProducts.filter(p => p.badge === arrivalType).length}
+                        {products.filter(p => p.badge === arrivalType).length}
                       </span>
                     </label>
                   ))}
@@ -478,7 +285,7 @@ const NewArrivalsEnhanced = () => {
                       />
                       <span className="filter-text">{category}</span>
                       <span className="filter-count">
-                        {newArrivalsProducts.filter(p => p.category === category).length}
+                        {products.filter(p => p.category === category).length}
                       </span>
                     </label>
                   ))}

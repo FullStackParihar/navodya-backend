@@ -99,6 +99,7 @@ body {
 .top-nav-content {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 20px;
 }
 
@@ -193,6 +194,7 @@ body {
 /* Navigation Icons */
 .nav-icons {
     display: flex;
+    align-items: center;
     gap: 20px;
 }
 
@@ -354,6 +356,9 @@ body {
     border: 1px solid var(--amazon-border);
     position: relative;
     cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 
 .product-card:hover {
@@ -430,6 +435,9 @@ body {
 
 .product-info {
     padding: 15px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
 }
 
 .product-title {
@@ -505,6 +513,7 @@ body {
     align-items: center;
     justify-content: center;
     gap: 8px;
+    margin-top: auto;
 }
 
 .add-to-cart:hover {

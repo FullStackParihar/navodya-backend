@@ -4,229 +4,11 @@ import SkeletonLoader from '../components/SkeletonLoader';
 import './TShirtsEnhanced.css';
 
 // Enhanced Today's Deals products with time-sensitive offers
-const todayDealsProducts = [
-  {
-    id: 91,
-    name: 'JNV Flash Sale T-Shirt',
-    description: 'Limited Time | 60% Off | Premium Cotton | Summer Collection',
-    price: 199,
-    originalPrice: 499,
-    image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=300&h=400&fit=crop',
-    badge: 'Flash Sale',
-    reviews: 445,
-    rating: 4.6,
-    category: 'T-Shirts',
-    sizes: ['S', 'M', 'L', 'XL'],
-    colors: ['Black', 'White', 'Navy'],
-    timeLeft: '2h 45m',
-    discount: 60,
-    stockLeft: 15,
-    soldCount: 285
-  },
-  {
-    id: 92,
-    name: 'JNV Lightning Deal Hoodie',
-    description: 'Lightning Deal | 50% Off | Fleece Lined | Winter Ready',
-    price: 399,
-    originalPrice: 799,
-    image: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=300&h=400&fit=crop',
-    badge: 'Lightning',
-    reviews: 312,
-    rating: 4.7,
-    category: 'Hoodies',
-    sizes: ['M', 'L', 'XL'],
-    colors: ['Black', 'Gray', 'Navy'],
-    timeLeft: '1h 30m',
-    discount: 50,
-    stockLeft: 8,
-    soldCount: 142
-  },
-  {
-    id: 93,
-    name: 'JNV Deal of the Day Backpack',
-    description: 'Deal of the Day | 40% Off | Waterproof | Laptop Compartment',
-    price: 539,
-    originalPrice: 899,
-    image: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=300&h=400&fit=crop',
-    badge: 'Deal of Day',
-    reviews: 278,
-    rating: 4.5,
-    category: 'Accessories',
-    sizes: ['One Size'],
-    colors: ['Black', 'Navy', 'Gray'],
-    timeLeft: '8h 15m',
-    discount: 40,
-    stockLeft: 25,
-    soldCount: 175
-  },
-  {
-    id: 94,
-    name: 'JNV Prime Special Watch',
-    description: 'Prime Special | 35% Off | Premium Quality | Leather Strap',
-    price: 649,
-    originalPrice: 999,
-    image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300&h=400&fit=crop',
-    badge: 'Prime',
-    reviews: 189,
-    rating: 4.8,
-    category: 'Accessories',
-    sizes: ['One Size'],
-    colors: ['Black', 'Brown', 'Silver'],
-    timeLeft: '12h 00m',
-    discount: 35,
-    stockLeft: 12,
-    soldCount: 88
-  },
-  {
-    id: 95,
-    name: 'JNV Early Bird Cap',
-    description: 'Early Bird | 55% Off | Adjustable | Embroidered Logo',
-    price: 89,
-    originalPrice: 199,
-    image: 'https://images.unsplash.com/photo-1513519245088-0e7839c3c889?w=300&h=400&fit=crop',
-    badge: 'Early Bird',
-    reviews: 234,
-    rating: 4.3,
-    category: 'Accessories',
-    sizes: ['One Size'],
-    colors: ['Black', 'White', 'Red'],
-    timeLeft: '4h 20m',
-    discount: 55,
-    stockLeft: 45,
-    soldCount: 255
-  },
-  {
-    id: 96,
-    name: 'JNV Midnight Sale Water Bottle',
-    description: 'Midnight Sale | 45% Off | Insulated | 1L Capacity',
-    price: 109,
-    originalPrice: 199,
-    image: 'https://images.unsplash.com/photo-1602143403490-42c665fd7239?w=300&h=400&fit=crop',
-    badge: 'Midnight',
-    reviews: 167,
-    rating: 4.4,
-    category: 'Accessories',
-    sizes: ['1L'],
-    colors: ['Silver', 'Black', 'Blue'],
-    timeLeft: '6h 45m',
-    discount: 45,
-    stockLeft: 32,
-    soldCount: 168
-  },
-  {
-    id: 97,
-    name: 'JNV Happy Hour Phone Case',
-    description: 'Happy Hour | 50% Off | Shockproof | All Models',
-    price: 74,
-    originalPrice: 149,
-    image: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=300&h=400&fit=crop',
-    badge: 'Happy Hour',
-    reviews: 145,
-    rating: 4.2,
-    category: 'Accessories',
-    sizes: ['iPhone', 'Android'],
-    colors: ['Black', 'White', 'Clear'],
-    timeLeft: '3h 10m',
-    discount: 50,
-    stockLeft: 68,
-    soldCount: 332
-  },
-  {
-    id: 98,
-    name: 'JNV Weekend Special Alumni Kit',
-    description: 'Weekend Special | 30% Off | Complete Set | Premium Packaging',
-    price: 1399,
-    originalPrice: 1999,
-    image: 'https://images.unsplash.com/photo-1523381210434-274e6fd17544?w=300&h=400&fit=crop',
-    badge: 'Weekend',
-    reviews: 298,
-    rating: 4.7,
-    category: 'Alumni Kits',
-    sizes: ['S', 'M', 'L', 'XL'],
-    colors: ['Navy', 'Black', 'Maroon'],
-    timeLeft: '10h 30m',
-    discount: 30,
-    stockLeft: 18,
-    soldCount: 82
-  },
-  {
-    id: 99,
-    name: 'JNV Rush Hour Sunglasses',
-    description: 'Rush Hour | 40% Off | UV Protected | Polarized',
-    price: 239,
-    originalPrice: 399,
-    image: 'https://images.unsplash.com/photo-1473496169904-658ba7c44d8a?w=300&h=400&fit=crop',
-    badge: 'Rush Hour',
-    reviews: 123,
-    rating: 4.5,
-    category: 'Accessories',
-    sizes: ['One Size'],
-    colors: ['Black', 'Brown', 'Tortoise'],
-    timeLeft: '5h 55m',
-    discount: 40,
-    stockLeft: 28,
-    soldCount: 171
-  },
-  {
-    id: 100,
-    name: 'JNV Bonanza Wallet',
-    description: 'Bonanza | 35% Off | Genuine Leather | RFID Protected',
-    price: 324,
-    originalPrice: 499,
-    image: 'https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=300&h=400&fit=crop',
-    badge: 'Bonanza',
-    reviews: 189,
-    rating: 4.6,
-    category: 'Accessories',
-    sizes: ['One Size'],
-    colors: ['Black', 'Brown', 'Tan'],
-    timeLeft: '7h 20m',
-    discount: 35,
-    stockLeft: 22,
-    soldCount: 178
-  },
-  {
-    id: 101,
-    name: 'JNV Fiesta Socks Set',
-    description: 'Fiesta | 60% Off | Pack of 3 | Cotton Blend',
-    price: 59,
-    originalPrice: 149,
-    image: 'https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=300&h=400&fit=crop',
-    badge: 'Fiesta',
-    reviews: 267,
-    rating: 4.1,
-    category: 'Accessories',
-    sizes: ['S', 'M', 'L'],
-    colors: ['Black', 'White', 'Navy', 'Gray'],
-    timeLeft: '9h 45m',
-    discount: 60,
-    stockLeft: 89,
-    soldCount: 411
-  },
-  {
-    id: 102,
-    name: 'JNV Mega Sale Belt',
-    description: 'Mega Sale | 42% Off | Genuine Leather | Classic Design',
-    price: 289,
-    originalPrice: 499,
-    image: 'https://images.unsplash.com/photo-1544966503-7e3c4c5c5c5c?w=300&h=400&fit=crop',
-    badge: 'Mega Sale',
-    reviews: 156,
-    rating: 4.4,
-    category: 'Accessories',
-    sizes: ['S', 'M', 'L', 'XL'],
-    colors: ['Black', 'Brown', 'Tan'],
-    timeLeft: '11h 15m',
-    discount: 42,
-    stockLeft: 35,
-    soldCount: 165
-  }
-];
-
 const TodayDealsEnhanced = () => {
   const [activeTab, setActiveTab] = useState('all');
   const [sortBy, setSortBy] = useState('time');
   const [isLoading, setIsLoading] = useState(true);
+  const [products, setProducts] = useState([]);
   const [selectedFilters, setSelectedFilters] = useState({
     categories: [],
     sizes: [],
@@ -236,20 +18,46 @@ const TodayDealsEnhanced = () => {
   });
   const [currentTime, setCurrentTime] = useState(new Date());
 
-  // Update current time every minute
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 60000);
-    return () => clearInterval(timer);
-  }, []);
+    const fetchDeals = async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetch('http://localhost:5000/api/products');
+        const result = await response.json();
+        
+        if (result.success) {
+          // Filter products that have a sale_price (deals)
+          const dealProducts = result.data.products.filter(p => p.sale_price && p.sale_price < p.price);
+          
+          const mapped = dealProducts.map(p => ({
+            id: p.slug,
+            dbId: p._id,
+            name: p.name,
+            description: p.description,
+            price: p.sale_price,
+            originalPrice: p.price,
+            image: p.images[0],
+            badge: (p.tags && p.tags.includes('flash')) ? 'Flash Sale' : (p.tags && p.tags.includes('lightning')) ? 'Lightning' : 'Deal of Day',
+            reviews: p.review_count || 0,
+            rating: p.rating || 0,
+            category: p.category,
+            sizes: p.sizes ? p.sizes.map(s => s.size) : [],
+            colors: p.colors ? p.colors.map(c => c.name) : [],
+            timeLeft: '12h 00m', // Mocked as backend doesn't have this yet
+            discount: Math.round(((p.price - p.sale_price) / p.price) * 100),
+            stockLeft: p.stock || 20,
+            soldCount: (p.review_count || 0) * 5 // Mocked sold count
+          }));
+          setProducts(mapped);
+        }
+      } catch (err) {
+        console.error('Error fetching deals:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  // Simulate loading
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1500);
-    return () => clearTimeout(timer);
+    fetchDeals();
   }, []);
 
   const handleFilterChange = (filterType, value) => {
@@ -261,7 +69,7 @@ const TodayDealsEnhanced = () => {
     }));
   };
 
-  const filteredProducts = todayDealsProducts.filter(product => {
+  const filteredProducts = products.filter(product => {
     // Tab filtering
     if (activeTab === 'flash' && product.badge !== 'Flash Sale') return false;
     if (activeTab === 'lightning' && product.badge !== 'Lightning') return false;
@@ -391,7 +199,7 @@ const TodayDealsEnhanced = () => {
             </p>
             <div className="hero-stats animate-slideUp" style={{ animationDelay: '0.4s' }}>
               <div className="stat">
-                <span className="stat-number">{todayDealsProducts.length}</span>
+                <span className="stat-number">{products.length}</span>
                 <span className="stat-label">Active Deals</span>
               </div>
               <div className="stat">
@@ -437,7 +245,7 @@ const TodayDealsEnhanced = () => {
                         {dealType}
                       </span>
                       <span className="filter-count">
-                        {todayDealsProducts.filter(p => p.badge === dealType).length}
+                        {products.filter(p => p.badge === dealType).length}
                       </span>
                     </label>
                   ))}
@@ -456,7 +264,7 @@ const TodayDealsEnhanced = () => {
                       />
                       <span className="filter-text">{category}</span>
                       <span className="filter-count">
-                        {todayDealsProducts.filter(p => p.category === category).length}
+                        {products.filter(p => p.category === category).length}
                       </span>
                     </label>
                   ))}

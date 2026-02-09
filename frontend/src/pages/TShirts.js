@@ -139,13 +139,41 @@ const TShirts = () => {
     colors: [],
     priceRange: []
   });
+  const [products, setProducts] = useState([]);
 
-  // Simulate loading
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1500);
-    return () => clearTimeout(timer);
+    const fetchTShirts = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch('http://localhost:5000/api/products?category=tshirts');
+        const result = await response.json();
+        
+        if (result.success) {
+          const mappedProducts = result.data.products.map(p => ({
+            id: p.slug,
+            dbId: p._id,
+            name: p.name,
+            description: p.description,
+            price: p.sale_price || p.price,
+            originalPrice: p.sale_price ? p.price : null,
+            image: p.images[0] || 'https://via.placeholder.com/300x400?text=No+Image',
+            badge: p.sale_price ? 'Sale' : (p.rating > 4.5 ? 'Bestseller' : ''),
+            reviews: p.review_count,
+            rating: p.rating,
+            category: 'Classic', // Default for now
+            sizes: p.sizes.map(s => s.size),
+            colors: p.colors.map(c => c.name)
+          }));
+          setProducts(mappedProducts);
+        }
+      } catch (err) {
+        console.error('Error fetching T-Shirts:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchTShirts();
   }, []);
 
   const handleFilterChange = (filterType, value) => {
@@ -157,7 +185,7 @@ const TShirts = () => {
     }));
   };
 
-  const filteredProducts = tshirtProducts.filter(product => {
+  const filteredProducts = products.filter(product => {
     // Tab filtering
     if (activeTab === 'trending' && product.badge !== 'Hot') return false;
     if (activeTab === 'new' && product.badge !== 'New') return false;
@@ -243,7 +271,7 @@ const TShirts = () => {
             </p>
             <div className="hero-stats animate-slideUp" style={{ animationDelay: '0.4s' }}>
               <div className="stat">
-                <span className="stat-number">{tshirtProducts.length}+</span>
+                <span className="stat-number">{products.length}+</span>
                 <span className="stat-label">Designs</span>
               </div>
               <div className="stat">
@@ -286,7 +314,7 @@ const TShirts = () => {
                       />
                       <span className="filter-text">{category}</span>
                       <span className="filter-count">
-                        {tshirtProducts.filter(p => p.category === category).length}
+                        {products.filter(p => p.category === category).length}
                       </span>
                     </label>
                   ))}

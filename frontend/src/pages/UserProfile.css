@@ -15,46 +15,52 @@
 }
 
 .profile-header {
-  background: linear-gradient(135deg, #2f4a67 0%, #1a2332 100%);
-  color: white;
+  background: white;
+  color: #334151;
   padding: 30px;
   display: flex;
   gap: 30px;
-  align-items: center;
+  align-items: flex-start;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .profile-avatar {
   position: relative;
+  flex-shrink: 0;
 }
 
 .avatar-img {
   width: 120px;
   height: 120px;
   border-radius: 50%;
-  border: 4px solid white;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  border: 4px solid #f1f5f9;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  object-fit: cover;
 }
 
 .change-avatar-btn {
   position: absolute;
   bottom: 0;
   right: 0;
-  background: rgba(255, 255, 255, 0.2);
+  background: #2f4a67;
   border: none;
-  padding: 8px 12px;
+  padding: 6px 10px;
   border-radius: 20px;
-  color: #2f4a67;
-  font-size: 12px;
+  color: white;
+  font-size: 11px;
   cursor: pointer;
   transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
 .change-avatar-btn:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: #23394f;
+  transform: translateY(-1px);
 }
 
 .profile-info {
   flex: 1;
+  min-width: 0; /* Prevent flex item from overflowing */
 }
 
 .view-mode h2 {
@@ -243,7 +249,7 @@
 
 .edit-profile-btn:hover {
   background: #23394f;
-  transform: translateY(-2pxpx);
+  transform: translateY(-2px);
   box-shadow: 0 8px 16px rgba(47, 74, 103, 0.3);
 }
 
@@ -290,6 +296,12 @@
   box-shadow: 0 8px 16px rgba(220, 38, 38, 0.3);
 }
 
+.text-muted {
+  color: #94a3b8;
+  font-style: italic;
+  font-weight: 400;
+}
+
 @media (max-width: 768px) {
   .profile-container {
     margin: 10px;
@@ -323,4 +335,154 @@
     width: 100%;
     justify-content: center;
   }
+}
+
+/* Avatar Modal Styles */
+.avatar-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.2s ease-out;
+}
+
+.avatar-modal {
+  background: white;
+  padding: 2rem;
+  border-radius: 1.5rem;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  animation: slideUp 0.3s ease-out;
+}
+
+.avatar-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.avatar-modal-header h3 {
+  margin: 0;
+  color: #1e293b;
+  font-size: 1.25rem;
+}
+
+.close-modal-btn {
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  color: #64748b;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: all 0.2s;
+}
+
+.close-modal-btn:hover {
+  background: #f1f5f9;
+  color: #ef4444;
+}
+
+.avatar-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.avatar-option {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 3px solid transparent;
+  transition: all 0.2s;
+  overflow: hidden;
+}
+
+.avatar-option:hover {
+  transform: scale(1.05);
+  border-color: #cbd5e1;
+}
+
+.avatar-option.selected {
+  border-color: #2f4a67;
+}
+
+.avatar-option img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.selected-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(47, 74, 103, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.5rem;
+}
+
+.custom-avatar-input p {
+  margin: 0 0 0.5rem;
+  color: #64748b;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.input-with-btn {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.input-with-btn input {
+  flex: 1;
+  padding: 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  outline: none;
+}
+
+.input-with-btn input:focus {
+  border-color: #2f4a67;
+}
+
+.apply-btn {
+  background: #2f4a67;
+  color: white;
+  border: none;
+  padding: 0 1.5rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.apply-btn:hover {
+  background: #1e293b;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }

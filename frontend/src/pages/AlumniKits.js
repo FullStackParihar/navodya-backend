@@ -4,181 +4,11 @@ import SkeletonLoader from '../components/SkeletonLoader';
 import './TShirtsEnhanced.css';
 
 // Enhanced Alumni Kits products with more variety
-const alumniKitsProducts = [
-  {
-    id: 43,
-    name: 'JNV Premium Alumni Kit',
-    description: 'Complete Set | T-Shirt + Hoodie + Cap + Badge | Premium Packaging',
-    price: 1999,
-    originalPrice: 2999,
-    image: 'https://images.unsplash.com/photo-1523381210434-274e6fd17544?w=300&h=400&fit=crop',
-    badge: 'Premium',
-    reviews: 342,
-    rating: 4.8,
-    category: 'Complete Kits',
-    sizes: ['S', 'M', 'L', 'XL'],
-    colors: ['Black', 'Navy', 'Maroon']
-  },
-  {
-    id: 44,
-    name: 'JNV Silver Alumni Kit',
-    description: 'Silver Edition | T-Shirt + Cap + ID Holder + Certificate',
-    price: 1499,
-    originalPrice: 2199,
-    image: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=300&h=400&fit=crop',
-    badge: 'Silver',
-    reviews: 278,
-    rating: 4.6,
-    category: 'Silver Edition',
-    sizes: ['S', 'M', 'L', 'XL'],
-    colors: ['Silver', 'Gray', 'White']
-  },
-  {
-    id: 45,
-    name: 'JNV Gold Alumni Kit',
-    description: 'Gold Edition | Hoodie + Watch + Wallet + Premium Badge',
-    price: 2499,
-    originalPrice: 3499,
-    image: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=300&h=400&fit=crop',
-    badge: 'Gold',
-    reviews: 189,
-    rating: 4.9,
-    category: 'Gold Edition',
-    sizes: ['M', 'L', 'XL', 'XXL'],
-    colors: ['Gold', 'Black', 'Navy']
-  },
-  {
-    id: 46,
-    name: 'JNV Basic Alumni Kit',
-    description: 'Essential Set | T-Shirt + Cap + Badge | Value Pack',
-    price: 999,
-    originalPrice: 1499,
-    image: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=300&h=400&fit=crop',
-    badge: 'Value',
-    reviews: 412,
-    rating: 4.4,
-    category: 'Basic Kits',
-    sizes: ['S', 'M', 'L', 'XL'],
-    colors: ['Black', 'White', 'Gray']
-  },
-  {
-    id: 47,
-    name: 'JNV Executive Alumni Kit',
-    description: 'Executive Set | Blazer + Shirt + Tie + Badge + Certificate',
-    price: 3999,
-    originalPrice: 5499,
-    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=400&fit=crop',
-    badge: 'Executive',
-    reviews: 156,
-    rating: 4.7,
-    category: 'Executive',
-    sizes: ['S', 'M', 'L', 'XL', 'XXL'],
-    colors: ['Navy', 'Black', 'Gray', 'Charcoal']
-  },
-  {
-    id: 48,
-    name: 'JNV Sports Alumni Kit',
-    description: 'Sports Set | Jersey + Shorts + Cap + Water Bottle + Bag',
-    price: 1799,
-    originalPrice: 2499,
-    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=300&h=400&fit=crop',
-    badge: 'Sports',
-    reviews: 223,
-    rating: 4.5,
-    category: 'Sports',
-    sizes: ['S', 'M', 'L', 'XL'],
-    colors: ['Black', 'Blue', 'Red', 'Green']
-  },
-  {
-    id: 49,
-    name: 'JNV Digital Alumni Kit',
-    description: 'Digital Set | E-Certificate + Digital Badge + Online Access',
-    price: 499,
-    originalPrice: 799,
-    image: 'https://images.unsplash.com/photo-1563013544-b8e825b3e4c8?w=300&h=400&fit=crop',
-    badge: 'Digital',
-    reviews: 198,
-    rating: 4.2,
-    category: 'Digital',
-    sizes: ['Digital'],
-    colors: ['Digital']
-  },
-  {
-    id: 50,
-    name: 'JNV Custom Alumni Kit',
-    description: 'Customizable | Choose Your Items | Personalized Badge',
-    price: 1299,
-    originalPrice: 1899,
-    image: 'https://images.unsplash.com/photo-1523381210434-274e6fd17544?w=300&h=400&fit=crop',
-    badge: 'Custom',
-    reviews: 167,
-    rating: 4.6,
-    category: 'Custom',
-    sizes: ['S', 'M', 'L', 'XL'],
-    colors: ['Custom']
-  },
-  {
-    id: 51,
-    name: 'JNV Batch Alumni Kit',
-    description: 'Batch Special | Batch Year Items | Group Discount Available',
-    price: 1599,
-    originalPrice: 2299,
-    image: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=300&h=400&fit=crop',
-    badge: 'Batch',
-    reviews: 289,
-    rating: 4.5,
-    category: 'Batch',
-    sizes: ['S', 'M', 'L', 'XL'],
-    colors: ['Navy', 'Black', 'Maroon']
-  },
-  {
-    id: 52,
-    name: 'JNV International Alumni Kit',
-    description: 'International Set | Premium Items | Global Shipping',
-    price: 2999,
-    originalPrice: 4299,
-    image: 'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=300&h=400&fit=crop',
-    badge: 'International',
-    reviews: 134,
-    rating: 4.8,
-    category: 'International',
-    sizes: ['S', 'M', 'L', 'XL'],
-    colors: ['Black', 'Navy', 'White']
-  },
-  {
-    id: 53,
-    name: 'JNV Mini Alumni Kit',
-    description: 'Mini Set | Cap + Badge + Keychain + Certificate',
-    price: 699,
-    originalPrice: 999,
-    image: 'https://images.unsplash.com/photo-1602143403490-42c665fd7239?w=300&h=400&fit=crop',
-    badge: 'Mini',
-    reviews: 245,
-    rating: 4.3,
-    category: 'Mini',
-    sizes: ['One Size'],
-    colors: ['Black', 'White', 'Navy']
-  },
-  {
-    id: 54,
-    name: 'JNV Legacy Alumni Kit',
-    description: 'Legacy Set | Premium Items | Engraved Badge | Wooden Box',
-    price: 4999,
-    originalPrice: 6999,
-    image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300&h=400&fit=crop',
-    badge: 'Legacy',
-    reviews: 89,
-    rating: 4.9,
-    category: 'Legacy',
-    sizes: ['M', 'L', 'XL'],
-    colors: ['Brown', 'Black', 'Gold']
-  }
-];
-
 const AlumniKits = () => {
   const [activeTab, setActiveTab] = useState('all');
   const [sortBy, setSortBy] = useState('featured');
   const [isLoading, setIsLoading] = useState(true);
+  const [products, setProducts] = useState([]);
   const [selectedFilters, setSelectedFilters] = useState({
     categories: [],
     sizes: [],
@@ -186,12 +16,39 @@ const AlumniKits = () => {
     priceRange: []
   });
 
-  // Simulate loading
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1500);
-    return () => clearTimeout(timer);
+    const fetchAlumniKits = async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetch('http://localhost:5000/api/products?category=alumni-kits');
+        const result = await response.json();
+        
+        if (result.success) {
+          const mapped = result.data.products.map(p => ({
+            id: p.slug,
+            dbId: p._id,
+            name: p.name,
+            description: p.description,
+            price: p.sale_price || p.price,
+            originalPrice: p.price,
+            image: p.images[0],
+            badge: (p.tags && p.tags.includes('premium')) ? 'Premium' : (p.tags && p.tags.includes('value')) ? 'Value' : '',
+            reviews: p.review_count || 0,
+            rating: p.rating || 0,
+            category: p.subcategory || 'Alumni Kits',
+            sizes: p.sizes ? p.sizes.map(s => s.size) : [],
+            colors: p.colors ? p.colors.map(c => c.name) : []
+          }));
+          setProducts(mapped);
+        }
+      } catch (err) {
+        console.error('Error fetching alumni kits:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchAlumniKits();
   }, []);
 
   const handleFilterChange = (filterType, value) => {
@@ -203,7 +60,7 @@ const AlumniKits = () => {
     }));
   };
 
-  const filteredProducts = alumniKitsProducts.filter(product => {
+  const filteredProducts = products.filter(product => {
     // Tab filtering
     if (activeTab === 'premium' && !['Premium', 'Executive', 'Legacy'].includes(product.badge)) return false;
     if (activeTab === 'new' && product.reviews < 200) return false;
@@ -290,7 +147,7 @@ const AlumniKits = () => {
             </p>
             <div className="hero-stats animate-slideUp" style={{ animationDelay: '0.4s' }}>
               <div className="stat">
-                <span className="stat-number">{alumniKitsProducts.length}+</span>
+                <span className="stat-number">{products.length}+</span>
                 <span className="stat-label">Kits Available</span>
               </div>
               <div className="stat">
@@ -333,7 +190,7 @@ const AlumniKits = () => {
                       />
                       <span className="filter-text">{category}</span>
                       <span className="filter-count">
-                        {alumniKitsProducts.filter(p => p.category === category).length}
+                        {products.filter(p => p.category === category).length}
                       </span>
                     </label>
                   ))}

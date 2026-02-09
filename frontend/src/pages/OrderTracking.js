@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import api from '../utils/api';
 
 const OrderTracking = () => {
   const { orderId } = useParams();
@@ -7,106 +8,69 @@ const OrderTracking = () => {
   const [orderData, setOrderData] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const mockOrderData = {
-    id: orderId || 'ORD20240127001',
-    orderDate: '2024-01-27',
-    estimatedDelivery: '2024-02-05',
-    status: 'shipped',
-    paymentMethod: 'UPI',
-    paymentStatus: 'paid',
-    total: 2592,
-    customer: {
-      name: 'John Doe',
-      email: 'john.doe@email.com',
-      phone: '+91 98765 43210'
-    },
-    shippingAddress: {
-      fullName: 'John Doe',
-      phone: '+91 98765 43210',
-      address: '123, Navodaya Colony',
-      landmark: 'Near JNV School',
-      city: 'Bangalore',
-      state: 'Karnataka',
-      pincode: '560001'
-    },
-    items: [
-      {
-        id: 1,
-        name: 'JNV Classic T-Shirt',
-        price: 599,
-        quantity: 2,
-        size: 'L',
-        color: 'Navy',
-        image: 'https://picsum.photos/seed/tshirt1/100/100'
-      }
-    ],
-    tracking: [
-      {
-        id: 1,
-        status: 'ordered',
-        title: 'Order Placed',
-        description: 'Your order has been successfully placed.',
-        date: '2024-01-27',
-        time: '10:30 AM',
-        completed: true,
-        icon: 'fas fa-shopping-cart'
-      },
-      {
-        id: 2,
-        status: 'confirmed',
-        title: 'Order Confirmed',
-        description: 'Your order has been confirmed and is being processed.',
-        date: '2024-01-27',
-        time: '11:15 AM',
-        completed: true,
-        icon: 'fas fa-check-circle'
-      },
-      {
-        id: 3,
-        status: 'shipped',
-        title: 'Shipped',
-        description: 'Your order has been shipped via Express Delivery.',
-        date: '2024-01-29',
-        time: '02:30 PM',
-        completed: true,
-        icon: 'fas fa-truck',
-        trackingNumber: 'EXP123456789',
-        carrier: 'Express Delivery'
-      },
-      {
-        id: 4,
-        status: 'out-for-delivery',
-        title: 'Out for Delivery',
-        description: 'Your order is out for delivery and will arrive soon.',
-        date: '2024-01-30',
-        time: '09:10 AM',
-        completed: false,
-        icon: 'fas fa-box'
-      },
-      {
-        id: 5,
-        status: 'delivered',
-        title: 'Delivered',
-        description: 'Your order has been delivered successfully.',
-        date: null,
-        time: null,
-        completed: false,
-        icon: 'fas fa-check-double'
-      }
-    ],
-    support: {
-      phone: '+91 1800-123-4567',
-      email: 'support@navodayatrendz.com',
-      whatsapp: '+91 92844 90206',
-      chatAvailable: true
-    }
-  };
+
 
   useEffect(() => {
-    setTimeout(() => {
-      setOrderData(mockOrderData);
-      setLoading(false);
-    }, 1000);
+    const fetchOrderData = async () => {
+      if (!orderId) return;
+      try {
+        setLoading(true);
+        const result = await api.get(`/orders/${orderId}`);
+        if (result.success) {
+          const o = result.data;
+          
+          // Helper for tracking steps base on status
+          const getTrackingSteps = (status) => {
+            const steps = [
+              { id: 1, status: 'ordered', title: 'Order Placed', description: 'Your order has been successfully placed.', completed: true, icon: 'fas fa-shopping-cart', date: new Date(o.created_at).toLocaleDateString(), time: new Date(o.created_at).toLocaleTimeString() },
+              { id: 2, status: 'processing', title: 'Processing', description: 'Your order is being prepared.', completed: ['PROCESSING', 'SHIPPED', 'DELIVERED'].includes(o.status), icon: 'fas fa-cog' },
+              { id: 3, status: 'shipped', title: 'Shipped', description: 'Your order has been shipped.', completed: ['SHIPPED', 'DELIVERED'].includes(o.status), icon: 'fas fa-truck' },
+              { id: 4, status: 'delivered', title: 'Delivered', description: 'Your order has been delivered.', completed: o.status === 'DELIVERED', icon: 'fas fa-box-open' }
+            ];
+            return steps;
+          };
+
+          const mappedOrder = {
+            id: o._id,
+            orderDate: o.created_at,
+            estimatedDelivery: new Date(new Date(o.created_at).getTime() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+            status: o.status.toLowerCase(),
+            paymentMethod: o.payment_info.method || 'Online',
+            paymentStatus: o.payment_info.status.toLowerCase(),
+            total: o.pricing.total,
+            shippingAddress: {
+              fullName: o.shipping_address.name,
+              address: o.shipping_address.address,
+              city: o.shipping_address.city,
+              state: o.shipping_address.state,
+              pincode: o.shipping_address.pincode
+            },
+            items: o.items.map(item => ({
+              id: item.product_id,
+              name: item.name,
+              price: item.price,
+              quantity: item.quantity,
+              size: item.size,
+              color: item.color,
+              image: item.image
+            })),
+            tracking: getTrackingSteps(o.status),
+            support: {
+              phone: '+91 1800-123-4567',
+              email: 'support@navodayatrendz.com',
+              whatsapp: '+91 92844 90206'
+            }
+          };
+          setOrderData(mappedOrder);
+        }
+      } catch (err) {
+        console.error('Error fetching order:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrderData();
   }, [orderId]);
 
   const calculateDaysRemaining = () => {

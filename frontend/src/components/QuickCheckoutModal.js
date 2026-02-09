@@ -20,6 +20,39 @@ const QuickCheckoutModal = ({
     paymentMethod: 'cod'
   });
 
+  React.useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+
+        const response = await fetch('http://localhost:5000/api/auth/profile', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        const result = await response.json();
+        
+        if (result.success) {
+          const u = result.data.user || result.data || {};
+          setFormData(prev => ({
+            ...prev,
+            fullName: u.name || '',
+            email: u.email || '',
+            phone: u.phone || '',
+            address: u.address || '',
+            city: u.city || '',
+            state: u.state || '',
+            pincode: u.pincode || ''
+          }));
+        }
+      } catch (err) {
+        console.error('Error fetching profile for quick checkout:', err);
+      }
+    };
+    fetchProfile();
+  }, []);
+
   const items = product ? [product] : cartItems;
 
   const calculateSubtotal = () => {

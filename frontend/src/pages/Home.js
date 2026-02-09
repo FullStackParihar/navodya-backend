@@ -3,67 +3,7 @@ import { Link } from 'react-router-dom';
 import ProductCard from '../components/ProductCard';
 import SkeletonLoader from '../components/SkeletonLoader';
 
-// Sample product data
-const featuredProducts = [
-  {
-    id: 1,
-    name: 'JNV Classic T-Shirt',
-    description: 'Premium Cotton | Custom Design',
-    price: 399,
-    originalPrice: 599,
-    image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=300&h=400&fit=crop',
-    badge: 'Bestseller',
-    reviews: 245
-  },
-  {
-    id: 2,
-    name: 'JNV Alumni Hoodie',
-    description: 'Fleece Fabric | Batch 2020',
-    price: 799,
-    originalPrice: 999,
-    image: 'https://images.unsplash.com/photo-1556821840-3a5f3d5fb6c7?w=300&h=400&fit=crop',
-    badge: 'New',
-    reviews: 189
-  },
-  {
-    id: 3,
-    name: 'JNV Baseball Cap',
-    description: 'Adjustable | Embroidered Logo',
-    price: 299,
-    originalPrice: 399,
-    image: 'https://images.unsplash.com/photo-1513519245088-0e7839c3c889?w=300&h=400&fit=crop',
-    badge: 'Hot',
-    reviews: 156
-  },
-  {
-    id: 4,
-    name: 'JNV Backpack',
-    description: 'Waterproof | Laptop Compartment',
-    price: 899,
-    originalPrice: 1299,
-    image: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=300&h=400&fit=crop',
-    reviews: 98
-  },
-  {
-    id: 5,
-    name: 'JNV Sports Jersey',
-    description: 'Performance Fabric | Breathable',
-    price: 549,
-    originalPrice: 799,
-    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=300&h=400&fit=crop',
-    badge: 'Limited',
-    reviews: 312
-  },
-  {
-    id: 6,
-    name: 'JNV Track Pants',
-    description: 'Comfort Fit | Quick Dry',
-    price: 449,
-    originalPrice: 649,
-    image: 'https://images.unsplash.com/photo-1586790170083-2f9ceadc732d?w=300&h=400&fit=crop',
-    reviews: 178
-  }
-];
+// Categories for navigation and filtering
 
 const categories = [
   {
@@ -99,21 +39,48 @@ const categories = [
 const Home = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('all');
+  const [products, setProducts] = useState([]);
 
   useEffect(() => {
-    // Simulate loading
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1500);
+    const fetchProducts = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch('http://localhost:5000/api/products');
+        const result = await response.json();
+        
+        if (result.success) {
+          // Map backend products to frontend format
+          const mappedProducts = result.data.products.map(p => ({
+            id: p.slug, // Use slug as ID for routing
+            dbId: p._id,
+            name: p.name,
+            description: p.description,
+            price: p.sale_price || p.price,
+            originalPrice: p.sale_price ? p.price : null,
+            image: p.images[0] || 'https://via.placeholder.com/300x400?text=No+Image',
+            badge: p.sale_price ? 'Sale' : (p.rating > 4.5 ? 'Bestseller' : ''),
+            reviews: p.review_count,
+            rating: p.rating,
+            sizes: p.sizes,
+            colors: p.colors
+          }));
+          setProducts(mappedProducts);
+        }
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-    return () => clearTimeout(timer);
+    fetchProducts();
   }, []);
 
-  const filteredProducts = featuredProducts.filter(product => {
+  const filteredProducts = products.filter(product => {
     if (activeTab === 'all') return true;
-    if (activeTab === 'trending') return product.badge === 'Hot';
+    if (activeTab === 'trending') return product.badge === 'Hot' || product.rating > 4;
     if (activeTab === 'new') return product.badge === 'New';
-    if (activeTab === 'bestseller') return product.reviews > 200;
+    if (activeTab === 'bestseller') return product.reviews > 100 || product.badge === 'Bestseller';
     return true;
   });
 

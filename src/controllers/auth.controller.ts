@@ -81,12 +81,19 @@ export const getProfile = asyncHandler(async (req: AuthRequest, res: Response) =
 });
 
 export const updateProfile = asyncHandler(async (req: AuthRequest, res: Response) => {
-  const { name, phone, avatar } = req.body;
+  const { name, phone, avatar, bio, address, city, state, pincode, jnvSchool, batchYear } = req.body;
   const updateData: any = {};
 
   if (name) updateData.name = name;
   if (phone !== undefined) updateData.phone = phone;
   if (avatar) updateData.avatar = avatar;
+  if (bio !== undefined) updateData.bio = bio;
+  if (address !== undefined) updateData.address = address;
+  if (city !== undefined) updateData.city = city;
+  if (state !== undefined) updateData.state = state;
+  if (pincode !== undefined) updateData.pincode = pincode;
+  if (jnvSchool !== undefined) updateData.jnvSchool = jnvSchool;
+  if (batchYear !== undefined) updateData.batchYear = batchYear;
 
   const user = await User.findByIdAndUpdate(req.userId, updateData, {
     new: true,

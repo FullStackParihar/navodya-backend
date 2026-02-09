@@ -24,18 +24,97 @@ const UserProfile = () => {
 
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({});
+  const [showAvatarModal, setShowAvatarModal] = useState(false);
 
   useEffect(() => {
-    // Check if user is authenticated
-    const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
-    if (!isAuthenticated) {
-      navigate('/login');
-    }
-  }, [navigate]);
+    const fetchProfile = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) return;
 
-  const handleGoogleSignup = () => {
-    // Google OAuth integration - placeholder
-    window.open('https://accounts.google.com/oauth/authorize?client_id=YOUR_CLIENT_ID&redirect_uri=YOUR_REDIRECT_URI&response_type=code&scope=email%20profile', '_blank');
+        const response = await fetch('http://localhost:5000/api/auth/profile', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        const result = await response.json();
+
+        if (result.success && result.data) {
+          // Handle both response structures: data.user (login/register style) or just data (getProfile style)
+          const user = result.data.user || result.data;
+          console.log('Fetched user data:', user);
+          
+          if (!user) return;
+
+          const nameParts = (user.name || '').split(' ');
+          const firstName = nameParts[0] || '';
+          const lastName = nameParts.slice(1).join(' ') || '';
+
+          const newUserData = {
+            firstName,
+            lastName,
+            email: user.email || '',
+            phone: user.phone || '',
+            profileImage: user.avatar || 'https://i.pravatar.cc/150?img=5',
+            bio: user.bio || '',
+            address: user.address || '',
+            city: user.city || '',
+            state: user.state || '',
+            pincode: user.pincode || '',
+            jnvSchool: user.jnvSchool || '',
+            batchYear: user.batchYear || ''
+          };
+
+          setUserData(newUserData);
+          
+          // Update localStorage
+          localStorage.setItem('userFirstName', firstName);
+          localStorage.setItem('userLastName', lastName);
+          localStorage.setItem('userEmail', user.email || '');
+          localStorage.setItem('userPhone', user.phone || '');
+          localStorage.setItem('userProfileImage', user.avatar || '');
+          localStorage.setItem('userBio', user.bio || '');
+          localStorage.setItem('userAddress', user.address || '');
+          localStorage.setItem('userCity', user.city || '');
+          localStorage.setItem('userState', user.state || '');
+          localStorage.setItem('userPincode', user.pincode || '');
+          localStorage.setItem('userJnvSchool', user.jnvSchool || '');
+          localStorage.setItem('userBatchYear', user.batchYear || '');
+        }
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+      }
+    };
+
+    fetchProfile();
+  }, []);
+
+  const handleAvatarUpdate = async (newUrl) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:5000/api/auth/profile', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ avatar: newUrl })
+      });
+
+      const result = await response.json();
+      
+      if (result.success) {
+        setUserData(prev => ({ ...prev, profileImage: newUrl }));
+        localStorage.setItem('userProfileImage', newUrl);
+        setShowAvatarModal(false);
+        alert('Profile photo updated successfully!');
+      } else {
+        alert(result.message || 'Failed to update avatar');
+      }
+    } catch (error) {
+      console.error('Avatar update error:', error);
+      alert('Failed to update avatar');
+    }
   };
 
   const handleEdit = () => {
@@ -45,18 +124,54 @@ const UserProfile = () => {
 
   const handleSave = async () => {
     try {
-      // Save to localStorage (in production, save to API)
-      Object.keys(editForm).forEach(key => {
-        localStorage.setItem(`user${key.charAt(0).toUpperCase() + key.slice(1)}`, editForm[key]);
+      const token = localStorage.getItem('token');
+      const fullName = `${editForm.firstName || ''} ${editForm.lastName || ''}`.trim();
+      
+      const response = await fetch('http://localhost:5000/api/auth/profile', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          name: fullName,
+          phone: editForm.phone,
+          avatar: editForm.profileImage,
+          bio: editForm.bio,
+          address: editForm.address,
+          city: editForm.city,
+          state: editForm.state,
+          pincode: editForm.pincode,
+          jnvSchool: editForm.jnvSchool,
+          batchYear: editForm.batchYear
+        })
       });
+
+      const result = await response.json();
       
-      setUserData(editForm);
-      setIsEditing(false);
-      
-      // Show success message (you could use a toast system here)
-      alert('Profile updated successfully!');
+      if (result.success) {
+        setUserData(editForm);
+        setIsEditing(false);
+        
+        // Update localStorage
+        localStorage.setItem('userFirstName', editForm.firstName || '');
+        localStorage.setItem('userLastName', editForm.lastName || '');
+        localStorage.setItem('userPhone', editForm.phone || '');
+        localStorage.setItem('userBio', editForm.bio || '');
+        localStorage.setItem('userAddress', editForm.address || '');
+        localStorage.setItem('userCity', editForm.city || '');
+        localStorage.setItem('userState', editForm.state || '');
+        localStorage.setItem('userPincode', editForm.pincode || '');
+        localStorage.setItem('userJnvSchool', editForm.jnvSchool || '');
+        localStorage.setItem('userBatchYear', editForm.batchYear || '');
+        
+        alert('Profile updated successfully!');
+      } else {
+        alert(result.message || 'Failed to update profile');
+      }
     } catch (error) {
       alert('Failed to update profile');
+      console.error('Update error:', error);
     }
   };
 
@@ -84,6 +199,11 @@ const UserProfile = () => {
     navigate('/login');
   };
 
+  const handleGoogleSignup = () => {
+    // Google OAuth integration - placeholder
+    window.open('https://accounts.google.com/oauth/authorize?client_id=YOUR_CLIENT_ID&redirect_uri=YOUR_REDIRECT_URI&response_type=code&scope=email%20profile', '_blank');
+  };
+
   return (
     <PrivateRoute>
       <div className="user-profile">
@@ -96,7 +216,7 @@ const UserProfile = () => {
                 alt="Profile" 
                 className="avatar-img"
               />
-              <button className="change-avatar-btn">
+              <button className="change-avatar-btn" onClick={() => setShowAvatarModal(true)}>
                 <i className="fas fa-camera"></i>
                 Change Photo
               </button>
@@ -240,27 +360,27 @@ const UserProfile = () => {
                   <div className="info-grid">
                     <div className="info-item">
                       <label>Address:</label>
-                      <span>{userData.address}</span>
+                      <span>{userData.address || <em className="text-muted">Not provided</em>}</span>
                     </div>
                     <div className="info-item">
                       <label>City:</label>
-                      <span>{userData.city}</span>
+                      <span>{userData.city || <em className="text-muted">Not provided</em>}</span>
                     </div>
                     <div className="info-item">
                       <label>State:</label>
-                      <span>{userData.state}</span>
+                      <span>{userData.state || <em className="text-muted">Not provided</em>}</span>
                     </div>
                     <div className="info-item">
                       <label>Pincode:</label>
-                      <span>{userData.pincode}</span>
+                      <span>{userData.pincode || <em className="text-muted">Not provided</em>}</span>
                     </div>
                     <div className="info-item">
                       <label>JNV School:</label>
-                      <span>{userData.jnvSchool}</span>
+                      <span>{userData.jnvSchool || <em className="text-muted">Not provided</em>}</span>
                     </div>
                     <div className="info-item">
                       <label>Batch Year:</label>
-                      <span>{userData.batchYear}</span>
+                      <span>{userData.batchYear || <em className="text-muted">Not provided</em>}</span>
                     </div>
                   </div>
                 </div>
@@ -288,6 +408,53 @@ const UserProfile = () => {
             </button>
           </div>
         </div>
+
+        {/* Avatar Selection Modal */}
+        {showAvatarModal && (
+          <div className="avatar-modal-overlay">
+            <div className="avatar-modal">
+              <div className="avatar-modal-header">
+                <h3>Choose Profile Photo</h3>
+                <button className="close-modal-btn" onClick={() => setShowAvatarModal(false)}>
+                  <i className="fas fa-times"></i>
+                </button>
+              </div>
+              
+              <div className="avatar-grid">
+                {Array.from({ length: 12 }, (_, i) => `https://i.pravatar.cc/150?img=${i + 1}`).map((url, index) => (
+                  <div 
+                    key={index} 
+                    className={`avatar-option ${userData.profileImage === url ? 'selected' : ''}`}
+                    onClick={() => handleAvatarUpdate(url)}
+                  >
+                    <img src={url} alt={`Avatar ${index + 1}`} />
+                    {userData.profileImage === url && <div className="selected-overlay"><i className="fas fa-check"></i></div>}
+                  </div>
+                ))}
+              </div>
+
+              <div className="custom-avatar-input">
+                <p>Or use a custom URL:</p>
+                <div className="input-with-btn">
+                  <input 
+                    type="text" 
+                    placeholder="https://example.com/image.jpg" 
+                    id="custom-avatar-url"
+                  />
+                  <button 
+                    className="apply-btn"
+                    onClick={() => {
+                      const url = document.getElementById('custom-avatar-url').value;
+                      if (url) handleAvatarUpdate(url);
+                    }}
+                  >
+                    Apply
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </PrivateRoute>
   );

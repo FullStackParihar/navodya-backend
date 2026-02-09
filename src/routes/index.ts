@@ -6,6 +6,7 @@ import favoriteRoutes from './favorite.routes.js';
 import couponRoutes from './coupon.routes.js';
 import orderRoutes from './order.routes.js';
 import reviewRoutes from './review.routes.js';
+import adminRoutes from './admin.routes.js';
 
 const router = Router();
 
@@ -16,6 +17,7 @@ router.use('/favorites', favoriteRoutes);
 router.use('/coupons', couponRoutes);
 router.use('/orders', orderRoutes);
 router.use('/reviews', reviewRoutes);
+router.use('/admin', adminRoutes);
 
 router.get('/health', (req, res) => {
   res.status(200).json({

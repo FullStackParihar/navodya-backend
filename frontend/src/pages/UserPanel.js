@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
@@ -12,69 +12,114 @@ const UserPanel = () => {
 
   const [activeTab, setActiveTab] = useState('overview');
 
-  const user = useMemo(() => ({
-    firstName: 'Rahul',
-    lastName: 'Kumar',
-    email: 'rahul.kumar@example.com',
-    phone: '+91 98765 43210',
-    jnvSchool: 'JNV Delhi',
-    batchYear: '2018',
+  const [accountData, setAccountData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    jnvSchool: '',
+    batchYear: '',
     avatar: 'https://i.pravatar.cc/150?img=5'
-  }), []);
+  });
 
-  const orders = useMemo(() => ([
-    {
-      id: 'ORD20240127001',
-      date: '2024-01-27',
-      status: 'shipped',
-      total: 2592,
-      items: 3,
-      etaDays: 5
-    },
-    {
-      id: 'ORD20240126002',
-      date: '2024-01-26',
-      status: 'delivered',
-      total: 1299,
-      items: 1,
-      etaDays: 0
-    },
-    {
-      id: 'ORD20240125003',
-      date: '2024-01-25',
-      status: 'processing',
-      total: 3498,
-      items: 4,
-      etaDays: 8
-    }
-  ]), []);
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+
+        const response = await fetch('http://localhost:5000/api/auth/profile', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        const result = await response.json();
+
+        if (result.success && result.data) {
+          const u = result.data.user || result.data;
+          
+          if (u) {
+            const nameParts = (u.name || '').split(' ');
+            setAccountData({
+              firstName: nameParts[0] || '',
+              lastName: nameParts.slice(1).join(' ') || '',
+              email: u.email || '',
+              phone: u.phone || '',
+              jnvSchool: u.jnvSchool || 'Not Set',
+              batchYear: u.batchYear || 'Not Set',
+              avatar: u.avatar || 'https://i.pravatar.cc/150?img=5',
+              address: u.address || '',
+              city: u.city || '',
+              state: u.state || '',
+              pincode: u.pincode || ''
+            });
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+      }
+    };
+
+    fetchProfile();
+  }, []);
+
+  const user = accountData;
+
+  const [orders, setOrders] = useState([]);
+  const [isLoadingOrders, setIsLoadingOrders] = useState(true);
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+
+        const response = await fetch('http://localhost:5000/api/orders', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        const result = await response.json();
+        
+        if (result.success) {
+          const mappedOrders = result.data.map(order => ({
+            id: order._id,
+            date: new Date(order.created_at).toLocaleDateString(),
+            status: order.status.toLowerCase(),
+            total: order.pricing.total,
+            items: order.items.length,
+            etaDays: order.status === 'PROCESSING' ? 7 : 0
+          }));
+          setOrders(mappedOrders);
+        }
+      } catch (err) {
+        console.error('Error fetching orders:', err);
+      } finally {
+        setIsLoadingOrders(false);
+      }
+    };
+
+    fetchOrders();
+  }, []);
 
   const latestOrder = useMemo(() => (orders.length ? orders[0] : null), [orders]);
 
-  const addresses = useMemo(() => ([
-    {
-      id: 1,
-      type: 'Home',
-      name: 'Rahul Kumar',
-      phone: '+91 98765 43210',
-      addressLine: '123, Block A, Navodaya Colony',
-      city: 'South Delhi',
-      state: 'Delhi',
-      pincode: '110065',
-      isDefault: true
-    },
-    {
-      id: 2,
-      type: 'Office',
-      name: 'Rahul Kumar',
-      phone: '+91 98765 43210',
-      addressLine: 'Tech Park, Building 5, 3rd Floor',
-      city: 'Whitefield, Bangalore',
-      state: 'Karnataka',
-      pincode: '560066',
-      isDefault: false
-    }
-  ]), []);
+  const addresses = useMemo(() => {
+    if (!accountData.firstName) return [];
+    return [
+      {
+        id: 'default',
+        type: 'Default',
+        name: `${accountData.firstName} ${accountData.lastName}`,
+        phone: accountData.phone,
+        addressLine: accountData.address || 'No address set',
+        city: accountData.city || '',
+        state: accountData.state || '',
+        pincode: accountData.pincode || '',
+        isDefault: true
+      }
+    ];
+  }, [accountData]);
 
   const statusBadgeClass = (status) => {
     if (status === 'delivered') return 'delivered';
@@ -366,36 +411,42 @@ const UserPanel = () => {
                     </div>
 
                     <div className="orders">
-                      {orders.map((o) => (
-                        <div key={o.id} className="order-card">
-                          <div className="order-top">
-                            <div>
-                              <div className="order-id">Order #{o.id}</div>
-                              <div className="order-meta">{o.date} • {o.items} items</div>
+                      {isLoadingOrders ? (
+                        <div className="loading-state">Loading your orders...</div>
+                      ) : orders.length === 0 ? (
+                        <div className="empty-state">No orders yet.</div>
+                      ) : (
+                        orders.map((o) => (
+                          <div key={o.id} className="order-card">
+                            <div className="order-top">
+                              <div>
+                                <div className="order-id">Order #{o.id.slice(-8).toUpperCase()}</div>
+                                <div className="order-meta">{o.date} • {o.items} items</div>
+                              </div>
+                              <span className={`badge ${statusBadgeClass(o.status)}`}>{o.status}</span>
                             </div>
-                            <span className={`badge ${statusBadgeClass(o.status)}`}>{o.status}</span>
-                          </div>
 
-                          <div className="order-bottom">
-                            <div className="order-amount">
-                              <span className="muted">Total</span>
-                              <span className="strong">₹{o.total}</span>
-                            </div>
-                            <div className="order-amount">
-                              <span className="muted">ETA</span>
-                              <span className="strong">{o.etaDays} days</span>
-                            </div>
-                            <div className="order-cta">
-                              <button className="btn-primary" onClick={() => navigate(`/order/${o.id}`)}>
-                                <i className="fas fa-map-marker-alt"></i> Track
-                              </button>
-                              <button className="btn-secondary" onClick={() => navigate('/profile')}>
-                                <i className="fas fa-eye"></i> Details
-                              </button>
+                            <div className="order-bottom">
+                              <div className="order-amount">
+                                <span className="muted">Total</span>
+                                <span className="strong">₹{o.total}</span>
+                              </div>
+                              <div className="order-amount">
+                                <span className="muted">ETA</span>
+                                <span className="strong">{o.etaDays} days</span>
+                              </div>
+                              <div className="order-cta">
+                                <button className="btn-primary" onClick={() => navigate(`/order/${o.id}`)}>
+                                  <i className="fas fa-map-marker-alt"></i> Track
+                                </button>
+                                <button className="btn-secondary" onClick={() => navigate('/profile')}>
+                                  <i className="fas fa-eye"></i> Details
+                                </button>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      ))}
+                        ))
+                      )}
                     </div>
                   </div>
                 </div>

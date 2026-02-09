@@ -4,181 +4,11 @@ import SkeletonLoader from '../components/SkeletonLoader';
 import './TShirtsEnhanced.css';
 
 // Enhanced Accessories products with more variety
-const accessoriesProducts = [
-  {
-    id: 31,
-    name: 'JNV Baseball Cap',
-    description: 'Adjustable Strap | Embroidered Logo | Premium Cotton',
-    price: 299,
-    originalPrice: 399,
-    image: 'https://images.unsplash.com/photo-1513519245088-0e7839c3c889?w=300&h=400&fit=crop',
-    badge: 'Bestseller',
-    reviews: 245,
-    rating: 4.5,
-    category: 'Caps',
-    sizes: ['One Size'],
-    colors: ['Black', 'Navy', 'White', 'Red']
-  },
-  {
-    id: 32,
-    name: 'JNV Backpack',
-    description: 'Waterproof | Laptop Compartment | Multiple Pockets',
-    price: 899,
-    originalPrice: 1299,
-    image: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=300&h=400&fit=crop',
-    badge: 'Hot',
-    reviews: 189,
-    rating: 4.6,
-    category: 'Bags',
-    sizes: ['One Size'],
-    colors: ['Black', 'Navy', 'Gray', 'Forest Green']
-  },
-  {
-    id: 33,
-    name: 'JNV Water Bottle',
-    description: 'Stainless Steel | Insulated | 1L Capacity',
-    price: 199,
-    originalPrice: 299,
-    image: 'https://images.unsplash.com/photo-1602143403490-42c665fd7239?w=300&h=400&fit=crop',
-    badge: 'New',
-    reviews: 156,
-    rating: 4.4,
-    category: 'Bottles',
-    sizes: ['1L'],
-    colors: ['Silver', 'Black', 'Blue', 'Red']
-  },
-  {
-    id: 34,
-    name: 'JNV Phone Case',
-    description: 'Premium Protection | Custom Design | Shockproof',
-    price: 149,
-    originalPrice: 199,
-    image: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=300&h=400&fit=crop',
-    badge: 'Trending',
-    reviews: 134,
-    rating: 4.3,
-    category: 'Phone Cases',
-    sizes: ['iPhone', 'Android'],
-    colors: ['Black', 'White', 'Clear', 'Blue']
-  },
-  {
-    id: 35,
-    name: 'JNV ID Card Holder',
-    description: 'Premium Leather | Custom Engraving | Magnetic Closure',
-    price: 99,
-    originalPrice: 149,
-    image: 'https://images.unsplash.com/photo-1602143403490-42c665fd7239?w=300&h=400&fit=crop',
-    badge: 'Limited',
-    reviews: 98,
-    rating: 4.2,
-    category: 'ID Holders',
-    sizes: ['Standard'],
-    colors: ['Black', 'Brown', 'Navy']
-  },
-  {
-    id: 36,
-    name: 'JNV Notebook Set',
-    description: 'Premium Paper | Custom Cover | Set of 3',
-    price: 249,
-    originalPrice: 349,
-    image: 'https://images.unsplash.com/photo-1563013544-b8e825b3e4c8?w=300&h=400&fit=crop',
-    badge: 'Premium',
-    reviews: 167,
-    rating: 4.5,
-    category: 'Stationery',
-    sizes: ['A5'],
-    colors: ['Black', 'Blue', 'Red', 'Green']
-  },
-  {
-    id: 37,
-    name: 'JNV Keychain',
-    description: 'Metallic | Custom Logo | Durable',
-    price: 79,
-    originalPrice: 99,
-    image: 'https://images.unsplash.com/photo-1602143403490-42c665fd7239?w=300&h=400&fit=crop',
-    badge: 'Popular',
-    reviews: 89,
-    rating: 4.1,
-    category: 'Keychains',
-    sizes: ['One Size'],
-    colors: ['Silver', 'Gold', 'Black']
-  },
-  {
-    id: 38,
-    name: 'JNV Sunglasses',
-    description: 'UV Protection | Polarized | Stylish Design',
-    price: 399,
-    originalPrice: 599,
-    image: 'https://images.unsplash.com/photo-1473496169904-658ba7c44d8a?w=300&h=400&fit=crop',
-    badge: 'Summer',
-    reviews: 123,
-    rating: 4.4,
-    category: 'Sunglasses',
-    sizes: ['One Size'],
-    colors: ['Black', 'Brown', 'Tortoise']
-  },
-  {
-    id: 39,
-    name: 'JNV Watch',
-    description: 'Analog | Leather Strap | Water Resistant',
-    price: 699,
-    originalPrice: 999,
-    image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300&h=400&fit=crop',
-    badge: 'Exclusive',
-    reviews: 78,
-    rating: 4.6,
-    category: 'Watches',
-    sizes: ['One Size'],
-    colors: ['Black', 'Brown', 'Silver']
-  },
-  {
-    id: 40,
-    name: 'JNV Belt',
-    description: 'Genuine Leather | Adjustable | Classic Design',
-    price: 349,
-    originalPrice: 499,
-    image: 'https://images.unsplash.com/photo-1544966503-7e3c4c5c5c5c?w=300&h=400&fit=crop',
-    badge: 'Classic',
-    reviews: 145,
-    rating: 4.3,
-    category: 'Belts',
-    sizes: ['S', 'M', 'L', 'XL'],
-    colors: ['Black', 'Brown', 'Tan']
-  },
-  {
-    id: 41,
-    name: 'JNV Wallet',
-    description: 'Premium Leather | Multiple Card Slots | RFID Protected',
-    price: 449,
-    originalPrice: 649,
-    image: 'https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=300&h=400&fit=crop',
-    badge: 'Premium',
-    reviews: 167,
-    rating: 4.7,
-    category: 'Wallets',
-    sizes: ['One Size'],
-    colors: ['Black', 'Brown', 'Tan']
-  },
-  {
-    id: 42,
-    name: 'JNV Socks Set',
-    description: 'Cotton Blend | Pack of 3 | Comfort Fit',
-    price: 149,
-    originalPrice: 199,
-    image: 'https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=300&h=400&fit=crop',
-    badge: 'Value',
-    reviews: 234,
-    rating: 4.2,
-    category: 'Socks',
-    sizes: ['S', 'M', 'L'],
-    colors: ['Black', 'White', 'Navy', 'Gray']
-  }
-];
-
 const Accessories = () => {
   const [activeTab, setActiveTab] = useState('all');
   const [sortBy, setSortBy] = useState('featured');
   const [isLoading, setIsLoading] = useState(true);
+  const [products, setProducts] = useState([]);
   const [selectedFilters, setSelectedFilters] = useState({
     categories: [],
     sizes: [],
@@ -186,12 +16,39 @@ const Accessories = () => {
     priceRange: []
   });
 
-  // Simulate loading
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1500);
-    return () => clearTimeout(timer);
+    const fetchAccessories = async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetch('http://localhost:5000/api/products?category=accessories');
+        const result = await response.json();
+        
+        if (result.success) {
+          const mapped = result.data.products.map(p => ({
+            id: p.slug,
+            dbId: p._id,
+            name: p.name,
+            description: p.description,
+            price: p.sale_price || p.price,
+            originalPrice: p.price,
+            image: p.images[0],
+            badge: (p.tags && p.tags.includes('trending')) ? 'Trending' : (p.tags && p.tags.includes('new')) ? 'New' : '',
+            reviews: p.review_count || 0,
+            rating: p.rating || 0,
+            category: p.subcategory || 'Accessories',
+            sizes: p.sizes ? p.sizes.map(s => s.size) : [],
+            colors: p.colors ? p.colors.map(c => c.name) : []
+          }));
+          setProducts(mapped);
+        }
+      } catch (err) {
+        console.error('Error fetching accessories:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchAccessories();
   }, []);
 
   const handleFilterChange = (filterType, value) => {
@@ -203,7 +60,7 @@ const Accessories = () => {
     }));
   };
 
-  const filteredProducts = accessoriesProducts.filter(product => {
+  const filteredProducts = products.filter(product => {
     // Tab filtering
     if (activeTab === 'trending' && product.badge !== 'Trending') return false;
     if (activeTab === 'new' && product.badge !== 'New') return false;
@@ -290,7 +147,7 @@ const Accessories = () => {
             </p>
             <div className="hero-stats animate-slideUp" style={{ animationDelay: '0.4s' }}>
               <div className="stat">
-                <span className="stat-number">{accessoriesProducts.length}+</span>
+                <span className="stat-number">{products.length}+</span>
                 <span className="stat-label">Products</span>
               </div>
               <div className="stat">
@@ -333,7 +190,7 @@ const Accessories = () => {
                       />
                       <span className="filter-text">{category}</span>
                       <span className="filter-count">
-                        {accessoriesProducts.filter(p => p.category === category).length}
+                        {products.filter(p => p.category === category).length}
                       </span>
                     </label>
                   ))}

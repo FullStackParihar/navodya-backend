@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import api from '../utils/api';
 import PrivateRoute from '../components/PrivateRoute';
+import { useToast } from '../context/ToastContext';
 import './AdminProfile.css';
 
 const AdminProfile = () => {
   const navigate = useNavigate();
+  const { success, error, info } = useToast();
   
   // Check if user is admin (you can customize this logic)
   const [isAdmin, setIsAdmin] = useState(false);
@@ -28,6 +31,23 @@ const AdminProfile = () => {
       return;
     }
   }, [navigate]);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const result = await api.get('/admin/stats');
+        if (result.success) {
+          setAdminData(prev => ({
+            ...prev,
+            stats: result.data
+          }));
+        }
+      } catch (err) {
+        console.error('Error fetching admin stats:', err);
+      }
+    };
+    if (isAdmin) fetchStats();
+  }, [isAdmin]);
 
   const [adminData, setAdminData] = useState({
     firstName: 'Admin',
@@ -75,9 +95,9 @@ const AdminProfile = () => {
       setAdminData(editForm);
       setIsEditing(false);
       
-      alert('Admin profile updated successfully!');
-    } catch (error) {
-      alert('Failed to update admin profile');
+      success('Admin profile updated successfully!');
+    } catch (err) {
+      error('Failed to update admin profile');
     }
   };
 
@@ -101,19 +121,19 @@ const AdminProfile = () => {
   };
 
   const handleUserManagement = () => {
-    navigate('/admin/users');
+    info('User Management module coming soon');
   };
 
   const handleOrderManagement = () => {
-    navigate('/admin/orders');
+    info('Order Management module coming soon');
   };
 
   const handleSystemSettings = () => {
-    navigate('/admin/settings');
+    info('System Settings module coming soon');
   };
 
   const handleAnalytics = () => {
-    navigate('/admin/analytics');
+    info('Advanced Analytics module coming soon');
   };
 
   if (!isAdmin) {

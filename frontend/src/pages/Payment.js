@@ -1,30 +1,22 @@
 import React, { useState, useEffect } from 'react';
+import { useCart } from '../context/CartContext';
+import { useToast } from '../context/ToastContext';
+import api from '../utils/api';
 
 const Payment = () => {
+  const { items: cartItems, totalAmount, clearCart } = useCart();
+  const { success: showToastSuccess, error: showToastError } = useToast();
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [paymentMethod, setPaymentMethod] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState(false);
+  const [couponCode, setCouponCode] = useState('');
   
-  const [addresses, setAddresses] = useState([
-    {
-      id: 1,
-      name: 'Home',
-      fullName: 'John Doe',
-      phone: '+91 98765 43210',
-      address: '123, Navodaya Colony',
-      landmark: 'Near JNV School',
-      city: 'Bangalore',
-      state: 'Karnataka',
-      pincode: '560001',
-      type: 'home',
-      isDefault: true
-    }
-  ]);
+  const [addresses, setAddresses] = useState([]);
 
   const [newAddress, setNewAddress] = useState({
-    name: '',
+    name: 'Home',
     fullName: '',
     phone: '',
     address: '',
@@ -37,6 +29,44 @@ const Payment = () => {
   });
 
   const [showAddAddress, setShowAddAddress] = useState(false);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const result = await api.get('/auth/profile');
+        if (result.success && result.data) {
+          const user = result.data;
+          // Create initial address from user profile if available
+          if (user.address) {
+            const initialAddress = {
+              id: 'profile',
+              name: 'Profile Address',
+              fullName: user.name,
+              phone: user.phone || '',
+              address: user.address,
+              landmark: '',
+              city: user.city || '',
+              state: user.state || '',
+              pincode: user.pincode || '',
+              type: 'home',
+              isDefault: true
+            };
+            setAddresses([initialAddress]);
+            setSelectedAddress(initialAddress);
+          }
+          
+          setNewAddress(prev => ({
+            ...prev,
+            fullName: user.name,
+            phone: user.phone || ''
+          }));
+        }
+      } catch (err) {
+        console.error('Error fetching profile for address:', err);
+      }
+    };
+    fetchProfile();
+  }, []);
 
   const paymentMethods = [
     {
@@ -54,77 +84,20 @@ const Payment = () => {
       color: '#4A90E2'
     },
     {
-      id: 'netbanking',
-      name: 'Net Banking',
-      description: 'Pay directly from your bank account',
-      icon: 'fas fa-university',
-      color: '#7B68EE'
-    },
-    {
-      id: 'wallet',
-      name: 'Wallet',
-      description: 'Paytm Wallet, Amazon Pay, Mobikwik',
-      icon: 'fas fa-wallet',
-      color: '#FF6B6B'
-    },
-    {
       id: 'cod',
       name: 'Cash on Delivery',
       description: 'Pay when you receive your order',
       icon: 'fas fa-money-bill-wave',
       color: '#4CAF50'
-    },
-    {
-      id: 'emi',
-      name: 'EMI',
-      description: 'Pay in easy monthly installments',
-      icon: 'fas fa-calendar-alt',
-      color: '#FF9800'
-    }
-  ];
-
-  const [cardDetails, setCardDetails] = useState({
-    number: '',
-    name: '',
-    expiry: '',
-    cvv: '',
-    saveCard: false
-  });
-
-  const [upiDetails, setUpiDetails] = useState({
-    upiId: '',
-    saveUpi: false
-  });
-
-  const [selectedBank, setSelectedBank] = useState('');
-
-  const cartItems = [
-    {
-      id: 1,
-      name: 'JNV Classic T-Shirt',
-      price: 599,
-      quantity: 2,
-      size: 'L',
-      color: 'Navy',
-      image: 'https://picsum.photos/seed/tshirt1/100/100'
-    },
-    {
-      id: 2,
-      name: 'JNV Alumni Hoodie',
-      price: 999,
-      quantity: 1,
-      size: 'XL',
-      color: 'Black',
-      image: 'https://picsum.photos/seed/hoodie1/100/100'
     }
   ];
 
   const calculateSubtotal = () => {
-    return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+    return totalAmount;
   };
 
   const calculateShipping = () => {
-    return calculateSubtotal() > 999 ? 0 : 99;
+    return calculateSubtotal() > 999 || calculateSubtotal() === 0 ? 0 : 99;
   };
 
   const calculateTax = () => {
@@ -141,7 +114,7 @@ const Payment = () => {
 
   const handleAddAddress = () => {
     if (!validatePincode(newAddress.pincode)) {
-      alert('Please enter a valid 6-digit pincode');
+      showToastError('Please enter a valid 6-digit pincode');
       return;
     }
 
@@ -151,38 +124,60 @@ const Payment = () => {
     };
 
     setAddresses([...addresses, address]);
-    setNewAddress({
-      name: '',
-      fullName: '',
-      phone: '',
-      address: '',
-      landmark: '',
-      city: '',
-      state: '',
-      pincode: '',
-      type: 'home',
-      isDefault: false
-    });
+    setSelectedAddress(address);
     setShowAddAddress(false);
+    showToastSuccess('Address added successfully');
   };
 
   const handlePayment = async () => {
     if (!selectedAddress) {
-      alert('Please select a delivery address');
+      showToastError('Please select a delivery address');
       return;
     }
 
     if (!paymentMethod) {
-      alert('Please select a payment method');
+      showToastError('Please select a payment method');
       return;
     }
 
     setIsProcessing(true);
 
-    setTimeout(() => {
+    try {
+      // 1. Create Payment Intent
+      const intentResult = await api.post('/orders/create-payment-intent', {
+        couponCode,
+        shippingAddress: selectedAddress
+      });
+
+      if (!intentResult.success) {
+        throw new Error(intentResult.message || 'Failed to create payment intent');
+      }
+
+      const { paymentIntentId, isTestMode } = intentResult.data;
+
+      // 2. Simulate Payment Confirmation (since it's mock or test mode)
+      // In a real Stripe integration, you'd use confirmCardPayment here.
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      // 3. Create Final Order
+      const orderResult = await api.post('/orders/create', {
+        paymentIntentId,
+        shippingAddress: selectedAddress
+      });
+
+      if (orderResult.success) {
+        setOrderPlaced(true);
+        clearCart();
+        showToastSuccess('Order placed successfully!');
+      } else {
+        throw new Error(orderResult.message || 'Failed to place order');
+      }
+    } catch (err) {
+      console.error('Checkout error:', err);
+      showToastError(err.message || 'Payment failed. Please try again.');
+    } finally {
       setIsProcessing(false);
-      setOrderPlaced(true);
-    }, 3000);
+    }
   };
 
   return (

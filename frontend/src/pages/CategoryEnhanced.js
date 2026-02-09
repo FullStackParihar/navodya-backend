@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import SizeFilter from '../components/SizeFilter';
+import { useCart } from '../context/CartContext';
+import { useToast } from '../context/ToastContext';
+import { Link } from 'react-router-dom';
 
 const CategoryEnhanced = ({ category = 'tshirts' }) => {
   const [products, setProducts] = useState([]);
@@ -8,40 +11,60 @@ const CategoryEnhanced = ({ category = 'tshirts' }) => {
   const [priceRange, setPriceRange] = useState([0, 2000]);
   const [sortBy, setSortBy] = useState('featured');
   const [loading, setLoading] = useState(true);
+  const { addToCart } = useCart();
+  const { success } = useToast();
 
-  const mockProducts = [
-    {
-      id: 1,
-      name: 'JNV Classic T-Shirt',
-      price: 599,
-      originalPrice: 799,
-      image: 'https://picsum.photos/seed/jnv-tshirt1/400/300',
-      sizes: ['s', 'm', 'l', 'xl', 'xxl'],
-      rating: 4.5,
-      reviews: 128,
-      badge: 'New'
-    },
-    {
-      id: 2,
-      name: 'JNV Sports T-Shirt',
-      price: 499,
-      originalPrice: 699,
-      image: 'https://picsum.photos/seed/jnv-tshirt2/400/300',
-      sizes: ['m', 'l', 'xl', 'xxl'],
-      rating: 4.3,
-      reviews: 89,
-      badge: 'Bestseller'
+  const handleSizeChange = (size) => {
+    if (selectedSizes.includes(size)) {
+      setSelectedSizes(selectedSizes.filter(s => s !== size));
+    } else {
+      setSelectedSizes([...selectedSizes, size]);
     }
-  ];
+  };
+
+  const handleAddToCart = (product) => {
+    addToCart({
+      ...product,
+      id: product.dbId || product.id,
+      quantity: 1,
+      selectedSize: product.sizes && product.sizes.length > 0 ? product.sizes[0] : 'Free Size',
+      selectedColor: 'N/A'
+    });
+    success(`${product.name} added to cart!`);
+  };
 
   useEffect(() => {
-    setLoading(true);
-    setTimeout(() => {
-      setProducts(mockProducts);
-      setFilteredProducts(mockProducts);
-      setLoading(false);
-    }, 1000);
-  }, []);
+    const fetchCategoryProducts = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(`http://localhost:5000/api/products?category=${category}`);
+        const result = await response.json();
+        
+        if (result.success) {
+          const mapped = result.data.products.map(p => ({
+            id: p.slug,
+            dbId: p._id,
+            name: p.name,
+            price: p.sale_price || p.price,
+            originalPrice: p.sale_price ? p.price : null,
+            image: p.images[0] || 'https://via.placeholder.com/400/300?text=No+Image',
+            sizes: p.sizes.map(s => s.size),
+            rating: p.rating,
+            reviews: p.review_count,
+            badge: p.sale_price ? 'Sale' : (p.rating > 4.5 ? 'Bestseller' : '')
+          }));
+          setProducts(mapped);
+          setFilteredProducts(mapped);
+        }
+      } catch (err) {
+        console.error('Error fetching category products:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCategoryProducts();
+  }, [category]);
 
   useEffect(() => {
     let filtered = products;
@@ -123,12 +146,18 @@ const CategoryEnhanced = ({ category = 'tshirts' }) => {
                   {product.badge && (
                     <span className="product-badge">{product.badge}</span>
                   )}
-                  <img src={product.image} alt={product.name} />
+                  <Link to={`/product/${product.id}`}>
+                    <img src={product.image} alt={product.name} />
+                  </Link>
                   <div className="product-info">
-                    <h3>{product.name}</h3>
+                    <Link to={`/product/${product.id}`}>
+                      <h3>{product.name}</h3>
+                    </Link>
                     <div className="product-price">
                       <span className="current-price">₹{product.price}</span>
-                      <span className="original-price">₹{product.originalPrice}</span>
+                      {product.originalPrice && (
+                        <span className="original-price">₹{product.originalPrice}</span>
+                      )}
                     </div>
                     <div className="product-rating">
                       <div className="stars">
@@ -141,7 +170,12 @@ const CategoryEnhanced = ({ category = 'tshirts' }) => {
                       </div>
                       <span>({product.reviews})</span>
                     </div>
-                    <button className="btn btn-primary">Add to Cart</button>
+                    <button 
+                      className="btn btn-primary"
+                      onClick={() => handleAddToCart(product)}
+                    >
+                      Add to Cart
+                    </button>
                   </div>
                 </div>
               ))}

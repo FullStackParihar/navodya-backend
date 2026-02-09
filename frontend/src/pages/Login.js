@@ -60,34 +60,33 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      if (isLogin) {
-        // Login logic
-        if (formData.email === 'admin@navodaya.com' && formData.password === 'admin123!@#') {
-          localStorage.setItem('isAuthenticated', 'true');
-          localStorage.setItem('userEmail', formData.email);
-          navigate('/account');
-        } else if (otpSent && otp === '123456') {
-          // OTP login
-          localStorage.setItem('isAuthenticated', 'true');
-          localStorage.setItem('userEmail', formData.email);
-          navigate('/account');
-        } else {
-          setError('Invalid credentials or OTP');
-        }
+      const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
+      const body = isLogin 
+        ? { email: formData.email, password: formData.password }
+        : { name: formData.name, email: formData.email, password: formData.password };
+
+      const response = await fetch(`http://localhost:5000${endpoint}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        localStorage.setItem('isAuthenticated', 'true');
+        localStorage.setItem('token', result.data.token);
+        localStorage.setItem('user', JSON.stringify(result.data.user));
+        localStorage.setItem('userEmail', result.data.user.email);
+        navigate('/account');
       } else {
-        // Signup logic
-        if (formData.email && formData.password) {
-          // Simulate signup - in production, create user account
-          await new Promise(resolve => setTimeout(resolve, 1500));
-          localStorage.setItem('isAuthenticated', 'true');
-          localStorage.setItem('userEmail', formData.email);
-          navigate('/account');
-        } else {
-          setError('Please fill all fields');
-        }
+        setError(result.message || 'Authentication failed');
       }
     } catch (err) {
       setError(isLogin ? 'Login failed' : 'Signup failed');
+      console.error('Auth error:', err);
     } finally {
       setIsLoading(false);
     }
@@ -173,30 +172,7 @@ const Login = () => {
             />
           </div>
 
-          {/* OTP Section */}
-          {isLogin && (
-            <div className="otp-section">
-              <div className="form-group">
-                <label htmlFor="otp">Enter OTP (if sent)</label>
-                <input
-                  type="text"
-                  id="otp"
-                  value={otp}
-                  onChange={(e) => setOtp(e.target.value)}
-                  placeholder="6-digit code"
-                  maxLength={6}
-                />
-              </div>
-              <button 
-                type="button" 
-                className="otp-btn" 
-                onClick={handleSendOTP}
-                disabled={isLoading || !formData.email}
-              >
-                {isLoading ? 'Sending...' : 'Send OTP'}
-              </button>
-            </div>
-          )}
+
           
           <button type="submit" disabled={isLoading} className="login-button">
             {isLoading ? (isLogin ? 'Logging in...' : 'Creating account...') : (isLogin ? 'Login' : 'Sign Up')}

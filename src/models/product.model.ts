@@ -12,6 +12,8 @@ export interface IProduct extends Document {
     sizes: { size: string; stock: number }[];
     colors: { name: string; hex?: string; images?: string[] }[];
     tags: string[];
+    features?: string[];
+    specifications?: Record<string, string>;
     rating: number;
     review_count: number;
     is_active: boolean;
@@ -31,6 +33,8 @@ const productSchema = new mongoose.Schema({
     sizes: [{ size: String, stock: Number }],
     colors: [{ name: String, hex: String, images: [String] }],
     tags: [String],
+    features: [String],
+    specifications: { type: Map, of: String },
     rating: { type: Number, default: 0 },
     review_count: { type: Number, default: 0 },
     is_active: { type: Boolean, default: true }

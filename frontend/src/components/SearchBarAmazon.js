@@ -19,26 +19,26 @@ const SearchBarAmazon = () => {
 
   // Enhanced product suggestions with more variety
   const allProducts = React.useMemo(() => [
-    { id: 1, name: 'JNV Classic T-Shirt', category: 'T-Shirts', price: 399, badge: 'Bestseller' },
-    { id: 2, name: 'JNV Alumni Hoodie', category: 'Hoodies', price: 799, badge: 'New' },
-    { id: 3, name: 'JNV Baseball Cap', category: 'Accessories', price: 299 },
-    { id: 4, name: 'JNV Backpack', category: 'Accessories', price: 899 },
-    { id: 5, name: 'JNV Polo T-Shirt', category: 'T-Shirts', price: 499 },
-    { id: 6, name: 'JNV Sports T-Shirt', category: 'T-Shirts', price: 349 },
-    { id: 7, name: 'JNV Batch T-Shirt', category: 'T-Shirts', price: 399 },
-    { id: 8, name: 'JNV Alumni T-Shirt', category: 'T-Shirts', price: 449 },
-    { id: 9, name: 'JNV Zip Hoodie', category: 'Hoodies', price: 899 },
-    { id: 10, name: 'JNV Pullover Hoodie', category: 'Hoodies', price: 799 },
-    { id: 11, name: 'JNV Sports Jersey', category: 'T-Shirts', price: 549, badge: 'Limited' },
-    { id: 12, name: 'JNV Track Pants', category: 'Accessories', price: 449 },
-    { id: 13, name: 'JNV Water Bottle', category: 'Accessories', price: 199 },
-    { id: 14, name: 'JNV Phone Case', category: 'Accessories', price: 149 },
-    { id: 15, name: 'JNV Alumni Kit', category: 'Alumni Kits', price: 1999, badge: 'Premium' },
-    { id: 16, name: 'JNV Custom T-Shirt', category: 'Customize', price: 599 },
-    { id: 17, name: 'JNV Custom Hoodie', category: 'Customize', price: 999 },
-    { id: 18, name: 'JNV Graduation Gown', category: 'Alumni Kits', price: 1299 },
-    { id: 19, name: 'JNV ID Card Holder', category: 'Accessories', price: 99 },
-    { id: 20, name: 'JNV Notebook Set', category: 'Accessories', price: 249 }
+    { id: 'jnv-classic-tshirt', name: 'JNV Classic T-Shirt', category: 'T-Shirts', price: 399, badge: 'Bestseller' },
+    { id: 'jnv-alumni-hoodie', name: 'JNV Alumni Hoodie', category: 'Hoodies', price: 799, badge: 'New' },
+    { id: 'jnv-baseball-cap', name: 'JNV Baseball Cap', category: 'Accessories', price: 299 },
+    { id: 'jnv-backpack', name: 'JNV Backpack', category: 'Accessories', price: 899 },
+    { id: 'jnv-polo-tshirt', name: 'JNV Polo T-Shirt', category: 'T-Shirts', price: 499 },
+    { id: 'jnv-sports-tshirt', name: 'JNV Sports T-Shirt', category: 'T-Shirts', price: 349 },
+    { id: 'jnv-batch-tshirt', name: 'JNV Batch T-Shirt', category: 'T-Shirts', price: 399 },
+    { id: 'jnv-alumni-tshirt', name: 'JNV Alumni T-Shirt', category: 'T-Shirts', price: 449 },
+    { id: 'jnv-zip-hoodie', name: 'JNV Zip Hoodie', category: 'Hoodies', price: 899 },
+    { id: 'jnv-pullover-hoodie', name: 'JNV Pullover Hoodie', category: 'Hoodies', price: 799 },
+    { id: 'jnv-sports-jersey', name: 'JNV Sports Jersey', category: 'T-Shirts', price: 549, badge: 'Limited' },
+    { id: 'jnv-track-pants', name: 'JNV Track Pants', category: 'Accessories', price: 449 },
+    { id: 'jnv-water-bottle', name: 'JNV Water Bottle', category: 'Accessories', price: 199 },
+    { id: 'jnv-phone-case', name: 'JNV Phone Case', category: 'Accessories', price: 149 },
+    { id: 'jnv-alumni-kit', name: 'JNV Alumni Kit', category: 'Alumni Kits', price: 1999, badge: 'Premium' },
+    { id: 'jnv-custom-tshirt', name: 'JNV Custom T-Shirt', category: 'Customize', price: 599 },
+    { id: 'jnv-custom-hoodie', name: 'JNV Custom Hoodie', category: 'Customize', price: 999 },
+    { id: 'jnv-graduation-gown', name: 'JNV Graduation Gown', category: 'Alumni Kits', price: 1299 },
+    { id: 'jnv-id-card-holder', name: 'JNV ID Card Holder', category: 'Accessories', price: 99 },
+    { id: 'jnv-notebook-set', name: 'JNV Notebook Set', category: 'Accessories', price: 249 }
   ], []);
 
   useEffect(() => {

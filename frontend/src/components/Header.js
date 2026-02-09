@@ -3,9 +3,12 @@ import { Link, useLocation } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import SearchBarAmazon from './SearchBarAmazon';
 
+import { useWishlist } from '../context/WishlistContext';
+
 const Header = () => {
   const location = useLocation();
   const { totalItems } = useCart();
+  const { totalItems: wishlistCount } = useWishlist();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   // Check if user is authenticated and is admin
@@ -48,34 +51,54 @@ const Header = () => {
                 <span>{isAuthenticated ? 'Account' : 'Login'}</span>
               </Link>
 
-              <Link 
-                to="/user-profile" 
-                className={`nav-item ${location.pathname === '/user-profile' ? 'active' : ''} animate-fadeIn`}
-                style={{ animationDelay: '0.15s' }}
-              >
-                <i className="fas fa-user"></i>
-                <span>User Profile</span>
-              </Link>
+              {isAuthenticated && (
+                <Link 
+                  to="/user-profile" 
+                  className={`nav-item ${location.pathname === '/user-profile' ? 'active' : ''} animate-fadeIn`}
+                  style={{ animationDelay: '0.15s' }}
+                >
+                  <i className="fas fa-user"></i>
+                  <span>Profile</span>
+                </Link>
+              )}
               
+              {isAdmin && (
+                <Link 
+                  to="/admin-profile" 
+                  className={`nav-item ${location.pathname === '/admin-profile' ? 'active' : ''} animate-fadeIn`}
+                  style={{ animationDelay: '0.25s' }}
+                >
+                  <i className="fas fa-crown"></i>
+                  <span>Admin</span>
+                </Link>
+              )}
+
               <Link 
-                to="/admin-profile" 
-                className={`nav-item ${location.pathname === '/admin-profile' ? 'active' : ''} animate-fadeIn`}
-                style={{ animationDelay: '0.25s' }}
+                to="/wishlist" 
+                className={`nav-item ${location.pathname === '/wishlist' ? 'active' : ''} animate-fadeIn`}
+                style={{ animationDelay: '0.28s' }}
               >
-                <i className="fas fa-crown"></i>
-                <span>Admin Profile</span>
+                <div className="cart-icon-wrapper">
+                  <i className="fas fa-heart"></i>
+                  {wishlistCount > 0 && (
+                    <span className="cart-count animate-bounce" style={{backgroundColor: '#ef4444'}}>{wishlistCount}</span>
+                  )}
+                </div>
+                <span>Wishlist</span>
               </Link>
               
               <Link 
                 to="/cart" 
-                className={`nav-item ${location.pathname === '/cart' ? 'active' : ''} animate-fadeIn`}
+                className={`nav-item cart-item ${location.pathname === '/cart' ? 'active' : ''} animate-fadeIn`}
                 style={{ animationDelay: '0.3s' }}
               >
-                <i className="fas fa-shopping-cart"></i>
+                <div className="cart-icon-wrapper">
+                  <i className="fas fa-shopping-cart"></i>
+                  {totalItems > 0 && (
+                    <span className="cart-count animate-bounce">{totalItems}</span>
+                  )}
+                </div>
                 <span>Cart</span>
-                {totalItems > 0 && (
-                  <span className="cart-count animate-bounce">{totalItems}</span>
-                )}
               </Link>
             </div>
 

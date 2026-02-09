@@ -5,6 +5,7 @@ const CartSummary = ({
   cartItems = [], 
   showCheckoutButton = true,
   className = '',
+  discount = 0,
   onCheckout = null 
 }) => {
   const navigate = useNavigate();
@@ -23,7 +24,7 @@ const CartSummary = ({
   };
 
   const calculateTotal = () => {
-    return calculateSubtotal() + calculateShipping() + calculateTax();
+    return Math.max(0, calculateSubtotal() + calculateShipping() + calculateTax() - discount);
   };
 
   const handleCheckout = () => {
@@ -76,6 +77,12 @@ const CartSummary = ({
           <span>Tax (18%)</span>
           <span>₹{tax}</span>
         </div>
+        {discount > 0 && (
+          <div className="price-row discount">
+            <span>Discount Applied</span>
+            <span>-₹{discount}</span>
+          </div>
+        )}
         <div className="price-row total">
           <span>Total</span>
           <span>₹{total}</span>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import QuickCheckoutModal from './QuickCheckoutModal';
@@ -8,31 +8,44 @@ const CheckoutDashboard = () => {
   const { items } = useCart();
   const [showQuickCheckout, setShowQuickCheckout] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [orders, setOrders] = useState([]);
+  const [isLoadingOrders, setIsLoadingOrders] = useState(true);
 
-  // Sample order data for demonstration
-  const sampleOrders = [
-    {
-      id: 'ORD20240127001',
-      status: 'shipped',
-      date: '2024-01-27',
-      total: 2592,
-      items: 2
-    },
-    {
-      id: 'ORD20240126002',
-      status: 'delivered',
-      date: '2024-01-26',
-      total: 1299,
-      items: 1
-    },
-    {
-      id: 'ORD20240125003',
-      status: 'processing',
-      date: '2024-01-25',
-      total: 3498,
-      items: 3
-    }
-  ];
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          setIsLoadingOrders(false);
+          return;
+        }
+
+        const response = await fetch('http://localhost:5000/api/orders', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        const result = await response.json();
+        
+        if (result.success) {
+          const mappedOrders = result.data.map(order => ({
+            id: order._id, // Full DB ID or short ID if backend provides it
+            status: order.status.toLowerCase(),
+            date: new Date(order.created_at).toLocaleDateString(),
+            total: order.pricing.total,
+            items: order.items.length
+          }));
+          setOrders(mappedOrders);
+        }
+      } catch (err) {
+        console.error('Error fetching orders:', err);
+      } finally {
+        setIsLoadingOrders(false);
+      }
+    };
+
+    fetchOrders();
+  }, []);
 
   const handleViewCart = () => {
     navigate('/cart');
@@ -140,27 +153,33 @@ const CheckoutDashboard = () => {
               </div>
             </div>
             <div className="orders-list">
-              {sampleOrders.map((order) => (
-                <div key={order.id} className="order-item">
-                  <div className="order-info">
-                    <h3>Order #{order.id}</h3>
-                    <div className="order-meta">
-                      <span className={`status-badge ${order.status}`}>
-                        {order.status.toUpperCase()}
-                      </span>
-                      <span className="order-date">{order.date}</span>
-                      <span className="order-total">₹{order.total}</span>
+              {isLoadingOrders ? (
+                <div className="loading-orders">Loading orders...</div>
+              ) : orders.length > 0 ? (
+                orders.map((order) => (
+                  <div key={order.id} className="order-item">
+                    <div className="order-info">
+                      <h3>Order #{order.id.slice(-8).toUpperCase()}</h3>
+                      <div className="order-meta">
+                        <span className={`status-badge ${order.status}`}>
+                          {order.status.toUpperCase()}
+                        </span>
+                        <span className="order-date">{order.date}</span>
+                        <span className="order-total">₹{order.total}</span>
+                      </div>
                     </div>
+                    <button 
+                      className="track-btn"
+                      onClick={() => handleTrackOrder(order.id)}
+                    >
+                      <i className="fas fa-map-marker-alt"></i>
+                      Track
+                    </button>
                   </div>
-                  <button 
-                    className="track-btn"
-                    onClick={() => handleTrackOrder(order.id)}
-                  >
-                    <i className="fas fa-map-marker-alt"></i>
-                    Track
-                  </button>
-                </div>
-              ))}
+                ))
+              ) : (
+                <div className="no-orders">No orders found</div>
+              )}
             </div>
             <button className="btn-secondary full-width" onClick={handleViewOrders}>
               <i className="fas fa-list"></i> View All Orders
@@ -224,7 +243,7 @@ const CheckoutDashboard = () => {
               <i className="fas fa-box"></i>
             </div>
             <div className="stat-info">
-              <h3>{sampleOrders.length}</h3>
+              <h3>{orders.length}</h3>
               <p>Active Orders</p>
             </div>
           </div>
