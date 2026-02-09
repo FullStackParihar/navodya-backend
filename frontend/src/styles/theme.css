@@ -1,0 +1,464 @@
+/* Theme System for React App - Dark Mode & Light Mode */
+
+/* CSS Variables for Light Mode */
+:root {
+  /* Light Mode Colors */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-tertiary: #e9ecef;
+  --text-primary: #212529;
+  --text-secondary: #6c757d;
+  --text-muted: #adb5bd;
+  --border-color: #dee2e6;
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
+  --shadow-md: 0 4px 8px rgba(0,0,0,0.1);
+  --shadow-lg: 0 8px 16px rgba(0,0,0,0.1);
+  
+  /* Brand Colors */
+  --primary-color: #2f4a67;
+  --primary-hover: #23394f;
+  --success-color: #28a745;
+  --warning-color: #d97706;
+  --danger-color: #dc3545;
+  --info-color: #17a2b8;
+  
+  /* Header Colors */
+  --header-bg: #ffffff;
+  --header-text: #212529;
+  --header-border: #dee2e6;
+  
+  /* Footer Colors */
+  --footer-primary: #131921;
+  --footer-secondary: #232f3e;
+  --footer-text: #ffffff;
+  --footer-text-light: #999999;
+  
+  /* Card Colors */
+  --card-bg: #ffffff;
+  --card-border: #dee2e6;
+  --card-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  
+  /* Button Colors */
+  --btn-primary-bg: #2f4a67;
+  --btn-primary-text: #ffffff;
+  --btn-primary-hover: #23394f;
+  --btn-secondary-bg: #6c757d;
+  --btn-secondary-text: #ffffff;
+  --btn-secondary-hover: #5a6268;
+  
+  /* Transition */
+  --theme-transition: all 0.3s ease;
+}
+
+/* Dark Mode Variables */
+[data-theme="dark"] {
+  /* Dark Mode Colors */
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #2d2d2d;
+  --bg-tertiary: #404040;
+  --text-primary: #ffffff;
+  --text-secondary: #b3b3b3;
+  --text-muted: #808080;
+  --border-color: #404040;
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 8px rgba(0,0,0,0.3);
+  --shadow-lg: 0 8px 16px rgba(0,0,0,0.3);
+  
+  /* Brand Colors (adjusted for dark mode) */
+  --primary-color: #56718d;
+  --primary-hover: #2f4a67;
+  --success-color: #28a745;
+  --warning-color: #d97706;
+  --danger-color: #dc3545;
+  --info-color: #17a2b8;
+  
+  /* Header Colors */
+  --header-bg: #2d2d2d;
+  --header-text: #ffffff;
+  --header-border: #404040;
+  
+  /* Footer Colors (slightly adjusted for dark mode) */
+  --footer-primary: #0f1419;
+  --footer-secondary: #1a1f2e;
+  --footer-text: #ffffff;
+  --footer-text-light: #b3b3b3;
+  
+  /* Card Colors */
+  --card-bg: #2d2d2d;
+  --card-border: #404040;
+  --card-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  
+  /* Button Colors */
+  --btn-primary-bg: #56718d;
+  --btn-primary-text: #ffffff;
+  --btn-primary-hover: #2f4a67;
+  --btn-secondary-bg: #404040;
+  --btn-secondary-text: #ffffff;
+  --btn-secondary-hover: #4a4a4a;
+}
+
+/* Apply theme to body */
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: var(--theme-transition);
+}
+
+/* Header Theme */
+.header {
+  background-color: var(--header-bg);
+  color: var(--header-text);
+  border-bottom: 1px solid var(--header-border);
+  transition: var(--theme-transition);
+}
+
+.nav-links a {
+  color: var(--header-text);
+  transition: var(--theme-transition);
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+  color: var(--primary-color);
+}
+
+.search-bar input {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+  transition: var(--theme-transition);
+}
+
+.search-bar input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(47, 74, 103, 0.18);
+}
+
+/* Product Cards Theme */
+.product-card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--card-shadow);
+  transition: var(--theme-transition);
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-lg);
+}
+
+.product-info h3 {
+  color: var(--text-primary);
+  transition: var(--theme-transition);
+}
+
+.product-info p {
+  color: var(--text-secondary);
+  transition: var(--theme-transition);
+}
+
+.current-price {
+  color: var(--text-primary);
+  transition: var(--theme-transition);
+}
+
+.original-price {
+  color: var(--text-muted);
+  transition: var(--theme-transition);
+}
+
+.product-rating span {
+  color: var(--text-secondary);
+  transition: var(--theme-transition);
+}
+
+/* Footer Theme */
+.universal-footer {
+  background: var(--footer-primary);
+  color: var(--footer-text);
+  transition: var(--theme-transition);
+}
+
+.footer-top {
+  background: var(--footer-secondary);
+  transition: var(--theme-transition);
+}
+
+.footer-middle {
+  background: var(--footer-primary);
+  transition: var(--theme-transition);
+}
+
+.footer-bottom {
+  background: var(--footer-primary);
+  transition: var(--theme-transition);
+}
+
+.footer-brand h3 {
+  color: var(--footer-text);
+  transition: var(--theme-transition);
+}
+
+.footer-brand h3 span {
+  color: var(--primary-color);
+  transition: var(--theme-transition);
+}
+
+.footer-brand p {
+  color: var(--footer-text-light);
+  transition: var(--theme-transition);
+}
+
+.footer-section h4 {
+  color: var(--footer-text);
+  transition: var(--theme-transition);
+}
+
+.footer-links a {
+  color: var(--footer-text-light);
+  transition: var(--theme-transition);
+}
+
+.footer-links a:hover {
+  color: var(--primary-color);
+}
+
+.payment-icon,
+.trust-badge,
+.app-button {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: var(--theme-transition);
+}
+
+.payment-icon:hover,
+.trust-badge:hover,
+.app-button:hover {
+  background: var(--primary-color);
+  transform: translateY(-2px);
+}
+
+.newsletter-section {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+  transition: var(--theme-transition);
+}
+
+.newsletter-input {
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--text-primary);
+  transition: var(--theme-transition);
+}
+
+.newsletter-button {
+  background: var(--footer-primary);
+  color: white;
+  transition: var(--theme-transition);
+}
+
+.newsletter-button:hover {
+  background: var(--footer-secondary);
+}
+
+.copyright {
+  color: var(--footer-text-light);
+  transition: var(--theme-transition);
+}
+
+.copyright span {
+  color: var(--primary-color);
+  transition: var(--theme-transition);
+}
+
+.bottom-links a {
+  color: var(--footer-text-light);
+  transition: var(--theme-transition);
+}
+
+.bottom-links a:hover {
+  color: var(--primary-color);
+}
+
+/* Back to Top Button Theme */
+.back-to-top {
+  background: var(--primary-color);
+  color: white;
+  transition: var(--theme-transition);
+}
+
+.back-to-top:hover {
+  background: var(--primary-hover);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Button Themes */
+.add-to-cart-btn,
+.load-more-btn,
+.cta-button {
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
+  transition: var(--theme-transition);
+}
+
+.add-to-cart-btn:hover,
+.load-more-btn:hover,
+.cta-button:hover {
+  background: var(--btn-primary-hover);
+  transform: translateY(-2px);
+}
+
+/* Form Elements Theme */
+input,
+textarea,
+select {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+  transition: var(--theme-transition);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(47, 74, 103, 0.18);
+}
+
+/* Filter and Sort Components */
+.filter-section,
+.sort-section {
+  background-color: var(--card-bg);
+  border: 1px solid var(--card-border);
+  transition: var(--theme-transition);
+}
+
+.filter-section h3,
+.sort-section h3 {
+  color: var(--text-primary);
+  transition: var(--theme-transition);
+}
+
+.filter-option,
+.sort-option {
+  color: var(--text-secondary);
+  transition: var(--theme-transition);
+}
+
+.filter-option:hover,
+.sort-option:hover {
+  color: var(--primary-color);
+}
+
+/* Modal Theme */
+.modal {
+  background-color: var(--card-bg);
+  color: var(--text-primary);
+  transition: var(--theme-transition);
+}
+
+.modal-header {
+  background-color: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+  transition: var(--theme-transition);
+}
+
+.modal-title {
+  color: var(--text-primary);
+  transition: var(--theme-transition);
+}
+
+/* Cart and Wishlist */
+.cart-item,
+.wishlist-item {
+  background-color: var(--card-bg);
+  border: 1px solid var(--card-border);
+  transition: var(--theme-transition);
+}
+
+.cart-item:hover,
+.wishlist-item:hover {
+  box-shadow: var(--shadow-md);
+}
+
+/* Loading and Skeleton States */
+.skeleton {
+  background: linear-gradient(90deg, var(--bg-secondary) 25%, var(--bg-tertiary) 50%, var(--bg-secondary) 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Smooth transitions for all elements */
+* {
+  transition: background-color var(--theme-transition),
+              color var(--theme-transition),
+              border-color var(--theme-transition),
+              box-shadow var(--theme-transition);
+}
+
+/* Theme Toggle Button Specific Styles */
+.theme-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  background: var(--primary-color);
+  border: none;
+  border-radius: 50px;
+  padding: 12px 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  transition: var(--theme-transition);
+  box-shadow: var(--shadow-md);
+}
+
+.theme-toggle:hover {
+  background: var(--primary-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.theme-toggle i {
+  font-size: 18px;
+  transition: var(--theme-transition);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .theme-toggle {
+    top: 15px;
+    right: 15px;
+    padding: 10px 16px;
+    font-size: 12px;
+  }
+  
+  .theme-toggle i {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .theme-toggle {
+    top: 10px;
+    right: 10px;
+    padding: 8px 12px;
+    font-size: 11px;
+  }
+  
+  .theme-toggle i {
+    font-size: 14px;
+  }
+}

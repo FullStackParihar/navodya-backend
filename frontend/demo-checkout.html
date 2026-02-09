@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout Demo - Navodaya Trendz</title>
+    <meta name="description" content="Complete checkout system demo">
+    
+    <!-- Basic CSS -->
+    <link rel="stylesheet" href="ui-enhanced.css">
+    <link rel="stylesheet" href="theme-switch.css">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-secondary, #f8fafc);
+        }
+
+        .demo-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .demo-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            background: var(--bg-primary, white);
+            padding: 2rem;
+            border-radius: var(--radius-2xl, 1.5rem);
+            box-shadow: var(--shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1));
+        }
+
+        .demo-header h1 {
+            color: var(--text-primary, #1e293b);
+            margin-bottom: 1rem;
+            font-size: 2.5rem;
+        }
+
+        .demo-header p {
+            color: var(--text-secondary, #64748b);
+            font-size: 1.125rem;
+        }
+
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .demo-card {
+            background: var(--bg-primary, white);
+            border-radius: var(--radius-2xl, 1.5rem);
+            padding: 2rem;
+            box-shadow: var(--shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1));
+            transition: transform var(--transition-fast);
+        }
+
+        .demo-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .demo-card h3 {
+            color: var(--text-primary, #1e293b);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .demo-card p {
+            color: var(--text-secondary, #64748b);
+            margin-bottom: 1.5rem;
+        }
+
+        .demo-btn {
+            display: inline-block;
+            background: var(--gradient-primary, linear-gradient(135deg, #ff6b35, #e55a2b));
+            color: white;
+            text-decoration: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius-lg, 0.75rem);
+            font-weight: 600;
+            transition: all var(--transition-fast);
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .demo-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md, 0 4px 6px -1px rgb(0 0 0 / 0.1));
+        }
+
+        .demo-btn.secondary {
+            background: var(--gray-200, #e2e8f0);
+            color: var(--text-primary, #1e293b);
+        }
+
+        .demo-btn.secondary:hover {
+            background: var(--gray-300, #cbd5e1);
+        }
+
+        .demo-btn.whatsapp {
+            background: #25D366;
+        }
+
+        .demo-btn.phone {
+            background: #3a86ff;
+        }
+
+        .features-list {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0;
+        }
+
+        .features-list li {
+            padding: 0.5rem 0;
+            color: var(--text-secondary, #64748b);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .features-list li i {
+            color: var(--success-color, #06ffa5);
+            width: 20px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: var(--radius-full, 9999px);
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+
+        .status-badge.working {
+            background: var(--success-color, #06ffa5);
+            color: var(--gray-900, #0f172a);
+        }
+
+        .status-badge.demo {
+            background: var(--info-color, #3a86ff);
+            color: white;
+        }
+
+        .quick-actions {
+            background: var(--bg-primary, white);
+            border-radius: var(--radius-2xl, 1.5rem);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1));
+        }
+
+        .quick-actions h2 {
+            color: var(--text-primary, #1e293b);
+            margin-bottom: 1.5rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .cart-info {
+            background: var(--gray-50, #f8fafc);
+            padding: 1rem;
+            border-radius: var(--radius-lg, 0.75rem);
+            margin-bottom: 1rem;
+        }
+
+        .cart-info p {
+            margin: 0.25rem 0;
+            color: var(--text-secondary, #64748b);
+        }
+
+        .cart-info strong {
+            color: var(--text-primary, #1e293b);
+        }
+
+        @media (max-width: 768px) {
+            .demo-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .demo-btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <!-- Header -->
+        <div class="demo-header">
+            <h1>🚀 Checkout System Demo</h1>
+            <p>Complete checkout and order tracking system for Navodaya Trendz</p>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <h2>🎯 Quick Access</h2>
+            <div class="cart-info">
+                <p><strong>Cart Items:</strong> 2 items</p>
+                <p><strong>Cart Total:</strong> ₹2,197</p>
+                <p><strong>Active Orders:</strong> 3 orders</p>
+            </div>
+            <div class="action-buttons">
+                <a href="checkout-dashboard.html" class="demo-btn">
+                    <i class="fas fa-dashboard"></i> Checkout Dashboard
+                </a>
+                <a href="cart.html" class="demo-btn secondary">
+                    <i class="fas fa-shopping-cart"></i> View Cart
+                </a>
+                <a href="payment.html" class="demo-btn">
+                    <i class="fas fa-credit-card"></i> Go to Payment
+                </a>
+                <a href="bulk-order.html" class="demo-btn secondary">
+                    <i class="fas fa-users"></i> Bulk Order
+                </a>
+                <a href="order-tracking.html" class="demo-btn">
+                    <i class="fas fa-truck"></i> Track Order
+                </a>
+            </div>
+        </div>
+
+        <!-- Features Grid -->
+        <div class="demo-grid">
+            <!-- Cart Management -->
+            <div class="demo-card">
+                <h3>
+                    <i class="fas fa-shopping-cart"></i> 
+                    Cart Management 
+                    <span class="status-badge working">Working</span>
+                </h3>
+                <p>Complete shopping cart with item management and checkout flow.</p>
+                <ul class="features-list">
+                    <li><i class="fas fa-check"></i> Add/Remove items</li>
+                    <li><i class="fas fa-check"></i> Quantity controls</li>
+                    <li><i class="fas fa-check"></i> Price calculations</li>
+                    <li><i class="fas fa-check"></i> Mini cart dropdown</li>
+                    <li><i class="fas fa-check"></i> Quick checkout</li>
+                </ul>
+                <a href="cart.html" class="demo-btn">
+                    <i class="fas fa-eye"></i> View Cart
+                </a>
+                <a href="checkout-dashboard.html" class="demo-btn secondary">
+                    <i class="fas fa-bolt"></i> Quick Checkout
+                </a>
+            </div>
+
+            <!-- Payment System -->
+            <div class="demo-card">
+                <h3>
+                    <i class="fas fa-credit-card"></i> 
+                    Payment System
+                    <span class="status-badge working">Working</span>
+                </h3>
+                <p>Multi-step payment process with all payment options.</p>
+                <ul class="features-list">
+                    <li><i class="fas fa-check"></i> Address management</li>
+                    <li><i class="fas fa-check"></i> Multiple payment methods</li>
+                    <li><i class="fas fa-check"></i> UPI, Cards, Net Banking</li>
+                    <li><i class="fas fa-check"></i> COD and EMI options</li>
+                    <li><i class="fas fa-check"></i> Order confirmation</li>
+                </ul>
+                <a href="payment.html" class="demo-btn">
+                    <i class="fas fa-lock"></i> Go to Payment
+                </a>
+                <a href="checkout-dashboard.html" class="demo-btn secondary">
+                    <i class="fas fa-cog"></i> Settings
+                </a>
+            </div>
+
+            <!-- Order Tracking -->
+            <div class="demo-card">
+                <h3>
+                    <i class="fas fa-truck"></i> 
+                    Order Tracking
+                    <span class="status-badge working">Working</span>
+                </h3>
+                <p>Real-time order tracking with delivery status and support.</p>
+                <ul class="features-list">
+                    <li><i class="fas fa-check"></i> Live order status</li>
+                    <li><i class="fas fa-check"></i> Delivery timeline</li>
+                    <li><i class="fas fa-check"></i> Days remaining</li>
+                    <li><i class="fas fa-check"></i> Tracking numbers</li>
+                    <li><i class="fas fa-check"></i> Customer support</li>
+                </ul>
+                <a href="order-tracking.html" class="demo-btn">
+                    <i class="fas fa-map-marker-alt"></i> Track Order
+                </a>
+                <a href="order-tracking.html?orderId=ORD20240127001" class="demo-btn secondary">
+                    <i class="fas fa-search"></i> Sample Order
+                </a>
+            </div>
+
+            <!-- Bulk Orders -->
+            <div class="demo-card">
+                <h3>
+                    <i class="fas fa-users"></i> 
+                    Bulk Orders
+                    <span class="status-badge working">Working</span>
+                </h3>
+                <p>Multi-step bulk order form with file uploads and customization.</p>
+                <ul class="features-list">
+                    <li><i class="fas fa-check"></i> Multi-step form</li>
+                    <li><i class="fas fa-check"></i> File uploads</li>
+                    <li><i class="fas fa-check"></i> Product customization</li>
+                    <li><i class="fas fa-check"></i> Quantity management</li>
+                    <li><i class="fas fa-check"></i> Design requirements</li>
+                </ul>
+                <a href="bulk-order.html" class="demo-btn">
+                    <i class="fas fa-plus"></i> Create Bulk Order
+                </a>
+                <a href="checkout-dashboard.html" class="demo-btn secondary">
+                    <i class="fas fa-list"></i> View Orders
+                </a>
+            </div>
+
+            <!-- Customer Support -->
+            <div class="demo-card">
+                <h3>
+                    <i class="fas fa-headset"></i> 
+                    Customer Support
+                    <span class="status-badge working">Working</span>
+                </h3>
+                <p>Multiple support channels for order assistance.</p>
+                <ul class="features-list">
+                    <li><i class="fas fa-check"></i> Phone support</li>
+                    <li><i class="fas fa-check"></i> Email support</li>
+                    <li><i class="fas fa-check"></i> WhatsApp chat</li>
+                    <li><i class="fas fa-check"></i> Live chat</li>
+                    <li><i class="fas fa-check"></i> FAQ section</li>
+                </ul>
+                <a href="tel:+9118001234567" class="demo-btn phone">
+                    <i class="fas fa-phone"></i> Call Support
+                </a>
+                <a href="https://wa.me/919284490206" class="demo-btn whatsapp">
+                    <i class="fab fa-whatsapp"></i> WhatsApp
+                </a>
+            </div>
+
+            <!-- Dashboard -->
+            <div class="demo-card">
+                <h3>
+                    <i class="fas fa-dashboard"></i> 
+                    Dashboard
+                    <span class="status-badge working">Working</span>
+                </h3>
+                <p>Centralized dashboard for all checkout activities.</p>
+                <ul class="features-list">
+                    <li><i class="fas fa-check"></i> Cart statistics</li>
+                    <li><i class="fas fa-check"></i> Order management</li>
+                    <li><i class="fas fa-check"></i> Quick actions</li>
+                    <li><i class="fas fa-check"></i> Support access</li>
+                    <li><i class="fas fa-check"></i> Real-time updates</li>
+                </ul>
+                <a href="checkout-dashboard.html" class="demo-btn">
+                    <i class="fas fa-tachometer-alt"></i> Open Dashboard
+                </a>
+                <a href="#" class="demo-btn secondary" onclick="alert('React version available at /checkout')">
+                    <i class="fab fa-react"></i> React Version
+                </a>
+            </div>
+        </div>
+
+        <!-- Instructions -->
+        <div class="demo-card">
+            <h3>
+                <i class="fas fa-info-circle"></i> 
+                How to Use This Demo
+                <span class="status-badge demo">Demo</span>
+            </h3>
+            <p>This is a complete demonstration of the checkout system. Click any of the buttons above to explore different features:</p>
+            <ul class="features-list">
+                <li><i class="fas fa-arrow-right"></i> <strong>Checkout Dashboard:</strong> Central hub for all checkout activities</li>
+                <li><i class="fas fa-arrow-right"></i> <strong>Cart:</strong> Shopping cart with item management</li>
+                <li><i class="fas fa-arrow-right"></i> <strong>Payment:</strong> Complete payment process with all options</li>
+                <li><i class="fas fa-arrow-right"></i> <strong>Order Tracking:</strong> Track your orders in real-time</li>
+                <li><i class="fas fa-arrow-right"></i> <strong>Bulk Orders:</strong> Create custom bulk orders</li>
+                <li><i class="fas fa-arrow-right"></i> <strong>Support:</strong> Get help via phone, email, or WhatsApp</li>
+            </ul>
+            <div style="margin-top: 1.5rem;">
+                <a href="index.html" class="demo-btn secondary">
+                    <i class="fas fa-home"></i> Back to Home
+                </a>
+                <a href="checkout-dashboard.html" class="demo-btn">
+                    <i class="fas fa-rocket"></i> Start with Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script src="theme-switch.js"></script>
+    <script>
+        // Add some interactivity
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('Checkout Demo Loaded Successfully!');
+            
+            // Update cart info dynamically
+            const updateCartInfo = () => {
+                const cartItems = 2;
+                const cartTotal = 2197;
+                const activeOrders = 3;
+                
+                // You can update the cart info here if needed
+                console.log(`Cart: ${cartItems} items, Total: ₹${cartTotal}, Orders: ${activeOrders}`);
+            };
+            
+            updateCartInfo();
+            
+            // Add click tracking
+            document.querySelectorAll('.demo-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const btnText = e.target.textContent.trim();
+                    console.log(`Button clicked: ${btnText}`);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

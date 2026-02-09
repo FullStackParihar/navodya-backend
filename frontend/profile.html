@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - Navodaya Trendz</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="top-strip">
+            <div class="container">
+                <div class="strip-content">
+                    <span>🎉 Special Alumni Meet Discounts!</span>
+                    <span>📞 +91-8947900884</span>
+                    <span>🚚 Free Shipping above ₹799</span>
+                </div>
+            </div>
+        </div>
+        <nav class="main-nav">
+            <div class="container">
+                <div class="nav-wrapper">
+                    <div class="logo">
+                        <h1>Navodaya<span>Trendz</span></h1>
+                    </div>
+                    <div class="search-bar">
+                        <input type="text" placeholder="Search for products...">
+                        <button><i class="fas fa-search"></i></button>
+                    </div>
+                    <div class="nav-icons">
+                        <a href="profile.html" class="nav-icon active">
+                            <i class="fas fa-user"></i>
+                            <span>Profile</span>
+                        </a>
+                        <a href="wishlist.html" class="nav-icon">
+                            <i class="fas fa-heart"></i>
+                            <span>Wishlist</span>
+                        </a>
+                        <a href="cart.html" class="nav-icon">
+                            <i class="fas fa-shopping-bag"></i>
+                            <span>Cart</span>
+                            <span class="cart-count">0</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <div class="category-nav">
+            <div class="container">
+                <ul class="category-menu">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="tshirts.html">T-Shirts</a></li>
+                    <li><a href="hoodies.html">Hoodies</a></li>
+                    <li><a href="accessories.html">Accessories</a></li>
+                    <li><a href="alumni-kits.html">Alumni Kits</a></li>
+                    <li><a href="customize.html">Customize</a></li>
+                    <li><a href="offers.html">Offers</a></li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1>My Profile</h1>
+            <p>Manage your account and preferences</p>
+        </div>
+    </section>
+
+    <!-- Profile Content -->
+    <section class="profile-page">
+        <div class="container">
+            <div class="profile-layout">
+                <!-- Sidebar Navigation -->
+                <aside class="profile-sidebar">
+                    <div class="profile-avatar">
+                        <img src="https://i.pravatar.cc/150?img=5" alt="Profile Avatar">
+                        <h3>Rahul Kumar</h3>
+                        <p>JNV Delhi, Batch 2018</p>
+                        <button class="edit-avatar-btn">
+                            <i class="fas fa-camera"></i> Change Photo
+                        </button>
+                    </div>
+                    <nav class="profile-nav">
+                        <ul>
+                            <li><a href="#personal-info" class="nav-link active"><i class="fas fa-user"></i> Personal Info</a></li>
+                            <li><a href="#orders" class="nav-link"><i class="fas fa-shopping-bag"></i> My Orders</a></li>
+                            <li><a href="#addresses" class="nav-link"><i class="fas fa-map-marker-alt"></i> Addresses</a></li>
+                            <li><a href="#payment" class="nav-link"><i class="fas fa-credit-card"></i> Payment Methods</a></li>
+                            <li><a href="#notifications" class="nav-link"><i class="fas fa-bell"></i> Notifications</a></li>
+                            <li><a href="#security" class="nav-link"><i class="fas fa-shield-alt"></i> Security</a></li>
+                            <li><a href="#logout" class="nav-link logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                        </ul>
+                    </nav>
+                </aside>
+
+                <!-- Main Content -->
+                <main class="profile-main">
+                    <!-- Personal Information -->
+                    <section id="personal-info" class="profile-section active">
+                        <h2>Personal Information</h2>
+                        <form class="profile-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="first-name">First Name</label>
+                                    <input type="text" id="first-name" value="Rahul" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="last-name">Last Name</label>
+                                    <input type="text" id="last-name" value="Kumar" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="email">Email Address</label>
+                                    <input type="email" id="email" value="rahul.kumar@example.com" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="phone">Phone Number</label>
+                                    <input type="tel" id="phone" value="+91 98765 43210" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="jnv-school">JNV School</label>
+                                    <select id="jnv-school">
+                                        <option value="jnv-delhi" selected>JNV Delhi</option>
+                                        <option value="jnv-mumbai">JNV Mumbai</option>
+                                        <option value="jnv-patna">JNV Patna</option>
+                                        <option value="jnv-kolkata">JNV Kolkata</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="batch-year">Batch Year</label>
+                                    <input type="number" id="batch-year" value="2018" min="1986" max="2024">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="bio">Bio</label>
+                                <textarea id="bio" rows="4" placeholder="Tell us about yourself...">Proud Navodayan working in tech. Love connecting with fellow alumni!</textarea>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn-primary">Save Changes</button>
+                                <button type="button" class="btn-secondary">Cancel</button>
+                            </div>
+                        </form>
+                    </section>
+
+                    <!-- My Orders -->
+                    <section id="orders" class="profile-section">
+                        <h2>My Orders</h2>
+                        <div class="orders-tabs">
+                            <button class="tab-btn active" data-tab="all">All Orders</button>
+                            <button class="tab-btn" data-tab="processing">Processing</button>
+                            <button class="tab-btn" data-tab="shipped">Shipped</button>
+                            <button class="tab-btn" data-tab="delivered">Delivered</button>
+                            <button class="tab-btn" data-tab="cancelled">Cancelled</button>
+                        </div>
+                        <div class="orders-list">
+                            <div class="order-item">
+                                <div class="order-header">
+                                    <div class="order-info">
+                                        <span class="order-id">Order #NTZ2024001</span>
+                                        <span class="order-date">Jan 15, 2024</span>
+                                        <span class="order-status delivered">Delivered</span>
+                                    </div>
+                                    <div class="order-total">₹1,597</div>
+                                </div>
+                                <div class="order-items">
+                                    <div class="order-product">
+                                        <img src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=60&h=60&fit=crop" alt="Product">
+                                        <div class="product-details">
+                                            <h4>JNV Classic T-Shirt</h4>
+                                            <p>Size: M | Qty: 1</p>
+                                        </div>
+                                        <span class="product-price">₹399</span>
+                                    </div>
+                                    <div class="order-product">
+                                        <img src="https://images.unsplash.com/photo-1556821840-3a5f3d5fb6c7?w=60&h=60&fit=crop" alt="Product">
+                                        <div class="product-details">
+                                            <h4>JNV Alumni Hoodie</h4>
+                                            <p>Size: L | Qty: 1</p>
+                                        </div>
+                                        <span class="product-price">₹799</span>
+                                    </div>
+                                </div>
+                                <div class="order-actions">
+                                    <button class="btn-outline">View Details</button>
+                                    <button class="btn-outline">Track Order</button>
+                                    <button class="btn-outline">Reorder</button>
+                                </div>
+                            </div>
+                            <div class="order-item">
+                                <div class="order-header">
+                                    <div class="order-info">
+                                        <span class="order-id">Order #NTZ2024002</span>
+                                        <span class="order-date">Jan 20, 2024</span>
+                                        <span class="order-status shipped">Shipped</span>
+                                    </div>
+                                    <div class="order-total">₹898</div>
+                                </div>
+                                <div class="order-items">
+                                    <div class="order-product">
+                                        <img src="https://images.unsplash.com/photo-1513519245088-0e7839c3c889?w=60&h=60&fit=crop" alt="Product">
+                                        <div class="product-details">
+                                            <h4>JNV Baseball Cap</h4>
+                                            <p>Qty: 2</p>
+                                        </div>
+                                        <span class="product-price">₹598</span>
+                                    </div>
+                                </div>
+                                <div class="order-actions">
+                                    <button class="btn-outline">View Details</button>
+                                    <button class="btn-outline">Track Order</button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Addresses -->
+                    <section id="addresses" class="profile-section">
+                        <h2>Shipping Addresses</h2>
+                        <button class="add-address-btn btn-primary">
+                            <i class="fas fa-plus"></i> Add New Address
+                        </button>
+                        <div class="addresses-grid">
+                            <div class="address-card">
+                                <div class="address-header">
+                                    <h4>Home</h4>
+                                    <span class="address-badge default">Default</span>
+                                </div>
+                                <div class="address-details">
+                                    <p><strong>Rahul Kumar</strong></p>
+                                    <p>123, Block A, Navodaya Colony</p>
+                                    <p>South Delhi, New Delhi</p>
+                                    <p>Delhi - 110065</p>
+                                    <p>Phone: +91 98765 43210</p>
+                                </div>
+                                <div class="address-actions">
+                                    <button class="btn-outline">Edit</button>
+                                    <button class="btn-outline">Remove</button>
+                                </div>
+                            </div>
+                            <div class="address-card">
+                                <div class="address-header">
+                                    <h4>Office</h4>
+                                </div>
+                                <div class="address-details">
+                                    <p><strong>Rahul Kumar</strong></p>
+                                    <p>Tech Park, Floor 5</p>
+                                    <p>Whitefield, Bangalore</p>
+                                    <p>Karnataka - 560048</p>
+                                    <p>Phone: +91 98765 43210</p>
+                                </div>
+                                <div class="address-actions">
+                                    <button class="btn-outline">Edit</button>
+                                    <button class="btn-outline">Remove</button>
+                                    <button class="btn-outline">Set as Default</button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Payment Methods -->
+                    <section id="payment" class="profile-section">
+                        <h2>Payment Methods</h2>
+                        <button class="add-payment-btn btn-primary">
+                            <i class="fas fa-plus"></i> Add Payment Method
+                        </button>
+                        <div class="payment-methods-grid">
+                            <div class="payment-card">
+                                <div class="payment-header">
+                                    <div class="card-type">
+                                        <i class="fab fa-cc-visa"></i>
+                                        <span>Visa ending in 4242</span>
+                                    </div>
+                                    <span class="payment-badge default">Default</span>
+                                </div>
+                                <div class="payment-details">
+                                    <p>Expires 12/25</p>
+                                </div>
+                                <div class="payment-actions">
+                                    <button class="btn-outline">Edit</button>
+                                    <button class="btn-outline">Remove</button>
+                                </div>
+                            </div>
+                            <div class="payment-card">
+                                <div class="payment-header">
+                                    <div class="card-type">
+                                        <i class="fab fa-google-pay"></i>
+                                        <span>Google Pay</span>
+                                    </div>
+                                </div>
+                                <div class="payment-details">
+                                    <p>rahul.kumar@upi</p>
+                                </div>
+                                <div class="payment-actions">
+                                    <button class="btn-outline">Remove</button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Notifications -->
+                    <section id="notifications" class="profile-section">
+                        <h2>Notification Preferences</h2>
+                        <form class="notifications-form">
+                            <div class="notification-group">
+                                <h3>Email Notifications</h3>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" checked>
+                                    <span>Order updates</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" checked>
+                                    <span>Special offers and discounts</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox">
+                                    <span>New product arrivals</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" checked>
+                                    <span>Alumni meet updates</span>
+                                </label>
+                            </div>
+                            <div class="notification-group">
+                                <h3>SMS Notifications</h3>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" checked>
+                                    <span>Order confirmation</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" checked>
+                                    <span>Delivery updates</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox">
+                                    <span>Marketing messages</span>
+                                </label>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn-primary">Save Preferences</button>
+                            </div>
+                        </form>
+                    </section>
+
+                    <!-- Security -->
+                    <section id="security" class="profile-section">
+                        <h2>Security Settings</h2>
+                        <div class="security-options">
+                            <div class="security-item">
+                                <div class="security-info">
+                                    <h3>Change Password</h3>
+                                    <p>Last changed 3 months ago</p>
+                                </div>
+                                <button class="btn-outline">Change Password</button>
+                            </div>
+                            <div class="security-item">
+                                <div class="security-info">
+                                    <h3>Two-Factor Authentication</h3>
+                                    <p>Add an extra layer of security to your account</p>
+                                </div>
+                                <button class="btn-outline">Enable 2FA</button>
+                            </div>
+                            <div class="security-item">
+                                <div class="security-info">
+                                    <h3>Login Activity</h3>
+                                    <p>View your recent login history</p>
+                                </div>
+                                <button class="btn-outline">View Activity</button>
+                            </div>
+                        </div>
+                    </section>
+                </main>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Navodaya Trendz</h3>
+                    <p>Made by Navodayans, for Navodayans. Your trusted partner for JNV alumni merchandise.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>Shop</h4>
+                    <ul>
+                        <li><a href="tshirts.html">T-Shirts</a></li>
+                        <li><a href="hoodies.html">Hoodies</a></li>
+                        <li><a href="accessories.html">Accessories</a></li>
+                        <li><a href="alumni-kits.html">Alumni Kits</a></li>
+                        <li><a href="customize.html">Customize</a></li>
+                        <li><a href="offers.html">Offers</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Help</h4>
+                    <ul>
+                        <li><a href="contact.html">Contact Us</a></li>
+                        <li><a href="shipping.html">Shipping Info</a></li>
+                        <li><a href="returns.html">Returns & Exchanges</a></li>
+                        <li><a href="size-guide.html">Size Guide</a></li>
+                        <li><a href="track-order.html">Track Order</a></li>
+                        <li><a href="faq.html">FAQ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Policies</h4>
+                    <ul>
+                        <li><a href="privacy-policy.html">Privacy Policy</a></li>
+                        <li><a href="terms-conditions.html">Terms & Conditions</a></li>
+                        <li><a href="refund-policy.html">Refund Policy</a></li>
+                        <li><a href="disclaimer.html">Disclaimer</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Navodaya Trendz. All Rights Reserved. | Made with ❤️ by Navodayans</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart - Navodaya Trendz</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="top-strip">
+            <div class="container">
+                <div class="strip-content">
+                    <span>🎉 Special Alumni Meet Discounts!</span>
+                    <span>📞 +91-8947900884</span>
+                    <span>🚚 Free Shipping above ₹799</span>
+                </div>
+            </div>
+        </div>
+        <nav class="main-nav">
+            <div class="container">
+                <div class="nav-wrapper">
+                    <div class="logo">
+                        <h1>Navodaya<span>Trendz</span></h1>
+                    </div>
+                    <div class="search-bar">
+                        <input type="text" placeholder="Search for products...">
+                        <button><i class="fas fa-search"></i></button>
+                    </div>
+                    <div class="nav-icons">
+                        <a href="profile.html" class="nav-icon">
+                            <i class="fas fa-user"></i>
+                            <span>Profile</span>
+                        </a>
+                        <a href="wishlist.html" class="nav-icon">
+                            <i class="fas fa-heart"></i>
+                            <span>Wishlist</span>
+                        </a>
+                        <a href="cart.html" class="nav-icon active">
+                            <i class="fas fa-shopping-bag"></i>
+                            <span>Cart</span>
+                            <span class="cart-count">0</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <div class="category-nav">
+            <div class="container">
+                <ul class="category-menu">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="tshirts.html">T-Shirts</a></li>
+                    <li><a href="hoodies.html">Hoodies</a></li>
+                    <li><a href="accessories.html">Accessories</a></li>
+                    <li><a href="alumni-kits.html">Alumni Kits</a></li>
+                    <li><a href="customize.html">Customize</a></li>
+                    <li><a href="offers.html">Offers</a></li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1>Shopping Cart</h1>
+            <p>Review your items and proceed to checkout</p>
+        </div>
+    </section>
+
+    <!-- Cart Content -->
+    <section class="cart-page">
+        <div class="container">
+            <div class="cart-layout">
+                <!-- Cart Items -->
+                <div class="cart-items">
+                    <div class="cart-item" data-product-id="1">
+                        <div class="item-image">
+                            <img src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=100&h=100&fit=crop" alt="JNV Classic T-Shirt">
+                        </div>
+                        <div class="item-details">
+                            <h3><a href="product-detail.html">JNV Classic T-Shirt</a></h3>
+                            <p>Premium Cotton | Custom Design | Size: M</p>
+                            <div class="item-price">
+                                <span class="current-price">₹399</span>
+                                <span class="original-price">₹599</span>
+                            </div>
+                        </div>
+                        <div class="item-quantity">
+                            <div class="quantity-controls">
+                                <button class="qty-btn decrease">-</button>
+                                <input type="number" class="qty-input" value="1" min="1" max="10">
+                                <button class="qty-btn increase">+</button>
+                            </div>
+                        </div>
+                        <div class="item-total">
+                            <span class="total-price">₹399</span>
+                        </div>
+                        <div class="item-remove">
+                            <button class="remove-btn"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="cart-item" data-product-id="2">
+                        <div class="item-image">
+                            <img src="https://images.unsplash.com/photo-1556821840-3a5f3d5fb6c7?w=100&h=100&fit=crop" alt="JNV Alumni Hoodie">
+                        </div>
+                        <div class="item-details">
+                            <h3><a href="product-detail.html">JNV Alumni Hoodie</a></h3>
+                            <p>Fleece Fabric | Batch 2020 | Size: L</p>
+                            <div class="item-price">
+                                <span class="current-price">₹799</span>
+                                <span class="original-price">₹999</span>
+                            </div>
+                        </div>
+                        <div class="item-quantity">
+                            <div class="quantity-controls">
+                                <button class="qty-btn decrease">-</button>
+                                <input type="number" class="qty-input" value="1" min="1" max="10">
+                                <button class="qty-btn increase">+</button>
+                            </div>
+                        </div>
+                        <div class="item-total">
+                            <span class="total-price">₹799</span>
+                        </div>
+                        <div class="item-remove">
+                            <button class="remove-btn"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="cart-item" data-product-id="3">
+                        <div class="item-image">
+                            <img src="https://images.unsplash.com/photo-1513519245088-0e7839c3c889?w=100&h=100&fit=crop" alt="JNV Baseball Cap">
+                        </div>
+                        <div class="item-details">
+                            <h3><a href="product-detail.html">JNV Baseball Cap</a></h3>
+                            <p>Adjustable | Embroidered Logo</p>
+                            <div class="item-price">
+                                <span class="current-price">₹299</span>
+                                <span class="original-price">₹399</span>
+                            </div>
+                        </div>
+                        <div class="item-quantity">
+                            <div class="quantity-controls">
+                                <button class="qty-btn decrease">-</button>
+                                <input type="number" class="qty-input" value="2" min="1" max="10">
+                                <button class="qty-btn increase">+</button>
+                            </div>
+                        </div>
+                        <div class="item-total">
+                            <span class="total-price">₹598</span>
+                        </div>
+                        <div class="item-remove">
+                            <button class="remove-btn"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Empty Cart Message (hidden by default) -->
+                    <div class="empty-cart" style="display: none;">
+                        <i class="fas fa-shopping-cart"></i>
+                        <h3>Your cart is empty</h3>
+                        <p>Add some JNV merchandise to get started!</p>
+                        <a href="index.html" class="btn-primary">Continue Shopping</a>
+                    </div>
+                </div>
+
+                <!-- Order Summary -->
+                <div class="order-summary">
+                    <h3>Order Summary</h3>
+                    <div class="summary-row">
+                        <span>Subtotal (3 items)</span>
+                        <span class="subtotal">₹1,796</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Discount</span>
+                        <span class="discount">-₹199</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Shipping</span>
+                        <span class="shipping">FREE</span>
+                    </div>
+                    <div class="summary-divider"></div>
+                    <div class="summary-row total">
+                        <span>Total</span>
+                        <span class="total-amount">₹1,597</span>
+                    </div>
+
+                    <!-- Promo Code -->
+                    <div class="promo-code">
+                        <h4>Have a promo code?</h4>
+                        <div class="promo-form">
+                            <input type="text" placeholder="Enter promo code" id="promo-input">
+                            <button class="apply-btn">Apply</button>
+                        </div>
+                    </div>
+
+                    <!-- Checkout Button -->
+                    <button class="checkout-btn">
+                        <i class="fas fa-lock"></i> Proceed to Checkout
+                    </button>
+
+                    <!-- Security Badge -->
+                    <div class="security-badge">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Secure Checkout</span>
+                    </div>
+
+                    <!-- Payment Methods -->
+                    <div class="payment-methods">
+                        <h4>We Accept</h4>
+                        <div class="payment-icons">
+                            <i class="fab fa-cc-visa"></i>
+                            <i class="fab fa-cc-mastercard"></i>
+                            <i class="fab fa-cc-amex"></i>
+                            <i class="fab fa-cc-paypal"></i>
+                            <i class="fab fa-google-pay"></i>
+                            <i class="fab fa-apple-pay"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recommended Products -->
+            <div class="recommended-products">
+                <h3>You might also like</h3>
+                <div class="recommended-grid">
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=200&h=200&fit=crop" alt="JNV Backpack">
+                            <div class="product-actions">
+                                <button class="wishlist-btn"><i class="far fa-heart"></i></button>
+                            </div>
+                        </div>
+                        <div class="product-info">
+                            <h4><a href="product-detail.html">JNV Backpack</a></h4>
+                            <div class="product-price">
+                                <span class="current-price">₹899</span>
+                                <span class="original-price">₹1299</span>
+                            </div>
+                            <button class="add-to-cart-btn" data-product-id="4" data-product-name="JNV Backpack" data-price="899">
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="https://images.unsplash.com/photo-1586790170083-2f9ceadc732d?w=200&h=200&fit=crop" alt="JNV Sports T-Shirt">
+                            <div class="product-actions">
+                                <button class="wishlist-btn"><i class="far fa-heart"></i></button>
+                            </div>
+                        </div>
+                        <div class="product-info">
+                            <h4><a href="product-detail.html">JNV Sports T-Shirt</a></h4>
+                            <div class="product-price">
+                                <span class="current-price">₹449</span>
+                                <span class="original-price">₹599</span>
+                            </div>
+                            <button class="add-to-cart-btn" data-product-id="5" data-product-name="JNV Sports T-Shirt" data-price="449">
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=200&h=200&fit=crop" alt="JNV Polo T-Shirt">
+                            <div class="product-actions">
+                                <button class="wishlist-btn"><i class="far fa-heart"></i></button>
+                            </div>
+                        </div>
+                        <div class="product-info">
+                            <h4><a href="product-detail.html">JNV Polo T-Shirt</a></h4>
+                            <div class="product-price">
+                                <span class="current-price">₹599</span>
+                                <span class="original-price">₹799</span>
+                            </div>
+                            <button class="add-to-cart-btn" data-product-id="6" data-product-name="JNV Polo T-Shirt" data-price="599">
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Navodaya Trendz</h3>
+                    <p>Made by Navodayans, for Navodayans. Your trusted partner for JNV alumni merchandise.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>Shop</h4>
+                    <ul>
+                        <li><a href="tshirts.html">T-Shirts</a></li>
+                        <li><a href="hoodies.html">Hoodies</a></li>
+                        <li><a href="accessories.html">Accessories</a></li>
+                        <li><a href="alumni-kits.html">Alumni Kits</a></li>
+                        <li><a href="customize.html">Customize</a></li>
+                        <li><a href="offers.html">Offers</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Help</h4>
+                    <ul>
+                        <li><a href="contact.html">Contact Us</a></li>
+                        <li><a href="shipping.html">Shipping Info</a></li>
+                        <li><a href="returns.html">Returns & Exchanges</a></li>
+                        <li><a href="size-guide.html">Size Guide</a></li>
+                        <li><a href="track-order.html">Track Order</a></li>
+                        <li><a href="faq.html">FAQ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Policies</h4>
+                    <ul>
+                        <li><a href="privacy-policy.html">Privacy Policy</a></li>
+                        <li><a href="terms-conditions.html">Terms & Conditions</a></li>
+                        <li><a href="refund-policy.html">Refund Policy</a></li>
+                        <li><a href="disclaimer.html">Disclaimer</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Navodaya Trendz. All Rights Reserved. | Made with ❤️ by Navodayans</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

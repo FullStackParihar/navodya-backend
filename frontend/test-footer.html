@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Enhanced Footer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Amazon-Inspired Footer Variables */
+        :root {
+            --footer-primary: #131921;
+            --footer-secondary: #232f3e;
+            --footer-accent: #2f4a67;
+            --footer-text: #ffffff;
+            --footer-text-light: #999999;
+            --footer-border: #37475a;
+            --transition-footer: all 0.3s ease;
+        }
+
+        /* Main Footer Container */
+        .universal-footer {
+            background: var(--footer-primary);
+            color: var(--footer-text);
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin-top: 80px;
+            position: relative;
+        }
+
+        /* Footer Top Section */
+        .footer-top {
+            background: var(--footer-secondary);
+            padding: 40px 0;
+            border-bottom: 1px solid var(--footer-border);
+        }
+
+        .footer-top-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 40px;
+        }
+
+        /* Brand Section */
+        .footer-brand {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .footer-brand h3 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--footer-text);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .footer-brand h3 span {
+            color: var(--footer-accent);
+        }
+
+        .footer-brand p {
+            font-size: 16px;
+            line-height: 1.6;
+            color: var(--footer-text-light);
+            margin: 0;
+            max-width: 400px;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 12px;
+        }
+
+        .social-link {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--footer-text);
+            text-decoration: none;
+            transition: var(--transition-footer);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .social-link:hover {
+            background: var(--footer-accent);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(255, 153, 0, 0.3);
+        }
+
+        .social-link i {
+            font-size: 18px;
+        }
+
+        /* Footer Sections */
+        .footer-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .footer-section h4 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--footer-text);
+            margin: 0;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .footer-section h4::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 40px;
+            height: 2px;
+            background: var(--footer-accent);
+        }
+
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .footer-links a {
+            color: var(--footer-text-light);
+            text-decoration: none;
+            font-size: 15px;
+            transition: var(--transition-footer);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 0;
+        }
+
+        .footer-links a:hover {
+            color: var(--footer-accent);
+            transform: translateX(5px);
+        }
+
+        .footer-links a i {
+            font-size: 12px;
+            width: 16px;
+            text-align: center;
+            opacity: 0.7;
+        }
+
+        .footer-links a:hover i {
+            opacity: 1;
+        }
+
+        /* Test content */
+        .test-content {
+            padding: 40px 20px;
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin: 0;
+        }
+
+        .test-content h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .test-content p {
+            font-size: 18px;
+            margin-bottom: 30px;
+        }
+
+        .test-button {
+            background: var(--footer-accent);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition-footer);
+        }
+
+        .test-button:hover {
+            background: #23394f;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <!-- Test Content -->
+    <div class="test-content">
+        <h1>🎓 Enhanced Footer Test</h1>
+        <p>This is a test page to verify the enhanced footer is working properly</p>
+        <button class="test-button" onclick="alert('Footer test successful!')">Test Button</button>
+    </div>
+
+    <!-- Universal Enhanced Footer -->
+    <footer class="universal-footer">
+        <!-- Footer Top Section -->
+        <div class="footer-top">
+            <div class="footer-top-content">
+                <!-- Brand Section -->
+                <div class="footer-brand">
+                    <h3>Navodaya<span>Trendz</span></h3>
+                    <p>Made by Navodayans, for Navodayans. Your trusted partner for JNV alumni merchandise.</p>
+                    <div class="footer-social">
+                        <a href="#" class="social-link" aria-label="Facebook">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="social-link" aria-label="Instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="social-link" aria-label="Twitter">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="social-link" aria-label="LinkedIn">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                        <a href="#" class="social-link" aria-label="WhatsApp">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Shop Section -->
+                <div class="footer-section">
+                    <h4>Shop</h4>
+                    <ul class="footer-links">
+                        <li><a href="http://localhost:3000/tshirts"><i class="fas fa-chevron-right"></i> T-Shirts</a></li>
+                        <li><a href="http://localhost:3000/hoodies"><i class="fas fa-chevron-right"></i> Hoodies</a></li>
+                        <li><a href="http://localhost:3000/accessories"><i class="fas fa-chevron-right"></i> Accessories</a></li>
+                        <li><a href="http://localhost:3000/alumni-kits"><i class="fas fa-chevron-right"></i> Alumni Kits</a></li>
+                        <li><a href="http://localhost:3000/customize"><i class="fas fa-chevron-right"></i> Customize</a></li>
+                        <li><a href="http://localhost:3000/today-deals"><i class="fas fa-chevron-right"></i> Today's Deals</a></li>
+                        <li><a href="http://localhost:3000/new-arrivals"><i class="fas fa-chevron-right"></i> New Arrivals</a></li>
+                    </ul>
+                </div>
+
+                <!-- Help Section -->
+                <div class="footer-section">
+                    <h4>Help</h4>
+                    <ul class="footer-links">
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Contact Us</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Shipping Info</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Returns & Exchanges</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Size Guide</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Track Order</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> FAQ</a></li>
+                    </ul>
+                </div>
+
+                <!-- Policies Section -->
+                <div class="footer-section">
+                    <h4>Policies</h4>
+                    <ul class="footer-links">
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Privacy Policy</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Terms & Conditions</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Refund Policy</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Disclaimer</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Cookie Policy</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Shipping Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        console.log('Footer test page loaded successfully!');
+        console.log('If you can see the dark footer below, the CSS is working.');
+    </script>
+</body>
+</html>

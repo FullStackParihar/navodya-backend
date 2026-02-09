@@ -1,0 +1,158 @@
+/* Enhanced Today's Deals Page Styles */
+
+/* Deal Badges Container */
+.deal-badges {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.deal-timer {
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  backdrop-filter: blur(4px);
+  animation: pulse 2s infinite;
+}
+
+.stock-indicator {
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  backdrop-filter: blur(4px);
+}
+
+.sold-count {
+  background: rgba(0, 100, 0, 0.8);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  backdrop-filter: blur(4px);
+}
+
+/* Enhanced Deal Timer Animation */
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.7; }
+  100% { opacity: 1; }
+}
+
+/* Urgent Deal Styling */
+.deal-timer[style*="#ff0000"] {
+  background: rgba(255, 0, 0, 0.9);
+  animation: urgentPulse 1s infinite;
+}
+
+@keyframes urgentPulse {
+  0% { 
+    opacity: 1; 
+    transform: scale(1);
+  }
+  50% { 
+    opacity: 0.8; 
+    transform: scale(1.05);
+  }
+  100% { 
+    opacity: 1; 
+    transform: scale(1);
+  }
+}
+
+/* Low Stock Indicator */
+.stock-indicator[style*="#ff0000"] {
+  background: rgba(255, 0, 0, 0.9);
+  animation: urgentPulse 1.5s infinite;
+}
+
+/* Product Wrapper Enhanced */
+.product-wrapper {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.product-wrapper:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+/* Deal Progress Bar */
+.deal-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: rgba(0, 0, 0, 0.2);
+  z-index: 10;
+}
+
+.deal-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #ff6600, #ff0000);
+  transition: width 0.3s ease;
+}
+
+/* Enhanced Deal Badge Icons */
+.filter-label .fas {
+  color: var(--amazon-orange);
+  font-size: 12px;
+  width: 12px;
+  text-align: center;
+}
+
+/* Responsive Deal Badges */
+@media (max-width: 768px) {
+  .deal-badges {
+    top: 8px;
+    left: 8px;
+    right: 8px;
+  }
+  
+  .deal-timer,
+  .stock-indicator,
+  .sold-count {
+    font-size: 10px;
+    padding: 3px 6px;
+  }
+}
+
+@media (max-width: 480px) {
+  .deal-badges {
+    top: 6px;
+    left: 6px;
+    right: 6px;
+    gap: 4px;
+  }
+  
+  .deal-timer,
+  .stock-indicator,
+  .sold-count {
+    font-size: 9px;
+    padding: 2px 4px;
+  }
+}

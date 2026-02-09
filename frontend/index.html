@@ -1,13 +1,1167 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navodaya Trendz - JNV Alumni Merchandise Store</title>
+    <meta name="description" content="Premium JNV alumni merchandise with Amazon-inspired design. Shop T-shirts, hoodies, accessories, and more with exclusive discounts.">
+    <meta name="keywords" content="JNV, Navodaya, alumni, merchandise, T-shirts, hoodies, accessories, online store">
+    <!-- Include the Enhanced Footer CSS -->
+    <link rel="stylesheet" href="ui-enhanced.css">
+    <link rel="stylesheet" href="theme-switch.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Inline Footer Styles (Backup) -->
+    <style>
+        /* Amazon-Inspired Footer Variables */
+        :root {
+            --footer-primary: #131921;
+            --footer-secondary: #232f3e;
+            --footer-accent: #2f4a67;
+            --footer-text: #ffffff;
+            --footer-text-light: #999999;
+            --footer-border: #37475a;
+            --transition-footer: all 0.3s ease;
+        }
+
+        /* Main Footer Container */
+        .universal-footer {
+            background: var(--footer-primary) !important;
+            color: var(--footer-text) !important;
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+            margin-top: 80px !important;
+            position: relative !important;
+        }
+
+        /* Footer Top Section */
+        .footer-top {
+            background: var(--footer-secondary) !important;
+            padding: 40px 0 !important;
+            border-bottom: 1px solid var(--footer-border) !important;
+        }
+
+        .footer-top-content {
+            max-width: 1200px !important;
+            margin: 0 auto !important;
+            padding: 0 20px !important;
+            display: grid !important;
+            grid-template-columns: 2fr 1fr 1fr 1fr !important;
+            gap: 40px !important;
+        }
+
+        /* Brand Section */
+        .footer-brand {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 20px !important;
+        }
+
+        .footer-brand h3 {
+            font-size: 28px !important;
+            font-weight: 700 !important;
+            color: var(--footer-text) !important;
+            margin: 0 !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 10px !important;
+        }
+
+        .footer-brand h3 span {
+            color: var(--footer-accent) !important;
+        }
+
+        .footer-brand p {
+            font-size: 16px !important;
+            line-height: 1.6 !important;
+            color: var(--footer-text-light) !important;
+            margin: 0 !important;
+            max-width: 400px !important;
+        }
+
+        .footer-social {
+            display: flex !important;
+            gap: 12px !important;
+        }
+
+        .social-link {
+            width: 40px !important;
+            height: 40px !important;
+            background: rgba(255, 255, 255, 0.1) !important;
+            border-radius: 50% !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            color: var(--footer-text) !important;
+            text-decoration: none !important;
+            transition: var(--transition-footer) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        }
+
+        .social-link:hover {
+            background: var(--footer-accent) !important;
+            color: white !important;
+            transform: translateY(-3px) !important;
+            box-shadow: 0 6px 12px rgba(194, 162, 77, 0.22) !important;
+        }
+
+        .social-link i {
+            font-size: 18px !important;
+        }
+
+        /* Footer Sections */
+        .footer-section {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 20px !important;
+        }
+
+        .footer-section h4 {
+            font-size: 18px !important;
+            font-weight: 600 !important;
+            color: var(--footer-text) !important;
+            margin: 0 !important;
+            position: relative !important;
+            padding-bottom: 10px !important;
+        }
+
+        .footer-section h4::after {
+            content: '' !important;
+            position: absolute !important;
+            bottom: 0 !important;
+            left: 0 !important;
+            width: 40px !important;
+            height: 2px !important;
+            background: var(--footer-accent) !important;
+        }
+
+        .footer-links {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 12px !important;
+            list-style: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+
+        .footer-links a {
+            color: var(--footer-text-light) !important;
+            text-decoration: none !important;
+            font-size: 15px !important;
+            transition: var(--transition-footer) !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+            padding: 4px 0 !important;
+        }
+
+        .footer-links a:hover {
+            color: var(--footer-accent) !important;
+            transform: translateX(5px) !important;
+        }
+
+        .footer-links a i {
+            font-size: 12px !important;
+            width: 16px !important;
+            text-align: center !important;
+            opacity: 0.7 !important;
+        }
+
+        .footer-links a:hover i {
+            opacity: 1 !important;
+        }
+
+        /* Footer Middle Section */
+        .footer-middle {
+            background: var(--footer-primary) !important;
+            padding: 30px 0 !important;
+            border-bottom: 1px solid var(--footer-border) !important;
+        }
+
+        .footer-middle-content {
+            max-width: 1200px !important;
+            margin: 0 auto !important;
+            padding: 0 20px !important;
+            display: grid !important;
+            grid-template-columns: 1fr 1fr 1fr !important;
+            gap: 40px !important;
+            align-items: center !important;
+        }
+
+        .payment-section h5,
+        .trust-section h5,
+        .app-section h5 {
+            font-size: 14px !important;
+            font-weight: 600 !important;
+            color: var(--footer-text) !important;
+            margin: 0 0 15px 0 !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.5px !important;
+        }
+
+        .payment-icons {
+            display: flex !important;
+            gap: 10px !important;
+            flex-wrap: wrap !important;
+        }
+
+        .payment-icon {
+            width: 40px !important;
+            height: 25px !important;
+            background: rgba(255, 255, 255, 0.1) !important;
+            border-radius: 4px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            color: var(--footer-text) !important;
+            font-size: 16px !important;
+            transition: var(--transition-footer) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        }
+
+        .payment-icon:hover {
+            background: var(--footer-accent) !important;
+            transform: translateY(-2px) !important;
+        }
+
+        .trust-badges {
+            display: grid !important;
+            grid-template-columns: 1fr 1fr !important;
+            gap: 10px !important;
+        }
+
+        .trust-badge {
+            display: flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+            padding: 8px 12px !important;
+            background: rgba(255, 255, 255, 0.05) !important;
+            border-radius: 6px !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            transition: var(--transition-footer) !important;
+        }
+
+        .trust-badge:hover {
+            background: rgba(255, 255, 255, 0.1) !important;
+            transform: translateY(-2px) !important;
+        }
+
+        .trust-badge i {
+            color: var(--footer-accent) !important;
+            font-size: 14px !important;
+        }
+
+        .trust-badge span {
+            font-size: 12px !important;
+            color: var(--footer-text-light) !important;
+            font-weight: 500 !important;
+        }
+
+        .app-buttons {
+            display: flex !important;
+            gap: 10px !important;
+        }
+
+        .app-button {
+            display: flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+            padding: 8px 15px !important;
+            background: rgba(255, 255, 255, 0.1) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            border-radius: 6px !important;
+            color: var(--footer-text) !important;
+            text-decoration: none !important;
+            font-size: 12px !important;
+            font-weight: 500 !important;
+            transition: var(--transition-footer) !important;
+        }
+
+        .app-button:hover {
+            background: var(--footer-accent) !important;
+            color: white !important;
+            transform: translateY(-2px) !important;
+        }
+
+        .app-button i {
+            font-size: 16px !important;
+        }
+
+        /* Newsletter Section */
+        .newsletter-section {
+            background: linear-gradient(135deg, var(--footer-accent) 0%, #23394f 100%) !important;
+            padding: 40px 0 !important;
+            text-align: center !important;
+        }
+
+        .newsletter-content {
+            max-width: 600px !important;
+            margin: 0 auto !important;
+            padding: 0 20px !important;
+        }
+
+        .newsletter-content h3 {
+            font-size: 28px !important;
+            font-weight: 700 !important;
+            color: white !important;
+            margin: 0 0 10px 0 !important;
+        }
+
+        .newsletter-content p {
+            font-size: 16px !important;
+            color: rgba(255, 255, 255, 0.9) !important;
+            margin: 0 0 25px 0 !important;
+        }
+
+        .newsletter-form {
+            display: flex !important;
+            gap: 10px !important;
+            max-width: 400px !important;
+            margin: 0 auto !important;
+        }
+
+        .newsletter-input {
+            flex: 1 !important;
+            padding: 12px 20px !important;
+            border: none !important;
+            border-radius: 6px !important;
+            font-size: 14px !important;
+            outline: none !important;
+            background: rgba(255, 255, 255, 0.9) !important;
+        }
+
+        .newsletter-button {
+            padding: 12px 25px !important;
+            background: var(--footer-primary) !important;
+            color: white !important;
+            border: none !important;
+            border-radius: 6px !important;
+            font-size: 14px !important;
+            font-weight: 600 !important;
+            cursor: pointer !important;
+            transition: var(--transition-footer) !important;
+            white-space: nowrap !important;
+        }
+
+        .newsletter-button:hover {
+            background: var(--footer-secondary) !important;
+            transform: translateY(-2px) !important;
+        }
+
+        /* Footer Bottom */
+        .footer-bottom {
+            background: var(--footer-primary) !important;
+            padding: 25px 0 !important;
+            border-top: 1px solid var(--footer-border) !important;
+        }
+
+        .footer-bottom-content {
+            max-width: 1200px !important;
+            margin: 0 auto !important;
+            padding: 0 20px !important;
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+        }
+
+        .copyright {
+            font-size: 14px !important;
+            color: var(--footer-text-light) !important;
+            margin: 0 !important;
+        }
+
+        .copyright span {
+            color: var(--footer-accent) !important;
+        }
+
+        .bottom-links {
+            display: flex !important;
+            gap: 20px !important;
+        }
+
+        .bottom-links a {
+            color: var(--footer-text-light) !important;
+            text-decoration: none !important;
+            font-size: 13px !important;
+            transition: var(--transition-footer) !important;
+        }
+
+        .bottom-links a:hover {
+            color: var(--footer-accent) !important;
+        }
+
+        /* Back to Top Button */
+        .back-to-top {
+            position: fixed !important;
+            bottom: 30px !important;
+            right: 30px !important;
+            width: 50px !important;
+            height: 50px !important;
+            background: var(--footer-accent) !important;
+            color: white !important;
+            border: none !important;
+            border-radius: 50% !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            cursor: pointer !important;
+            transition: var(--transition-footer) !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+            z-index: 1000 !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+        }
+
+        .back-to-top.show {
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+
+        .back-to-top:hover {
+            background: #23394f !important;
+            transform: translateY(-3px) !important;
+            box-shadow: 0 6px 20px rgba(47, 74, 103, 0.26) !important;
+        }
+
+        .back-to-top i {
+            font-size: 20px !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Enhanced Header -->
+    <header class="header">
+        <div class="top-strip">
+            <div class="strip-content">
+                <span>🎉 Special Alumni Meet Discounts!</span>
+                <span>📞 +91-8947900884</span>
+                <span>🚚 Free Shipping above ₹799</span>
+            </div>
+        </div>
+        <nav class="main-nav">
+            <div class="nav-wrapper">
+                <div class="logo">
+                    <h1>Navodaya<span>Trendz</span></h1>
+                </div>
+                <div class="search-bar">
+                    <input type="text" placeholder="Search for JNV merchandise...">
+                    <button class="search-btn">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="index.html" class="active">Home</a></li>
+                    <li><a href="http://localhost:3000/tshirts">T-Shirts</a></li>
+                    <li><a href="http://localhost:3000/hoodies">Hoodies</a></li>
+                    <li><a href="http://localhost:3000/accessories">Accessories</a></li>
+                    <li><a href="http://localhost:3000/alumni-kits">Alumni Kits</a></li>
+                    <li><a href="http://localhost:3000/customize">Customize</a></li>
+                    <li><a href="http://localhost:3000/today-deals">Today's Deals</a></li>
+                    <li><a href="http://localhost:3000/new-arrivals">New Arrivals</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Enhanced Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1>Navodaya<span>Trendz</span></h1>
+                    <p>Premium JNV Alumni Merchandise Store</p>
+                    <p>Exclusive discounts for Navodaya alumni members</p>
+                    <a href="#products" class="cta-button">
+                        <i class="fas fa-shopping-bag"></i>
+                        Shop Now
+                    </a>
+                </div>
+                <div class="hero-image">
+                    <img src="https://images.unsplash.com/photo-1523381210434-274e6fd17544?w=800&h=600&fit=crop" alt="JNV Merchandise">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Enhanced Features Section -->
+    <section class="features">
+        <div class="container">
+            <h2>Why Choose Navodaya Trendz?</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-percentage"></i>
+                    </div>
+                    <h3>Exclusive Discounts</h3>
+                    <p>Special offers only for JNV alumni members with up to 50% off on selected items</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-truck"></i>
+                    </div>
+                    <h3>Free Shipping</h3>
+                    <p>On orders above ₹799 with fast delivery across India</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-award"></i>
+                    </div>
+                    <h3>Premium Quality</h3>
+                    <p>High-quality materials and craftsmanship that lasts</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3>Alumni Network</h3>
+                    <p>Connect with JNV alumni nationwide through our platform</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Enhanced Categories Section -->
+    <section class="categories">
+        <div class="container">
+            <h2>Shop by Category</h2>
+            <div class="categories-grid">
+                <a href="http://localhost:3000/tshirts" class="category-card">
+                    <div class="category-image">
+                        <img src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=300&h=400&fit=crop" alt="T-Shirts">
+                    </div>
+                    <h3>T-Shirts</h3>
+                </a>
+                <a href="http://localhost:3000/hoodies" class="category-card">
+                    <div class="category-image">
+                        <img src="https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=300&h=400&fit=crop" alt="Hoodies">
+                    </div>
+                    <h3>Hoodies</h3>
+                </a>
+                <a href="http://localhost:3000/accessories" class="category-card">
+                    <div class="category-image">
+                        <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=300&h=400&fit=crop" alt="Accessories">
+                    </div>
+                    <h3>Accessories</h3>
+                </a>
+                <a href="http://localhost:3000/alumni-kits" class="category-card">
+                    <div class="category-image">
+                        <img src="https://images.unsplash.com/photo-1523381210434-274e6fd17544?w=300&h=400&fit=crop" alt="Alumni Kits">
+                    </div>
+                    <h3>Alumni Kits</h3>
+                </a>
+                <a href="http://localhost:3000/customize" class="category-card">
+                    <div class="category-image">
+                        <img src="https://images.unsplash.com/photo-1563013544-b8e825b3e4c8?w=300&h=400&fit=crop" alt="Customize">
+                    </div>
+                    <h3>Customize</h3>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Enhanced Products Section -->
+    <section id="products" class="products">
+        <div class="container">
+            <h2>Featured Products</h2>
+            <div class="products-grid">
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=300&h=400&fit=crop" alt="JNV Classic T-Shirt">
+                        <div class="product-badge">-30%</div>
+                    </div>
+                    <div class="product-actions">
+                        <button class="wishlist-btn">
+                            <i class="far fa-heart"></i>
+                        </button>
+                        <button class="quick-view-btn">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <div class="product-info">
+                        <h3>JNV Classic T-Shirt</h3>
+                        <p>Premium Cotton | Custom Design</p>
+                        <div class="product-price">
+                            <span class="current-price">₹399</span>
+                            <span class="original-price">₹599</span>
+                        </div>
+                        <div class="product-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                            <span>(245)</span>
+                        </div>
+                        <button class="add-to-cart-btn">Add to Cart</button>
+                    </div>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=300&h=400&fit=crop" alt="JNV Polo T-Shirt">
+                        <div class="product-badge">New</div>
+                    </div>
+                    <div class="product-actions">
+                        <button class="wishlist-btn">
+                            <i class="far fa-heart"></i>
+                        </button>
+                        <button class="quick-view-btn">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <div class="product-info">
+                        <h3>JNV Polo T-Shirt</h3>
+                        <p>Polo Collar | Embroidered Logo</p>
+                        <div class="product-price">
+                            <span class="current-price">₹599</span>
+                            <span class="original-price">₹799</span>
+                        </div>
+                        <div class="product-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                            <span>(189)</span>
+                        </div>
+                        <button class="add-to-cart-btn">Add to Cart</button>
+                    </div>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="https://images.unsplash.com/photo-1586790170083-2f9ceadc732d?w=300&h=400&fit=crop" alt="JNV Sports T-Shirt">
+                        <div class="product-badge">Hot</div>
+                    </div>
+                    <div class="product-actions">
+                        <button class="wishlist-btn">
+                            <i class="far fa-heart"></i>
+                        </button>
+                        <button class="quick-view-btn">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <div class="product-info">
+                        <h3>JNV Sports T-Shirt</h3>
+                        <p>Dri-Fit Fabric | Athletic Fit</p>
+                        <div class="product-price">
+                            <span class="current-price">₹449</span>
+                            <span class="original-price">₹599</span>
+                        </div>
+                        <div class="product-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                            <span>(156)</span>
+                        </div>
+                        <button class="add-to-cart-btn">Add to Cart</button>
+                    </div>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=300&h=400&fit=crop" alt="JNV Batch T-Shirt">
+                        <div class="product-badge">Trending</div>
+                    </div>
+                    <div class="product-actions">
+                        <button class="wishlist-btn">
+                            <i class="far fa-heart"></i>
+                        </button>
+                        <button class="quick-view-btn">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <div class="product-info">
+                        <h3>JNV Batch T-Shirt</h3>
+                        <p>Custom Batch Year | Premium Print</p>
+                        <div class="product-price">
+                            <span class="current-price">₹349</span>
+                            <span class="original-price">₹499</span>
+                        </div>
+                        <div class="product-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <span>(298)</span>
+                        </div>
+                        <button class="add-to-cart-btn">Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+            <div class="load-more-container">
+                <button class="load-more-btn">Load More Products</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Enhanced Alumni Meet Banner -->
+    <section class="alumni-banner-enhanced">
+        <div class="container">
+            <div class="banner-content-enhanced">
+                <div class="banner-text">
+                    <h2>🎓 Planning an Alumni Meet?</h2>
+                    <p>Get special packages for JNV reunions with custom merchandise</p>
+                    <div class="banner-features">
+                        <div class="feature-item">
+                            <i class="fas fa-users"></i>
+                            <span>Group Discounts</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-palette"></i>
+                            <span>Custom Design</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-truck"></i>
+                            <span>Bulk Delivery</span>
+                        </div>
+                    </div>
+                    <div class="banner-actions">
+                        <button class="btn-primary-enhanced" onclick="window.location.href='http://localhost:3000/alumni-kits'">
+                            <i class="fas fa-shopping-bag"></i>
+                            Explore Alumni Kits
+                        </button>
+                        <button class="btn-secondary-enhanced">
+                            <i class="fas fa-phone"></i>
+                            Contact Us
+                        </button>
+                    </div>
+                </div>
+                <div class="banner-image">
+                    <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=400&h=300&fit=crop" alt="JNV Alumni Meet">
+                    <div class="banner-badge">
+                        <i class="fas fa-percentage"></i>
+                        <span>20% OFF</span>
+                        <span>Group Orders</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Enhanced Testimonials -->
+    <section class="testimonials-enhanced">
+        <div class="container">
+            <div class="section-header-enhanced">
+                <h2 class="section-title-enhanced">What Navodayans Say</h2>
+                <p class="section-subtitle">Real experiences from our JNV alumni community</p>
+            </div>
+            <div class="testimonials-grid-enhanced">
+                <div class="testimonial-card-enhanced">
+                    <div class="testimonial-header">
+                        <div class="testimonial-stars">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <span class="rating-text">5.0</span>
+                        </div>
+                        <div class="testimonial-badge">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Verified Purchase</span>
+                        </div>
+                    </div>
+                    <p class="testimonial-text">"Amazing quality T-shirts for our JNV alumni meet. The custom design was perfect and delivery was on time! The Amazon-inspired quality really shows."</p>
+                    <div class="testimonial-author">
+                        <img src="https://i.pravatar.cc/60?img=1" alt="Rahul Sharma">
+                        <div class="author-info">
+                            <h4>Rahul Sharma</h4>
+                            <p>JNV Delhi, Batch 2018</p>
+                            <div class="author-stats">
+                                <span><i class="fas fa-shopping-bag"></i> 5 Orders</span>
+                                <span><i class="fas fa-calendar"></i> 2 months ago</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card-enhanced">
+                    <div class="testimonial-header">
+                        <div class="testimonial-stars">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <span class="rating-text">5.0</span>
+                        </div>
+                        <div class="testimonial-badge">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Verified Purchase</span>
+                        </div>
+                    </div>
+                    <p class="testimonial-text">"The hoodie collection is fantastic! Perfect quality and the JNV branding brings back so many memories. Fast shipping and great customer service."</p>
+                    <div class="testimonial-author">
+                        <img src="https://i.pravatar.cc/60?img=2" alt="Priya Patel">
+                        <div class="author-info">
+                            <h4>Priya Patel</h4>
+                            <p>JNV Mumbai, Batch 2017</p>
+                            <div class="author-stats">
+                                <span><i class="fas fa-shopping-bag"></i> 3 Orders</span>
+                                <span><i class="fas fa-calendar"></i> 1 month ago</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card-enhanced">
+                    <div class="testimonial-header">
+                        <div class="testimonial-stars">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                            <span class="rating-text">4.5</span>
+                        </div>
+                        <div class="testimonial-badge">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Verified Purchase</span>
+                        </div>
+                    </div>
+                    <p class="testimonial-text">"Great collection of accessories! The JNV cap and watch are my favorites. The quality matches premium brands. Highly recommend to all Navodayans!"</p>
+                    <div class="testimonial-author">
+                        <img src="https://i.pravatar.cc/60?img=3" alt="Amit Kumar">
+                        <div class="author-info">
+                            <h4>Amit Kumar</h4>
+                            <p>JNV Bangalore, Batch 2019</p>
+                            <div class="author-stats">
+                                <span><i class="fas fa-shopping-bag"></i> 7 Orders</span>
+                                <span><i class="fas fa-calendar"></i> 3 weeks ago</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonials-stats">
+                <div class="stat-item">
+                    <div class="stat-number">10,000+</div>
+                    <div class="stat-label">Happy Navodayans</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">4.8</div>
+                    <div class="stat-label">Average Rating</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">50+</div>
+                    <div class="stat-label">JNV Campuses</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">98%</div>
+                    <div class="stat-label">Satisfaction Rate</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Enhanced Newsletter -->
+    <section class="newsletter-enhanced">
+        <div class="container">
+            <div class="newsletter-content-enhanced">
+                <div class="newsletter-text">
+                    <h2>🎓 Stay Updated with Navodaya Trendz</h2>
+                    <p>Get latest updates on new JNV merchandise, exclusive alumni deals, and special offers</p>
+                    <div class="newsletter-benefits">
+                        <div class="benefit-item">
+                            <i class="fas fa-percentage"></i>
+                            <span>Exclusive Discounts</span>
+                        </div>
+                        <div class="benefit-item">
+                            <i class="fas fa-sparkles"></i>
+                            <span>New Arrivals First</span>
+                        </div>
+                        <div class="benefit-item">
+                            <i class="fas fa-gift"></i>
+                            <span>Special Alumni Offers</span>
+                        </div>
+                    </div>
+                </div>
+                <form class="newsletter-form-enhanced">
+                    <div class="form-group">
+                        <input type="email" placeholder="Enter your email address" required>
+                        <button type="submit">
+                            <i class="fas fa-paper-plane"></i>
+                            Subscribe
+                        </button>
+                    </div>
+                    <p class="form-note">Join 10,000+ Navodayans. Unsubscribe anytime.</p>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Universal Enhanced Footer -->
+    <footer class="universal-footer">
+        <!-- Footer Top Section -->
+        <div class="footer-top">
+            <div class="footer-top-content">
+                <!-- Brand Section -->
+                <div class="footer-brand footer-animate">
+                    <h3>Navodaya<span>Trendz</span></h3>
+                    <p>Made by Navodayans, for Navodayans. Your trusted partner for JNV alumni merchandise.</p>
+                    <div class="footer-social">
+                        <a href="#" class="social-link" aria-label="Facebook">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="social-link" aria-label="Instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="social-link" aria-label="Twitter">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="social-link" aria-label="LinkedIn">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                        <a href="#" class="social-link" aria-label="WhatsApp">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Shop Section -->
+                <div class="footer-section footer-animate footer-animate-delay-1">
+                    <h4>Shop</h4>
+                    <ul class="footer-links">
+                        <li><a href="http://localhost:3000/tshirts"><i class="fas fa-chevron-right"></i> T-Shirts</a></li>
+                        <li><a href="http://localhost:3000/hoodies"><i class="fas fa-chevron-right"></i> Hoodies</a></li>
+                        <li><a href="http://localhost:3000/accessories"><i class="fas fa-chevron-right"></i> Accessories</a></li>
+                        <li><a href="http://localhost:3000/alumni-kits"><i class="fas fa-chevron-right"></i> Alumni Kits</a></li>
+                        <li><a href="http://localhost:3000/customize"><i class="fas fa-chevron-right"></i> Customize</a></li>
+                        <li><a href="http://localhost:3000/today-deals"><i class="fas fa-chevron-right"></i> Today's Deals</a></li>
+                        <li><a href="http://localhost:3000/new-arrivals"><i class="fas fa-chevron-right"></i> New Arrivals</a></li>
+                    </ul>
+                </div>
+
+                <!-- Help Section -->
+                <div class="footer-section footer-animate footer-animate-delay-2">
+                    <h4>Help</h4>
+                    <ul class="footer-links">
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Contact Us</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Shipping Info</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Returns & Exchanges</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Size Guide</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Track Order</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> FAQ</a></li>
+                    </ul>
+                </div>
+
+                <!-- Policies Section -->
+                <div class="footer-section footer-animate footer-animate-delay-3">
+                    <h4>Policies</h4>
+                    <ul class="footer-links">
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Privacy Policy</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Terms & Conditions</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Refund Policy</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Disclaimer</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Cookie Policy</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Shipping Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer Middle Section -->
+        <div class="footer-middle">
+            <div class="footer-middle-content">
+                <!-- Payment Methods -->
+                <div class="payment-section">
+                    <h5>Payment Methods</h5>
+                    <div class="payment-icons">
+                        <div class="payment-icon" title="Visa">
+                            <i class="fab fa-cc-visa"></i>
+                        </div>
+                        <div class="payment-icon" title="Mastercard">
+                            <i class="fab fa-cc-mastercard"></i>
+                        </div>
+                        <div class="payment-icon" title="American Express">
+                            <i class="fab fa-cc-amex"></i>
+                        </div>
+                        <div class="payment-icon" title="PayPal">
+                            <i class="fab fa-cc-paypal"></i>
+                        </div>
+                        <div class="payment-icon" title="Google Pay">
+                            <i class="fab fa-google-pay"></i>
+                        </div>
+                        <div class="payment-icon" title="Apple Pay">
+                            <i class="fab fa-apple-pay"></i>
+                        </div>
+                        <div class="payment-icon" title="Net Banking">
+                            <i class="fas fa-university"></i>
+                        </div>
+                        <div class="payment-icon" title="Cash on Delivery">
+                            <i class="fas fa-money-bill-wave"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Trust Badges -->
+                <div class="trust-section">
+                    <h5>Why Shop With Us</h5>
+                    <div class="trust-badges">
+                        <div class="trust-badge">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Secure Payment</span>
+                        </div>
+                        <div class="trust-badge">
+                            <i class="fas fa-truck"></i>
+                            <span>Fast Delivery</span>
+                        </div>
+                        <div class="trust-badge">
+                            <i class="fas fa-undo"></i>
+                            <span>Easy Returns</span>
+                        </div>
+                        <div class="trust-badge">
+                            <i class="fas fa-headset"></i>
+                            <span>24/7 Support</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- App Download -->
+                <div class="app-section">
+                    <h5>Download App</h5>
+                    <div class="app-buttons">
+                        <a href="#" class="app-button">
+                            <i class="fab fa-google-play"></i>
+                            <span>Google Play</span>
+                        </a>
+                        <a href="#" class="app-button">
+                            <i class="fab fa-app-store"></i>
+                            <span>App Store</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Newsletter Section -->
+        <div class="newsletter-section">
+            <div class="newsletter-content">
+                <h3>🎓 Stay Connected with Navodayans</h3>
+                <p>Get exclusive offers, new arrivals, and alumni meet updates delivered to your inbox</p>
+                <form class="newsletter-form" onsubmit="event.preventDefault(); alert('Thank you for subscribing!');">
+                    <input type="email" class="newsletter-input" placeholder="Enter your email address" required>
+                    <button type="submit" class="newsletter-button">Subscribe</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Footer Bottom -->
+        <div class="footer-bottom">
+            <div class="footer-bottom-content">
+                <p class="copyright">© 2025 Navodaya Trendz. All Rights Reserved. | Made with <span>❤️</span> by Navodayans</p>
+                <div class="bottom-links">
+                    <a href="#">Sitemap</a>
+                    <a href="#">Careers</a>
+                    <a href="#">Press</a>
+                    <a href="#">Partner with Us</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <button class="back-to-top" id="backToTop" aria-label="Back to top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="script.js"></script>
+    <script src="theme-switch.js"></script>
+    <script>
+        // Back to Top Button
+        document.addEventListener('DOMContentLoaded', function() {
+            const backToTopButton = document.getElementById('backToTop');
+            
+            window.addEventListener('scroll', function() {
+                if (window.pageYOffset > 300) {
+                    backToTopButton.classList.add('show');
+                } else {
+                    backToTopButton.classList.remove('show');
+                }
+            });
+            
+            backToTopButton.addEventListener('click', function() {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+            
+            // Add animation classes on scroll
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+            
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+            
+            document.querySelectorAll('.footer-animate').forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(20px)';
+                el.style.transition = 'all 0.6s ease-out';
+                observer.observe(el);
+            });
+        });
+    </script>
+</body>
+</html>
+                    <h3>Navodaya Trendz</h3>
+                    <p>Made by Navodayans, for Navodayans. Your trusted partner for JNV alumni merchandise.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>Shop</h4>
+                    <ul>
+                        <li><a href="tshirts.html">T-Shirts</a></li>
+                        <li><a href="hoodies.html">Hoodies</a></li>
+                        <li><a href="accessories.html">Accessories</a></li>
+                        <li><a href="alumni-kits.html">Alumni Kits</a></li>
+                        <li><a href="customize.html">Customize</a></li>
+                        <li><a href="offers.html">Offers</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Help</h4>
+                    <ul>
+                        <li><a href="contact.html">Contact Us</a></li>
+                        <li><a href="shipping.html">Shipping Info</a></li>
+                        <li><a href="returns.html">Returns & Exchanges</a></li>
+                        <li><a href="size-guide.html">Size Guide</a></li>
+                        <li><a href="track-order.html">Track Order</a></li>
+                        <li><a href="faq.html">FAQ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Policies</h4>
+                    <ul>
+                        <li><a href="privacy-policy.html">Privacy Policy</a></li>
+                        <li><a href="terms-conditions.html">Terms & Conditions</a></li>
+                        <li><a href="refund-policy.html">Refund Policy</a></li>
+                        <li><a href="disclaimer.html">Disclaimer</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Navodaya Trendz. All Rights Reserved. | Made with ❤️ by Navodayans</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
 </html>

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navodaya Trendz - JNV Alumni Merchandise Store</title>
+    <meta name="description" content="Premium JNV alumni merchandise with Amazon-inspired design. Shop T-shirts, hoodies, accessories, and more with exclusive discounts.">
+    <meta name="keywords" content="JNV, Navodaya, alumni, merchandise, T-shirts, hoodies, accessories, online store">
+    <link rel="stylesheet" href="src/index.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            background: var(--amazon-light-gray);
+        }
+        .app-redirect {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, var(--amazon-dark-blue) 0%, var(--amazon-blue) 100%);
+            color: white;
+            text-align: center;
+        }
+        .redirect-content {
+            max-width: 600px;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+        .redirect-content h1 {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            animation: fadeInUp 1s ease-out;
+        }
+        .redirect-content p {
+            font-size: 18px;
+            margin-bottom: 30px;
+            opacity: 0.9;
+            animation: fadeInUp 1s ease-out 0.2s;
+        }
+        .redirect-button {
+            background: var(--amazon-orange);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            animation: fadeInUp 1s ease-out 0.4s;
+        }
+        .redirect-button:hover {
+            background: #23394f;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(47, 74, 103, 0.3);
+        }
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+            animation: fadeInUp 1s ease-out 0.6s;
+        }
+        .feature {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        .feature i {
+            font-size: 32px;
+            color: var(--amazon-orange);
+            margin-bottom: 10px;
+        }
+        .feature h3 {
+            font-size: 18px;
+            margin: 0 0 10px 0;
+        }
+        .feature p {
+            font-size: 14px;
+            margin: 0;
+            opacity: 0.9;
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-redirect">
+        <div class="redirect-content">
+            <h1>🎓 Welcome to Navodaya Trendz</h1>
+            <p>Experience our Amazon-inspired JNV alumni merchandise store with enhanced UI and modern design.</p>
+            <a href="http://localhost:3000" class="redirect-button">
+                <i className="fas fa-shopping-bag"></i>
+                Launch Enhanced Store
+            </a>
+            
+            <div class="features">
+                <div class="feature">
+                    <i className="fas fa-percentage"></i>
+                    <h3>Today's Deals</h3>
+                    <p>Time-sensitive offers with countdown timers</p>
+                </div>
+                <div class="feature">
+                    <i className="fas fa-sparkles"></i>
+                    <h3>New Arrivals</h3>
+                    <p>Fresh collections with arrival tracking</p>
+                </div>
+                <div class="feature">
+                    <i className="fas fa-palette"></i>
+                    <h3>Customize</h3>
+                    <p>Personalize your JNV gear</p>
+                </div>
+                <div class="feature">
+                    <i className="fas fa-star"></i>
+                    <h3>Premium Quality</h3>
+                    <p>Amazon-inspired design system</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

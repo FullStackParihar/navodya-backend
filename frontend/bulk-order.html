@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bulk Order - Navodaya Trendz</title>
+    <meta name="description" content="Order custom merchandise in bulk for your organization, event, or team">
+    
+    <!-- Enhanced CSS -->
+    <link rel="stylesheet" href="ui-enhanced.css">
+    <link rel="stylesheet" href="theme-switch.css">
+    
+    <!-- Modern Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Bulk Order Specific Styles */
+        .bulk-order-page {
+            padding: 2rem 0;
+            min-height: 100vh;
+            background: var(--bg-secondary, #f8fafc);
+        }
+
+        .bulk-order-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .bulk-order-header h1 {
+            font-size: 2.5rem;
+            color: var(--text-primary, #1e293b);
+            margin-bottom: 0.5rem;
+        }
+
+        .bulk-order-header p {
+            color: var(--text-secondary, #64748b);
+            font-size: 1.125rem;
+        }
+
+        .progress-steps {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--gray-200, #e2e8f0);
+            color: var(--text-secondary, #64748b);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            transition: all var(--transition-normal);
+        }
+
+        .step.active .step-number {
+            background: var(--gradient-primary, linear-gradient(135deg, #ff6b35, #e55a2b));
+            color: white;
+        }
+
+        .step-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary, #64748b);
+            font-weight: 500;
+        }
+
+        .step.active .step-label {
+            color: var(--primary-color, #ff6b35);
+        }
+
+        .form-step {
+            background: var(--bg-primary, white);
+            border-radius: var(--radius-2xl, 1.5rem);
+            padding: 2rem;
+            box-shadow: var(--shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1));
+            margin-bottom: 2rem;
+        }
+
+        .form-step h2 {
+            color: var(--text-primary, #1e293b);
+            margin-bottom: 2rem;
+        }
+
+        .step-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .btn-add-product {
+            background: var(--success-color, #06ffa5);
+            color: var(--gray-900, #0f172a);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius-lg, 0.75rem);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-add-product:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md, 0 4px 6px -1px rgb(0 0 0 / 0.1));
+        }
+
+        .product-card {
+            border: 1px solid var(--border-color, #e2e8f0);
+            border-radius: var(--radius-xl, 1rem);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .btn-remove-product {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--danger-color, #fb5607);
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-fast);
+        }
+
+        .btn-remove-product:hover {
+            transform: scale(1.1);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            font-weight: 500;
+            color: var(--text-primary, #1e293b);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            padding: 0.75rem;
+            border: 1px solid var(--border-color, #e2e8f0);
+            border-radius: var(--radius-lg, 0.75rem);
+            font-size: 0.875rem;
+            transition: all var(--transition-fast);
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-color, #ff6b35);
+            box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+        }
+
+        .size-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 1rem;
+        }
+
+        .size-input {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .size-input label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-secondary, #64748b);
+            margin-bottom: 0.25rem;
+        }
+
+        .size-input input {
+            width: 60px;
+            text-align: center;
+        }
+
+        .total-quantity input {
+            background: var(--primary-color, #ff6b35);
+            color: white;
+            font-weight: 600;
+        }
+
+        .upload-area {
+            border: 2px dashed var(--border-color, #e2e8f0);
+            border-radius: var(--radius-xl, 1rem);
+            padding: 2rem;
+            text-align: center;
+            transition: all var(--transition-fast);
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary-color, #ff6b35);
+            background: var(--gray-50, #f8fafc);
+        }
+
+        .upload-label {
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .upload-label i {
+            font-size: 3rem;
+            color: var(--primary-color, #ff6b35);
+        }
+
+        .upload-label span {
+            font-weight: 600;
+            color: var(--text-primary, #1e293b);
+        }
+
+        .upload-label small {
+            color: var(--text-secondary, #64748b);
+        }
+
+        .uploaded-files {
+            margin-top: 1.5rem;
+        }
+
+        .file-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border: 1px solid var(--border-color, #e2e8f0);
+            border-radius: var(--radius-lg, 0.75rem);
+            position: relative;
+        }
+
+        .file-preview {
+            width: 50px;
+            height: 50px;
+            border-radius: var(--radius-md, 0.5rem);
+            overflow: hidden;
+        }
+
+        .file-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .file-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--gray-100, #f1f5f9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-md, 0.5rem);
+            color: var(--text-secondary, #64748b);
+        }
+
+        .file-info {
+            flex: 1;
+        }
+
+        .file-name {
+            font-weight: 500;
+            color: var(--text-primary, #1e293b);
+            margin: 0;
+        }
+
+        .file-size {
+            font-size: 0.75rem;
+            color: var(--text-secondary, #64748b);
+            margin: 0;
+        }
+
+        .btn-remove-file {
+            background: var(--danger-color, #fb5607);
+            color: white;
+            border: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-fast);
+        }
+
+        .btn-remove-file:hover {
+            transform: scale(1.1);
+        }
+
+        .review-section {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .review-card {
+            background: var(--gray-50, #f8fafc);
+            border-radius: var(--radius-xl, 1rem);
+            padding: 1.5rem;
+        }
+
+        .review-card h3 {
+            color: var(--text-primary, #1e293b);
+            margin-bottom: 1rem;
+        }
+
+        .review-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .review-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border-color, #e2e8f0);
+        }
+
+        .review-item label {
+            font-weight: 500;
+            color: var(--text-secondary, #64748b);
+        }
+
+        .review-item span {
+            color: var(--text-primary, #1e293b);
+            font-weight: 500;
+        }
+
+        .product-review {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: white;
+            border-radius: var(--radius-lg, 0.75rem);
+        }
+
+        .product-review h4 {
+            color: var(--primary-color, #ff6b35);
+            margin-bottom: 0.5rem;
+        }
+
+        .product-details p {
+            margin-bottom: 0.5rem;
+        }
+
+        .form-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .btn-primary,
+        .btn-secondary {
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: var(--radius-lg, 0.75rem);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary, linear-gradient(135deg, #ff6b35, #e55a2b));
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md, 0 4px 6px -1px rgb(0 0 0 / 0.1));
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: var(--gray-200, #e2e8f0);
+            color: var(--text-primary, #1e293b);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-300, #cbd5e1);
+        }
+
+        .success-message {
+            background: var(--success-color, #06ffa5);
+            color: var(--gray-900, #0f172a);
+            padding: 1.5rem;
+            border-radius: var(--radius-xl, 1rem);
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .success-message i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fadeIn {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @media (max-width: 768px) {
+            .progress-steps {
+                gap: 1rem;
+            }
+            
+            .step-label {
+                font-size: 0.75rem;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .size-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .file-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-navigation {
+                flex-direction: column;
+            }
+            
+            .form-navigation button {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header" id="header">
+        <nav class="nav container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-graduation-cap"></i> Navodaya Trendz
+            </a>
+            
+            <ul class="nav-links">
+                <li><a href="index.html" class="nav-link">Home</a></li>
+                <li><a href="#" class="nav-link">Products</a></li>
+                <li><a href="#" class="nav-link active">Bulk Order</a></li>
+                <li><a href="#" class="nav-link">About</a></li>
+                <li><a href="#" class="nav-link">Contact</a></li>
+            </ul>
+            
+            <div class="search-container">
+                <input type="text" class="search-bar" placeholder="Search products...">
+                <i class="fas fa-search search-icon"></i>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Bulk Order Page -->
+    <section class="bulk-order-page">
+        <div class="container">
+            <!-- Header -->
+            <div class="bulk-order-header">
+                <h1>Bulk Order Request</h1>
+                <p>Get custom merchandise for your organization, event, or team</p>
+                
+                <!-- Progress Steps -->
+                <div class="progress-steps">
+                    <div class="step active" id="step-1">
+                        <div class="step-number">1</div>
+                        <div class="step-label">Contact Info</div>
+                    </div>
+                    <div class="step" id="step-2">
+                        <div class="step-number">2</div>
+                        <div class="step-label">Product Details</div>
+                    </div>
+                    <div class="step" id="step-3">
+                        <div class="step-number">3</div>
+                        <div class="step-label">Design & Upload</div>
+                    </div>
+                    <div class="step" id="step-4">
+                        <div class="step-number">4</div>
+                        <div class="step-label">Review & Submit</div>
+                    </div>
+                </div>
+            </div>
+
+            <form id="bulkOrderForm">
+                <!-- Step 1: Contact Information -->
+                <div class="form-step animate-fadeIn" id="step-1-content">
+                    <h2>Organization Information</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Organization Name *</label>
+                            <input type="text" name="organizationName" placeholder="Your organization name" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Contact Person *</label>
+                            <input type="text" name="contactPerson" placeholder="Name of contact person" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Email Address *</label>
+                            <input type="email" name="email" placeholder="your@email.com" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Phone Number *</label>
+                            <input type="tel" name="phone" placeholder="+91 98765 43210" required>
+                        </div>
+                        
+                        <div class="form-group full-width">
+                            <label>Delivery Address</label>
+                            <textarea name="deliveryAddress" placeholder="Complete delivery address" rows="3"></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>City</label>
+                            <input type="text" name="city" placeholder="City name">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>State</label>
+                            <input type="text" name="state" placeholder="State name">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Pincode</label>
+                            <input type="text" name="pincode" placeholder="6-digit pincode">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Required Date</label>
+                            <input type="date" name="requiredDate" min="">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Estimated Budget</label>
+                            <input type="text" name="budget" placeholder="e.g., ₹50,000 - ₹1,00,000">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Product Details -->
+                <div class="form-step" id="step-2-content" style="display: none;">
+                    <div class="step-header">
+                        <h2>Product Details</h2>
+                        <button type="button" class="btn-add-product" onclick="addProduct()">
+                            <i class="fas fa-plus"></i> Add Another Product
+                        </button>
+                    </div>
+                    
+                    <div id="products-container">
+                        <!-- Products will be added here dynamically -->
+                    </div>
+                </div>
+
+                <!-- Step 3: Design & Upload -->
+                <div class="form-step" id="step-3-content" style="display: none;">
+                    <h2>Design & File Upload</h2>
+                    <div id="design-upload-container">
+                        <!-- Design upload areas will be added here dynamically -->
+                    </div>
+                </div>
+
+                <!-- Step 4: Review & Submit -->
+                <div class="form-step" id="step-4-content" style="display: none;">
+                    <h2>Review Your Order</h2>
+                    
+                    <div class="review-section">
+                        <div class="review-card">
+                            <h3>Organization Information</h3>
+                            <div class="review-grid" id="review-contact-info">
+                                <!-- Contact info will be populated here -->
+                            </div>
+                        </div>
+                        
+                        <div class="review-card">
+                            <h3>Products Summary</h3>
+                            <div id="review-products">
+                                <!-- Products summary will be populated here -->
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Additional Notes</label>
+                            <textarea name="additionalNotes" placeholder="Any additional requirements or special instructions" rows="4"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation Buttons -->
+                <div class="form-navigation">
+                    <button type="button" class="btn-secondary" id="prevBtn" onclick="changeStep(-1)" style="display: none;">
+                        <i class="fas fa-arrow-left"></i> Previous
+                    </button>
+                    
+                    <button type="button" class="btn-primary" id="nextBtn" onclick="changeStep(1)">
+                        Next <i class="fas fa-arrow-right"></i>
+                    </button>
+                    
+                    <button type="submit" class="btn-primary" id="submitBtn" style="display: none;" disabled>
+                        <i class="fas fa-check"></i> Submit Order Request
+                    </button>
+                </div>
+            </form>
+
+            <!-- Success Message -->
+            <div class="success-message" id="successMessage" style="display: none;">
+                <i class="fas fa-check-circle"></i>
+                <p>Your bulk order request has been submitted successfully! We will contact you within 24 hours.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Scripts -->
+    <script src="theme-switch.js"></script>
+    <script>
+        // Global variables
+        let currentStep = 1;
+        let products = [{
+            id: 1,
+            productName: '',
+            category: 'tshirts',
+            sizes: { xs: 0, s: 0, m: 0, l: 0, xl: 0, xxl: 0, '3xl': 0, '4xl': 0 },
+            description: '',
+            specifications: '',
+            uploadedImages: [],
+            designRequirements: ''
+        }];
+
+        const categories = [
+            { value: 'tshirts', label: 'T-Shirts' },
+            { value: 'hoodies', label: 'Hoodies' },
+            { value: 'polo', label: 'Polo Shirts' },
+            { value: 'caps', label: 'Caps' },
+            { value: 'bags', label: 'Bags' },
+            { value: 'accessories', label: 'Accessories' },
+            { value: 'custom', label: 'Custom Product' }
+        ];
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set minimum date to today
+            const today = new Date().toISOString().split('T')[0];
+            document.querySelector('input[name="requiredDate"]').min = today;
+            
+            // Add initial product
+            renderProducts();
+        });
+
+        // Change step
+        function changeStep(direction) {
+            if (direction === 1 && !validateStep(currentStep)) {
+                alert('Please fill in all required fields for this step');
+                return;
+            }
+            
+            // Hide current step
+            document.getElementById(`step-${currentStep}-content`).style.display = 'none';
+            document.getElementById(`step-${currentStep}`).classList.remove('active');
+            
+            // Update step
+            currentStep += direction;
+            
+            // Show new step
+            document.getElementById(`step-${currentStep}-content`).style.display = 'block';
+            document.getElementById(`step-${currentStep}`).classList.add('active');
+            
+            // Update navigation buttons
+            updateNavigationButtons();
+            
+            // Populate review if on step 4
+            if (currentStep === 4) {
+                populateReview();
+            }
+        }
+
+        // Validate current step
+        function validateStep(step) {
+            switch (step) {
+                case 1:
+                    const orgName = document.querySelector('input[name="organizationName"]').value;
+                    const contactPerson = document.querySelector('input[name="contactPerson"]').value;
+                    const email = document.querySelector('input[name="email"]').value;
+                    const phone = document.querySelector('input[name="phone"]').value;
+                    return orgName && contactPerson && email && phone;
+                    
+                case 2:
+                    return products.some(p => p.productName && p.category && calculateTotalQuantity(p) > 0);
+                    
+                case 3:
+                    return products.every(p => p.uploadedImages.length > 0 || p.designRequirements);
+                    
+                default:
+                    return true;
+            }
+        }
+
+        // Update navigation buttons
+        function updateNavigationButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            prevBtn.style.display = currentStep > 1 ? 'flex' : 'none';
+            
+            if (currentStep === 4) {
+                nextBtn.style.display = 'none';
+                submitBtn.style.display = 'flex';
+            } else {
+                nextBtn.style.display = 'flex';
+                submitBtn.style.display = 'none';
+            }
+        }
+
+        // Add product
+        function addProduct() {
+            const newProduct = {
+                id: Date.now(),
+                productName: '',
+                category: 'tshirts',
+                sizes: { xs: 0, s: 0, m: 0, l: 0, xl: 0, xxl: 0, '3xl': 0, '4xl': 0 },
+                description: '',
+                specifications: '',
+                uploadedImages: [],
+                designRequirements: ''
+            };
+            
+            products.push(newProduct);
+            renderProducts();
+        }
+
+        // Remove product
+        function removeProduct(index) {
+            if (products.length > 1) {
+                products.splice(index, 1);
+                renderProducts();
+            }
+        }
+
+        // Render products
+        function renderProducts() {
+            const container = document.getElementById('products-container');
+            
+            container.innerHTML = products.map((product, index) => `
+                <div class="product-card animate-fadeIn">
+                    ${products.length > 1 ? `
+                        <button type="button" class="btn-remove-product" onclick="removeProduct(${index})">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    ` : ''}
+                    
+                    <h3>Product ${index + 1}</h3>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Product Name *</label>
+                            <input type="text" value="${product.productName}" 
+                                   onchange="updateProduct(${index}, 'productName', this.value)"
+                                   placeholder="e.g., JNV Alumni T-Shirt" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Category *</label>
+                            <select onchange="updateProduct(${index}, 'category', this.value)" required>
+                                ${categories.map(cat => `
+                                    <option value="${cat.value}" ${cat.value === product.category ? 'selected' : ''}>
+                                        ${cat.label}
+                                    </option>
+                                `).join('')}
+                            </select>
+                        </div>
+                        
+                        <div class="form-group full-width">
+                            <label>Description</label>
+                            <textarea onchange="updateProduct(${index}, 'description', this.value)"
+                                      placeholder="Describe your product requirements" rows="3">${product.description}</textarea>
+                        </div>
+                        
+                        <div class="form-group full-width">
+                            <label>Specifications</label>
+                            <textarea onchange="updateProduct(${index}, 'specifications', this.value)"
+                                      placeholder="Material, quality, printing method, etc." rows="3">${product.specifications}</textarea>
+                        </div>
+                        
+                        <div class="form-group full-width">
+                            <label>Sizes & Quantities</label>
+                            <div class="size-grid">
+                                ${Object.entries(product.sizes).map(([size, quantity]) => `
+                                    <div class="size-input">
+                                        <label>${size.toUpperCase()}</label>
+                                        <input type="number" min="0" value="${quantity}"
+                                               onchange="updateProduct(${index}, 'sizes.${size}', this.value)"
+                                               placeholder="0">
+                                    </div>
+                                `).join('')}
+                                <div class="total-quantity">
+                                    <label>Total</label>
+                                    <input type="text" value="${calculateTotalQuantity(product)}" readonly class="total-input">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Update product
+        function updateProduct(index, field, value) {
+            if (field.includes('.')) {
+                const [parentField, childField] = field.split('.');
+                products[index][parentField][childField] = value;
+            } else {
+                products[index][field] = value;
+            }
+        }
+
+        // Calculate total quantity
+        function calculateTotalQuantity(product) {
+            return Object.values(product.sizes).reduce((sum, qty) => sum + parseInt(qty || 0), 0);
+        }
+
+        // Handle image upload
+        function handleImageUpload(productIndex, event) {
+            const files = Array.from(event.target.files);
+            
+            files.forEach(file => {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        products[productIndex].uploadedImages.push({
+                            name: file.name,
+                            url: e.target.result,
+                            size: file.size
+                        });
+                        renderDesignUpload();
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        // Remove image
+        function removeImage(productIndex, imageIndex) {
+            products[productIndex].uploadedImages.splice(imageIndex, 1);
+            renderDesignUpload();
+        }
+
+        // Render design upload
+        function renderDesignUpload() {
+            const container = document.getElementById('design-upload-container');
+            
+            container.innerHTML = products.map((product, index) => `
+                <div class="product-card animate-fadeIn">
+                    <h3>${product.productName || `Product ${index + 1}`}</h3>
+                    
+                    <div class="form-group">
+                        <label>Design Requirements</label>
+                        <textarea onchange="updateProduct(${index}, 'designRequirements', this.value)"
+                                  placeholder="Describe your design requirements, colors, placement, etc." rows="4">${product.designRequirements}</textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Upload Design Files</label>
+                        <div class="upload-area">
+                            <input type="file" id="files-${product.id}" multiple 
+                                   accept="image/*,.pdf,.ai,.eps,.svg"
+                                   onchange="handleImageUpload(${index}, event)"
+                                   style="display: none;">
+                            <label for="files-${product.id}" class="upload-label">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <span>Click to upload or drag and drop</span>
+                                <small>PNG, JPG, PDF, AI, EPS, SVG (Max 10MB per file)</small>
+                            </label>
+                        </div>
+                        
+                        ${product.uploadedImages.length > 0 ? `
+                            <div class="uploaded-files">
+                                <h4>Uploaded Files:</h4>
+                                <div class="file-grid">
+                                    ${product.uploadedImages.map((file, fileIndex) => `
+                                        <div class="file-item">
+                                            <div class="file-preview">
+                                                <img src="${file.url}" alt="${file.name}">
+                                            </div>
+                                            <div class="file-info">
+                                                <p class="file-name">${file.name}</p>
+                                                <p class="file-size">${(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                                            </div>
+                                            <button type="button" class="btn-remove-file" 
+                                                    onclick="removeImage(${index}, ${fileIndex})">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Populate review
+        function populateReview() {
+            // Contact info
+            const contactInfo = document.getElementById('review-contact-info');
+            const formData = new FormData(document.getElementById('bulkOrderForm'));
+            
+            contactInfo.innerHTML = `
+                <div class="review-item">
+                    <label>Organization:</label>
+                    <span>${formData.get('organizationName')}</span>
+                </div>
+                <div class="review-item">
+                    <label>Contact Person:</label>
+                    <span>${formData.get('contactPerson')}</span>
+                </div>
+                <div class="review-item">
+                    <label>Email:</label>
+                    <span>${formData.get('email')}</span>
+                </div>
+                <div class="review-item">
+                    <label>Phone:</label>
+                    <span>${formData.get('phone')}</span>
+                </div>
+                <div class="review-item">
+                    <label>Delivery Address:</label>
+                    <span>${formData.get('deliveryAddress')}</span>
+                </div>
+                <div class="review-item">
+                    <label>City:</label>
+                    <span>${formData.get('city')}</span>
+                </div>
+                <div class="review-item">
+                    <label>Required Date:</label>
+                    <span>${formData.get('requiredDate')}</span>
+                </div>
+                <div class="review-item">
+                    <label>Budget:</label>
+                    <span>${formData.get('budget')}</span>
+                </div>
+            `;
+            
+            // Products summary
+            const productsReview = document.getElementById('review-products');
+            productsReview.innerHTML = products.map((product, index) => `
+                <div class="product-review">
+                    <h4>Product ${index + 1}: ${product.productName}</h4>
+                    <div class="product-details">
+                        <p><strong>Category:</strong> ${categories.find(c => c.value === product.category)?.label}</p>
+                        <p><strong>Quantity:</strong> ${calculateTotalQuantity(product)} pieces</p>
+                        <p><strong>Sizes:</strong> ${Object.entries(product.sizes)
+                            .filter(([_, qty]) => qty > 0)
+                            .map(([size, qty]) => `${size.toUpperCase()}: ${qty}`)
+                            .join(', ') || 'Not specified'}</p>
+                        ${product.description ? `<p><strong>Description:</strong> ${product.description}</p>` : ''}
+                        ${product.uploadedImages.length > 0 ? `<p><strong>Files Uploaded:</strong> ${product.uploadedImages.length} files</p>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Handle form submission
+        document.getElementById('bulkOrderForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+            
+            // Simulate API call
+            setTimeout(() => {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-check"></i> Submit Order Request';
+                
+                // Show success message
+                document.getElementById('successMessage').style.display = 'block';
+                
+                // Scroll to success message
+                document.getElementById('successMessage').scrollIntoView({ behavior: 'smooth' });
+                
+                // Reset form after 5 seconds
+                setTimeout(() => {
+                    document.getElementById('successMessage').style.display = 'none';
+                    currentStep = 1;
+                    products = [{
+                        id: 1,
+                        productName: '',
+                        category: 'tshirts',
+                        sizes: { xs: 0, s: 0, m: 0, l: 0, xl: 0, xxl: 0, '3xl': 0, '4xl': 0 },
+                        description: '',
+                        specifications: '',
+                        uploadedImages: [],
+                        designRequirements: ''
+                    }];
+                    
+                    document.getElementById('bulkOrderForm').reset();
+                    renderProducts();
+                    renderDesignUpload();
+                    
+                    // Reset to step 1
+                    document.getElementById('step-4-content').style.display = 'none';
+                    document.getElementById('step-4').classList.remove('active');
+                    document.getElementById('step-1-content').style.display = 'block';
+                    document.getElementById('step-1').classList.add('active');
+                    updateNavigationButtons();
+                }, 5000);
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

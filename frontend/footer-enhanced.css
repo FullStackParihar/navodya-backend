@@ -1,0 +1,650 @@
+/* Enhanced Universal Footer CSS for All Pages */
+
+/* Amazon-Inspired Footer Variables */
+:root {
+    --footer-primary: #131921;
+    --footer-secondary: #232f3e;
+    --footer-accent: #2f4a67;
+    --footer-text: #ffffff;
+    --footer-text-light: #999999;
+    --footer-border: #37475a;
+    --footer-bg-light: #f7f8fa;
+    --shadow-footer: 0 4px 12px rgba(0, 0, 0, 0.15);
+    --transition-footer: all 0.3s ease;
+}
+
+/* Main Footer Container */
+.universal-footer {
+    background: var(--footer-primary);
+    color: var(--footer-text);
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    margin-top: 80px;
+    position: relative;
+}
+
+/* Footer Top Section */
+.footer-top {
+    background: var(--footer-secondary);
+    padding: 40px 0;
+    border-bottom: 1px solid var(--footer-border);
+}
+
+.footer-top-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 40px;
+}
+
+/* Brand Section */
+.footer-brand {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.footer-brand h3 {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--footer-text);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.footer-brand h3 span {
+    color: var(--footer-accent);
+}
+
+.footer-brand p {
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--footer-text-light);
+    margin: 0;
+    max-width: 400px;
+}
+
+.footer-social {
+    display: flex;
+    gap: 12px;
+}
+
+.social-link {
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--footer-text);
+    text-decoration: none;
+    transition: var(--transition-footer);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.social-link:hover {
+    background: var(--footer-accent);
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(194, 162, 77, 0.22);
+}
+
+.social-link i {
+    font-size: 18px;
+}
+
+/* Footer Sections */
+.footer-section {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.footer-section h4 {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--footer-text);
+    margin: 0;
+    position: relative;
+    padding-bottom: 10px;
+}
+
+.footer-section h4::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 40px;
+    height: 2px;
+    background: var(--footer-accent);
+}
+
+.footer-links {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-links li {
+    position: relative;
+}
+
+.footer-links a {
+    color: var(--footer-text-light);
+    text-decoration: none;
+    font-size: 15px;
+    transition: var(--transition-footer);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0;
+}
+
+.footer-links a:hover {
+    color: var(--footer-accent);
+    transform: translateX(5px);
+}
+
+.footer-links a i {
+    font-size: 12px;
+    width: 16px;
+    text-align: center;
+    opacity: 0.7;
+}
+
+.footer-links a:hover i {
+    opacity: 1;
+}
+
+/* Footer Middle Section */
+.footer-middle {
+    background: var(--footer-primary);
+    padding: 30px 0;
+    border-bottom: 1px solid var(--footer-border);
+}
+
+.footer-middle-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 40px;
+    align-items: center;
+}
+
+/* Payment Methods */
+.payment-section h5 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--footer-text);
+    margin: 0 0 15px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.payment-icons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.payment-icon {
+    width: 40px;
+    height: 25px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--footer-text);
+    font-size: 16px;
+    transition: var(--transition-footer);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.payment-icon:hover {
+    background: var(--footer-accent);
+    transform: translateY(-2px);
+}
+
+/* Trust Badges */
+.trust-section h5 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--footer-text);
+    margin: 0 0 15px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.trust-badges {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.trust-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: var(--transition-footer);
+}
+
+.trust-badge:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+}
+
+.trust-badge i {
+    color: var(--footer-accent);
+    font-size: 14px;
+}
+
+.trust-badge span {
+    font-size: 12px;
+    color: var(--footer-text-light);
+    font-weight: 500;
+}
+
+/* App Download */
+.app-section h5 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--footer-text);
+    margin: 0 0 15px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.app-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.app-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 15px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    color: var(--footer-text);
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 500;
+    transition: var(--transition-footer);
+}
+
+.app-button:hover {
+    background: var(--footer-accent);
+    color: white;
+    transform: translateY(-2px);
+}
+
+.app-button i {
+    font-size: 16px;
+}
+
+/* Newsletter Section */
+.newsletter-section {
+    background: linear-gradient(135deg, var(--footer-accent) 0%, #23394f 100%);
+    padding: 40px 0;
+    text-align: center;
+}
+
+.newsletter-content {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.newsletter-content h3 {
+    font-size: 28px;
+    font-weight: 700;
+    color: white;
+    margin: 0 0 10px 0;
+}
+
+.newsletter-content p {
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0 0 25px 0;
+}
+
+.newsletter-form {
+    display: flex;
+    gap: 10px;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.newsletter-input {
+    flex: 1;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+    background: rgba(255, 255, 255, 0.9);
+}
+
+.newsletter-button {
+    padding: 12px 25px;
+    background: var(--footer-primary);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-footer);
+    white-space: nowrap;
+}
+
+.newsletter-button:hover {
+    background: var(--footer-secondary);
+    transform: translateY(-2px);
+}
+
+/* Footer Bottom */
+.footer-bottom {
+    background: var(--footer-primary);
+    padding: 25px 0;
+    border-top: 1px solid var(--footer-border);
+}
+
+.footer-bottom-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.copyright {
+    font-size: 14px;
+    color: var(--footer-text-light);
+    margin: 0;
+}
+
+.copyright span {
+    color: var(--footer-accent);
+}
+
+.bottom-links {
+    display: flex;
+    gap: 20px;
+}
+
+.bottom-links a {
+    color: var(--footer-text-light);
+    text-decoration: none;
+    font-size: 13px;
+    transition: var(--transition-footer);
+}
+
+.bottom-links a:hover {
+    color: var(--footer-accent);
+}
+
+/* Back to Top Button */
+.back-to-top {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 50px;
+    height: 50px;
+    background: var(--footer-accent);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-footer);
+    opacity: 0;
+    visibility: hidden;
+    z-index: 1000;
+    box-shadow: var(--shadow-footer);
+}
+
+.back-to-top.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.back-to-top:hover {
+    background: #23394f;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(47, 74, 103, 0.26);
+}
+
+.back-to-top i {
+    font-size: 20px;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .footer-top-content {
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+    }
+    
+    .footer-middle-content {
+        grid-template-columns: 1fr;
+        gap: 30px;
+        text-align: center;
+    }
+    
+    .trust-badges {
+        grid-template-columns: 1fr;
+        max-width: 200px;
+        margin: 0 auto;
+    }
+    
+    .app-buttons {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .footer-top {
+        padding: 30px 0;
+    }
+    
+    .footer-top-content {
+        grid-template-columns: 1fr;
+        gap: 25px;
+        text-align: center;
+    }
+    
+    .footer-brand {
+        align-items: center;
+    }
+    
+    .footer-brand p {
+        max-width: 100%;
+        text-align: center;
+    }
+    
+    .footer-social {
+        justify-content: center;
+    }
+    
+    .footer-section {
+        align-items: center;
+    }
+    
+    .footer-section h4::after {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    
+    .footer-links {
+        align-items: center;
+    }
+    
+    .footer-middle {
+        padding: 25px 0;
+    }
+    
+    .payment-icons {
+        justify-content: center;
+    }
+    
+    .newsletter-form {
+        flex-direction: column;
+        max-width: 300px;
+    }
+    
+    .footer-bottom-content {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+    
+    .bottom-links {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 480px) {
+    .universal-footer {
+        margin-top: 60px;
+    }
+    
+    .footer-top {
+        padding: 25px 0;
+    }
+    
+    .footer-brand h3 {
+        font-size: 24px;
+    }
+    
+    .footer-brand p {
+        font-size: 15px;
+    }
+    
+    .footer-section h4 {
+        font-size: 16px;
+    }
+    
+    .footer-links a {
+        font-size: 14px;
+    }
+    
+    .newsletter-content h3 {
+        font-size: 24px;
+    }
+    
+    .newsletter-content p {
+        font-size: 15px;
+    }
+    
+    .trust-badges {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+    
+    .trust-badge {
+        padding: 6px 10px;
+    }
+    
+    .trust-badge span {
+        font-size: 11px;
+    }
+    
+    .app-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .app-button {
+        width: 200px;
+        justify-content: center;
+    }
+    
+    .payment-icons {
+        gap: 8px;
+    }
+    
+    .payment-icon {
+        width: 35px;
+        height: 22px;
+        font-size: 14px;
+    }
+    
+    .back-to-top {
+        width: 45px;
+        height: 45px;
+        bottom: 20px;
+        right: 20px;
+    }
+    
+    .back-to-top i {
+        font-size: 18px;
+    }
+}
+
+/* Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Utility Classes */
+.footer-animate {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.footer-animate-delay-1 {
+    animation-delay: 0.1s;
+}
+
+.footer-animate-delay-2 {
+    animation-delay: 0.2s;
+}
+
+.footer-animate-delay-3 {
+    animation-delay: 0.3s;
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    .universal-footer {
+        background: var(--footer-primary);
+    }
+}

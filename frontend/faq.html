@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FAQ - Navodaya Trendz</title>
+  <meta name="description" content="Frequently asked questions for Navodaya Trendz" />
+
+  <link rel="stylesheet" href="ui-enhanced.css" />
+  <link rel="stylesheet" href="theme-switch.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <style>
+    body { background: var(--bg-secondary, #f8fafc); }
+
+    .hero {
+      padding: 2rem 0;
+      background:
+        radial-gradient(1200px 400px at 20% 0%, rgba(255, 107, 53, 0.18), transparent 60%),
+        radial-gradient(900px 350px at 80% 10%, rgba(58, 134, 255, 0.14), transparent 60%);
+    }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
+
+    .hero-card {
+      background: var(--bg-primary, #fff);
+      border-radius: var(--radius-2xl, 1.5rem);
+      padding: 2rem;
+      box-shadow: var(--shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1));
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    h1 { margin: 0; color: var(--text-primary, #1e293b); }
+    .hero-card p { margin: 0.5rem 0 0; color: var(--text-secondary, #64748b); font-weight: 600; }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      border-radius: 9999px;
+      border: 1px solid var(--border-color, #e2e8f0);
+      background: var(--gray-50, #f8fafc);
+      font-weight: 800;
+      color: var(--text-primary, #1e293b);
+      font-size: 0.85rem;
+    }
+
+    .body { padding: 1.25rem 0 2rem; }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 1.25rem;
+      align-items: start;
+    }
+
+    .faq-list { display: grid; gap: 0.75rem; }
+
+    .faq-item {
+      width: 100%;
+      text-align: left;
+      border: 1px solid var(--border-color, #e2e8f0);
+      background: var(--bg-primary, #fff);
+      border-radius: var(--radius-2xl, 1.5rem);
+      padding: 1rem 1.25rem;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .faq-item:hover {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md, 0 4px 6px -1px rgb(0 0 0 / 0.1));
+      border-color: rgba(255, 107, 53, 0.35);
+    }
+
+    .faq-item.open {
+      background: rgba(255, 107, 53, 0.05);
+      border-color: rgba(255, 107, 53, 0.35);
+    }
+
+    .faq-q {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      color: var(--text-primary, #1e293b);
+      font-weight: 900;
+    }
+
+    .faq-a { margin-top: 0.75rem; color: var(--text-secondary, #64748b); font-weight: 600; line-height: 1.6; }
+
+    .side {
+      position: sticky;
+      top: 110px;
+      display: grid;
+      gap: 1rem;
+    }
+
+    .side-card {
+      background: var(--bg-primary, #fff);
+      border-radius: var(--radius-2xl, 1.5rem);
+      padding: 1.5rem;
+      border: 1px solid var(--border-color, #e2e8f0);
+      box-shadow: var(--shadow-md, 0 4px 6px -1px rgb(0 0 0 / 0.1));
+    }
+
+    .side-card h3 { margin: 0; color: var(--text-primary, #1e293b); }
+    .side-card p { margin: 0.5rem 0 1rem; color: var(--text-secondary, #64748b); font-weight: 600; }
+
+    .btn-primary, .btn-secondary {
+      border: none;
+      border-radius: var(--radius-lg, 0.75rem);
+      font-weight: 800;
+      cursor: pointer;
+      padding: 0.75rem 1rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all var(--transition-fast);
+      text-decoration: none;
+    }
+
+    .btn-primary { background: var(--gradient-primary, linear-gradient(135deg, #ff6b35, #e55a2b)); color: #fff; }
+    .btn-secondary { background: var(--gray-200, #e2e8f0); color: var(--text-primary, #1e293b); }
+
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: var(--shadow-md, 0 4px 6px -1px rgb(0 0 0 / 0.1)); }
+    .btn-secondary:hover { background: var(--gray-300, #cbd5e1); }
+
+    .actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+    @media (max-width: 1024px) {
+      .layout { grid-template-columns: 1fr; }
+      .side { position: static; }
+    }
+  </style>
+</head>
+<body>
+  <header class="header" id="header">
+    <nav class="nav container">
+      <a href="index.html" class="logo"><i class="fas fa-graduation-cap"></i> Navodaya Trendz</a>
+      <ul class="nav-links">
+        <li><a href="index.html" class="nav-link">Home</a></li>
+        <li><a href="checkout-dashboard.html" class="nav-link">Checkout</a></li>
+        <li><a href="user-panel.html" class="nav-link">Account</a></li>
+        <li><a href="faq.html" class="nav-link active">FAQ</a></li>
+        <li><a href="feedback.html" class="nav-link">Feedback</a></li>
+      </ul>
+      <div class="search-container">
+        <input type="text" class="search-bar" placeholder="Search products..." />
+        <i class="fas fa-search search-icon"></i>
+      </div>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="container">
+      <div class="hero-card">
+        <div>
+          <h1>FAQ</h1>
+          <p>Quick answers to common questions about orders, payments, tracking and support.</p>
+        </div>
+        <div class="actions">
+          <span class="pill"><i class="fas fa-truck"></i> Delivery</span>
+          <span class="pill"><i class="fas fa-credit-card"></i> Payments</span>
+          <span class="pill"><i class="fas fa-headset"></i> Support</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="body">
+    <div class="container">
+      <div class="layout">
+        <div class="faq-list" id="faq-list"></div>
+
+        <aside class="side">
+          <div class="side-card">
+            <h3>Still need help?</h3>
+            <p>Reach out and we’ll help you quickly.</p>
+            <div class="actions">
+              <a class="btn-secondary" href="tel:+9118001234567"><i class="fas fa-phone"></i> Call</a>
+              <a class="btn-secondary" href="mailto:support@navodayatrendz.com?subject=FAQ%20Help"><i class="fas fa-envelope"></i> Email</a>
+              <a class="btn-primary" href="https://wa.me/919284490206?text=Hi%2C%20I%20need%20help%20with%20my%20order"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+            </div>
+          </div>
+
+          <div class="side-card">
+            <h3>Bulk Orders</h3>
+            <p>Ordering for alumni meets? Submit your requirements here.</p>
+            <a class="btn-primary" href="bulk-order.html"><i class="fas fa-users"></i> Bulk Order</a>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <script src="theme-switch.js"></script>
+  <script>
+    const faqs = [
+      { q: 'How do I place an order?', a: 'Browse products, add items to cart, then go to Payment to complete your order.' },
+      { q: 'What payment methods are supported?', a: 'We support UPI, Debit/Credit Cards, Net Banking, Wallets, and Cash on Delivery (where available).' },
+      { q: 'How can I track my order?', a: 'Go to Account → My Orders and click Track, or open the Order Tracking page with your order ID.' },
+      { q: 'How long does delivery take?', a: 'Delivery time depends on your location. Typical delivery is 3–7 business days after shipping.' },
+      { q: 'Can I change my delivery address after placing an order?', a: 'If the order is not shipped yet, you can request an address change by contacting support.' },
+      { q: 'How do I return or exchange a product?', a: 'For returns/exchanges, contact support with your order ID. We will guide you through the process.' },
+      { q: 'Do you offer bulk orders for alumni meets?', a: 'Yes. Use the Bulk Order page to submit quantity and customization requirements.' },
+      { q: 'How do I contact support?', a: 'You can call, email, or WhatsApp from the Support section in Account or Order Tracking pages.' }
+    ];
+
+    const list = document.getElementById('faq-list');
+    let openIndex = 0;
+
+    function render() {
+      list.innerHTML = '';
+      faqs.forEach((item, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'faq-item' + (idx === openIndex ? ' open' : '');
+        btn.type = 'button';
+
+        const q = document.createElement('div');
+        q.className = 'faq-q';
+        q.innerHTML = `<span>${item.q}</span><span><i class="fas ${idx === openIndex ? 'fa-chevron-up' : 'fa-chevron-down'}"></i></span>`;
+        btn.appendChild(q);
+
+        if (idx === openIndex) {
+          const a = document.createElement('div');
+          a.className = 'faq-a';
+          a.textContent = item.a;
+          btn.appendChild(a);
+        }
+
+        btn.addEventListener('click', () => {
+          openIndex = (openIndex === idx ? -1 : idx);
+          render();
+        });
+
+        list.appendChild(btn);
+      });
+    }
+
+    render();
+  </script>
+</body>
+</html>

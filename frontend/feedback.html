@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Feedback - Navodaya Trendz</title>
+  <meta name="description" content="Share your feedback for Navodaya Trendz" />
+
+  <link rel="stylesheet" href="ui-enhanced.css" />
+  <link rel="stylesheet" href="theme-switch.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <style>
+    body { background: var(--bg-secondary, #f8fafc); }
+
+    .hero {
+      padding: 2rem 0;
+      background:
+        radial-gradient(1200px 400px at 20% 0%, rgba(255, 107, 53, 0.18), transparent 60%),
+        radial-gradient(900px 350px at 80% 10%, rgba(58, 134, 255, 0.14), transparent 60%);
+    }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
+
+    .hero-card {
+      background: var(--bg-primary, #fff);
+      border-radius: var(--radius-2xl, 1.5rem);
+      padding: 2rem;
+      box-shadow: var(--shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1));
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    h1 { margin: 0; color: var(--text-primary, #1e293b); }
+    .hero-card p { margin: 0.5rem 0 0; color: var(--text-secondary, #64748b); font-weight: 600; }
+
+    .hero-mini {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+
+    .mini {
+      border: 1px solid var(--border-color, #e2e8f0);
+      background: var(--gray-50, #f8fafc);
+      border-radius: var(--radius-xl, 1rem);
+      padding: 0.9rem;
+    }
+
+    .mini-title { color: var(--text-secondary, #64748b); font-weight: 800; font-size: 0.8rem; }
+    .mini-link { color: var(--text-primary, #1e293b); font-weight: 900; text-decoration: none; }
+
+    .body { padding: 1.25rem 0 2rem; }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 1.25rem;
+      align-items: start;
+    }
+
+    .card {
+      background: var(--bg-primary, #fff);
+      border-radius: var(--radius-2xl, 1.5rem);
+      padding: 1.5rem;
+      border: 1px solid var(--border-color, #e2e8f0);
+      box-shadow: var(--shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1));
+    }
+
+    .muted { color: var(--text-secondary, #64748b); font-weight: 600; margin: 0.25rem 0 1rem; }
+
+    .stars {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      margin: 0.75rem 0 1.25rem;
+    }
+
+    .star {
+      width: 42px;
+      height: 42px;
+      border-radius: 0.9rem;
+      border: 1px solid var(--border-color, #e2e8f0);
+      background: var(--gray-50, #f8fafc);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted, #94a3b8);
+    }
+
+    .star:hover { transform: translateY(-1px); border-color: rgba(255, 107, 53, 0.35); }
+
+    .star.on {
+      background: rgba(255, 107, 53, 0.12);
+      color: var(--primary-color, #ff6b35);
+      border-color: rgba(255, 107, 53, 0.35);
+    }
+
+    .rating-text { margin-left: 0.5rem; font-weight: 900; color: var(--text-primary, #1e293b); }
+
+    .form { display: grid; gap: 1rem; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+
+    .field { display: grid; gap: 0.35rem; }
+
+    label { font-weight: 900; color: var(--text-primary, #1e293b); font-size: 0.9rem; }
+
+    input, select, textarea {
+      border: 1px solid var(--border-color, #e2e8f0);
+      background: var(--gray-50, #f8fafc);
+      border-radius: var(--radius-xl, 1rem);
+      padding: 0.85rem 0.95rem;
+      outline: none;
+      font-weight: 600;
+      color: var(--text-primary, #1e293b);
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: rgba(255, 107, 53, 0.45);
+      box-shadow: 0 0 0 4px rgba(255, 107, 53, 0.12);
+    }
+
+    .actions { display: flex; gap: 0.75rem; justify-content: flex-end; flex-wrap: wrap; }
+
+    .btn-primary, .btn-secondary {
+      border: none;
+      border-radius: var(--radius-lg, 0.75rem);
+      font-weight: 900;
+      cursor: pointer;
+      padding: 0.85rem 1.15rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: all var(--transition-fast);
+      text-decoration: none;
+    }
+
+    .btn-primary { background: var(--gradient-primary, linear-gradient(135deg, #ff6b35, #e55a2b)); color: #fff; }
+    .btn-secondary { background: var(--gray-200, #e2e8f0); color: var(--text-primary, #1e293b); }
+
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: var(--shadow-md, 0 4px 6px -1px rgb(0 0 0 / 0.1)); }
+    .btn-secondary:hover { background: var(--gray-300, #cbd5e1); }
+
+    .btn-primary:disabled { opacity: 0.75; cursor: not-allowed; transform: none; }
+
+    .side {
+      position: sticky;
+      top: 110px;
+      display: grid;
+      gap: 1rem;
+    }
+
+    .side-card {
+      background: var(--bg-primary, #fff);
+      border-radius: var(--radius-2xl, 1.5rem);
+      padding: 1.5rem;
+      border: 1px solid var(--border-color, #e2e8f0);
+      box-shadow: var(--shadow-md, 0 4px 6px -1px rgb(0 0 0 / 0.1));
+    }
+
+    .side-card h3 { margin: 0; color: var(--text-primary, #1e293b); }
+    .side-card p { margin: 0.5rem 0 1rem; color: var(--text-secondary, #64748b); font-weight: 600; }
+
+    .toast {
+      position: fixed;
+      right: 1rem;
+      bottom: 1rem;
+      background: var(--bg-primary, #fff);
+      border: 1px solid var(--border-color, #e2e8f0);
+      border-radius: 1rem;
+      padding: 0.85rem 1rem;
+      box-shadow: var(--shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1));
+      display: none;
+      max-width: 320px;
+      font-weight: 800;
+      color: var(--text-primary, #1e293b);
+    }
+
+    @media (max-width: 1024px) {
+      .layout { grid-template-columns: 1fr; }
+      .side { position: static; }
+    }
+
+    @media (max-width: 640px) {
+      .grid { grid-template-columns: 1fr; }
+      .hero-mini { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="header" id="header">
+    <nav class="nav container">
+      <a href="index.html" class="logo"><i class="fas fa-graduation-cap"></i> Navodaya Trendz</a>
+      <ul class="nav-links">
+        <li><a href="index.html" class="nav-link">Home</a></li>
+        <li><a href="checkout-dashboard.html" class="nav-link">Checkout</a></li>
+        <li><a href="user-panel.html" class="nav-link">Account</a></li>
+        <li><a href="faq.html" class="nav-link">FAQ</a></li>
+        <li><a href="feedback.html" class="nav-link active">Feedback</a></li>
+      </ul>
+      <div class="search-container">
+        <input type="text" class="search-bar" placeholder="Search products..." />
+        <i class="fas fa-search search-icon"></i>
+      </div>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="container">
+      <div class="hero-card">
+        <div>
+          <h1>Feedback</h1>
+          <p>Help us improve Navodaya Trendz. Share your experience.</p>
+        </div>
+        <div class="hero-mini">
+          <div class="mini">
+            <div class="mini-title">Support</div>
+            <a class="mini-link" href="mailto:support@navodayatrendz.com?subject=Feedback">support@navodayatrendz.com</a>
+          </div>
+          <div class="mini">
+            <div class="mini-title">Call</div>
+            <a class="mini-link" href="tel:+9118001234567">+91 1800-123-4567</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="body">
+    <div class="container">
+      <div class="layout">
+        <div class="card">
+          <h2>Rate your experience</h2>
+          <p class="muted">Select a rating and tell us what went well (or what didn’t).</p>
+
+          <div class="stars" aria-label="Rating">
+            <button type="button" class="star" data-star="1"><i class="fas fa-star"></i></button>
+            <button type="button" class="star" data-star="2"><i class="fas fa-star"></i></button>
+            <button type="button" class="star" data-star="3"><i class="fas fa-star"></i></button>
+            <button type="button" class="star" data-star="4"><i class="fas fa-star"></i></button>
+            <button type="button" class="star" data-star="5"><i class="fas fa-star"></i></button>
+            <span class="rating-text" id="rating-text">Select</span>
+          </div>
+
+          <form class="form" id="feedback-form">
+            <div class="grid">
+              <div class="field">
+                <label>Name</label>
+                <input name="name" placeholder="Your name" />
+              </div>
+              <div class="field">
+                <label>Email</label>
+                <input name="email" placeholder="you@email.com" />
+              </div>
+              <div class="field">
+                <label>Order ID (optional)</label>
+                <input name="orderId" placeholder="ORD2024..." />
+              </div>
+              <div class="field">
+                <label>Topic</label>
+                <select name="topic">
+                  <option value="general">General</option>
+                  <option value="product">Product Quality</option>
+                  <option value="delivery">Delivery</option>
+                  <option value="payment">Payment</option>
+                  <option value="support">Support</option>
+                  <option value="ui">Website UI</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Feedback</label>
+              <textarea name="message" rows="5" placeholder="Write your feedback here..."></textarea>
+            </div>
+
+            <div class="actions">
+              <button class="btn-secondary" type="reset">Reset</button>
+              <button class="btn-primary" type="submit">Submit Feedback</button>
+            </div>
+          </form>
+        </div>
+
+        <aside class="side">
+          <div class="side-card">
+            <h3>Quick help</h3>
+            <p>Check FAQ for common questions.</p>
+            <a class="btn-primary" href="faq.html"><i class="fas fa-question-circle"></i> Open FAQ</a>
+          </div>
+
+          <div class="side-card">
+            <h3>Track an order</h3>
+            <p>If your feedback is about delivery, tracking helps.</p>
+            <a class="btn-secondary" href="user-panel.html"><i class="fas fa-user-circle"></i> Account</a>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="theme-switch.js"></script>
+  <script>
+    const stars = Array.from(document.querySelectorAll('.star'));
+    const ratingText = document.getElementById('rating-text');
+    const toast = document.getElementById('toast');
+    const form = document.getElementById('feedback-form');
+
+    let rating = 0;
+    let hover = 0;
+
+    function renderStars() {
+      const shown = hover || rating;
+      stars.forEach((btn) => {
+        const n = parseInt(btn.getAttribute('data-star'), 10);
+        btn.classList.toggle('on', shown >= n);
+      });
+      ratingText.textContent = shown ? `${shown}/5` : 'Select';
+    }
+
+    stars.forEach((btn) => {
+      const n = parseInt(btn.getAttribute('data-star'), 10);
+      btn.addEventListener('mouseenter', () => { hover = n; renderStars(); });
+      btn.addEventListener('mouseleave', () => { hover = 0; renderStars(); });
+      btn.addEventListener('click', () => { rating = n; renderStars(); });
+    });
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.style.display = 'block';
+      setTimeout(() => { toast.style.display = 'none'; }, 2500);
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const data = new FormData(form);
+      const name = (data.get('name') || '').toString().trim();
+      const email = (data.get('email') || '').toString().trim();
+      const message = (data.get('message') || '').toString().trim();
+
+      if (!name) return showToast('Please enter your name');
+      if (!email) return showToast('Please enter your email');
+      if (!message) return showToast('Please write your feedback');
+      if (!rating) return showToast('Please select a rating');
+
+      form.reset();
+      rating = 0;
+      hover = 0;
+      renderStars();
+      showToast('Thanks! Your feedback has been submitted.');
+    });
+
+    renderStars();
+  </script>
+</body>
+</html>

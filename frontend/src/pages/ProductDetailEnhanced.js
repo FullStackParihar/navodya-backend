@@ -1,0 +1,574 @@
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
+import { useToast } from '../context/ToastContext';
+import ProductCard from '../components/ProductCard';
+import SkeletonLoader from '../components/SkeletonLoader';
+import './TShirtsEnhanced.css';
+
+// Sample product data
+const productData = {
+  1: {
+    id: 1,
+    name: 'JNV Classic T-Shirt Premium Edition',
+    description: 'Experience the ultimate comfort with our premium JNV Classic T-Shirt. Made from 100% organic cotton with a perfect blend of style and comfort. Features our iconic JNV logo with premium embroidery.',
+    price: 599,
+    originalPrice: 899,
+    image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&h=600&fit=crop',
+    badge: 'Premium',
+    reviews: 1245,
+    rating: 4.7,
+    category: 'T-Shirts',
+    sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
+    colors: ['Black', 'White', 'Navy', 'Gray', 'Maroon', 'Forest Green'],
+    inStock: true,
+    stockCount: 156,
+    features: [
+      '100% Premium Cotton',
+      'Reinforced Stitching',
+      'Pre-shrunk Fabric',
+      'Tag-free Label',
+      'Machine Washable',
+      'Eco-friendly Dyes'
+    ],
+    specifications: {
+      material: '100% Organic Cotton',
+      weight: '180 GSM',
+      fit: 'Regular Fit',
+      neckline: 'Round Neck',
+      sleeve: 'Short Sleeve',
+      care: 'Machine Wash Cold',
+      origin: 'Made in India'
+    },
+    images: [
+      'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&h=600&fit=crop&auto=format&h=500',
+      'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&h=600&fit=crop&auto=format&w=400'
+    ]
+  }
+};
+
+// Related products
+const relatedProducts = [
+  {
+    id: 2,
+    name: 'JNV Premium Hoodie',
+    description: 'Premium fleece hoodie with JNV logo',
+    price: 899,
+    originalPrice: 1299,
+    image: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=300&h=400&fit=crop',
+    badge: 'Hot',
+    reviews: 892,
+    rating: 4.6
+  },
+  {
+    id: 3,
+    name: 'JNV Classic Cap',
+    description: 'Adjustable cap with embroidered logo',
+    price: 299,
+    originalPrice: 399,
+    image: 'https://images.unsplash.com/photo-1513519245088-0e7839c3c889?w=300&h=400&fit=crop',
+    badge: 'New',
+    reviews: 456,
+    rating: 4.5
+  },
+  {
+    id: 4,
+    name: 'JNV Sports Jersey',
+    description: 'Performance jersey for sports activities',
+    price: 749,
+    originalPrice: 999,
+    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=300&h=400&fit=crop',
+    badge: 'Limited',
+    reviews: 623,
+    rating: 4.8
+  }
+];
+
+const ProductDetailEnhanced = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { addToCart } = useCart();
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const { success, error } = useToast();
+  
+  const [product, setProduct] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [selectedSize, setSelectedSize] = useState('');
+  const [selectedColor, setSelectedColor] = useState('');
+  const [quantity, setQuantity] = useState(1);
+  const [selectedImage, setSelectedImage] = useState(0);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const [activeTab, setActiveTab] = useState('description');
+
+  useEffect(() => {
+    // Simulate loading product data
+    const timer = setTimeout(() => {
+      const productInfo = productData[id];
+      if (productInfo) {
+        setProduct(productInfo);
+        setSelectedSize(productInfo.sizes[0]);
+        setSelectedColor(productInfo.colors[0]);
+      }
+      setIsLoading(false);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [id]);
+
+  const handleAddToCart = () => {
+    if (!selectedSize) {
+      error('Please select a size');
+      return;
+    }
+    
+    setIsAddingToCart(true);
+    setTimeout(() => {
+      const productToAdd = {
+        ...product,
+        selectedSize,
+        selectedColor,
+        quantity
+      };
+      addToCart(productToAdd);
+      success(`${product.name} added to cart!`);
+      setIsAddingToCart(false);
+    }, 500);
+  };
+
+  const handleWishlistToggle = () => {
+    if (isInWishlist(product.id)) {
+      removeFromWishlist(product.id);
+      error(`${product.name} removed from wishlist`);
+    } else {
+      addToWishlist(product);
+      success(`${product.name} added to wishlist!`);
+    }
+  };
+
+  const handleBuyNow = () => {
+    if (!selectedSize) {
+      error('Please select a size');
+      return;
+    }
+    
+    const productToAdd = {
+      ...product,
+      selectedSize,
+      selectedColor,
+      quantity
+    };
+    addToCart(productToAdd);
+    navigate('/cart');
+  };
+
+  const renderStars = (rating) => {
+    const stars = [];
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating % 1 !== 0;
+    
+    for (let i = 0; i < fullStars; i++) {
+      stars.push(<i key={i} className="fas fa-star" style={{ color: 'var(--amazon-orange)' }}></i>);
+    }
+    
+    if (hasHalfStar) {
+      stars.push(<i key="half" className="fas fa-star-half-alt" style={{ color: 'var(--amazon-orange)' }}></i>);
+    }
+    
+    const emptyStars = 5 - Math.ceil(rating);
+    for (let i = 0; i < emptyStars; i++) {
+      stars.push(<i key={`empty-${i}`} className="far fa-star" style={{ color: '#ddd' }}></i>);
+    }
+    
+    return stars;
+  };
+
+  if (isLoading) {
+    return (
+      <div className="product-detail-page">
+        <div className="container">
+          <div className="product-detail-layout">
+            <div className="product-images-section">
+              <SkeletonLoader type="product" count={1} />
+            </div>
+            <div className="product-info-section">
+              <SkeletonLoader type="product" count={3} />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!product) {
+    return (
+      <div className="product-detail-page">
+        <div className="container">
+          <div className="product-not-found">
+            <i className="fas fa-exclamation-triangle"></i>
+            <h2>Product Not Found</h2>
+            <p>The product you're looking for doesn't exist or has been removed.</p>
+            <button className="btn-primary" onClick={() => navigate('/tshirts')}>
+              Continue Shopping
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="product-detail-page">
+      <div className="container">
+        {/* Breadcrumb */}
+        <nav className="breadcrumb animate-fadeIn">
+          <a href="/">Home</a>
+          <span className="separator">/</span>
+          <a href="/tshirts">T-Shirts</a>
+          <span className="separator">/</span>
+          <span className="current">{product.name}</span>
+        </nav>
+
+        <div className="product-detail-layout">
+          {/* Product Images */}
+          <div className="product-images-section animate-slideInLeft">
+            <div className="main-image-container">
+              <img 
+                src={product.images[selectedImage]} 
+                alt={product.name}
+                className="main-image"
+              />
+              {product.badge && (
+                <div className="product-badge-detail">{product.badge}</div>
+              )}
+            </div>
+            
+            <div className="thumbnail-container">
+              {product.images.map((image, index) => (
+                <div 
+                  key={index}
+                  className={`thumbnail ${selectedImage === index ? 'active' : ''}`}
+                  onClick={() => setSelectedImage(index)}
+                >
+                  <img src={image} alt={`${product.name} ${index + 1}`} />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Product Information */}
+          <div className="product-info-section animate-slideInRight">
+            <div className="product-header">
+              <h1 className="product-title">{product.name}</h1>
+              
+              <div className="product-rating-section">
+                <div className="rating-stars">
+                  {renderStars(product.rating)}
+                </div>
+                <span className="rating-text">{product.rating}</span>
+                <span className="reviews-count">({product.reviews} reviews)</span>
+              </div>
+
+              <div className="price-section">
+                <span className="current-price">₹{product.price}</span>
+                {product.originalPrice && (
+                  <span className="original-price">₹{product.originalPrice}</span>
+                )}
+                {product.originalPrice && (
+                  <span className="discount-badge">
+                    {Math.round((1 - product.price / product.originalPrice) * 100)}% OFF
+                  </span>
+                )}
+              </div>
+
+              <div className="stock-status">
+                {product.inStock ? (
+                  <span className="in-stock">
+                    <i className="fas fa-check-circle"></i> In Stock ({product.stockCount} available)
+                  </span>
+                ) : (
+                  <span className="out-of-stock">
+                    <i className="fas fa-times-circle"></i> Out of Stock
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Product Options */}
+            <div className="product-options">
+              <div className="size-selection">
+                <h3>Size</h3>
+                <div className="size-options-detail">
+                  {product.sizes.map(size => (
+                    <button
+                      key={size}
+                      className={`size-option ${selectedSize === size ? 'active' : ''}`}
+                      onClick={() => setSelectedSize(size)}
+                    >
+                      {size}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="color-selection">
+                <h3>Color</h3>
+                <div className="color-options-detail">
+                  {product.colors.map(color => (
+                    <button
+                      key={color}
+                      className={`color-option ${selectedColor === color ? 'active' : ''}`}
+                      onClick={() => setSelectedColor(color)}
+                      style={{ backgroundColor: getColorHex(color) }}
+                      title={color}
+                    >
+                      {selectedColor === color && <i className="fas fa-check"></i>}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="quantity-selection">
+                <h3>Quantity</h3>
+                <div className="quantity-controls-detail">
+                  <button 
+                    className="qty-btn"
+                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                    disabled={quantity <= 1}
+                  >
+                    <i className="fas fa-minus"></i>
+                  </button>
+                  <input 
+                    type="number" 
+                    value={quantity}
+                    onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+                    min="1"
+                    max="10"
+                  />
+                  <button 
+                    className="qty-btn"
+                    onClick={() => setQuantity(Math.min(10, quantity + 1))}
+                    disabled={quantity >= 10}
+                  >
+                    <i className="fas fa-plus"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="action-buttons">
+              <button 
+                className="add-to-cart-btn"
+                onClick={handleAddToCart}
+                disabled={!product.inStock || isAddingToCart}
+              >
+                {isAddingToCart ? (
+                  <i className="fas fa-spinner fa-spin"></i>
+                ) : (
+                  <>
+                    <i className="fas fa-shopping-cart"></i>
+                    Add to Cart
+                  </>
+                )}
+              </button>
+              
+              <button 
+                className="buy-now-btn"
+                onClick={handleBuyNow}
+                disabled={!product.inStock}
+              >
+                <i className="fas fa-bolt"></i>
+                Buy Now
+              </button>
+              
+              <button 
+                className={`wishlist-btn ${isInWishlist(product.id) ? 'active' : ''}`}
+                onClick={handleWishlistToggle}
+              >
+                <i className={isInWishlist(product.id) ? 'fas fa-heart' : 'far fa-heart'}></i>
+              </button>
+            </div>
+
+            {/* Product Features */}
+            <div className="product-features">
+              <h3>Key Features</h3>
+              <ul>
+                {product.features.map((feature, index) => (
+                  <li key={index}>
+                    <i className="fas fa-check"></i>
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Trust Badges */}
+            <div className="trust-badges">
+              <div className="trust-badge">
+                <i className="fas fa-truck"></i>
+                <span>Free Delivery</span>
+              </div>
+              <div className="trust-badge">
+                <i className="fas fa-undo"></i>
+                <span>30-Day Returns</span>
+              </div>
+              <div className="trust-badge">
+                <i className="fas fa-shield-alt"></i>
+                <span>Secure Payment</span>
+              </div>
+              <div className="trust-badge">
+                <i className="fas fa-award"></i>
+                <span>Quality Assured</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Product Details Tabs */}
+        <div className="product-details-tabs animate-fadeIn">
+          <div className="tab-navigation">
+            {['description', 'specifications', 'reviews'].map((tab) => (
+              <button
+                key={tab}
+                className={`tab-nav-btn ${activeTab === tab ? 'active' : ''}`}
+                onClick={() => setActiveTab(tab)}
+              >
+                {tab === 'description' && 'Description'}
+                {tab === 'specifications' && 'Specifications'}
+                {tab === 'reviews' && 'Reviews'}
+              </button>
+            ))}
+          </div>
+
+          <div className="tab-content">
+            {activeTab === 'description' && (
+              <div className="description-content">
+                <p>{product.description}</p>
+                <div className="product-highlights">
+                  <h3>Product Highlights</h3>
+                  <ul>
+                    <li>Premium quality material for maximum comfort</li>
+                    <li>Stylish design perfect for everyday wear</li>
+                    <li>Durable construction that lasts wash after wash</li>
+                    <li>Perfect fit for all body types</li>
+                  </ul>
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'specifications' && (
+              <div className="specifications-content">
+                <h3>Product Specifications</h3>
+                <div className="specs-grid">
+                  {Object.entries(product.specifications).map(([key, value]) => (
+                    <div key={key} className="spec-item">
+                      <span className="spec-label">{key.charAt(0).toUpperCase() + key.slice(1)}:</span>
+                      <span className="spec-value">{value}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'reviews' && (
+              <div className="reviews-content">
+                <h3>Customer Reviews</h3>
+                <div className="reviews-summary">
+                  <div className="overall-rating">
+                    <span className="rating-number">{product.rating}</span>
+                    <div className="rating-stars-large">
+                      {renderStars(product.rating)}
+                    </div>
+                    <span className="total-reviews">{product.reviews} Reviews</span>
+                  </div>
+                </div>
+                
+                <div className="review-filters">
+                  <button className="filter-btn active">All Reviews</button>
+                  <button className="filter-btn">5 Stars</button>
+                  <button className="filter-btn">4 Stars</button>
+                  <button className="filter-btn">3 Stars</button>
+                  <button className="filter-btn">2 Stars</button>
+                  <button className="filter-btn">1 Star</button>
+                </div>
+
+                <div className="reviews-list">
+                  <div className="review-item">
+                    <div className="review-header">
+                      <div className="reviewer-info">
+                        <span className="reviewer-name">Rahul Kumar</span>
+                        <div className="review-rating">
+                          {renderStars(5)}
+                        </div>
+                      </div>
+                      <span className="review-date">2 days ago</span>
+                    </div>
+                    <div className="review-content">
+                      <p>Excellent quality T-shirt! The fabric is very comfortable and the fit is perfect. Highly recommend!</p>
+                    </div>
+                  </div>
+                  
+                  <div className="review-item">
+                    <div className="review-header">
+                      <div className="reviewer-info">
+                        <span className="reviewer-name">Priya Sharma</span>
+                        <div className="review-rating">
+                          {renderStars(4)}
+                        </div>
+                      </div>
+                      <span className="review-date">1 week ago</span>
+                    </div>
+                    <div className="review-content">
+                      <p>Good quality product. The color is exactly as shown in the picture. Slightly expensive but worth it.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Related Products */}
+        <div className="related-products-section animate-slideInUp">
+          <h2>Related Products</h2>
+          <div className="related-products-grid">
+            {relatedProducts.map((relatedProduct, index) => (
+              <div 
+                key={relatedProduct.id} 
+                className="animate-fadeIn"
+                style={{ animationDelay: `${index * 0.1}s` }}
+              >
+                <ProductCard product={relatedProduct} />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Helper function to get color hex values
+const getColorHex = (colorName) => {
+  const colorMap = {
+    'Black': '#000000',
+    'White': '#ffffff',
+    'Navy': '#000080',
+    'Gray': '#808080',
+    'Maroon': '#800000',
+    'Forest Green': '#228B22',
+    'Red': '#ff0000',
+    'Blue': '#0000ff',
+    'Green': '#008000',
+    'Yellow': '#64748b',
+    'Purple': '#800080',
+    'Orange': '#ff6600',
+    'Pink': '#ffc0cb',
+    'Brown': '#964B00',
+    'Cream': '#64748b'
+  };
+  return colorMap[colorName] || '#000000';
+};
+
+export default ProductDetailEnhanced;

@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Account - Navodaya Trendz</title>
+
+  <link rel="stylesheet" href="ui-enhanced.css" />
+  <link rel="stylesheet" href="theme-switch.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <style>
+    body { background: var(--bg-secondary, #f8fafc); }
+
+    .account-hero {
+      padding: 2rem 0;
+      background:
+        radial-gradient(1200px 400px at 20% 0%, rgba(255, 107, 53, 0.18), transparent 60%),
+        radial-gradient(900px 350px at 80% 10%, rgba(58, 134, 255, 0.14), transparent 60%);
+    }
+    .account-hero .wrap {
+      background: var(--bg-primary, #fff);
+      border-radius: var(--radius-2xl, 1.5rem);
+      padding: 2rem;
+      box-shadow: var(--shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1));
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .hero-user { display: flex; gap: 1rem; align-items: center; }
+    .hero-user img { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; }
+    .hero-user h1 { margin: 0; color: var(--text-primary, #1e293b); }
+    .hero-user p { margin: 0.25rem 0 0; color: var(--text-secondary, #64748b); font-weight: 600; }
+
+    .submeta {
+      margin: 0.35rem 0 0;
+      color: var(--text-muted, #94a3b8);
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .hero-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+    .btn-primary, .btn-secondary {
+      border: none;
+      border-radius: var(--radius-lg, 0.75rem);
+      font-weight: 800;
+      cursor: pointer;
+      padding: 0.75rem 1.25rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all var(--transition-fast);
+      text-decoration: none;
+    }
+    .btn-primary { background: var(--gradient-primary, linear-gradient(135deg, #ff6b35, #e55a2b)); color: #fff; }
+    .btn-secondary { background: var(--gray-200, #e2e8f0); color: var(--text-primary, #1e293b); }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: var(--shadow-md, 0 4px 6px -1px rgb(0 0 0 / 0.1)); }
+    .btn-secondary:hover { background: var(--gray-300, #cbd5e1); }
+
+    .account-body { padding: 1rem 0 2rem; }
+    .layout { display: grid; grid-template-columns: 280px 1fr; gap: 1.5rem; align-items: start; }
+
+    .sidebar { position: sticky; top: 110px; display: flex; flex-direction: column; gap: 0.5rem; }
+    .side-link {
+      width: 100%;
+      background: var(--bg-primary, #fff);
+      border: 1px solid var(--border-color, #e2e8f0);
+      border-radius: var(--radius-xl, 1rem);
+      padding: 0.9rem 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: var(--text-primary, #1e293b);
+      font-weight: 800;
+      transition: all var(--transition-fast);
+      text-align: left;
+    }
+    .side-link.active { background: rgba(255, 107, 53, 0.08); border-color: rgba(255, 107, 53, 0.35); }
+
+    .card {
+      background: var(--bg-primary, #fff);
+      border-radius: var(--radius-2xl, 1.5rem);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1));
+      margin-bottom: 1rem;
+    }
+
+    .card h2 { margin: 0 0 1rem; color: var(--text-primary, #1e293b); }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.75rem;
+    }
+
+    .stat {
+      border: 1px solid var(--border-color, #e2e8f0);
+      background: var(--gray-50, #f8fafc);
+      border-radius: var(--radius-xl, 1rem);
+      padding: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .stat-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 1rem;
+      background: rgba(255, 107, 53, 0.12);
+      color: var(--primary-color, #ff6b35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .stat-value {
+      color: var(--text-primary, #1e293b);
+      font-weight: 900;
+      line-height: 1.1;
+    }
+
+    .stat-label {
+      color: var(--text-secondary, #64748b);
+      font-weight: 700;
+      font-size: 0.8rem;
+      margin-top: 0.1rem;
+    }
+
+    .orders { display: grid; gap: 1rem; }
+    .order {
+      background: var(--gray-50, #f8fafc);
+      border: 1px solid var(--border-color, #e2e8f0);
+      border-radius: var(--radius-2xl, 1.5rem);
+      padding: 1.25rem;
+    }
+    .order-top { display: flex; justify-content: space-between; gap: 1rem; align-items: start; }
+    .badge {
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+    .badge.shipped { background: var(--info-color, #3a86ff); color: #fff; }
+    .badge.delivered { background: var(--success-color, #16a34a); color: #fff; }
+    .badge.processing { background: var(--warning-color, #d97706); color: var(--gray-900, #0f172a); }
+
+    .muted { color: var(--text-secondary, #64748b); font-weight: 600; }
+    .strong { color: var(--text-primary, #1e293b); font-weight: 900; }
+
+    .order-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1rem; }
+
+    .support-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+    .support-card {
+      background: var(--gray-50, #f8fafc);
+      border: 1px solid var(--border-color, #e2e8f0);
+      border-radius: var(--radius-2xl, 1.5rem);
+      padding: 1.25rem;
+      cursor: pointer;
+      text-align: left;
+      transition: all var(--transition-fast);
+    }
+    .support-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md, 0 4px 6px -1px rgb(0 0 0 / 0.1)); }
+
+    .support-icon {
+      width: 44px; height: 44px;
+      border-radius: 1rem;
+      background: var(--primary-color, #ff6b35);
+      color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 0.75rem;
+    }
+    .support-icon.whatsapp { background: #25D366; }
+
+    .tab { display: none; }
+    .tab.active { display: block; }
+
+    @media (max-width: 1024px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; display: grid; grid-template-columns: repeat(2, 1fr); }
+      .stats { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 640px) {
+      .sidebar { grid-template-columns: 1fr; }
+      .support-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="header" id="header">
+    <nav class="nav container">
+      <a href="index.html" class="logo"><i class="fas fa-graduation-cap"></i> Navodaya Trendz</a>
+      <ul class="nav-links">
+        <li><a href="index.html" class="nav-link">Home</a></li>
+        <li><a href="checkout-dashboard.html" class="nav-link">Checkout</a></li>
+        <li><a href="order-tracking.html" class="nav-link">Track Order</a></li>
+        <li><a href="user-panel.html" class="nav-link active">Account</a></li>
+      </ul>
+      <div class="search-container">
+        <input type="text" class="search-bar" placeholder="Search products..." />
+        <i class="fas fa-search search-icon"></i>
+      </div>
+    </nav>
+  </header>
+
+  <section class="account-hero">
+    <div class="container">
+      <div class="wrap">
+        <div class="hero-user">
+          <img src="https://i.pravatar.cc/150?img=5" alt="User" />
+          <div>
+            <h1>Rahul Kumar</h1>
+            <p>JNV Delhi • Batch 2018</p>
+            <p class="submeta">rahul.kumar@example.com • +91 98765 43210</p>
+          </div>
+        </div>
+        <div class="hero-actions">
+          <a class="btn-secondary" href="profile.html"><i class="fas fa-user"></i> Profile</a>
+          <a class="btn-primary" href="checkout-dashboard.html"><i class="fas fa-bolt"></i> Checkout Center</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="account-body">
+    <div class="container">
+      <div class="layout">
+        <aside class="sidebar">
+          <button class="side-link active" data-tab="overview"><i class="fas fa-border-all"></i> Overview</button>
+          <button class="side-link" data-tab="orders"><i class="fas fa-shopping-bag"></i> My Orders</button>
+          <button class="side-link" data-tab="addresses"><i class="fas fa-map-marker-alt"></i> Addresses</button>
+          <button class="side-link" data-tab="support"><i class="fas fa-headset"></i> Support</button>
+        </aside>
+
+        <main>
+          <div class="tab active" id="tab-overview">
+            <div class="card">
+              <h2>Stats</h2>
+              <div class="stats">
+                <div class="stat">
+                  <div class="stat-icon"><i class="fas fa-shopping-bag"></i></div>
+                  <div>
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">Orders</div>
+                  </div>
+                </div>
+                <div class="stat">
+                  <div class="stat-icon"><i class="fas fa-shopping-cart"></i></div>
+                  <div>
+                    <div class="stat-value">2</div>
+                    <div class="stat-label">Cart Items</div>
+                  </div>
+                </div>
+                <div class="stat">
+                  <div class="stat-icon"><i class="fas fa-heart"></i></div>
+                  <div>
+                    <div class="stat-value">1</div>
+                    <div class="stat-label">Wishlist</div>
+                  </div>
+                </div>
+                <div class="stat">
+                  <div class="stat-icon"><i class="fas fa-rupee-sign"></i></div>
+                  <div>
+                    <div class="stat-value">₹2197</div>
+                    <div class="stat-label">Cart Total</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <h2>Quick Links</h2>
+              <div class="hero-actions">
+                <a class="btn-primary" href="payment.html"><i class="fas fa-credit-card"></i> Payment</a>
+                <a class="btn-secondary" href="cart.html"><i class="fas fa-shopping-cart"></i> Cart</a>
+                <a class="btn-secondary" href="wishlist.html"><i class="fas fa-heart"></i> Wishlist</a>
+                <a class="btn-secondary" href="bulk-order.html"><i class="fas fa-users"></i> Bulk Order</a>
+              </div>
+            </div>
+
+            <div class="card">
+              <h2>Latest Order</h2>
+              <div class="order">
+                <div class="order-top">
+                  <div>
+                    <div class="strong">Order #ORD20240127001</div>
+                    <div class="muted">2024-01-27 • 3 items • Total ₹2592</div>
+                  </div>
+                  <span class="badge shipped">SHIPPED</span>
+                </div>
+                <div class="order-actions">
+                  <a class="btn-primary" href="order-tracking.html?orderId=ORD20240127001"><i class="fas fa-map-marker-alt"></i> Track</a>
+                  <a class="btn-secondary" href="payment.html"><i class="fas fa-lock"></i> Pay</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab" id="tab-orders">
+            <div class="card">
+              <h2>My Orders</h2>
+              <div class="orders">
+                <div class="order">
+                  <div class="order-top">
+                    <div>
+                      <div class="strong">Order #ORD20240127001</div>
+                      <div class="muted">2024-01-27 • Total ₹2592</div>
+                    </div>
+                    <span class="badge shipped">SHIPPED</span>
+                  </div>
+                  <div class="order-actions">
+                    <a class="btn-primary" href="order-tracking.html?orderId=ORD20240127001"><i class="fas fa-map-marker-alt"></i> Track</a>
+                    <a class="btn-secondary" href="profile.html"><i class="fas fa-eye"></i> Details</a>
+                  </div>
+                </div>
+
+                <div class="order">
+                  <div class="order-top">
+                    <div>
+                      <div class="strong">Order #ORD20240126002</div>
+                      <div class="muted">2024-01-26 • Total ₹1299</div>
+                    </div>
+                    <span class="badge delivered">DELIVERED</span>
+                  </div>
+                  <div class="order-actions">
+                    <a class="btn-primary" href="order-tracking.html?orderId=ORD20240126002"><i class="fas fa-map-marker-alt"></i> Track</a>
+                    <a class="btn-secondary" href="tshirts.html"><i class="fas fa-redo"></i> Reorder</a>
+                  </div>
+                </div>
+
+                <div class="order">
+                  <div class="order-top">
+                    <div>
+                      <div class="strong">Order #ORD20240125003</div>
+                      <div class="muted">2024-01-25 • Total ₹3498</div>
+                    </div>
+                    <span class="badge processing">PROCESSING</span>
+                  </div>
+                  <div class="order-actions">
+                    <a class="btn-primary" href="order-tracking.html?orderId=ORD20240125003"><i class="fas fa-map-marker-alt"></i> Track</a>
+                    <a class="btn-secondary" href="checkout-dashboard.html"><i class="fas fa-bolt"></i> Checkout</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab" id="tab-addresses">
+            <div class="card">
+              <h2>Addresses</h2>
+              <p class="muted">Manage addresses in the checkout (Payment) page.</p>
+              <div class="hero-actions">
+                <a class="btn-primary" href="payment.html"><i class="fas fa-plus"></i> Add Address</a>
+                <a class="btn-secondary" href="profile.html"><i class="fas fa-cog"></i> Manage</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab" id="tab-support">
+            <div class="card">
+              <h2>Support</h2>
+              <div class="support-grid">
+                <button class="support-card" onclick="window.open('tel:+9118001234567')">
+                  <div class="support-icon"><i class="fas fa-phone"></i></div>
+                  <div class="strong">Call Support</div>
+                  <div class="muted">+91 1800-123-4567</div>
+                </button>
+
+                <button class="support-card" onclick="window.open('mailto:support@navodayatrendz.com?subject=Help%20Request')">
+                  <div class="support-icon"><i class="fas fa-envelope"></i></div>
+                  <div class="strong">Email</div>
+                  <div class="muted">support@navodayatrendz.com</div>
+                </button>
+
+                <button class="support-card" onclick="window.open('https://wa.me/919284490206?text=Hi%2C%20I%20need%20help%20with%20my%20order')">
+                  <div class="support-icon whatsapp"><i class="fab fa-whatsapp"></i></div>
+                  <div class="strong">WhatsApp</div>
+                  <div class="muted">Instant chat</div>
+                </button>
+
+                <button class="support-card" onclick="window.location.href='bulk-order.html'">
+                  <div class="support-icon"><i class="fas fa-users"></i></div>
+                  <div class="strong">Bulk Order Help</div>
+                  <div class="muted">Custom requests</div>
+                </button>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  </section>
+
+  <script src="theme-switch.js"></script>
+  <script>
+    const links = document.querySelectorAll('.side-link');
+    const tabs = {
+      overview: document.getElementById('tab-overview'),
+      orders: document.getElementById('tab-orders'),
+      addresses: document.getElementById('tab-addresses'),
+      support: document.getElementById('tab-support')
+    };
+
+    links.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        links.forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        Object.values(tabs).forEach((t) => t.classList.remove('active'));
+        const key = btn.getAttribute('data-tab');
+        tabs[key].classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>
