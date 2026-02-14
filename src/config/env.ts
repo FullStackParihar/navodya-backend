@@ -15,4 +15,9 @@ export const config = {
   stripe: {
     secretKey: process.env.STRIPE_SECRET_KEY || 'sk_test_placeholder',
   },
+  cloudinary: {
+    cloudName: process.env.CLOUDINARY_CLOUD_NAME,
+    apiKey: process.env.CLOUDINARY_API_KEY,
+    apiSecret: process.env.CLOUDINARY_API_SECRET,
+  },
 };

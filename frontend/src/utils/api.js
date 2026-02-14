@@ -20,19 +20,31 @@ export const api = {
   },
 
   post: async (endpoint, data) => {
+    const isFormData = data instanceof FormData;
+    const headers = getHeaders();
+    if (isFormData) {
+      delete headers['Content-Type']; // Let browser set boundary
+    }
+    
     const response = await fetch(`${API_URL}${endpoint}`, {
       method: 'POST',
-      headers: getHeaders(),
-      body: JSON.stringify(data),
+      headers: headers,
+      body: isFormData ? data : JSON.stringify(data),
     });
     return response.json();
   },
 
   patch: async (endpoint, data) => {
+    const isFormData = data instanceof FormData;
+    const headers = getHeaders();
+    if (isFormData) {
+      delete headers['Content-Type'];
+    }
+
     const response = await fetch(`${API_URL}${endpoint}`, {
       method: 'PATCH',
-      headers: getHeaders(),
-      body: JSON.stringify(data),
+      headers: headers,
+      body: isFormData ? data : JSON.stringify(data),
     });
     return response.json();
   },

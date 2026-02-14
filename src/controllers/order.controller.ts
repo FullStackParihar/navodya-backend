@@ -150,6 +150,15 @@ export const createOrder = asyncHandler(async (req: AuthRequest, res: Response) 
         return res.status(200).json(new ApiResponse(200, existingOrder, 'Order already exists'));
     }
 
+    // Map Shipping Address to model schema
+    const mappedAddress = {
+        street: shippingAddress.addressLine || shippingAddress.address || 'N/A',
+        city: shippingAddress.city || 'N/A',
+        state: shippingAddress.state || 'N/A',
+        zip_code: shippingAddress.pincode || shippingAddress.zip_code || 'N/A',
+        country: shippingAddress.country || 'India'
+    };
+
     // Get Cart logic again (Should ideally be atomic or locked)
     const cartItems = await CartItem.find({ user_id: req.userId }).populate('product_id');
     if (!cartItems.length) {
@@ -161,6 +170,7 @@ export const createOrder = asyncHandler(async (req: AuthRequest, res: Response) 
 
     for (const item of cartItems) {
         const product = item.product_id as unknown as IProduct;
+        if (!product) continue;
 
         // Decrement Stock
         const sizeIndex = product.sizes.findIndex(s => s.size === item.size);
@@ -189,7 +199,7 @@ export const createOrder = asyncHandler(async (req: AuthRequest, res: Response) 
     // Re-calculate details
     let discount = 0;
     let couponId: any = undefined;
-    const couponCode = paymentIntentStub.metadata.couponCode;
+    const couponCode = (paymentIntentStub.metadata.couponCode || '').toUpperCase();
 
     if (couponCode) {
         const coupon = await Coupon.findOne({ code: couponCode });
@@ -214,10 +224,10 @@ export const createOrder = asyncHandler(async (req: AuthRequest, res: Response) 
     const order = await Order.create({
         user_id: req.userId,
         items: orderItems,
-        shipping_address: shippingAddress,
+        shipping_address: mappedAddress,
         payment_info: {
             id: paymentIntentId,
-            status: paymentIntentId.startsWith('cod_') ? 'UNPAID' : 'PAID',
+            status: paymentIntentId.startsWith('cod_') ? 'PENDING' : 'PAID',
             method: paymentIntentStub.payment_method_types[0]
         },
         pricing: {

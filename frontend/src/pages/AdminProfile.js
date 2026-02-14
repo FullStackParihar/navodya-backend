@@ -25,6 +25,7 @@ const AdminProfile = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState(null); // 'product', 'category'
   const [formData, setFormData] = useState({});
+  const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
     const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
@@ -89,6 +90,21 @@ const AdminProfile = () => {
     }
   }, [isAdmin, activeTab]);
 
+  // Always fetch categories once when entering Admin Panel
+  useEffect(() => {
+    if (isAdmin) {
+      const fetchCategoriesInitial = async () => {
+        try {
+          const result = await api.get('/categories');
+          if (result.success) setCategories(result.data);
+        } catch (err) {
+          console.error('Error fetching categories initial:', err);
+        }
+      };
+      fetchCategoriesInitial();
+    }
+  }, [isAdmin]);
+
   const handleLogout = () => {
     localStorage.removeItem('isAuthenticated');
     localStorage.removeItem('userEmail');
@@ -108,6 +124,10 @@ const AdminProfile = () => {
       setFormData(mappedItem);
     } else {
       if (type === 'product') {
+        if (categories.length === 0) {
+          error('Please wait for categories to load or create one first.');
+          return;
+        }
         setFormData({
           name: '', slug: '', description: '', price: 0, categoryId: categories[0]?._id || '', subcategory: '', images: [], sizes: [{ size: 'M', stock: 10 }], colors: [{ name: 'Default' }], tags: []
         });
@@ -162,6 +182,35 @@ const AdminProfile = () => {
       }
     } catch (err) {
       error('An error occurred');
+    }
+  };
+  
+  const handleImageUpload = async (e, field = 'images') => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const uploadData = new FormData();
+    uploadData.append('image', file);
+
+    try {
+      setIsUploading(true);
+      const result = await api.post('/upload/upload', uploadData);
+
+      if (result.success) {
+        if (field === 'images') {
+          // Navodaya products use an images array
+          setFormData({ ...formData, images: [result.data.url] }); // Replacing for simplicity if single upload
+        } else {
+          setFormData({ ...formData, [field]: result.data.url });
+        }
+        success('Image uploaded successfully');
+      } else {
+        error(result.message || 'Upload failed');
+      }
+    } catch (err) {
+      error('Error uploading image');
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -543,8 +592,26 @@ const AdminProfile = () => {
                         <input type="text" value={formData.subcategory} onChange={e => setFormData({...formData, subcategory: e.target.value})} />
                       </div>
                       <div className="form-group">
-                        <label>Image URL</label>
-                        <input type="text" value={formData.images?.[0] || ''} onChange={e => setFormData({...formData, images: [e.target.value]})} required />
+                        <label>Product Images</label>
+                        <div className="image-upload-wrapper">
+                          <input 
+                            type="file" 
+                            accept="image/*" 
+                            onChange={e => handleImageUpload(e, 'images')} 
+                            disabled={isUploading}
+                          />
+                          {isUploading && <span className="upload-spinner"><i className="fas fa-spinner fa-spin"></i> Uploading...</span>}
+                        </div>
+                        {formData.images?.length > 0 && (
+                          <div className="image-preview-grid">
+                            {formData.images.map((img, idx) => (
+                              <div key={idx} className="preview-item">
+                                <img src={img} alt="Preview" />
+                                <button type="button" onClick={() => setFormData({...formData, images: formData.images.filter((_, i) => i !== idx)})}>&times;</button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
                       <div className="form-group">
                         <label>Description</label>
@@ -596,8 +663,22 @@ const AdminProfile = () => {
                         <input type="text" value={formData.slug} onChange={e => setFormData({...formData, slug: e.target.value})} required />
                       </div>
                       <div className="form-group">
-                        <label>Image URL</label>
-                        <input type="text" value={formData.image} onChange={e => setFormData({...formData, image: e.target.value})} required />
+                        <label>Category Image</label>
+                        <div className="image-upload-wrapper">
+                          <input 
+                            type="file" 
+                            accept="image/*" 
+                            onChange={e => handleImageUpload(e, 'image')} 
+                            disabled={isUploading}
+                          />
+                          {isUploading && <span className="upload-spinner"><i className="fas fa-spinner fa-spin"></i> Uploading...</span>}
+                        </div>
+                        {formData.image && (
+                          <div className="preview-item single">
+                            <img src={formData.image} alt="Preview" />
+                            <button type="button" onClick={() => setFormData({...formData, image: ''})}>&times;</button>
+                          </div>
+                        )}
                       </div>
                       <div className="form-group">
                         <label>Description</label>
