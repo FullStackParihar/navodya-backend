@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import api from '../utils/api';
 
 const QuickCheckoutModal = ({ 
   isOpen = false, 
@@ -23,16 +24,7 @@ const QuickCheckoutModal = ({
   React.useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const token = localStorage.getItem('token');
-        if (!token) return;
-
-        const response = await fetch('http://localhost:5000/api/auth/profile', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        const result = await response.json();
-        
+        const result = await api.get('/auth/profile');
         if (result.success) {
           const u = result.data.user || result.data || {};
           setFormData(prev => ({

@@ -9,12 +9,26 @@ const AdminProfile = () => {
   const navigate = useNavigate();
   const { success, error, info } = useToast();
   
-  // Check if user is admin (you can customize this logic)
   const [isAdmin, setIsAdmin] = useState(false);
+  const [activeTab, setActiveTab] = useState('dashboard');
+  const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(true);
   
+  // Data states
+  const [products, setProducts] = useState([]);
+  const [orders, setOrders] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [coupons, setCoupons] = useState([]);
+
+  // Modal states
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalType, setModalType] = useState(null); // 'product', 'category'
+  const [formData, setFormData] = useState({});
+
   useEffect(() => {
-    // Check if user is authenticated and is admin
     const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+    const userRole = localStorage.getItem('userRole');
     const userEmail = localStorage.getItem('userEmail');
     
     if (!isAuthenticated) {
@@ -22,405 +36,584 @@ const AdminProfile = () => {
       return;
     }
     
-    // Check if user is admin (you can customize this logic)
-    if (userEmail === 'admin@navodaya.com') {
+    if (userRole === 'admin' || userEmail === 'admin@navodaya.com') {
       setIsAdmin(true);
     } else {
-      // Redirect non-admin users away from admin profile
       navigate('/user-profile');
-      return;
     }
   }, [navigate]);
 
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const result = await api.get('/admin/stats');
-        if (result.success) {
-          setAdminData(prev => ({
-            ...prev,
-            stats: result.data
-          }));
-        }
-      } catch (err) {
-        console.error('Error fetching admin stats:', err);
-      }
-    };
-    if (isAdmin) fetchStats();
-  }, [isAdmin]);
-
-  const [adminData, setAdminData] = useState({
-    firstName: 'Admin',
-    lastName: 'User',
-    email: 'admin@navodaya.com',
-    phone: '+91 98765 43210',
-    role: 'Super Administrator',
-    department: 'System Administration',
-    adminLevel: 'Level 5',
-    joinDate: '2024-01-01',
-    lastLogin: new Date().toISOString(),
-    permissions: [
-      'User Management',
-      'Order Management', 
-      'Content Management',
-      'System Settings',
-      'Analytics Access',
-      'Database Management'
-    ],
-    stats: {
-      totalUsers: 1247,
-      activeUsers: 892,
-      totalOrders: 5432,
-      pendingOrders: 23,
-      revenue: 2847500,
-      conversionRate: 3.2
-    }
-  });
-
-  const [isEditing, setIsEditing] = useState(false);
-  const [editForm, setEditForm] = useState({});
-
-  const handleEdit = () => {
-    setEditForm(adminData);
-    setIsEditing(true);
-  };
-
-  const handleSave = async () => {
+  const fetchData = async (tab) => {
+    setLoading(true);
     try {
-      // Save admin data (in production, save to API/database)
-      Object.keys(editForm).forEach(key => {
-        localStorage.setItem(`admin${key.charAt(0).toUpperCase() + key.slice(1)}`, editForm[key]);
-      });
-      
-      setAdminData(editForm);
-      setIsEditing(false);
-      
-      success('Admin profile updated successfully!');
+      let result;
+      switch (tab) {
+        case 'dashboard':
+          result = await api.get('/admin/stats');
+          if (result.success) setStats(result.data);
+          break;
+        case 'products':
+          result = await api.get('/products');
+          if (result.success) setProducts(result.data.products || result.data);
+          break;
+        case 'orders':
+          result = await api.get('/admin/orders');
+          if (result.success) setOrders(result.data);
+          break;
+        case 'categories':
+          result = await api.get('/categories');
+          if (result.success) setCategories(result.data);
+          break;
+        case 'users':
+          result = await api.get('/admin/users');
+          if (result.success) setUsers(result.data);
+          break;
+        case 'coupons':
+          result = await api.get('/coupons');
+          if (result.success) setCoupons(result.data);
+          break;
+        default:
+          break;
+      }
     } catch (err) {
-      error('Failed to update admin profile');
+      console.error(`Error fetching ${tab}:`, err);
+      error(`Failed to load ${tab}`);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleCancel = () => {
-    setEditForm({});
-    setIsEditing(false);
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setEditForm(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
+  useEffect(() => {
+    if (isAdmin) {
+      fetchData(activeTab);
+    }
+  }, [isAdmin, activeTab]);
 
   const handleLogout = () => {
     localStorage.removeItem('isAuthenticated');
     localStorage.removeItem('userEmail');
+    localStorage.removeItem('userRole');
+    localStorage.removeItem('token');
     navigate('/login');
   };
 
-  const handleUserManagement = () => {
-    info('User Management module coming soon');
+  // CRUD Handlers
+  const handleOpenModal = (type, item = null) => {
+    setModalType(type);
+    if (item) {
+      // Map backend internal keys to frontend form keys if necessary
+      const mappedItem = { ...item };
+      if (item.category_id) mappedItem.categoryId = typeof item.category_id === 'object' ? item.category_id._id : item.category_id;
+      if (item.sale_price) mappedItem.salePrice = item.sale_price;
+      setFormData(mappedItem);
+    } else {
+      if (type === 'product') {
+        setFormData({
+          name: '', slug: '', description: '', price: 0, categoryId: categories[0]?._id || '', subcategory: '', images: [], sizes: [{ size: 'M', stock: 10 }], colors: [{ name: 'Default' }], tags: []
+        });
+      } else if (type === 'category') {
+        setFormData({
+          name: '', slug: '', description: '', image: ''
+        });
+      } else if (type === 'coupon') {
+        setFormData({
+          code: '', type: 'PERCENTAGE', value: 0, minOrderAmount: 0, maxDiscountAmount: 0, validUntil: new Date(Date.now() + 30*24*60*60*1000).toISOString().split('T')[0], usageLimit: 100
+        });
+      }
+    }
+    setIsModalOpen(true);
   };
 
-  const handleOrderManagement = () => {
-    info('Order Management module coming soon');
+  const handleSave = async (e) => {
+    e.preventDefault();
+    try {
+      let result;
+      if (modalType === 'product') {
+        if (formData._id) {
+          result = await api.patch(`/products/${formData._id}`, formData);
+        } else {
+          result = await api.post('/products', formData);
+        }
+      } else if (modalType === 'category') {
+        if (formData._id) {
+          result = await api.patch(`/categories/${formData._id}`, formData);
+        } else {
+          result = await api.post('/categories', formData);
+        }
+      } else if (modalType === 'coupon') {
+        if (formData._id) {
+          // Assuming backend might not have patch for coupons yet, but let's follow the pattern
+          // If not, we can just say "Edit not supported" or similar. 
+          // Actually, let's just implement Post for now if we don't know the Patch route.
+          // Looking at coupon.routes.ts, there is only GET and POST.
+          error('Editing coupons is not supported yet. Please delete and recreate.');
+          return;
+        } else {
+          result = await api.post('/coupons', formData);
+        }
+      }
+      
+      if (result.success) {
+        success('Success!');
+        setIsModalOpen(false);
+        fetchData(activeTab);
+      } else {
+        error(result.message || 'Operation failed');
+      }
+    } catch (err) {
+      error('An error occurred');
+    }
   };
 
-  const handleSystemSettings = () => {
-    info('System Settings module coming soon');
+  const deleteItem = async (type, id) => {
+    if (window.confirm(`Are you sure you want to delete this ${type}?`)) {
+      try {
+        let endpoint = '';
+        if (type === 'product') endpoint = `/products/${id}`;
+        else if (type === 'category') endpoint = `/categories/${id}`;
+        else if (type === 'user') endpoint = `/admin/users/${id}`;
+        else if (type === 'coupon') endpoint = `/coupons/${id}`; // Need to check if this exists
+        
+        const result = await api.delete(endpoint);
+        if (result.success) {
+          success(`${type} deleted`);
+          fetchData(activeTab);
+        } else {
+          error(result.message);
+        }
+      } catch (err) {
+        error('Failed to delete');
+      }
+    }
   };
 
-  const handleAnalytics = () => {
-    info('Advanced Analytics module coming soon');
+  const updateOrderStatus = async (orderId, status) => {
+    try {
+      const result = await api.patch(`/admin/orders/${orderId}/status`, { status });
+      if (result.success) {
+        success('Order status updated');
+        fetchData('orders');
+      }
+    } catch (err) {
+      error('Failed to update order');
+    }
   };
 
-  if (!isAdmin) {
-    return null; // Will redirect in useEffect
-  }
+  const renderDashboard = () => (
+    <div className="stats-dashboard">
+      <div className="section-header">
+        <h2>System Overview</h2>
+        <div className="current-date">{new Date().toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</div>
+      </div>
+      {stats && (
+        <div className="stats-grid">
+          <div className="stat-card primary">
+            <div className="stat-icon"><i className="fas fa-users"></i></div>
+            <div className="stat-content">
+              <div className="stat-number">{stats.totalUsers}</div>
+              <div className="stat-label">Total Users</div>
+            </div>
+          </div>
+          <div className="stat-card success">
+            <div className="stat-icon"><i className="fas fa-shopping-bag"></i></div>
+            <div className="stat-content">
+              <div className="stat-number">{stats.totalOrders}</div>
+              <div className="stat-label">Total Orders</div>
+            </div>
+          </div>
+          <div className="stat-card revenue">
+            <div className="stat-icon"><i className="fas fa-rupee-sign"></i></div>
+            <div className="stat-content">
+              <div className="stat-number">₹{stats.revenue?.toLocaleString()}</div>
+              <div className="stat-label">Total Revenue</div>
+            </div>
+          </div>
+          <div className="stat-card info">
+            <div className="stat-icon"><i className="fas fa-tshirt"></i></div>
+            <div className="stat-content">
+              <div className="stat-number">{stats.totalProducts}</div>
+              <div className="stat-label">Products</div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
+  const renderProducts = () => (
+    <div className="admin-section">
+      <div className="section-header">
+        <h2>Product Management</h2>
+        <button className="add-btn" onClick={() => handleOpenModal('product')}>
+          <i className="fas fa-plus"></i> Add Product
+        </button>
+      </div>
+      <div className="admin-table-container">
+        <table className="admin-table">
+          <thead>
+            <tr>
+              <th>Image</th>
+              <th>Name</th>
+              <th>Category</th>
+              <th>Price</th>
+              <th>Stock</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {products.map(product => (
+              <tr key={product._id}>
+                <td><img src={product.images[0]} alt={product.name} className="table-img" /></td>
+                <td>{product.name}</td>
+                <td>{product.subcategory}</td>
+                <td>
+                  ₹{product.price}
+                  {product.sale_price ? <div style={{fontSize: '11px', color: '#22c55e'}}>Sale: ₹{product.sale_price}</div> : null}
+                </td>
+                <td>{product.sizes?.reduce((acc, s) => acc + s.stock, 0)}</td>
+                <td>
+                  <button className="action-icon edit" onClick={() => handleOpenModal('product', product)}><i className="fas fa-edit"></i></button>
+                  <button className="action-icon delete" onClick={() => deleteItem('product', product._id)}><i className="fas fa-trash"></i></button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+
+  const renderCategories = () => (
+    <div className="admin-section">
+      <div className="section-header">
+        <h2>Category Management</h2>
+        <button className="add-btn" onClick={() => handleOpenModal('category')}>
+          <i className="fas fa-plus"></i> Add Category
+        </button>
+      </div>
+      <div className="admin-table-container">
+        <table className="admin-table">
+          <thead>
+            <tr>
+              <th>Image</th>
+              <th>Name</th>
+              <th>Slug</th>
+              <th>Description</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {categories.map(cat => (
+              <tr key={cat._id}>
+                <td><img src={cat.image} alt={cat.name} className="table-img" /></td>
+                <td>{cat.name}</td>
+                <td>{cat.slug}</td>
+                <td>{cat.description?.substring(0, 50)}...</td>
+                <td>
+                  <button className="action-icon edit" onClick={() => handleOpenModal('category', cat)}><i className="fas fa-edit"></i></button>
+                  <button className="action-icon delete" onClick={() => deleteItem('category', cat._id)}><i className="fas fa-trash"></i></button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+
+  const renderOrders = () => (
+    <div className="admin-section">
+      <div className="section-header">
+        <h2>Order Management</h2>
+      </div>
+      <div className="admin-table-container">
+        <table className="admin-table">
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Customer</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {orders.map(order => (
+              <tr key={order._id}>
+                <td>#{order._id.substring(0, 8)}</td>
+                <td>{order.shipping_address?.firstName} {order.shipping_address?.lastName}</td>
+                <td>₹{order.pricing?.total}</td>
+                <td>
+                  <span className={`status-badge ${order.status.toLowerCase()}`}>
+                    {order.status}
+                  </span>
+                </td>
+                <td>{new Date(order.created_at).toLocaleDateString()}</td>
+                <td>
+                  <select 
+                    value={order.status} 
+                    onChange={(e) => updateOrderStatus(order._id, e.target.value)}
+                    className="status-select"
+                  >
+                    <option value="PROCESSING">Processing</option>
+                    <option value="SHIPPED">Shipped</option>
+                    <option value="DELIVERED">Delivered</option>
+                    <option value="CANCELLED">Cancelled</option>
+                  </select>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+
+  const renderUsers = () => (
+    <div className="admin-section">
+      <div className="section-header">
+        <h2>User Management</h2>
+      </div>
+      <div className="admin-table-container">
+        <table className="admin-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Joined At</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {users.map(user => (
+              <tr key={user._id}>
+                <td>{user.name}</td>
+                <td>{user.email}</td>
+                <td><span className={`role-badge ${user.role}`}>{user.role}</span></td>
+                <td>{new Date(user.created_at).toLocaleDateString()}</td>
+                <td>
+                  <button className="action-icon delete" onClick={() => deleteItem('user', user._id)}><i className="fas fa-trash"></i></button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+
+  if (!isAdmin) return null;
 
   return (
     <PrivateRoute>
-      <div className="admin-profile">
-        <div className="admin-container">
-          {/* Admin Header */}
-          <div className="admin-header">
-            <div className="admin-avatar">
-              <div className="avatar-badge">
-                <img 
-                  src="https://i.pravatar.cc/150?img=5" 
-                  alt="Admin" 
-                  className="avatar-img"
-                />
-                <div className="admin-badge-icon">
-                  <i className="fas fa-crown"></i>
-                </div>
-              </div>
-              <div className="admin-info">
-                <h1 className="admin-title">
-                  {adminData.firstName} {adminData.lastName}
-                  <span className="admin-role">{adminData.role}</span>
-                </h1>
-                <div className="admin-meta">
-                  <span className="department">{adminData.department}</span>
-                  <span className="level">Level {adminData.adminLevel}</span>
-                </div>
-              </div>
-            </div>
-            
-            {!isEditing && (
-              <button className="edit-admin-btn" onClick={handleEdit}>
-                <i className="fas fa-edit"></i>
-                Edit Admin Profile
-              </button>
-            )}
+      <div className="admin-profile-new">
+        <div className="admin-sidebar-new">
+          <div className="sidebar-brand">
+            <i className="fas fa-shield-alt"></i>
+            <span>Navodaya Admin</span>
           </div>
-
-          <div className="admin-content">
-            <div className="admin-layout">
-              {/* Admin Information Panel */}
-              <aside className="admin-sidebar">
-                <div className="admin-card">
-                  <h3>Admin Information</h3>
-                  {isEditing ? (
-                    <div className="edit-form">
-                      <div className="form-row">
-                        <label>Display Name</label>
-                        <input
-                          type="text"
-                          name="firstName"
-                          value={editForm.firstName}
-                          onChange={handleInputChange}
-                          className="form-input"
-                        />
-                      </div>
-                      <div className="form-row">
-                        <label>Email</label>
-                        <input
-                          type="email"
-                          name="email"
-                          value={editForm.email}
-                          onChange={handleInputChange}
-                          className="form-input"
-                          disabled
-                        />
-                      </div>
-                      <div className="form-row">
-                        <label>Phone</label>
-                        <input
-                          type="tel"
-                          name="phone"
-                          value={editForm.phone}
-                          onChange={handleInputChange}
-                          className="form-input"
-                        />
-                      </div>
-                      <div className="form-row">
-                        <label>Department</label>
-                        <input
-                          type="text"
-                          name="department"
-                          value={editForm.department}
-                          onChange={handleInputChange}
-                          className="form-input"
-                        />
-                      </div>
-                      <div className="form-row">
-                        <label>Admin Level</label>
-                        <select
-                          name="adminLevel"
-                          value={editForm.adminLevel}
-                          onChange={handleInputChange}
-                          className="form-input"
-                        >
-                          <option value="1">Level 1 - Basic</option>
-                          <option value="2">Level 2 - Intermediate</option>
-                          <option value="3">Level 3 - Advanced</option>
-                          <option value="4">Level 4 - Expert</option>
-                          <option value="5">Level 5 - Super Admin</option>
-                        </select>
-                      </div>
-                      <div className="edit-actions">
-                        <button className="save-btn" onClick={handleSave}>
-                          <i className="fas fa-save"></i>
-                          Save Changes
-                        </button>
-                        <button className="cancel-btn" onClick={handleCancel}>
-                          <i className="fas fa-times"></i>
-                          Cancel
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="view-mode">
-                      <div className="info-item">
-                        <label>Display Name:</label>
-                        <span>{adminData.firstName} {adminData.lastName}</span>
-                      </div>
-                      <div className="info-item">
-                        <label>Email:</label>
-                        <span>{adminData.email}</span>
-                      </div>
-                      <div className="info-item">
-                        <label>Phone:</label>
-                        <span>{adminData.phone}</span>
-                      </div>
-                      <div className="info-item">
-                        <label>Department:</label>
-                        <span>{adminData.department}</span>
-                      </div>
-                      <div className="info-item">
-                        <label>Admin Level:</label>
-                        <span>Level {adminData.adminLevel}</span>
-                      </div>
-                      <div className="info-item">
-                        <label>Join Date:</label>
-                        <span>{new Date(adminData.joinDate).toLocaleDateString()}</span>
-                      </div>
-                      <div className="info-item">
-                        <label>Last Login:</label>
-                        <span>{new Date(adminData.lastLogin).toLocaleString()}</span>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Quick Actions */}
-                <div className="admin-card">
-                  <h3>Quick Actions</h3>
-                  <div className="action-grid">
-                    <button className="action-btn" onClick={handleUserManagement}>
-                      <i className="fas fa-users"></i>
-                      User Management
-                    </button>
-                    <button className="action-btn" onClick={handleOrderManagement}>
-                      <i className="fas fa-shopping-bag"></i>
-                      Order Management
-                    </button>
-                    <button className="action-btn" onClick={handleSystemSettings}>
-                      <i className="fas fa-cog"></i>
-                      System Settings
-                    </button>
-                    <button className="action-btn" onClick={handleAnalytics}>
-                      <i className="fas fa-chart-bar"></i>
-                      Analytics
-                    </button>
-                  </div>
-                </div>
-
-                {/* Permissions */}
-                <div className="admin-card">
-                  <h3>Permissions</h3>
-                  <div className="permissions-list">
-                    {adminData.permissions.map((permission, index) => (
-                      <div key={index} className="permission-item">
-                        <i className="fas fa-check-circle"></i>
-                        <span>{permission}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </aside>
-
-              {/* Main Content - Statistics Dashboard */}
-              <main className="admin-main">
-                <div className="stats-dashboard">
-                  <h2>System Statistics</h2>
-                  
-                  <div className="stats-grid">
-                    <div className="stat-card primary">
-                      <div className="stat-icon">
-                        <i className="fas fa-users"></i>
-                      </div>
-                      <div className="stat-content">
-                        <div className="stat-number">{adminData.stats.totalUsers}</div>
-                        <div className="stat-label">Total Users</div>
-                      </div>
-                    </div>
-
-                    <div className="stat-card success">
-                      <div className="stat-icon">
-                        <i className="fas fa-user-check"></i>
-                      </div>
-                      <div className="stat-content">
-                        <div className="stat-number">{adminData.stats.activeUsers}</div>
-                        <div className="stat-label">Active Users</div>
-                      </div>
-                    </div>
-
-                    <div className="stat-card info">
-                      <div className="stat-icon">
-                        <i className="fas fa-shopping-bag"></i>
-                      </div>
-                      <div className="stat-content">
-                        <div className="stat-number">{adminData.stats.totalOrders}</div>
-                        <div className="stat-label">Total Orders</div>
-                      </div>
-                    </div>
-
-                    <div className="stat-card warning">
-                      <div className="stat-icon">
-                        <i className="fas fa-clock"></i>
-                      </div>
-                      <div className="stat-content">
-                        <div className="stat-number">{adminData.stats.pendingOrders}</div>
-                        <div className="stat-label">Pending Orders</div>
-                      </div>
-                    </div>
-
-                    <div className="stat-card revenue">
-                      <div className="stat-icon">
-                        <i className="fas fa-rupee-sign"></i>
-                      </div>
-                      <div className="stat-content">
-                        <div className="stat-number">₹{adminData.stats.revenue.toLocaleString()}</div>
-                        <div className="stat-label">Total Revenue</div>
-                      </div>
-                    </div>
-
-                    <div className="stat-card conversion">
-                      <div className="stat-icon">
-                        <i className="fas fa-chart-line"></i>
-                      </div>
-                      <div className="stat-content">
-                        <div className="stat-number">{adminData.stats.conversionRate}%</div>
-                        <div className="stat-label">Conversion Rate</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Recent Activity */}
-                <div className="recent-activity">
-                  <h3>System Status</h3>
-                  <div className="status-grid">
-                    <div className="status-item online">
-                      <div className="status-indicator"></div>
-                      <span>System Online</span>
-                    </div>
-                    <div className="status-item secure">
-                      <div className="status-indicator"></div>
-                      <span>Security Active</span>
-                    </div>
-                    <div className="status-item backup">
-                      <div className="status-indicator"></div>
-                      <span>Last Backup: 2 hours ago</span>
-                    </div>
-                  </div>
-                </div>
-              </main>
-            </div>
-          </div>
-
-          {/* Admin Actions Footer */}
-          <div className="admin-actions-footer">
-            <button className="logout-admin-btn" onClick={handleLogout}>
-              <i className="fas fa-sign-out-alt"></i>
-              Logout Admin Panel
+          <nav className="sidebar-nav">
+            <button className={activeTab === 'dashboard' ? 'active' : ''} onClick={() => setActiveTab('dashboard')}>
+              <i className="fas fa-chart-line"></i> Dashboard
+            </button>
+            <button className={activeTab === 'products' ? 'active' : ''} onClick={() => setActiveTab('products')}>
+              <i className="fas fa-box"></i> Products
+            </button>
+            <button className={activeTab === 'categories' ? 'active' : ''} onClick={() => setActiveTab('categories')}>
+              <i className="fas fa-tags"></i> Categories
+            </button>
+            <button className={activeTab === 'orders' ? 'active' : ''} onClick={() => setActiveTab('orders')}>
+              <i className="fas fa-shopping-cart"></i> Orders
+            </button>
+            <button className={activeTab === 'users' ? 'active' : ''} onClick={() => setActiveTab('users')}>
+              <i className="fas fa-users"></i> Users
+            </button>
+            <button className={activeTab === 'coupons' ? 'active' : ''} onClick={() => setActiveTab('coupons')}>
+              <i className="fas fa-ticket-alt"></i> Coupons
+            </button>
+          </nav>
+          <div className="sidebar-footer">
+            <button className="logout-btn" onClick={handleLogout}>
+              <i className="fas fa-sign-out-alt"></i> Logout
             </button>
           </div>
         </div>
+        
+        <main className="admin-content-new">
+          {loading ? (
+            <div className="admin-loader">
+              <div className="spinner"></div>
+              <p>Loading {activeTab}...</p>
+            </div>
+          ) : (
+            <>
+              {activeTab === 'dashboard' && renderDashboard()}
+              {activeTab === 'products' && renderProducts()}
+              {activeTab === 'categories' && renderCategories()}
+              {activeTab === 'orders' && renderOrders()}
+              {activeTab === 'users' && renderUsers()}
+              {activeTab === 'coupons' && (
+                <div className="admin-section">
+                  <div className="section-header">
+                    <h2>Coupon Management</h2>
+                    <button className="add-btn" onClick={() => handleOpenModal('coupon')}>
+                      <i className="fas fa-plus"></i> Add Coupon
+                    </button>
+                  </div>
+                  <div className="admin-table-container">
+                    <table className="admin-table">
+                      <thead>
+                        <tr>
+                          <th>Code</th>
+                          <th>Type</th>
+                          <th>Value</th>
+                          <th>Usage</th>
+                          <th>Expires</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {coupons.map(coupon => (
+                          <tr key={coupon._id}>
+                            <td><strong>{coupon.code}</strong></td>
+                            <td>{coupon.type}</td>
+                            <td>{coupon.type === 'PERCENTAGE' ? `${coupon.value}%` : `₹${coupon.value}`}</td>
+                            <td>{coupon.usage_count} / {coupon.usage_limit || '∞'}</td>
+                            <td>{new Date(coupon.valid_until).toLocaleDateString()}</td>
+                            <td>
+                               <button className="action-icon delete" onClick={() => deleteItem('coupon', coupon._id)}>
+                                 <i className="fas fa-trash"></i>
+                               </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+        </main>
+
+        {/* CRUD Modal */}
+        {isModalOpen && (
+          <div className="admin-modal-overlay">
+            <div className="admin-modal">
+              <div className="modal-header">
+                <h3>{formData._id ? 'Edit' : 'Add'} {modalType === 'product' ? 'Product' : modalType === 'category' ? 'Category' : 'Coupon'}</h3>
+                <button className="close-modal" onClick={() => setIsModalOpen(false)}>&times;</button>
+              </div>
+              <form onSubmit={handleSave}>
+                <div className="modal-body">
+                  {modalType === 'product' ? (
+                    <>
+                      <div className="form-group">
+                        <label>Name</label>
+                        <input type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} required />
+                      </div>
+                      <div className="form-group">
+                        <label>Slug</label>
+                        <input type="text" value={formData.slug} onChange={e => setFormData({...formData, slug: e.target.value})} required />
+                      </div>
+                      <div className="form-group">
+                        <label>Base Price</label>
+                        <input type="number" value={formData.price} onChange={e => setFormData({...formData, price: Number(e.target.value)})} required />
+                      </div>
+                      <div className="form-group">
+                        <label>Sale Price (Optional)</label>
+                        <input type="number" value={formData.salePrice || ''} onChange={e => setFormData({...formData, salePrice: e.target.value ? Number(e.target.value) : undefined})} />
+                      </div>
+                      <div className="form-group">
+                        <label>Category</label>
+                        <select 
+                          value={formData.categoryId} 
+                          onChange={e => setFormData({...formData, categoryId: e.target.value})}
+                          required
+                        >
+                          <option value="">Select Category</option>
+                          {categories.map(cat => (
+                            <option key={cat._id} value={cat._id}>{cat.name}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="form-group">
+                        <label>Subcategory</label>
+                        <input type="text" value={formData.subcategory} onChange={e => setFormData({...formData, subcategory: e.target.value})} />
+                      </div>
+                      <div className="form-group">
+                        <label>Image URL</label>
+                        <input type="text" value={formData.images?.[0] || ''} onChange={e => setFormData({...formData, images: [e.target.value]})} required />
+                      </div>
+                      <div className="form-group">
+                        <label>Description</label>
+                        <textarea value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} required />
+                      </div>
+                    </>
+                  ) : modalType === 'coupon' ? (
+                    <>
+                      <div className="form-group">
+                        <label>Coupon Code</label>
+                        <input type="text" value={formData.code} onChange={e => setFormData({...formData, code: e.target.value.toUpperCase()})} placeholder="E.g. SUMMER50" required />
+                      </div>
+                      <div className="form-group">
+                        <label>Discount Type</label>
+                        <select value={formData.type} onChange={e => setFormData({...formData, type: e.target.value})}>
+                          <option value="PERCENTAGE">Percentage (%)</option>
+                          <option value="FIXED">Fixed Amount (₹)</option>
+                        </select>
+                      </div>
+                      <div className="form-group">
+                        <label>Discount Value</label>
+                        <input type="number" value={formData.value} onChange={e => setFormData({...formData, value: Number(e.target.value)})} required />
+                      </div>
+                      <div className="form-group">
+                        <label>Min Order Amount (₹)</label>
+                        <input type="number" value={formData.minOrderAmount} onChange={e => setFormData({...formData, minOrderAmount: Number(e.target.value)})} />
+                      </div>
+                      <div className="form-group">
+                        <label>Max Discount Amount (₹)</label>
+                        <input type="number" value={formData.maxDiscountAmount} onChange={e => setFormData({...formData, maxDiscountAmount: Number(e.target.value)})} />
+                      </div>
+                      <div className="form-group">
+                        <label>Usage Limit</label>
+                        <input type="number" value={formData.usageLimit} onChange={e => setFormData({...formData, usageLimit: Number(e.target.value)})} />
+                      </div>
+                      <div className="form-group">
+                        <label>Valid Until</label>
+                        <input type="date" value={formData.validUntil} onChange={e => setFormData({...formData, validUntil: e.target.value})} required />
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="form-group">
+                        <label>Name</label>
+                        <input type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} required />
+                      </div>
+                      <div className="form-group">
+                        <label>Slug</label>
+                        <input type="text" value={formData.slug} onChange={e => setFormData({...formData, slug: e.target.value})} required />
+                      </div>
+                      <div className="form-group">
+                        <label>Image URL</label>
+                        <input type="text" value={formData.image} onChange={e => setFormData({...formData, image: e.target.value})} required />
+                      </div>
+                      <div className="form-group">
+                        <label>Description</label>
+                        <textarea value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} />
+                      </div>
+                    </>
+                  )}
+                </div>
+                <div className="modal-footer">
+                  <button type="button" className="cancel-btn" onClick={() => setIsModalOpen(false)}>Cancel</button>
+                  <button type="submit" className="save-btn">Save {modalType}</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
       </div>
     </PrivateRoute>
   );

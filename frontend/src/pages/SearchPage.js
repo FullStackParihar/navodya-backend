@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import api from '../utils/api';
 import ProductCard from '../components/ProductCard';
 import SkeletonLoader from '../components/SkeletonLoader';
 import './TShirtsEnhanced.css'; // Reuse category styles
@@ -19,15 +20,11 @@ const SearchPage = () => {
         const fetchSearchResults = async () => {
             try {
                 setIsLoading(true);
-                let url = `http://localhost:5000/api/products?search=${encodeURIComponent(query)}`;
+                let endpoint = `/products?search=${encodeURIComponent(query)}`;
                 if (category !== 'All') {
-                    // We might need to map category name to slug if the backend expects slug
-                    // For now, let's assume the query param is handled
-                    url += `&category=${category.toLowerCase().replace(' ', '-')}`;
+                    endpoint += `&category=${category.toLowerCase().replace(' ', '-')}`;
                 }
-                
-                const response = await fetch(url);
-                const result = await response.json();
+                const result = await api.get(endpoint);
 
                 if (result.success) {
                     const mapped = result.data.products.map(p => ({

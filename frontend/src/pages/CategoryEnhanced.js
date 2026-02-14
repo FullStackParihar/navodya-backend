@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import api from '../utils/api';
 import SizeFilter from '../components/SizeFilter';
 import { useCart } from '../context/CartContext';
 import { useToast } from '../context/ToastContext';
@@ -37,9 +38,7 @@ const CategoryEnhanced = ({ category = 'tshirts' }) => {
     const fetchCategoryProducts = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`http://localhost:5000/api/products?category=${category}`);
-        const result = await response.json();
-        
+        const result = await api.get(`/products?category=${category}`);
         if (result.success) {
           const mapped = result.data.products.map(p => ({
             id: p.slug,
@@ -62,7 +61,6 @@ const CategoryEnhanced = ({ category = 'tshirts' }) => {
         setLoading(false);
       }
     };
-
     fetchCategoryProducts();
   }, [category]);
 

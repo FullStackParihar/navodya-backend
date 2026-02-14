@@ -73,3 +73,12 @@ export const getAllCoupons = asyncHandler(async (req: Request, res: Response) =>
     const coupons = await Coupon.find({}).sort({ created_at: -1 });
     res.status(200).json(new ApiResponse(200, coupons, 'Coupons retrieved successfully'));
 });
+
+export const deleteCoupon = asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const coupon = await Coupon.findByIdAndDelete(id);
+    if (!coupon) {
+        throw new ApiError(404, 'Coupon not found');
+    }
+    res.status(200).json(new ApiResponse(200, null, 'Coupon deleted successfully'));
+});

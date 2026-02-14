@@ -12,6 +12,9 @@ const Payment = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [couponCode, setCouponCode] = useState('');
+  const [discountAmount, setDiscountAmount] = useState(0);
+  const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
   
   const [addresses, setAddresses] = useState([]);
 
@@ -105,7 +108,46 @@ const Payment = () => {
   };
 
   const calculateTotal = () => {
-    return calculateSubtotal() + calculateShipping() + calculateTax();
+    const total = calculateSubtotal() + calculateShipping() + calculateTax() - discountAmount;
+    return total > 0 ? total : 0;
+  };
+
+  const handleApplyCoupon = async () => {
+    if (!couponCode) {
+      showToastError('Please enter a coupon code');
+      return;
+    }
+
+    setIsApplyingCoupon(true);
+    try {
+      const result = await api.post('/coupons/validate', {
+        code: couponCode,
+        orderAmount: calculateSubtotal()
+      });
+
+      if (result.success) {
+        setDiscountAmount(result.data.discountAmount);
+        setAppliedCoupon(result.data.couponCode);
+        showToastSuccess(`Coupon applied! You saved ₹${result.data.discountAmount}`);
+      } else {
+        showToastError(result.message || 'Invalid coupon code');
+        setDiscountAmount(0);
+        setAppliedCoupon(null);
+      }
+    } catch (err) {
+      showToastError(err.message || 'Failed to apply coupon');
+      setDiscountAmount(0);
+      setAppliedCoupon(null);
+    } finally {
+      setIsApplyingCoupon(false);
+    }
+  };
+
+  const removeCoupon = () => {
+    setCouponCode('');
+    setDiscountAmount(0);
+    setAppliedCoupon(null);
+    showToastSuccess('Coupon removed');
   };
 
   const validatePincode = (pincode) => {
@@ -143,26 +185,34 @@ const Payment = () => {
     setIsProcessing(true);
 
     try {
-      // 1. Create Payment Intent
-      const intentResult = await api.post('/orders/create-payment-intent', {
-        couponCode,
-        shippingAddress: selectedAddress
-      });
+      let paymentIntentId = '';
+      
+      if (paymentMethod === 'cod') {
+        // For COD, we don't create a Stripe payment intent
+        paymentIntentId = `cod_${Date.now()}`;
+      } else {
+        // 1. Create Payment Intent
+        const intentResult = await api.post('/orders/create-payment-intent', {
+          couponCode,
+          shippingAddress: selectedAddress,
+          paymentMethod // Added to let backend know
+        });
 
-      if (!intentResult.success) {
-        throw new Error(intentResult.message || 'Failed to create payment intent');
+        if (!intentResult.success) {
+          throw new Error(intentResult.message || 'Failed to create payment intent');
+        }
+
+        paymentIntentId = intentResult.data.paymentIntentId;
+
+        // 2. Simulate Payment Confirmation (since it's mock or test mode)
+        await new Promise(resolve => setTimeout(resolve, 2000));
       }
 
-      const { paymentIntentId, isTestMode } = intentResult.data;
-
-      // 2. Simulate Payment Confirmation (since it's mock or test mode)
-      // In a real Stripe integration, you'd use confirmCardPayment here.
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
-      // 3. Create Final Order
       const orderResult = await api.post('/orders/create', {
         paymentIntentId,
-        shippingAddress: selectedAddress
+        shippingAddress: selectedAddress,
+        paymentMethod,
+        couponCode: appliedCoupon || couponCode
       });
 
       if (orderResult.success) {
@@ -458,11 +508,12 @@ const Payment = () => {
                     >
                       {isProcessing ? (
                         <>
-                          <i className="fas fa-spinner fa-spin"></i> Processing Payment...
+                          <i className="fas fa-spinner fa-spin"></i> {paymentMethod === 'cod' ? 'Placing Order...' : 'Processing Payment...'}
                         </>
                       ) : (
                         <>
-                          <i className="fas fa-lock"></i> Pay ₹{calculateTotal()}
+                          <i className={`fas fa-${paymentMethod === 'cod' ? 'check-circle' : 'lock'}`}></i> 
+                          {paymentMethod === 'cod' ? ' Confirm Order' : ` Pay ₹${calculateTotal()}`}
                         </>
                       )}
                     </button>
@@ -502,10 +553,46 @@ const Payment = () => {
                   <span>Tax (18%)</span>
                   <span>₹{calculateTax()}</span>
                 </div>
+                {discountAmount > 0 && (
+                  <div className="price-row discount">
+                    <span>Discount</span>
+                    <span>-₹{discountAmount}</span>
+                  </div>
+                )}
                 <div className="price-row total">
                   <span>Total</span>
                   <span>₹{calculateTotal()}</span>
                 </div>
+              </div>
+
+              <div className="coupon-section">
+                <h4>Have a Coupon?</h4>
+                <div className="coupon-input-wrapper">
+                  <input 
+                    type="text" 
+                    placeholder="Enter coupon code" 
+                    value={couponCode}
+                    onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                    disabled={appliedCoupon}
+                  />
+                  {appliedCoupon ? (
+                    <button className="btn-remove-coupon" onClick={removeCoupon}>Remove</button>
+                  ) : (
+                    <button 
+                      className="btn-apply-coupon" 
+                      onClick={handleApplyCoupon}
+                      disabled={isApplyingCoupon || !couponCode}
+                    >
+                      {isApplyingCoupon ? '...' : 'Apply'}
+                    </button>
+                  )}
+                </div>
+                {appliedCoupon && (
+                  <div className="applied-coupon-info">
+                    <i className="fas fa-check-circle"></i>
+                    <span>Code <strong>{appliedCoupon}</strong> applied!</span>
+                  </div>
+                )}
               </div>
 
               <div className="secure-payment">
@@ -948,6 +1035,68 @@ const Payment = () => {
           justify-content: center;
           gap: 0.5rem;
           color: var(--success-color, #16a34a);
+          font-weight: 600;
+        }
+
+        .coupon-section {
+          background: var(--gray-50, #f8fafc);
+          padding: 1.25rem;
+          border-radius: var(--radius-lg, 0.75rem);
+          margin-bottom: 2rem;
+          border: 1px dashed var(--border-color, #e2e8f0);
+        }
+
+        .coupon-section h4 {
+          margin: 0 0 1rem;
+          font-size: 1rem;
+          color: var(--text-primary, #1e293b);
+        }
+
+        .coupon-input-wrapper {
+          display: flex;
+          gap: 0.5rem;
+        }
+
+        .coupon-input-wrapper input {
+          flex: 1;
+          padding: 0.75rem;
+          border: 1px solid var(--border-color, #e2e8f0);
+          border-radius: var(--radius-md, 0.5rem);
+          font-family: inherit;
+          text-transform: uppercase;
+        }
+
+        .btn-apply-coupon {
+          padding: 0.75rem 1.25rem;
+          background: #232f3e;
+          color: white;
+          border: none;
+          border-radius: var(--radius-md, 0.5rem);
+          font-weight: 600;
+          cursor: pointer;
+        }
+
+        .btn-remove-coupon {
+          padding: 0.75rem 1.25rem;
+          background: #fee2e2;
+          color: #ef4444;
+          border: none;
+          border-radius: var(--radius-md, 0.5rem);
+          font-weight: 600;
+          cursor: pointer;
+        }
+
+        .applied-coupon-info {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          margin-top: 0.75rem;
+          color: #16a34a;
+          font-size: 0.875rem;
+        }
+
+        .price-row.discount {
+          color: #16a34a;
           font-weight: 600;
         }
 

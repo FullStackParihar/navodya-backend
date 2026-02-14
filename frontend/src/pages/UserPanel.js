@@ -1,5 +1,6 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import api from '../utils/api';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { useToast } from '../context/ToastContext';
@@ -25,19 +26,9 @@ const UserPanel = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const token = localStorage.getItem('token');
-        if (!token) return;
-
-        const response = await fetch('http://localhost:5000/api/auth/profile', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        const result = await response.json();
-
+        const result = await api.get('/auth/profile');
         if (result.success && result.data) {
           const u = result.data.user || result.data;
-          
           if (u) {
             const nameParts = (u.name || '').split(' ');
             setAccountData({
@@ -59,7 +50,6 @@ const UserPanel = () => {
         console.error('Error fetching profile:', error);
       }
     };
-
     fetchProfile();
   }, []);
 
@@ -71,16 +61,7 @@ const UserPanel = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const token = localStorage.getItem('token');
-        if (!token) return;
-
-        const response = await fetch('http://localhost:5000/api/orders', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        const result = await response.json();
-        
+        const result = await api.get('/orders');
         if (result.success) {
           const mappedOrders = result.data.map(order => ({
             id: order._id,
@@ -98,7 +79,6 @@ const UserPanel = () => {
         setIsLoadingOrders(false);
       }
     };
-
     fetchOrders();
   }, []);
 

@@ -1,4 +1,5 @@
 import { Response } from 'express';
+import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { AuthRequest } from '../middlewares/auth.middleware.js';
@@ -28,4 +29,43 @@ export const getAdminStats = asyncHandler(async (req: AuthRequest, res: Response
             conversionRate: totalUsers > 0 ? ((totalOrders / totalUsers) * 100).toFixed(1) : 0
         }, 'Admin stats retrieved successfully')
     );
+});
+
+export const getAllOrders = asyncHandler(async (req: AuthRequest, res: Response) => {
+    const orders = await Order.find().sort({ created_at: -1 });
+    res.status(200).json(new ApiResponse(200, orders, 'All orders retrieved successfully'));
+});
+
+export const getAllUsers = asyncHandler(async (req: AuthRequest, res: Response) => {
+    const users = await User.find().select('-password').sort({ created_at: -1 });
+    res.status(200).json(new ApiResponse(200, users, 'All users retrieved successfully'));
+});
+
+export const updateOrderStatus = asyncHandler(async (req: AuthRequest, res: Response) => {
+    const { orderId } = req.params;
+    const { status } = req.body;
+
+    const order = await Order.findByIdAndUpdate(
+        orderId,
+        { status },
+        { new: true }
+    );
+
+    if (!order) {
+        throw new ApiError(404, 'Order not found');
+    }
+
+    res.status(200).json(new ApiResponse(200, order, 'Order status updated successfully'));
+});
+
+export const deleteUser = asyncHandler(async (req: AuthRequest, res: Response) => {
+    const { userId } = req.params;
+
+    const user = await User.findByIdAndDelete(userId);
+
+    if (!user) {
+        throw new ApiError(404, 'User not found');
+    }
+
+    res.status(200).json(new ApiResponse(200, null, 'User deleted successfully'));
 });

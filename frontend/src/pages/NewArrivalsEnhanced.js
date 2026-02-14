@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import api from '../utils/api';
 import ProductCard from '../components/ProductCard';
 import SkeletonLoader from '../components/SkeletonLoader';
 import './TShirtsEnhanced.css';
@@ -23,8 +24,7 @@ const NewArrivalsEnhanced = () => {
     const fetchNewArrivals = async () => {
       setIsLoading(true);
       try {
-        const response = await fetch('http://localhost:5000/api/products');
-        const result = await response.json();
+        const result = await api.get('/products');
         
         if (result.success) {
           // In a real app, we might want to filter by date or tag. 

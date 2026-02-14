@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import api from '../utils/api';
 import ProductCard from '../components/ProductCard';
 import SkeletonLoader from '../components/SkeletonLoader';
 import './TShirtsEnhanced.css';
@@ -22,13 +23,9 @@ const TodayDealsEnhanced = () => {
     const fetchDeals = async () => {
       setIsLoading(true);
       try {
-        const response = await fetch('http://localhost:5000/api/products');
-        const result = await response.json();
-        
+        const result = await api.get('/products');
         if (result.success) {
-          // Filter products that have a sale_price (deals)
           const dealProducts = result.data.products.filter(p => p.sale_price && p.sale_price < p.price);
-          
           const mapped = dealProducts.map(p => ({
             id: p.slug,
             dbId: p._id,
@@ -43,10 +40,10 @@ const TodayDealsEnhanced = () => {
             category: p.category,
             sizes: p.sizes ? p.sizes.map(s => s.size) : [],
             colors: p.colors ? p.colors.map(c => c.name) : [],
-            timeLeft: '12h 00m', // Mocked as backend doesn't have this yet
+            timeLeft: '12h 00m',
             discount: Math.round(((p.price - p.sale_price) / p.price) * 100),
             stockLeft: p.stock || 20,
-            soldCount: (p.review_count || 0) * 5 // Mocked sold count
+            soldCount: (p.review_count || 0) * 5
           }));
           setProducts(mapped);
         }
@@ -56,7 +53,6 @@ const TodayDealsEnhanced = () => {
         setIsLoading(false);
       }
     };
-
     fetchDeals();
   }, []);
 

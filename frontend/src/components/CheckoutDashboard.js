@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import api from '../utils/api';
 import { useCart } from '../context/CartContext';
 import QuickCheckoutModal from './QuickCheckoutModal';
 
@@ -14,22 +15,10 @@ const CheckoutDashboard = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          setIsLoadingOrders(false);
-          return;
-        }
-
-        const response = await fetch('http://localhost:5000/api/orders', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        const result = await response.json();
-        
+        const result = await api.get('/orders');
         if (result.success) {
           const mappedOrders = result.data.map(order => ({
-            id: order._id, // Full DB ID or short ID if backend provides it
+            id: order._id,
             status: order.status.toLowerCase(),
             date: new Date(order.created_at).toLocaleDateString(),
             total: order.pricing.total,
@@ -43,7 +32,6 @@ const CheckoutDashboard = () => {
         setIsLoadingOrders(false);
       }
     };
-
     fetchOrders();
   }, []);
 

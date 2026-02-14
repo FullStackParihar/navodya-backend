@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import api from '../utils/api';
 import ProductCard from '../components/ProductCard';
 import SkeletonLoader from '../components/SkeletonLoader';
 import './TShirtsEnhanced.css';
@@ -20,9 +21,7 @@ const AlumniKits = () => {
     const fetchAlumniKits = async () => {
       setIsLoading(true);
       try {
-        const response = await fetch('http://localhost:5000/api/products?category=alumni-kits');
-        const result = await response.json();
-        
+        const result = await api.get('/products?category=alumni-kits');
         if (result.success) {
           const mapped = result.data.products.map(p => ({
             id: p.slug,
@@ -47,7 +46,6 @@ const AlumniKits = () => {
         setIsLoading(false);
       }
     };
-
     fetchAlumniKits();
   }, []);
 

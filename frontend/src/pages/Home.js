@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import api from '../utils/api';
 import ProductCard from '../components/ProductCard';
 import SkeletonLoader from '../components/SkeletonLoader';
 
@@ -45,8 +46,7 @@ const Home = () => {
     const fetchProducts = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch('http://localhost:5000/api/products');
-        const result = await response.json();
+        const result = await api.get('/products');
         
         if (result.success) {
           // Map backend products to frontend format

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import api from '../utils/api';
 import './Login.css';
 
 const Login = () => {
@@ -60,26 +61,16 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
-      const body = isLogin 
-        ? { email: formData.email, password: formData.password }
-        : { name: formData.name, email: formData.email, password: formData.password };
-
-      const response = await fetch(`http://localhost:5000${endpoint}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(body),
-      });
-
-      const result = await response.json();
+      const result = isLogin 
+        ? await api.post('/auth/login', { email: formData.email, password: formData.password })
+        : await api.post('/auth/register', { name: formData.name, email: formData.email, password: formData.password });
 
       if (result.success) {
         localStorage.setItem('isAuthenticated', 'true');
         localStorage.setItem('token', result.data.token);
         localStorage.setItem('user', JSON.stringify(result.data.user));
         localStorage.setItem('userEmail', result.data.user.email);
+        localStorage.setItem('userRole', result.data.user.role || 'user');
         navigate('/account');
       } else {
         setError(result.message || 'Authentication failed');

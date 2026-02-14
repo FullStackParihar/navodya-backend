@@ -14,7 +14,8 @@ const Header = () => {
   // Check if user is authenticated and is admin
   const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
   const userEmail = localStorage.getItem('userEmail');
-  const isAdmin = isAuthenticated && userEmail === 'admin@navodaya.com';
+  const userRole = localStorage.getItem('userRole');
+  const isAdmin = isAuthenticated && (userRole === 'admin' || userEmail === 'admin@navodaya.com');
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);

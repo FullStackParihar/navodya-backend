@@ -127,16 +127,15 @@ export const createOrder = asyncHandler(async (req: AuthRequest, res: Response) 
         throw new ApiError(400, 'Payment Intent ID is required');
     }
 
-    // Verify Payment Intent Status (Mock Bypass)
+    // Verify Payment Intent Status (Mock/COD Bypass)
     let paymentIntentStub = { status: 'succeeded', metadata: { couponCode: '' } as any, payment_method_types: ['card'] };
 
-    if (paymentIntentId.startsWith('mock_pi_')) {
-        // Bypass Stripe verification for mock orders
-        // Try to find coupon from request metadata if possible, but here we can't easily.
-        // For now, assume no coupon metadata persistence in mock mode unless passed in body, 
-        // but createOrder payload doesn't have couponCode.
-        // We can accept couponCode in body for mock orders if needed, or just ignore for simple test.
-        paymentIntentStub.metadata.couponCode = ''; // Or handle if client sends it
+    if (paymentIntentId.startsWith('mock_pi_') || paymentIntentId.startsWith('cod_')) {
+        // Bypass Stripe verification
+        paymentIntentStub.metadata.couponCode = req.body.couponCode || '';
+        if (paymentIntentId.startsWith('cod_')) {
+            paymentIntentStub.payment_method_types = ['cod'];
+        }
     } else {
         const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
         if (paymentIntent.status !== 'succeeded') {
@@ -218,7 +217,7 @@ export const createOrder = asyncHandler(async (req: AuthRequest, res: Response) 
         shipping_address: shippingAddress,
         payment_info: {
             id: paymentIntentId,
-            status: 'PAID', // confirmed
+            status: paymentIntentId.startsWith('cod_') ? 'UNPAID' : 'PAID',
             method: paymentIntentStub.payment_method_types[0]
         },
         pricing: {

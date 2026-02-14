@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import api from '../utils/api';
 import { useToast } from '../context/ToastContext';
 import './SearchBarAmazon.css';
 
@@ -9,6 +10,7 @@ const SearchBarAmazon = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [allProducts, setAllProducts] = useState([]);
   const navigate = useNavigate();
   const { info } = useToast();
   const searchRef = useRef(null);
@@ -17,29 +19,27 @@ const SearchBarAmazon = () => {
     'All', 'T-Shirts', 'Hoodies', 'Accessories', 'Alumni Kits', 'Customize'
   ];
 
-  // Enhanced product suggestions with more variety
-  const allProducts = React.useMemo(() => [
-    { id: 'jnv-classic-tshirt', name: 'JNV Classic T-Shirt', category: 'T-Shirts', price: 399, badge: 'Bestseller' },
-    { id: 'jnv-alumni-hoodie', name: 'JNV Alumni Hoodie', category: 'Hoodies', price: 799, badge: 'New' },
-    { id: 'jnv-baseball-cap', name: 'JNV Baseball Cap', category: 'Accessories', price: 299 },
-    { id: 'jnv-backpack', name: 'JNV Backpack', category: 'Accessories', price: 899 },
-    { id: 'jnv-polo-tshirt', name: 'JNV Polo T-Shirt', category: 'T-Shirts', price: 499 },
-    { id: 'jnv-sports-tshirt', name: 'JNV Sports T-Shirt', category: 'T-Shirts', price: 349 },
-    { id: 'jnv-batch-tshirt', name: 'JNV Batch T-Shirt', category: 'T-Shirts', price: 399 },
-    { id: 'jnv-alumni-tshirt', name: 'JNV Alumni T-Shirt', category: 'T-Shirts', price: 449 },
-    { id: 'jnv-zip-hoodie', name: 'JNV Zip Hoodie', category: 'Hoodies', price: 899 },
-    { id: 'jnv-pullover-hoodie', name: 'JNV Pullover Hoodie', category: 'Hoodies', price: 799 },
-    { id: 'jnv-sports-jersey', name: 'JNV Sports Jersey', category: 'T-Shirts', price: 549, badge: 'Limited' },
-    { id: 'jnv-track-pants', name: 'JNV Track Pants', category: 'Accessories', price: 449 },
-    { id: 'jnv-water-bottle', name: 'JNV Water Bottle', category: 'Accessories', price: 199 },
-    { id: 'jnv-phone-case', name: 'JNV Phone Case', category: 'Accessories', price: 149 },
-    { id: 'jnv-alumni-kit', name: 'JNV Alumni Kit', category: 'Alumni Kits', price: 1999, badge: 'Premium' },
-    { id: 'jnv-custom-tshirt', name: 'JNV Custom T-Shirt', category: 'Customize', price: 599 },
-    { id: 'jnv-custom-hoodie', name: 'JNV Custom Hoodie', category: 'Customize', price: 999 },
-    { id: 'jnv-graduation-gown', name: 'JNV Graduation Gown', category: 'Alumni Kits', price: 1299 },
-    { id: 'jnv-id-card-holder', name: 'JNV ID Card Holder', category: 'Accessories', price: 99 },
-    { id: 'jnv-notebook-set', name: 'JNV Notebook Set', category: 'Accessories', price: 249 }
-  ], []);
+  useEffect(() => {
+    const fetchAllProducts = async () => {
+      try {
+        const result = await api.get('/products');
+        if (result.success) {
+          const mapped = result.data.products.map(p => ({
+            id: p.slug,
+            name: p.name,
+            category: p.subcategory || p.category,
+            price: p.sale_price || p.price,
+            badge: p.sale_price ? 'Sale' : (p.rating > 4.5 ? 'Bestseller' : ''),
+            image: p.images[0]
+          }));
+          setAllProducts(mapped);
+        }
+      } catch (err) {
+        console.error('Error fetching all products for search:', err);
+      }
+    };
+    fetchAllProducts();
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -60,18 +60,17 @@ const SearchBarAmazon = () => {
           product.name.toLowerCase().includes(query.toLowerCase())
         );
 
-        // Filter by selected category if not "All"
         if (selectedCategory !== 'All') {
-          filtered = filtered.filter(product => product.category === selectedCategory);
+          filtered = filtered.filter(product => product.category.toLowerCase().includes(selectedCategory.toLowerCase()));
         }
 
-        setSuggestions(filtered.slice(0, 6)); // Show more suggestions
+        setSuggestions(filtered.slice(0, 6));
         setIsLoading(false);
       }, 300);
 
       return () => clearTimeout(timeoutId);
     } else {
-      setSuggestions([]);
+      setSuggestions(allProducts.slice(0, 4));
       setIsLoading(false);
     }
   }, [query, selectedCategory, allProducts]);
@@ -177,7 +176,7 @@ const SearchBarAmazon = () => {
                 >
                   <div className="suggestion-image">
                     <img 
-                      src={`https://picsum.photos/seed/${product.id}/40/40.jpg`} 
+                      src={product.image || `https://via.placeholder.com/40x40?text=${product.name.charAt(0)}`} 
                       alt={product.name}
                     />
                   </div>

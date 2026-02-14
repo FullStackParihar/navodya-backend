@@ -113,13 +113,12 @@ export const CartProvider = ({ children }) => {
         const result = await api.get('/cart');
         if (result.success) {
           const mappedItems = result.data.items.map(item => ({
-            id: item.product_id.slug,
-            dbId: item.product_id._id,
+            id: item.products?.slug || item.product_id?.slug || item.id,
+            dbId: item.products?._id || item.product_id?._id || item.product_id,
             cartItemId: item._id,
-            name: item.product_id.name,
-            price: item.product_id.sale_price || item.product_id.price,
-            originalPrice: item.product_id.sale_price ? item.product_id.price : null,
-            image: item.product_id.images[0],
+            name: item.products?.name || item.product_id?.name,
+            price: item.products?.sale_price || item.products?.price || item.product_id?.sale_price || item.product_id?.price || 0,
+            image: item.products?.images?.[0] || item.product_id?.images?.[0],
             quantity: item.quantity,
             selectedSize: item.size,
             selectedColor: item.color
