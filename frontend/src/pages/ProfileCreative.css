@@ -1,7 +1,7 @@
 /* Creative Profile Page Styles */
 .profile-hero {
   position: relative;
-  padding: 80px 0 40px;
+  padding: 160px 0 40px; /* Increased top padding for sticky header */
   overflow: hidden;
 }
 

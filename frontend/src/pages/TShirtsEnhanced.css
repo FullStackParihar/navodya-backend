@@ -1,11 +1,654 @@
-/* Enhanced T-Shirts Page Styles */
+/* T-Shirts Page - Grayish Blue Theme */
+
+/* CSS Variables */
+:root {
+  --tshirts-primary: #1e3a8a;
+  --tshirts-secondary: #3b82f6;
+  --tshirts-accent: #60a5fa;
+  --tshirts-light: #dbeafe;
+  --tshirts-lighter: #eff6ff;
+  --tshirts-dark: #1e293b;
+  --tshirts-darker: #0f172a;
+  --tshirts-gray: #64748b;
+  --tshirts-light-gray: #f1f5f9;
+  --tshirts-medium-gray: #e2e8f0;
+  --tshirts-dark-gray: #475569;
+  --tshirts-gradient: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #60a5fa 100%);
+  --tshirts-hero-gradient: linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%);
+  --tshirts-card-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(241, 245, 249, 0.95) 100%);
+  --tshirts-border: rgba(100, 116, 139, 0.2);
+  --tshirts-shadow: 0 4px 6px -1px rgba(30, 58, 138, 0.1), 0 2px 4px -1px rgba(30, 58, 138, 0.06);
+  --tshirts-shadow-lg: 0 10px 15px -3px rgba(30, 58, 138, 0.1), 0 4px 6px -2px rgba(30, 58, 138, 0.05);
+  --tshirts-shadow-xl: 0 25px 50px -12px rgba(30, 58, 138, 0.25);
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Page Container */
+.tshirts-page {
+  min-height: 100vh;
+  background: var(--tshirts-hero-gradient);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+  position: relative;
+}
+
+/* Animated Background */
+.tshirts-page::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(96, 165, 250, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 40% 60%, rgba(30, 58, 138, 0.1) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
 
 /* Hero Section */
 .tshirt-hero {
-  position: relative;
+  background: var(--tshirts-card-bg);
+  backdrop-filter: blur(20px);
   padding: 80px 0 60px;
+  border-bottom: 1px solid var(--tshirts-border);
+  position: relative;
+  z-index: 1;
+}
+
+.tshirt-hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(96, 165, 250, 0.05) 100%);
+  pointer-events: none;
+}
+
+.tshirt-hero-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.tshirt-hero h1 {
+  font-size: 3.5rem;
+  font-weight: 800;
+  background: var(--tshirts-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 20px;
+  text-shadow: 0 0 30px rgba(59, 130, 246, 0.3);
+}
+
+.tshirt-hero p {
+  font-size: 1.3rem;
+  color: var(--tshirts-gray);
+  max-width: 600px;
+  margin: 0 auto 40px;
+  line-height: 1.6;
+}
+
+.tshirt-stats {
+  display: flex;
+  justify-content: center;
+  gap: 60px;
+  flex-wrap: wrap;
+}
+
+.tshirt-stat {
+  text-align: center;
+}
+
+.tshirt-stat-number {
+  display: block;
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--tshirts-primary);
+  margin-bottom: 8px;
+}
+
+.tshirt-stat-label {
+  font-size: 1rem;
+  color: var(--tshirts-gray);
+  font-weight: 500;
+}
+
+/* Filters Section */
+.tshirts-filters {
+  background: var(--tshirts-card-bg);
+  backdrop-filter: blur(20px);
+  padding: 30px 0;
+  border-bottom: 1px solid var(--tshirts-border);
+  position: relative;
+  z-index: 1;
+}
+
+.tshirts-filters::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.03) 0%, rgba(96, 165, 250, 0.03) 100%);
+  pointer-events: none;
+}
+
+.tshirts-filters-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 30px;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 1;
+}
+
+/* Tabs */
+.tshirts-tabs {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.tshirts-tab {
+  padding: 12px 24px;
+  background: var(--tshirts-card-bg);
+  border: 2px solid var(--tshirts-border);
+  border-radius: 50px;
+  color: var(--tshirts-gray);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  text-decoration: none;
+  font-size: 0.95rem;
+  position: relative;
   overflow: hidden;
-  background: linear-gradient(135deg, var(--amazon-dark-blue) 0%, var(--amazon-blue) 100%);
+}
+
+.tshirts-tab::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(96, 165, 250, 0.1) 100%);
+  opacity: 0;
+  transition: var(--transition);
+}
+
+.tshirts-tab:hover::before {
+  opacity: 1;
+}
+
+.tshirts-tab:hover {
+  color: var(--tshirts-secondary);
+  transform: translateY(-2px);
+  box-shadow: var(--tshirts-shadow);
+}
+
+.tshirts-tab.active {
+  background: var(--tshirts-gradient);
+  color: white;
+  border-color: var(--tshirts-accent);
+  box-shadow: var(--tshirts-shadow-lg);
+}
+
+/* Sort Dropdown */
+.tshirts-sort {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.tshirts-sort label {
+  font-weight: 600;
+  color: var(--tshirts-gray);
+  font-size: 0.95rem;
+}
+
+.tshirts-sort select {
+  padding: 10px 15px;
+  border: 2px solid var(--tshirts-border);
+  border-radius: 8px;
+  background: var(--tshirts-card-bg);
+  color: var(--tshirts-dark);
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+  outline: none;
+}
+
+.tshirts-sort select:hover {
+  border-color: var(--tshirts-accent);
+}
+
+.tshirts-sort select:focus {
+  border-color: var(--tshirts-secondary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Products Section */
+.tshirts-products {
+  padding: 60px 0;
+  position: relative;
+  z-index: 1;
+}
+
+.tshirts-products-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.tshirts-products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 40px;
+  margin-bottom: 60px;
+}
+
+/* Product Card */
+.tshirts-product-card {
+  background: var(--tshirts-card-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--tshirts-border);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: var(--tshirts-shadow);
+  transition: var(--transition);
+  position: relative;
+}
+
+.tshirts-product-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(96, 165, 250, 0.05) 100%);
+  opacity: 0;
+  transition: var(--transition);
+}
+
+.tshirts-product-card:hover::before {
+  opacity: 1;
+}
+
+.tshirts-product-card:hover {
+  transform: translateY(-10px);
+  box-shadow: var(--tshirts-shadow-xl);
+  border-color: var(--tshirts-accent);
+}
+
+.tshirts-product-image {
+  position: relative;
+  height: 320px;
+  overflow: hidden;
+}
+
+.tshirts-product-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: var(--transition);
+}
+
+.tshirts-product-card:hover .tshirts-product-image img {
+  transform: scale(1.05);
+}
+
+.tshirts-product-badge {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  padding: 6px 12px;
+  background: var(--tshirts-gradient);
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: var(--tshirts-shadow);
+}
+
+.tshirts-product-actions {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  opacity: 0;
+  transform: translateX(20px);
+  transition: var(--transition);
+}
+
+.tshirts-product-card:hover .tshirts-product-actions {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.tshirts-action-btn {
+  width: 40px;
+  height: 40px;
+  background: var(--tshirts-card-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--tshirts-border);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--tshirts-gray);
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: var(--tshirts-shadow);
+}
+
+.tshirts-action-btn:hover {
+  background: var(--tshirts-accent);
+  color: white;
+  transform: scale(1.1);
+}
+
+.tshirts-product-info {
+  padding: 25px;
+  position: relative;
+  z-index: 1;
+}
+
+.tshirts-product-name {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--tshirts-primary);
+  margin-bottom: 8px;
+  line-height: 1.4;
+  transition: var(--transition);
+}
+
+.tshirts-product-card:hover .tshirts-product-name {
+  color: var(--tshirts-secondary);
+}
+
+.tshirts-product-description {
+  font-size: 0.9rem;
+  color: var(--tshirts-gray);
+  margin-bottom: 15px;
+  line-height: 1.5;
+}
+
+.tshirts-product-price {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.tshirts-price-current {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--tshirts-secondary);
+}
+
+.tshirts-price-original {
+  font-size: 1.1rem;
+  color: var(--tshirts-gray);
+  text-decoration: line-through;
+}
+
+.tshirts-product-rating {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.tshirts-stars {
+  display: flex;
+  gap: 2px;
+}
+
+.tshirts-star {
+  color: var(--tshirts-accent);
+  font-size: 1rem;
+}
+
+.tshirts-star.empty {
+  color: var(--tshirts-medium-gray);
+}
+
+.tshirts-rating-text {
+  font-size: 0.9rem;
+  color: var(--tshirts-gray);
+}
+
+.tshirts-add-to-cart {
+  width: 100%;
+  padding: 15px;
+  background: var(--tshirts-gradient);
+  color: white;
+  border: none;
+  border-radius: 50px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: var(--tshirts-shadow);
+  position: relative;
+  overflow: hidden;
+}
+
+.tshirts-add-to-cart::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: var(--transition);
+}
+
+.tshirts-add-to-cart:hover::before {
+  left: 100%;
+}
+
+.tshirts-add-to-cart:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--tshirts-shadow-lg);
+}
+
+/* Load More Button */
+.tshirts-load-more {
+  text-align: center;
+  margin-top: 40px;
+}
+
+.tshirts-load-more-btn {
+  padding: 15px 40px;
+  background: var(--tshirts-card-bg);
+  backdrop-filter: blur(20px);
+  border: 2px solid var(--tshirts-accent);
+  color: var(--tshirts-accent);
+  border-radius: 50px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: var(--tshirts-shadow);
+}
+
+.tshirts-load-more-btn:hover {
+  background: var(--tshirts-gradient);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: var(--tshirts-shadow-lg);
+}
+
+/* Loading State */
+.tshirts-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+.tshirts-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid var(--tshirts-medium-gray);
+  border-top: 4px solid var(--tshirts-accent);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Empty State */
+.tshirts-empty {
+  text-align: center;
+  padding: 80px 20px;
+}
+
+.tshirts-empty-icon {
+  font-size: 4rem;
+  color: var(--tshirts-gray);
+  margin-bottom: 20px;
+}
+
+.tshirts-empty-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--tshirts-primary);
+  margin-bottom: 10px;
+}
+
+.tshirts-empty-text {
+  font-size: 1rem;
+  color: var(--tshirts-gray);
+  margin-bottom: 30px;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .tshirt-hero h1 {
+    font-size: 3rem;
+  }
+  
+  .tshirts-products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 30px;
+  }
+}
+
+@media (max-width: 768px) {
+  .tshirt-hero {
+    padding: 60px 0 40px;
+  }
+  
+  .tshirt-hero h1 {
+    font-size: 2.5rem;
+  }
+  
+  .tshirt-hero p {
+    font-size: 1.1rem;
+  }
+  
+  .tshirt-stats {
+    gap: 30px;
+  }
+  
+  .tshirts-filters-content {
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .tshirts-tabs {
+    justify-content: center;
+  }
+  
+  .tshirts-products {
+    padding: 40px 0;
+  }
+  
+  .tshirts-products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 25px;
+  }
+}
+
+@media (max-width: 480px) {
+  .tshirt-hero {
+    padding: 40px 0 30px;
+  }
+  
+  .tshirt-hero h1 {
+    font-size: 2rem;
+  }
+  
+  .tshirt-hero p {
+    font-size: 1rem;
+  }
+  
+  .tshirt-stats {
+    gap: 20px;
+  }
+  
+  .tshirt-stat-number {
+    font-size: 2rem;
+  }
+  
+  .tshirts-tabs {
+    gap: 8px;
+  }
+  
+  .tshirts-tab {
+    padding: 10px 18px;
+    font-size: 0.85rem;
+  }
+  
+  .tshirts-products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 20px;
+  }
+  
+  .tshirts-product-image {
+    height: 280px;
+  }
+  
+  .tshirts-product-info {
+    padding: 20px;
+  }
+  
+  .tshirts-product-name {
+    font-size: 1.1rem;
+  }
+  
+  .tshirts-price-current {
+    font-size: 1.3rem;
+  }
 }
 
 .hero-background {

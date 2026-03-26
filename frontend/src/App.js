@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import FooterEnhanced from './components/FooterEnhanced';
 import ThemeSwitch from './components/ThemeSwitch';
-import Home from './pages/Home';
+import HomeClean from './pages/HomeClean';
 import TShirts from './pages/TShirts';
 import Hoodies from './pages/Hoodies';
 import Accessories from './pages/Accessories';
@@ -24,6 +24,8 @@ import Wishlist from './pages/Wishlist';
 import Profile from './pages/Profile';
 import UserProfile from './pages/UserProfile';
 import AdminProfile from './pages/AdminProfile';
+import CheckoutPage from './pages/CheckoutPage';
+import OrderSuccessPage from './pages/OrderSuccessPage';
 import SearchPage from './pages/SearchPage';
 import ScrollToTop from './components/ScrollToTop';
 import ToastContainer from './components/ToastContainer';
@@ -45,33 +47,34 @@ const AppContent = () => {
         <Header />
         <main>
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<HomeClean />} />
             <Route path="/tshirts" element={<TShirts />} />
             <Route path="/hoodies" element={<Hoodies />} />
             <Route path="/accessories" element={<Accessories />} />
             <Route path="/alumni-kits" element={<AlumniKits />} />
             <Route path="/today-deals" element={<TodayDealsEnhanced />} />
-            <Route path="/today-deals-enhanced" element={<TodayDealsEnhanced />} />
             <Route path="/new-arrivals" element={<NewArrivalsEnhanced />} />
-            <Route path="/new-arrivals-enhanced" element={<NewArrivalsEnhanced />} />
             <Route path="/customize" element={<Customize />} />
+            <Route path="/product/:id" element={<ProductDetailEnhanced />} />
             <Route path="/bulk-order" element={<BulkOrder />} />
             <Route path="/payment" element={<PrivateRoute><Payment /></PrivateRoute>} />
+            <Route path="/order-tracking" element={<PrivateRoute><OrderTracking /></PrivateRoute>} />
             <Route path="/order/:orderId" element={<PrivateRoute><OrderTracking /></PrivateRoute>} />
             <Route path="/track/:orderId" element={<PrivateRoute><OrderTracking /></PrivateRoute>} />
-            <Route path="/checkout" element={<PrivateRoute><CheckoutDashboard /></PrivateRoute>} />
-            <Route path="/product/:id" element={<ProductDetailEnhanced />} />
-            <Route path="/product-enhanced/:id" element={<ProductDetailEnhanced />} />
-            <Route path="/cart" element={<Cart />} />
-            <Route path="/wishlist" element={<Wishlist />} />
-            <Route path="/profile" element={<PrivateRoute><UserProfile /></PrivateRoute>} />
-            <Route path="/user-profile" element={<PrivateRoute><UserProfile /></PrivateRoute>} />
-            <Route path="/admin-profile" element={<PrivateRoute><AdminProfile /></PrivateRoute>} />
-            <Route path="/login" element={<Login />} />
+            <Route path="/checkout" element={<PrivateRoute><CheckoutPage /></PrivateRoute>} />
+            <Route path="/checkout-dashboard" element={<PrivateRoute><CheckoutDashboard /></PrivateRoute>} />
+            <Route path="/order-success" element={<PrivateRoute><OrderSuccessPage /></PrivateRoute>} />
+            <Route path="/user-panel" element={<PrivateRoute><UserPanel /></PrivateRoute>} />
             <Route path="/account" element={<PrivateRoute><UserPanel /></PrivateRoute>} />
             <Route path="/faq" element={<FAQ />} />
             <Route path="/feedback" element={<Feedback />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/wishlist" element={<Wishlist />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/user-profile" element={<PrivateRoute><UserProfile /></PrivateRoute>} />
+            <Route path="/admin-profile" element={<PrivateRoute><AdminProfile /></PrivateRoute>} />
             <Route path="/search" element={<SearchPage />} />
+            <Route path="/login" element={<Login />} />
           </Routes>
         </main>
         <FooterEnhanced />

@@ -68,6 +68,28 @@
   box-shadow: 0 0 0 3px rgba(47, 74, 103, 0.1);
 }
 
+/* Loading State */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.loading-spinner {
+  font-size: 3rem;
+  color: #3b82f6;
+  margin-bottom: 1rem;
+}
+
+.loading-state p {
+  font-size: 1.1rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
 /* Products Section */
 .products-section {
   padding: 3rem 0;

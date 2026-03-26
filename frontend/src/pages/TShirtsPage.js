@@ -3,106 +3,83 @@ import { Link } from 'react-router-dom';
 import './TShirtsPage.css';
 
 const TShirtsPage = () => {
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [selectedSize, setSelectedSize] = useState('all');
-  const [selectedColor, setSelectedColor] = useState('all');
-  const [sortBy, setSortBy] = useState('featured');
+  const [imageErrors, setImageErrors] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
 
-  const categories = [
-    { id: 'all', name: 'All T-Shirts' },
-    { id: 'classic', name: 'Classic' },
-    { id: 'sports', name: 'Sports' },
-    { id: 'vintage', name: 'Vintage' },
-    { id: 'graphic', name: 'Graphic' }
-  ];
+  // Simulate loading
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, []);
 
-  const sizes = ['S', 'M', 'L', 'XL', 'XXL'];
-  const colors = [
-    { id: 'all', name: 'All Colors', hex: '#000000' },
-    { id: 'white', name: 'White', hex: '#FFFFFF' },
-    { id: 'black', name: 'Black', hex: '#000000' },
-    { id: 'navy', name: 'Navy', hex: '#1e3a8a' },
-    { id: 'gray', name: 'Gray', hex: '#6B7280' },
-    { id: 'red', name: 'Red', hex: '#DC2626' },
-    { id: 'blue', name: 'Blue', hex: '#2563EB' }
-  ];
+  const handleImageError = (productId) => {
+    setImageErrors(prev => ({
+      ...prev,
+      [productId]: true
+    }));
+  };
 
+  const getFallbackImage = () => {
+    return 'https://via.placeholder.com/400x500/f3f4f6/6b7280?text=JNV+T-Shirt';
+  };
   const products = [
     {
       id: 1,
       name: 'JNV Classic Tee',
-      category: 'classic',
       price: 599,
       originalPrice: 799,
-      image: 'https://via.placeholder.com/300x400?text=T-Shirt1',
+      image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=500&fit=crop',
       description: 'Premium cotton t-shirt with classic JNV logo',
-      sizes: ['S', 'M', 'L', 'XL'],
-      colors: ['white', 'black', 'navy', 'gray'],
       featured: true
     },
     {
       id: 2,
       name: 'Sports Performance Tee',
-      category: 'sports',
       price: 799,
       originalPrice: 999,
-      image: 'https://via.placeholder.com/300x400?text=T-Shirt2',
+      image: 'https://images.unsplash.com/photo-1516726777716-f3d0f9cb299f?w=400&h=500&fit=crop',
       description: 'Moisture-wicking fabric perfect for sports activities',
-      sizes: ['M', 'L', 'XL', 'XXL'],
-      colors: ['white', 'black', 'navy', 'red', 'blue'],
-      featured: true
-    },
-    {
-      id: 3,
-      name: 'Vintage JNV Design',
-      category: 'vintage',
-      price: 899,
-      originalPrice: 1299,
-      image: 'https://via.placeholder.com/300x400?text=T-Shirt3',
-      description: 'Retro-inspired design with distressed JNV branding',
-      sizes: ['S', 'M', 'L', 'XL'],
-      colors: ['white', 'black', 'gray', 'navy'],
       featured: false
     },
     {
+      id: 3,
+      name: 'Vintage Navodaya',
+      price: 699,
+      originalPrice: 899,
+      image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=500&fit=crop',
+      description: 'Retro-style t-shirt with vintage JNV design',
+      featured: true
+    },
+    {
       id: 4,
-      name: 'Graphic Art Tee',
-      category: 'graphic',
-      price: 999,
-      originalPrice: 1499,
-      image: 'https://via.placeholder.com/300x400?text=T-Shirt4',
-      description: 'Unique graphic designs created by JNV artists',
-      sizes: ['S', 'M', 'L', 'XL', 'XXL'],
-      colors: ['white', 'black', 'red', 'blue', 'gray'],
+      name: 'Graphic Design Tee',
+      price: 899,
+      originalPrice: 1099,
+      image: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=400&h=500&fit=crop',
+      description: 'Artistic graphic print showcasing JNV spirit',
       featured: false
     },
     {
       id: 5,
-      name: 'Alumni Batch Tee',
-      category: 'classic',
-      price: 1299,
-      originalPrice: 1899,
-      image: 'https://via.placeholder.com/300x400?text=T-Shirt5',
-      description: 'Special edition for JNV alumni batches',
-      sizes: ['M', 'L', 'XL', 'XXL'],
-      colors: ['white', 'black', 'navy', 'gray'],
+      name: 'Alumni Special',
+      price: 999,
+      originalPrice: 1299,
+      image: 'https://images.unsplash.com/photo-1554568218-0f1715e72254?w=400&h=500&fit=crop',
+      description: 'Exclusive design for JNV alumni',
       featured: true
+    },
+    {
+      id: 6,
+      name: 'Campus Life Tee',
+      price: 549,
+      originalPrice: 749,
+      image: 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=400&h=500&fit=crop',
+      description: 'Comfortable tee celebrating campus life',
+      featured: false
     }
   ];
-
-  const filteredProducts = products.filter(product => {
-    const categoryMatch = selectedCategory === 'all' || product.category === selectedCategory;
-    const sizeMatch = selectedSize === 'all' || product.sizes.includes(selectedSize);
-    const colorMatch = selectedColor === 'all' || product.colors.includes(selectedColor);
-    return categoryMatch && sizeMatch && colorMatch;
-  });
-
-  const sortedProducts = [...filteredProducts].sort((a, b) => {
-    if (sortBy === 'price-low') return a.price - b.price;
-    if (sortBy === 'price-high') return b.price - a.price;
-    if (sortBy === 'name') return a.name.localeCompare(b.name);
-    return 0;
-  });
 
   return (
     <div className="tshirts-page">
@@ -114,136 +91,53 @@ const TShirtsPage = () => {
         </div>
       </div>
 
-      {/* Filters */}
-      <div className="filters-section">
-        <div className="container">
-          <div className="filters-grid">
-            {/* Category Filter */}
-            <div className="filter-group">
-              <label className="filter-label">Category</label>
-              <select 
-                value={selectedCategory} 
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="filter-select"
-              >
-                {categories.map(category => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Size Filter */}
-            <div className="filter-group">
-              <label className="filter-label">Size</label>
-              <select 
-                value={selectedSize} 
-                onChange={(e) => setSelectedSize(e.target.value)}
-                className="filter-select"
-              >
-                <option value="all">All Sizes</option>
-                {sizes.map(size => (
-                  <option key={size} value={size}>
-                    {size}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Color Filter */}
-            <div className="filter-group">
-              <label className="filter-label">Color</label>
-              <select 
-                value={selectedColor} 
-                onChange={(e) => setSelectedColor(e.target.value)}
-                className="filter-select"
-              >
-                {colors.map(color => (
-                  <option key={color.id} value={color.id}>
-                    {color.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Sort */}
-            <div className="filter-group">
-              <label className="filter-label">Sort By</label>
-              <select 
-                value={sortBy} 
-                onChange={(e) => setSortBy(e.target.value)}
-                className="filter-select"
-              >
-                <option value="featured">Featured</option>
-                <option value="price-low">Price: Low to High</option>
-                <option value="price-high">Price: High to Low</option>
-                <option value="name">Name: A to Z</option>
-              </select>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Products Grid */}
       <div className="products-section">
         <div className="container">
-          <div className="products-grid">
-            {sortedProducts.map(product => (
-              <div key={product.id} className="product-card">
-                {product.featured && (
-                  <div className="featured-badge">
-                    <i className="fas fa-star"></i>
-                    Featured
-                  </div>
-                )}
-                <div className="product-image">
-                  <img src={product.image} alt={product.name} />
-                  {product.originalPrice > product.price && (
-                    <div className="discount-badge">
-                      -{Math.round((1 - product.price / product.originalPrice) * 100)}%
+          {isLoading ? (
+            <div className="loading-state">
+              <div className="loading-spinner">
+                <i className="fas fa-spinner fa-spin"></i>
+              </div>
+              <p>Loading amazing JNV products...</p>
+            </div>
+          ) : (
+            <div className="products-grid">
+              {products.map(product => (
+                <div key={product.id} className="product-card">
+                  {product.featured && (
+                    <div className="featured-badge">
+                      <i className="fas fa-star"></i>
+                      Featured
                     </div>
                   )}
-                </div>
-                <div className="product-info">
-                  <h3 className="product-name">{product.name}</h3>
-                  <p className="product-description">{product.description}</p>
-                  <div className="product-meta">
-                    <div className="price-info">
-                      {product.originalPrice > product.price ? (
-                        <>
-                          <span className="original-price">₹{product.originalPrice}</span>
-                          <span className="current-price">₹{product.price}</span>
-                        </>
-                      ) : (
-                        <span className="current-price">₹{product.price}</span>
-                      )}
+                  <div className="product-image">
+                    <img 
+                      src={imageErrors[product.id] ? getFallbackImage() : product.image} 
+                      alt={product.name}
+                      onError={() => handleImageError(product.id)}
+                    />
+                  </div>
+                  <div className="product-info">
+                    <h3 className="product-name">{product.name}</h3>
+                    <p className="product-description">{product.description}</p>
+                    <div className="product-price">
+                      <span className="current-price">₹{product.price}</span>
+                      <span className="original-price">₹{product.originalPrice}</span>
                     </div>
-                    <div className="product-sizes">
-                      <span className="sizes-label">Sizes:</span>
-                      <div className="size-pills">
-                        {product.sizes.map(size => (
-                          <span key={size} className="size-pill">
-                            {size}
-                          </span>
-                        ))}
-                      </div>
+                    <div className="product-actions">
+                      <Link to={`/product/${product.id}`} className="view-btn">
+                        View Product
+                      </Link>
+                      <button className="cart-btn">
+                        <i className="fas fa-shopping-cart"></i>
+                      </button>
                     </div>
                   </div>
                 </div>
-                <div className="product-actions">
-                  <button className="add-to-cart-btn">
-                    <i className="fas fa-shopping-cart"></i>
-                    Add to Cart
-                  </button>
-                  <button className="quick-view-btn">
-                    <i className="fas fa-eye"></i>
-                    Quick View
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

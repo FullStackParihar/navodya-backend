@@ -16,10 +16,10 @@ const ProductDetailEnhanced = () => {
   const { success, error } = useToast();
   
   const [product, setProduct] = useState(null);
-  const [relatedProducts, setRelatedProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedSize, setSelectedSize] = useState('');
   const [selectedColor, setSelectedColor] = useState('');
+  const [selectedThemeColor, setSelectedThemeColor] = useState('blue');
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
@@ -27,6 +27,26 @@ const ProductDetailEnhanced = () => {
   const [reviews, setReviews] = useState([]);
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
   const [reviewFormData, setReviewFormData] = useState({ rating: 5, comment: '' });
+
+  // Wishlist toggle function
+  const handleWishlistToggle = (productId) => {
+    if (isInWishlist(productId)) {
+      removeFromWishlist(productId);
+      error('Product removed from wishlist');
+    } else {
+      addToWishlist(productId);
+      success('Product added to wishlist');
+    }
+  };
+
+  // Color theme options
+  const colorThemes = [
+    { name: 'red', primary: '#dc2626', secondary: '#ef4444', light: '#fca5a5', gradient: 'linear-gradient(135deg, #dc2626 0%, #ef4444 50%, #f87171 100%)' },
+    { name: 'green', primary: '#16a34a', secondary: '#22c55e', light: '#86efac', gradient: 'linear-gradient(135deg, #16a34a 0%, #22c55e 50%, #4ade80 100%)' },
+    { name: 'yellow', primary: '#ca8a04', secondary: '#eab308', light: '#fde047', gradient: 'linear-gradient(135deg, #ca8a04 0%, #eab308 50%, #facc15 100%)' },
+    { name: 'blue', primary: '#2563eb', secondary: '#3b82f6', light: '#93c5fd', gradient: 'linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #60a5fa 100%)' },
+    { name: 'white', primary: '#374151', secondary: '#6b7280', light: '#f3f4f6', gradient: 'linear-gradient(135deg, #374151 0%, #6b7280 50%, #9ca3af 100%)' }
+  ];
 
   useEffect(() => {
     const fetchProductAndRelated = async () => {
@@ -63,23 +83,6 @@ const ProductDetailEnhanced = () => {
           setProduct(mappedProduct);
           if (mappedProduct.sizes.length > 0) setSelectedSize(mappedProduct.sizes[0]);
           if (mappedProduct.colors.length > 0) setSelectedColor(mappedProduct.colors[0]);
-
-          if (mappedProduct.categorySlug) {
-            const relResult = await api.get(`/products?category=${mappedProduct.categorySlug}&limit=4`);
-            if (relResult.success) {
-              const mappedRelated = relResult.data.products
-                .filter(item => item.slug !== id)
-                .map(item => ({
-                  id: item.slug,
-                  dbId: item._id,
-                  name: item.name,
-                  price: item.sale_price || item.price,
-                  image: item.images[0],
-                  rating: item.rating || 0
-                }));
-              setRelatedProducts(mappedRelated);
-            }
-          }
         }
       } catch (err) {
         console.error('Error fetching product:', err);
@@ -106,71 +109,65 @@ const ProductDetailEnhanced = () => {
 
   const handleReviewSubmit = async (e) => {
     e.preventDefault();
-    const token = localStorage.getItem('token');
-    if (!token) {
-      error('Please login to submit a review');
-      navigate('/login');
-      return;
-    }
-    if (!reviewFormData.comment.trim()) {
-      error('Please enter a comment');
-      return;
-    }
+    setIsSubmittingReview(true);
     try {
-      setIsSubmittingReview(true);
-      const result = await api.post(`/reviews/${product.dbId}`, reviewFormData);
-      if (result.success) {
-        success('Review submitted successfully!');
-        setReviews([result.data, ...reviews]);
-        setReviewFormData({ rating: 5, comment: '' });
-      } else {
-        error(result.message || 'Failed to submit review');
-      }
+      await api.post('/reviews', {
+        product_id: product.dbId,
+        rating: reviewFormData.rating,
+        comment: reviewFormData.comment
+      });
+      success('Review submitted successfully!');
+      setReviewFormData({ rating: 5, comment: '' });
     } catch (err) {
-      error('Error submitting review');
+      error('Failed to submit review');
     } finally {
       setIsSubmittingReview(false);
     }
   };
 
-  const handleAddToCart = () => {
-    if (!selectedSize) {
-      error('Please select a size');
-      return;
-    }
+  const handleAddToCart = async () => {
+    if (!product.inStock) return;
+    
     setIsAddingToCart(true);
-    setTimeout(() => {
-      addToCart({ ...product, selectedSize, selectedColor, quantity });
-      success(`${product.name} added to cart!`);
+    try {
+      await addToCart({
+        ...product,
+        quantity,
+        selectedSize,
+        selectedColor: selectedThemeColor
+      });
+      success('Product added to cart successfully!');
+    } catch (err) {
+      error('Failed to add product to cart');
+    } finally {
       setIsAddingToCart(false);
-    }, 500);
-  };
-
-  const handleWishlistToggle = () => {
-    if (isInWishlist(product.id)) {
-      removeFromWishlist(product.id);
-      error(`${product.name} removed from wishlist`);
-    } else {
-      addToWishlist(product);
-      success(`${product.name} added to wishlist!`);
     }
   };
 
-  const handleBuyNow = () => {
-    if (!selectedSize) {
-      error('Please select a size');
-      return;
+  const handleBuyNow = async () => {
+    if (!product.inStock) return;
+    
+    try {
+      await addToCart({
+        ...product,
+        quantity,
+        selectedSize,
+        selectedColor: selectedThemeColor
+      });
+      navigate('/checkout');
+    } catch (err) {
+      error('Failed to process order');
     }
-    addToCart({ ...product, selectedSize, selectedColor, quantity });
-    navigate('/cart');
   };
 
   const renderStars = (rating) => {
     const stars = [];
-    for (let i = 0; i < 5; i++) {
-      stars.push(
-        <i key={i} className={`${i < Math.floor(rating) ? 'fas' : 'far'} fa-star`} style={{ color: 'var(--amazon-orange)' }}></i>
-      );
+    for (let i = 1; i <= 5; i++) {
+      if (i <= rating) {
+        stars.push(<i key={i} className="fas fa-star"></i>);
+      } else {
+        stars.push(<i key={i} className="far fa-star"></i>);
+      }
     }
     return stars;
   };
@@ -180,80 +177,268 @@ const ProductDetailEnhanced = () => {
 
   return (
     <div className="product-detail-page">
-      <div className="container">
-        <nav className="breadcrumb">
-          <a href="/">Home</a> / <a href="/tshirts">Products</a> / <span className="current">{product.name}</span>
-        </nav>
-        <div className="product-detail-layout">
-          <div className="product-images-section">
-            <div className="main-image-container">
-              <img src={product.images[selectedImage]} alt={product.name} className="main-image" />
-            </div>
-            <div className="thumbnail-container">
-              {product.images.map((img, idx) => (
-                <div key={idx} className={`thumbnail ${selectedImage === idx ? 'active' : ''}`} onClick={() => setSelectedImage(idx)}>
-                  <img src={img} alt="" />
-                </div>
-              ))}
-            </div>
+      {/* Hero Section */}
+      <section className="product-hero-enhanced animate-fadeIn">
+        <div className="hero-background">
+          <div className="hero-pattern"></div>
+        </div>
+        <div className="container">
+          <div className="hero-content">
+            <h1 className="animate-slideDown">Product Details</h1>
+            <p className="animate-slideUp" style={{ animationDelay: '0.2s' }}>
+              Premium JNV merchandise with exceptional quality
+            </p>
           </div>
-          <div className="product-info-section">
-            <h1 className="product-title">{product.name}</h1>
-            <div className="price-section">
-              <span className="current-price">₹{product.price}</span>
+        </div>
+      </section>
+
+      {/* Product Detail Page */}
+      <section className="product-detail-page-enhanced">
+        <div className="container">
+          <div className="product-layout-enhanced">
+            {/* Product Images */}
+            <div className="product-images-enhanced animate-slideInLeft">
+              <div className="main-image-container">
+                <img src={product.images[selectedImage]} alt={product.name} />
+                <div className="image-actions">
+                  <button className="image-action-btn">
+                    <i className="far fa-heart"></i>
+                  </button>
+                  <button className="image-action-btn">
+                    <i className="fas fa-share-alt"></i>
+                  </button>
+                  <button className="image-action-btn">
+                    <i className="fas fa-search-plus"></i>
+                  </button>
+                </div>
+              </div>
+              <div className="thumbnail-container">
+                {product.images.map((img, idx) => (
+                  <div key={idx} className={`thumbnail ${selectedImage === idx ? 'active' : ''}`} onClick={() => setSelectedImage(idx)}>
+                    <img src={img} alt="" />
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="product-options">
-              <div className="size-selection">
-                <h3>Size</h3>
-                <div className="size-options-detail">
-                  {product.sizes.map(s => (
-                    <button key={s} className={`size-option ${selectedSize === s ? 'active' : ''}`} onClick={() => setSelectedSize(s)}>{s}</button>
+
+            {/* Product Info Section */}
+            <div className="product-info-enhanced animate-slideInRight">
+              <div className="product-header-enhanced">
+                <div className="product-category">{product.category}</div>
+                <h1 className="product-title">{product.name}</h1>
+                <div className="product-rating-section">
+                  <div className="rating-stars">
+                    {renderStars(product.rating)}
+                  </div>
+                  <span className="rating-text">{product.rating} ({product.reviews} reviews)</span>
+                </div>
+              </div>
+
+              <div className="price-section-enhanced">
+                <div className="price-container">
+                  <span className="current-price">₹{product.price}</span>
+                  {product.originalPrice && (
+                    <span className="original-price">₹{product.originalPrice}</span>
+                  )}
+                  {product.originalPrice && (
+                    <span className="discount-badge">Save ₹{product.originalPrice - product.price}</span>
+                  )}
+                </div>
+                <div className="stock-info">
+                  <i className={`fas fa-circle ${product.inStock ? 'in-stock' : 'out-stock'}`}></i>
+                  <span>{product.inStock ? 'In Stock' : 'Out of Stock'}</span>
+                  {product.inStock && <span className="stock-count">({product.stockCount} available)</span>}
+                </div>
+              </div>
+
+              <div className="product-description-enhanced">
+                <p>{product.description}</p>
+              </div>
+
+              <div className="product-options-enhanced">
+                <div className="size-selection">
+                  <div className="option-header">
+                    <h3>Size</h3>
+                    <button className="size-guide-btn">
+                      <i className="fas fa-ruler"></i>
+                      Size Guide
+                    </button>
+                  </div>
+                  <div className="size-options-detail">
+                    {product.sizes.map(s => (
+                      <button 
+                        key={s} 
+                        className={`size-option ${selectedSize === s ? 'active' : ''}`} 
+                        onClick={() => setSelectedSize(s)}
+                      >
+                        {s}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                
+                <div className="color-theme-selection">
+                  <h3>Color Theme</h3>
+                  <div className="color-theme-options">
+                    {colorThemes.map(theme => (
+                      <button 
+                        key={theme.name} 
+                        className={`color-theme-option ${selectedThemeColor === theme.name ? 'active' : ''}`} 
+                        onClick={() => setSelectedThemeColor(theme.name)}
+                        style={{ background: theme.gradient }}
+                        title={theme.name}
+                      >
+                        <span className="color-theme-name">{theme.name}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="quantity-selection">
+                  <h3>Quantity</h3>
+                  <div className="quantity-controls">
+                    <button 
+                      className="quantity-btn" 
+                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                      disabled={quantity <= 1}
+                    >
+                      <i className="fas fa-minus"></i>
+                    </button>
+                    <input 
+                      type="number" 
+                      value={quantity} 
+                      onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+                      min="1" 
+                      max="10"
+                    />
+                    <button 
+                      className="quantity-btn" 
+                      onClick={() => setQuantity(Math.min(10, quantity + 1))}
+                      disabled={quantity >= 10}
+                    >
+                      <i className="fas fa-plus"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="action-buttons-enhanced">
+                <button 
+                  className="add-to-cart-btn-enhanced" 
+                  onClick={handleAddToCart} 
+                  disabled={!product.inStock || isAddingToCart}
+                >
+                  {isAddingToCart ? (
+                    <>
+                      <i className="fas fa-spinner fa-spin"></i>
+                      Adding...
+                    </>
+                  ) : (
+                    <>
+                      <i className="fas fa-shopping-cart"></i>
+                      Add to Cart
+                    </>
+                  )}
+                </button>
+                <button className="buy-now-btn-enhanced" onClick={handleBuyNow} disabled={!product.inStock}>
+                  <i className="fas fa-bolt"></i>
+                  Buy Now
+                </button>
+                <button className="wishlist-btn-enhanced" onClick={() => handleWishlistToggle(product.id)}>
+                  <i className={isInWishlist(product.id) ? 'fas fa-heart' : 'far fa-heart'}></i>
+                  {isInWishlist(product.id) ? 'Remove from Wishlist' : 'Add to Wishlist'}
+                </button>
+              </div>
+
+              <div className="product-features-enhanced">
+                <h4>Key Features</h4>
+                <ul>
+                  {product.features.map((feature, index) => (
+                    <li key={index}>
+                      <i className="fas fa-check-circle"></i>
+                      {feature}
+                    </li>
                   ))}
+                </ul>
+              </div>
+
+              <div className="product-meta-enhanced">
+                <div className="meta-item">
+                  <i className="fas fa-truck"></i>
+                  <span>Free Shipping on orders above ₹999</span>
+                </div>
+                <div className="meta-item">
+                  <i className="fas fa-undo"></i>
+                  <span>30-day return policy</span>
+                </div>
+                <div className="meta-item">
+                  <i className="fas fa-shield-alt"></i>
+                  <span>100% Authentic Products</span>
                 </div>
               </div>
             </div>
-            <div className="action-buttons">
-              <button className="add-to-cart-btn" onClick={handleAddToCart} disabled={!product.inStock || isAddingToCart}>Add to Cart</button>
-              <button className="buy-now-btn" onClick={handleBuyNow} disabled={!product.inStock}>Buy Now</button>
-              <button className={`wishlist-btn ${isInWishlist(product.id) ? 'active' : ''}`} onClick={handleWishlistToggle}>
-                <i className="fas fa-heart"></i>
-              </button>
-            </div>
-            <div className="product-description mt-4">
-              <h3>Description</h3>
-              <p>{product.description}</p>
-            </div>
           </div>
         </div>
-        
-        <div className="reviews-section mt-5">
-          <div className="tab-navigation">
-            <button className={`tab-nav-btn ${activeTab === 'reviews' ? 'active' : ''}`} onClick={() => setActiveTab('reviews')}>Reviews</button>
+      </section>
+
+      {/* Reviews Section */}
+      <section className="reviews-section-enhanced">
+        <div className="container">
+          <div className="reviews-header">
+            <h2>Customer Reviews</h2>
+            <div className="reviews-summary">
+              <div className="average-rating">
+                <span className="rating-number">{product.rating}</span>
+                <div className="rating-stars">
+                  {renderStars(product.rating)}
+                </div>
+                <span className="total-reviews">({product.reviews} reviews)</span>
+              </div>
+            </div>
           </div>
-          <div className="tab-content">
-            <div className="add-review-section mb-4">
+          
+          <div className="reviews-content">
+            <div className="add-review-section">
               <h4>Leave a Review</h4>
               <form onSubmit={handleReviewSubmit}>
                 <textarea 
-                  className="form-control mb-2" 
+                  className="form-control" 
                   value={reviewFormData.comment} 
                   onChange={e => setReviewFormData({ ...reviewFormData, comment: e.target.value })}
                   placeholder="Your review..."
                 />
-                <button type="submit" className="btn btn-primary">Submit</button>
+                <button type="submit" className="submit-review-btn" disabled={isSubmittingReview}>
+                  {isSubmittingReview ? (
+                    <>
+                      <i className="fas fa-spinner fa-spin"></i>
+                      Submitting...
+                    </>
+                  ) : (
+                    <>
+                      <i className="fas fa-star"></i>
+                      Submit Review
+                    </>
+                  )}
+                </button>
               </form>
             </div>
+            
             <div className="reviews-list">
               {reviews.map(r => (
-                <div key={r._id} className="review-item border-bottom py-3">
-                  <strong>{r.user_id?.name || 'User'}</strong> - {renderStars(r.rating)}
-                  <p>{r.comment}</p>
+                <div key={r._id} className="review-item">
+                  <div className="review-header">
+                    <strong>{r.user_id?.name || 'User'}</strong>
+                    <div className="review-rating">
+                      {renderStars(r.rating)}
+                    </div>
+                  </div>
+                  <p className="review-comment">{r.comment}</p>
                 </div>
               ))}
             </div>
           </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 };

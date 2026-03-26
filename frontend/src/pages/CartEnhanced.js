@@ -1,67 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useToast } from '../context/ToastContext';
-import ProductCard from '../components/ProductCard';
 import SkeletonLoader from '../components/SkeletonLoader';
 
-// Sample recommended products
-const recommendedProducts = [
-  {
-    id: 13,
-    name: 'JNV Baseball Cap',
-    description: 'Adjustable | Embroidered Logo',
-    price: 299,
-    originalPrice: 399,
-    image: 'https://images.unsplash.com/photo-1513519245088-0e7839c3c889?w=300&h=400&fit=crop',
-    badge: 'Hot',
-    reviews: 156
-  },
-  {
-    id: 14,
-    name: 'JNV Backpack',
-    description: 'Waterproof | Laptop Compartment',
-    price: 899,
-    originalPrice: 1299,
-    image: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=300&h=400&fit=crop',
-    reviews: 98
-  },
-  {
-    id: 15,
-    name: 'JNV Water Bottle',
-    description: 'Stainless Steel | Insulated',
-    price: 199,
-    originalPrice: 299,
-    image: 'https://images.unsplash.com/photo-1602143403490-42c665fd7239?w=300&h=400&fit=crop',
-    badge: 'New',
-    reviews: 78
-  },
-  {
-    id: 16,
-    name: 'JNV Phone Case',
-    description: 'Protective | Custom Design',
-    price: 149,
-    originalPrice: 199,
-    image: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=300&h=400&fit=crop',
-    reviews: 134
-  }
-];
-
 const Cart = () => {
+  const navigate = useNavigate();
   const { items, totalAmount, updateQuantity, removeFromCart } = useCart();
   const { success, error } = useToast();
   const [promoCode, setPromoCode] = useState('');
   const [discount, setDiscount] = useState(199);
   const [isLoading, setIsLoading] = useState(false);
-  const [recommendedLoading, setRecommendedLoading] = useState(true);
 
-  useEffect(() => {
-    // Simulate loading for recommended products
-    const timer = setTimeout(() => {
-      setRecommendedLoading(false);
-    }, 1000);
-    return () => clearTimeout(timer);
-  }, []);
+  const handleCheckout = () => {
+    if (items.length === 0) {
+      error('Your cart is empty');
+      return;
+    }
+    // Navigate to checkout page
+    navigate('/checkout');
+  };
 
   const handleQuantityChange = (id, newQuantity) => {
     if (newQuantity < 1) {
@@ -283,7 +241,7 @@ const Cart = () => {
                   <span>Total</span>
                   <span className="total-amount">₹{calculateTotal()}</span>
                 </div>
-                <button className="checkout-btn-mobile">
+                <button className="checkout-btn-mobile" onClick={handleCheckout}>
                   <i className="fas fa-lock"></i> Proceed to Checkout
                 </button>
               </div>
@@ -353,7 +311,7 @@ const Cart = () => {
                 </div>
 
                 {/* Checkout Button */}
-                <button className="checkout-btn-enhanced">
+                <button className="checkout-btn-enhanced" onClick={handleCheckout}>
                   <i className="fas fa-lock"></i> Proceed to Checkout
                 </button>
 
@@ -389,29 +347,6 @@ const Cart = () => {
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
-
-          {/* Recommended Products */}
-          <div className="recommended-products-enhanced">
-            <div className="recommended-header">
-              <h3>You might also like</h3>
-              <Link to="/tshirts" className="view-all-link">View All Products</Link>
-            </div>
-            <div className="recommended-grid">
-              {recommendedLoading ? (
-                <SkeletonLoader type="product" count={4} />
-              ) : (
-                recommendedProducts.map((product, index) => (
-                  <div 
-                    key={product.id} 
-                    className="animate-fadeIn"
-                    style={{ animationDelay: `${index * 0.1}s` }}
-                  >
-                    <ProductCard product={product} />
-                  </div>
-                ))
-              )}
             </div>
           </div>
         </div>
