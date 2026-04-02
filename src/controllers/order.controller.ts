@@ -20,15 +20,26 @@ export const createPaymentIntent = asyncHandler(async (req: AuthRequest, res: Re
     // 1. Get Cart Items
     const cartItems = await CartItem.find({ user_id: req.userId }).populate('product_id');
 
-    if (!cartItems.length) {
-        throw new ApiError(400, 'Cart is empty');
+    console.log(`Payment intent: User ${req.userId} has ${cartItems.length} cart items`);
+
+    if (!cartItems || cartItems.length === 0) {
+        console.log('Payment intent failed: Cart is empty');
+        throw new ApiError(400, 'Your cart is empty. Please add items to your cart before proceeding to checkout.');
+    }
+
+    // Filter out any items where product might be null (due to deleted products)
+    const validCartItems = cartItems.filter(item => item.product_id);
+    
+    if (validCartItems.length === 0) {
+        console.log('Payment intent failed: No valid cart items (products may have been deleted)');
+        throw new ApiError(400, 'Your cart contains invalid items. Please remove them and try again.');
     }
 
     // 2. Calculate Subtotal
     let subtotal = 0;
     const items = [];
 
-    for (const item of cartItems) {
+    for (const item of validCartItems) {
         const product = item.product_id as unknown as IProduct;
         if (!product) continue;
 
@@ -161,14 +172,26 @@ export const createOrder = asyncHandler(async (req: AuthRequest, res: Response) 
 
     // Get Cart logic again (Should ideally be atomic or locked)
     const cartItems = await CartItem.find({ user_id: req.userId }).populate('product_id');
-    if (!cartItems.length) {
-        throw new ApiError(400, 'Cart is empty');
+    
+    console.log(`Order creation: User ${req.userId} has ${cartItems.length} cart items`);
+    
+    if (!cartItems || cartItems.length === 0) {
+        console.log('Order creation failed: Cart is empty');
+        throw new ApiError(400, 'Your cart is empty. Please add items to your cart before placing an order.');
+    }
+
+    // Filter out any items where product might be null (due to deleted products)
+    const validCartItems = cartItems.filter(item => item.product_id);
+    
+    if (validCartItems.length === 0) {
+        console.log('Order creation failed: No valid cart items (products may have been deleted)');
+        throw new ApiError(400, 'Your cart contains invalid items. Please remove them and try again.');
     }
 
     const orderItems: any[] = [];
     let subtotal = 0;
 
-    for (const item of cartItems) {
+    for (const item of validCartItems) {
         const product = item.product_id as unknown as IProduct;
         if (!product) continue;
 
@@ -179,7 +202,7 @@ export const createOrder = asyncHandler(async (req: AuthRequest, res: Response) 
                 throw new ApiError(400, `Insufficient stock for ${product.name} (Size: ${item.size})`);
             }
             product.sizes[sizeIndex].stock -= item.quantity;
-            await product.save(); // Save stock update
+            await product.save();
         }
 
         const price = product.sale_price || product.price;
@@ -188,11 +211,11 @@ export const createOrder = asyncHandler(async (req: AuthRequest, res: Response) 
         orderItems.push({
             product_id: product._id,
             name: product.name,
-            image: product.images[0],
             price: price,
             quantity: item.quantity,
             size: item.size,
-            color: item.color
+            color: item.color,
+            image: product.images[0] || ''
         });
     }
 

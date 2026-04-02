@@ -63,7 +63,7 @@ const HomeClean = () => {
             price: p.sale_price || p.price,
             originalPrice: p.sale_price ? p.price : null,
             image: p.images[0] || 'https://via.placeholder.com/300x400?text=No+Image',
-            badge: p.sale_price ? 'Sale' : (p.rating > 4.5 ? 'Bestseller' : ''),
+            badge: p.rating > 4.5 ? 'Bestseller' : '',
             reviews: p.review_count,
             rating: p.rating,
             sizes: p.sizes,

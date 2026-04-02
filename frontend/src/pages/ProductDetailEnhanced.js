@@ -39,15 +39,6 @@ const ProductDetailEnhanced = () => {
     }
   };
 
-  // Color theme options
-  const colorThemes = [
-    { name: 'red', primary: '#dc2626', secondary: '#ef4444', light: '#fca5a5', gradient: 'linear-gradient(135deg, #dc2626 0%, #ef4444 50%, #f87171 100%)' },
-    { name: 'green', primary: '#16a34a', secondary: '#22c55e', light: '#86efac', gradient: 'linear-gradient(135deg, #16a34a 0%, #22c55e 50%, #4ade80 100%)' },
-    { name: 'yellow', primary: '#ca8a04', secondary: '#eab308', light: '#fde047', gradient: 'linear-gradient(135deg, #ca8a04 0%, #eab308 50%, #facc15 100%)' },
-    { name: 'blue', primary: '#2563eb', secondary: '#3b82f6', light: '#93c5fd', gradient: 'linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #60a5fa 100%)' },
-    { name: 'white', primary: '#374151', secondary: '#6b7280', light: '#f3f4f6', gradient: 'linear-gradient(135deg, #374151 0%, #6b7280 50%, #9ca3af 100%)' }
-  ];
-
   useEffect(() => {
     const fetchProductAndRelated = async () => {
       try {
@@ -82,7 +73,10 @@ const ProductDetailEnhanced = () => {
           };
           setProduct(mappedProduct);
           if (mappedProduct.sizes.length > 0) setSelectedSize(mappedProduct.sizes[0]);
-          if (mappedProduct.colors.length > 0) setSelectedColor(mappedProduct.colors[0]);
+          if (mappedProduct.colors.length > 0) {
+            setSelectedColor(mappedProduct.colors[0]);
+            setSelectedThemeColor(mappedProduct.colors[0]);
+          }
         }
       } catch (err) {
         console.error('Error fetching product:', err);
@@ -175,6 +169,12 @@ const ProductDetailEnhanced = () => {
   if (isLoading) return <div className="container p-5 text-center"><SkeletonLoader type="product" count={1} /></div>;
   if (!product) return <div className="container p-5 text-center"><h2>Product Not Found</h2><button onClick={() => navigate('/')}>Back Home</button></div>;
 
+  // Debug: Log product data
+  console.log('Product data:', product);
+  console.log('Product images:', product.images);
+  console.log('Product sizes:', product.sizes);
+  console.log('Product colors:', product.colors);
+
   return (
     <div className="product-detail-page">
       {/* Hero Section */}
@@ -265,32 +265,50 @@ const ProductDetailEnhanced = () => {
                     </button>
                   </div>
                   <div className="size-options-detail">
-                    {product.sizes.map(s => (
-                      <button 
-                        key={s} 
-                        className={`size-option ${selectedSize === s ? 'active' : ''}`} 
-                        onClick={() => setSelectedSize(s)}
-                      >
-                        {s}
-                      </button>
-                    ))}
+                    {product.sizes && product.sizes.map(size => {
+                      const isAvailable = true; // You can enhance this with actual stock data
+                      return (
+                        <button 
+                          key={size} 
+                          className={`size-option ${selectedSize === size ? 'active' : ''} ${!isAvailable ? 'out-of-stock' : ''}`}
+                          onClick={() => isAvailable && setSelectedSize(size)}
+                          disabled={!isAvailable}
+                          title={isAvailable ? `Size ${size} available` : `Size ${size} out of stock`}
+                        >
+                          {size}
+                          {!isAvailable && <i className="fas fa-times"></i>}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <div className="size-info">
+                    <i className="fas fa-info-circle"></i>
+                    <span>Select your preferred size</span>
                   </div>
                 </div>
                 
                 <div className="color-theme-selection">
-                  <h3>Color Theme</h3>
+                  <h3>Color</h3>
                   <div className="color-theme-options">
-                    {colorThemes.map(theme => (
+                    {product.colors && product.colors.map(color => (
                       <button 
-                        key={theme.name} 
-                        className={`color-theme-option ${selectedThemeColor === theme.name ? 'active' : ''}`} 
-                        onClick={() => setSelectedThemeColor(theme.name)}
-                        style={{ background: theme.gradient }}
-                        title={theme.name}
+                        key={color} 
+                        className={`color-theme-option ${selectedThemeColor === color ? 'active' : ''}`} 
+                        onClick={() => setSelectedThemeColor(color)}
+                        title={color}
+                        style={{ 
+                          background: product.colorMap && product.colorMap[color] 
+                            ? product.colorMap[color] 
+                            : `linear-gradient(135deg, ${color} 0%, ${color} 100%)`
+                        }}
                       >
-                        <span className="color-theme-name">{theme.name}</span>
+                        <span className="color-theme-name">{color}</span>
                       </button>
                     ))}
+                  </div>
+                  <div className="color-selection-info">
+                    <i className="fas fa-palette"></i>
+                    <span>Choose your preferred color</span>
                   </div>
                 </div>
 

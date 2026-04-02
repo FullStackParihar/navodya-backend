@@ -215,6 +215,18 @@ const Cart = () => {
                         <Link to={`/product/${item.id}`}>{item.name}</Link>
                       </h3>
                       <p>{item.description}</p>
+                      <div className="item-variants">
+                        {item.size && (
+                          <span className="variant-badge">
+                            <i className="fas fa-ruler"></i> Size: {item.size}
+                          </span>
+                        )}
+                        {item.color && (
+                          <span className="variant-badge">
+                            <i className="fas fa-palette"></i> Color: {item.color}
+                          </span>
+                        )}
+                      </div>
                       <div className="item-price-enhanced">
                         <span className="current-price">₹{item.price}</span>
                         {item.originalPrice && (

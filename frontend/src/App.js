@@ -11,7 +11,7 @@ import AlumniKits from './pages/AlumniKits';
 import TodayDealsEnhanced from './pages/TodayDealsEnhanced';
 import NewArrivalsEnhanced from './pages/NewArrivalsEnhanced';
 import Customize from './pages/Customize';
-import ProductDetailEnhanced from './pages/ProductDetailEnhanced';
+import ProductDetailAmazon from './pages/ProductDetailAmazon';
 import BulkOrder from './pages/BulkOrder';
 import Payment from './pages/Payment';
 import OrderTracking from './pages/OrderTracking';
@@ -33,6 +33,7 @@ import './styles/ui-enhanced.css';
 import { CartProvider } from './context/CartContext';
 import { WishlistProvider } from './context/WishlistContext';
 import { ToastProvider, useToast } from './context/ToastContext';
+import { AuthProvider } from './context/AuthContext';
 import PrivateRoute from './components/PrivateRoute';
 import Login from './pages/Login';
 
@@ -55,7 +56,7 @@ const AppContent = () => {
             <Route path="/today-deals" element={<TodayDealsEnhanced />} />
             <Route path="/new-arrivals" element={<NewArrivalsEnhanced />} />
             <Route path="/customize" element={<Customize />} />
-            <Route path="/product/:id" element={<ProductDetailEnhanced />} />
+            <Route path="/product/:id" element={<ProductDetailAmazon />} />
             <Route path="/bulk-order" element={<BulkOrder />} />
             <Route path="/payment" element={<PrivateRoute><Payment /></PrivateRoute>} />
             <Route path="/order-tracking" element={<PrivateRoute><OrderTracking /></PrivateRoute>} />
@@ -87,11 +88,13 @@ const AppContent = () => {
 function App() {
   return (
     <ToastProvider>
-      <CartProvider>
-        <WishlistProvider>
-          <AppContent />
-        </WishlistProvider>
-      </CartProvider>
+      <AuthProvider>
+        <CartProvider>
+          <WishlistProvider>
+            <AppContent />
+          </WishlistProvider>
+        </CartProvider>
+      </AuthProvider>
     </ToastProvider>
   );
 }

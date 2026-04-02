@@ -13,10 +13,20 @@ export const getCart = asyncHandler(async (req: AuthRequest, res: Response) => {
     .sort({ created_at: -1 });
 
   console.log('Found cart items:', cartItems.length);
+  console.log('Cart items details:', cartItems.map(item => ({
+    id: item._id,
+    product_id: item.product_id,
+    quantity: item.quantity,
+    size: item.size,
+    color: item.color
+  })));
+  
   // cartItems.forEach(item => console.log('Item:', item.product_id));
 
   // Filter out items where the product has been deleted (null after populate)
   const validItems = cartItems.filter(item => item.product_id);
+  
+  console.log('Valid cart items after filtering:', validItems.length);
 
   const subtotal = validItems.reduce((total, item) => {
     const product = item.product_id as unknown as IProduct;
@@ -55,7 +65,7 @@ export const getCart = asyncHandler(async (req: AuthRequest, res: Response) => {
 
 export const addToCart = asyncHandler(async (req: AuthRequest, res: Response) => {
   const { productId, quantity, size, color } = req.body;
-  console.log(`addToCart: User ${req.userId} adding ${productId}, size=${size}, color=${color}`);
+  console.log(`addToCart: User ${req.userId} adding ${productId}, size=${size}, color=${color}, quantity=${quantity}`);
 
   const product = await Product.findOne({ _id: productId, is_active: true });
 
@@ -92,6 +102,7 @@ export const addToCart = asyncHandler(async (req: AuthRequest, res: Response) =>
 
     cartItem.quantity = newQuantity;
     await cartItem.save();
+    console.log(`addToCart: Updated existing cart item to quantity ${newQuantity}`);
   } else {
     cartItem = await CartItem.create({
       user_id: req.userId,
@@ -100,7 +111,12 @@ export const addToCart = asyncHandler(async (req: AuthRequest, res: Response) =>
       size,
       color,
     });
+    console.log(`addToCart: Created new cart item with ID ${cartItem._id}`);
   }
+
+  // Verify the item was saved by checking total cart count
+  const totalCartItems = await CartItem.countDocuments({ user_id: req.userId });
+  console.log(`addToCart: User ${req.userId} now has ${totalCartItems} total cart items`);
 
   // Populate for response
   const populatedCartItem = await CartItem.findById(cartItem._id).populate('product_id');

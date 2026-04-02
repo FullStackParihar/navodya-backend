@@ -70,6 +70,28 @@ export const login = asyncHandler(async (req: AuthRequest, res: Response) => {
   );
 });
 
+export const validateToken = asyncHandler(async (req: AuthRequest, res: Response) => {
+  // If we reach here, the token is valid (passed through auth middleware)
+  res.status(200).json(new ApiResponse(200, { valid: true }, 'Token is valid'));
+});
+
+export const refreshToken = asyncHandler(async (req: AuthRequest, res: Response) => {
+  const user = await User.findById(req.userId).select('-password_hash');
+
+  if (!user) {
+    throw new ApiError(401, 'User not found');
+  }
+
+  // Generate new token
+  const token = jwt.sign(
+    { userId: user.id },
+    config.jwt.secret,
+    { expiresIn: config.jwt.expiresIn } as SignOptions
+  );
+
+  res.status(200).json(new ApiResponse(200, { token }, 'Token refreshed successfully'));
+});
+
 export const getProfile = asyncHandler(async (req: AuthRequest, res: Response) => {
   const user = await User.findById(req.userId).select('-password_hash');
 

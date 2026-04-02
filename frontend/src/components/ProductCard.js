@@ -94,10 +94,6 @@ const ProductCard = ({ product }) => {
         {product.badge && (
           <div className="product-badge">{product.badge}</div>
         )}
-        
-        {discount > 0 && (
-          <div className="discount-badge">-{discount}%</div>
-        )}
       </div>
       
       <div className="product-info">

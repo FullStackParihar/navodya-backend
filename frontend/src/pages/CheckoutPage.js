@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useToast } from '../context/ToastContext';
+import { useAuth } from '../context/AuthContext';
 import './CheckoutPage.css';
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
   const { items, totalAmount, clearCart } = useCart();
   const { success, error } = useToast();
+  const { authenticatedApiCall } = useAuth();
   
   const [formData, setFormData] = useState({
     firstName: '',
@@ -39,14 +41,62 @@ const CheckoutPage = () => {
       return;
     }
 
+    // Check if cart is empty
+    if (items.length === 0) {
+      error('Your cart is empty');
+      return;
+    }
+
     setIsProcessing(true);
     
-    // Simulate order processing
-    setTimeout(() => {
-      success('Order placed successfully!');
-      clearCart();
-      navigate('/order-success');
-    }, 2000);
+    try {
+      // Create order using authenticated API call
+      const orderData = {
+        shippingAddress: {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          phone: formData.phone,
+          address: formData.address,
+          city: formData.city,
+          state: formData.state,
+          pincode: formData.pincode
+        },
+        paymentMethod: formData.paymentMethod,
+        items: items.map(item => ({
+          productId: item.id,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          size: item.size,
+          color: item.color
+        })),
+        totalAmount: totalAmount
+      };
+
+      const response = await authenticatedApiCall('/orders/create', {
+        method: 'POST',
+        body: JSON.stringify(orderData)
+      });
+
+      if (response.success) {
+        success('Order placed successfully!');
+        clearCart();
+        navigate('/order-success');
+      } else {
+        error(response.message || 'Failed to place order');
+      }
+    } catch (err) {
+      console.error('Order creation error:', err);
+      if (err.message === 'Token refresh failed') {
+        error('Session expired. Please login again.');
+        navigate('/login');
+      } else {
+        error('Failed to place order. Please try again.');
+      }
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const calculateTotal = () => {
