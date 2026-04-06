@@ -19,12 +19,11 @@ const ProductCardAmazon = ({ product }) => {
 
     setIsAdding(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 500));
-      addToCart(product);
+      await addToCart(product);
       success(`${product.name} added to cart!`);
     } catch (err) {
-      error('Failed to add to cart');
+      console.error('addToCart error:', err);
+      error(err.message || 'Failed to add to cart');
     } finally {
       setIsAdding(false);
     }

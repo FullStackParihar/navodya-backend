@@ -38,11 +38,11 @@ const categories = [
 ];
 
 // Stats data like in the design
-const stats = [
-  { number: '200+', label: 'International Brands', icon: '🌍' },
-  { number: '2,000+', label: 'High-Quality Products', icon: '📦' },
-  { number: '30,000+', label: 'Happy Customers', icon: '😊' }
-];
+// const stats = [
+//   { number: '200+', label: 'International Brands', icon: '🌍' },
+//   { number: '2,000+', label: 'High-Quality Products', icon: '📦' },
+//   { number: '30,000+', label: 'Happy Customers', icon: '😊' }
+// ];
 
 const HomeClean = () => {
   const [isLoading, setIsLoading] = useState(true);

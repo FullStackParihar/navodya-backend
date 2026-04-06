@@ -74,23 +74,43 @@ export const addToCart = asyncHandler(async (req: AuthRequest, res: Response) =>
     throw new ApiError(404, 'Product not found or not available');
   }
 
-  const sizeData = product.sizes.find((s) => s.size === size);
+  // Improved size and color selection
+  let effectiveSize = size;
+  let effectiveColor = color;
+
+  let sizeData = product.sizes.find((s) => s.size === effectiveSize);
+  
+  // If requested size not found and product has sizes, pick first available with stock or just first
+  if (!sizeData && product.sizes.length > 0) {
+    sizeData = product.sizes.find(s => s.stock >= quantity) || product.sizes[0];
+    effectiveSize = sizeData.size;
+    console.log(`addToCart: Defaulting to size ${effectiveSize} as ${size} was not found`);
+  }
+
   if (!sizeData || sizeData.stock < quantity) {
     console.log(`addToCart: Invalid size/stock. Available: ${JSON.stringify(product.sizes)}`);
     throw new ApiError(400, 'Selected size not available or insufficient stock');
   }
 
-  const colorExists = product.colors.some((c) => c.name === color);
-  if (!colorExists) {
-    console.log(`addToCart: Invalid color ${color}. Available: ${JSON.stringify(product.colors)}`);
+  const colorExists = product.colors.some((c) => c.name === effectiveColor);
+  if (!colorExists && product.colors.length > 0) {
+    effectiveColor = product.colors[0].name;
+    console.log(`addToCart: Defaulting to color ${effectiveColor} as ${color} was not found`);
+  } else if (!colorExists && product.colors.length === 0) {
+     // If no colors exist but we received N/A, it's fine
+     if (effectiveColor !== 'N/A') {
+        effectiveColor = 'N/A';
+     }
+  } else if (!colorExists) {
+    console.log(`addToCart: Invalid color ${effectiveColor}. Available: ${JSON.stringify(product.colors)}`);
     throw new ApiError(400, 'Selected color not available');
   }
 
   let cartItem = await CartItem.findOne({
     user_id: req.userId,
     product_id: productId,
-    size,
-    color,
+    size: effectiveSize,
+    color: effectiveColor,
   });
 
   if (cartItem) {
@@ -108,8 +128,8 @@ export const addToCart = asyncHandler(async (req: AuthRequest, res: Response) =>
       user_id: req.userId,
       product_id: productId,
       quantity,
-      size,
-      color,
+      size: effectiveSize,
+      color: effectiveColor,
     });
     console.log(`addToCart: Created new cart item with ID ${cartItem._id}`);
   }

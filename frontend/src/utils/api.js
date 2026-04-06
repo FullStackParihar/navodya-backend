@@ -1,4 +1,4 @@
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
 const getHeaders = () => {
   const token = localStorage.getItem('token');
@@ -16,14 +16,16 @@ export const api = {
     const response = await fetch(`${API_URL}${endpoint}`, {
       headers: getHeaders(),
     });
-    return response.json();
+    const result = await response.json();
+    if (!response.ok) throw result;
+    return result;
   },
 
   post: async (endpoint, data) => {
     const isFormData = data instanceof FormData;
     const headers = getHeaders();
     if (isFormData) {
-      delete headers['Content-Type']; // Let browser set boundary
+      delete headers['Content-Type'];
     }
     
     const response = await fetch(`${API_URL}${endpoint}`, {
@@ -31,7 +33,9 @@ export const api = {
       headers: headers,
       body: isFormData ? data : JSON.stringify(data),
     });
-    return response.json();
+    const result = await response.json();
+    if (!response.ok) throw result;
+    return result;
   },
 
   patch: async (endpoint, data) => {
@@ -46,7 +50,9 @@ export const api = {
       headers: headers,
       body: isFormData ? data : JSON.stringify(data),
     });
-    return response.json();
+    const result = await response.json();
+    if (!response.ok) throw result;
+    return result;
   },
 
   delete: async (endpoint) => {
@@ -54,7 +60,9 @@ export const api = {
       method: 'DELETE',
       headers: getHeaders(),
     });
-    return response.json();
+    const result = await response.json();
+    if (!response.ok) throw result;
+    return result;
   },
 };
 

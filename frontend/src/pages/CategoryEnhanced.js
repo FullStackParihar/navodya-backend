@@ -13,7 +13,7 @@ const CategoryEnhanced = ({ category = 'tshirts' }) => {
   const [sortBy, setSortBy] = useState('featured');
   const [loading, setLoading] = useState(true);
   const { addToCart } = useCart();
-  const { success } = useToast();
+  const { success, error } = useToast();
 
   const handleSizeChange = (size) => {
     if (selectedSizes.includes(size)) {
@@ -23,15 +23,20 @@ const CategoryEnhanced = ({ category = 'tshirts' }) => {
     }
   };
 
-  const handleAddToCart = (product) => {
-    addToCart({
-      ...product,
-      id: product.dbId || product.id,
-      quantity: 1,
-      selectedSize: product.sizes && product.sizes.length > 0 ? product.sizes[0] : 'Free Size',
-      selectedColor: 'N/A'
-    });
-    success(`${product.name} added to cart!`);
+  const handleAddToCart = async (product) => {
+    try {
+      await addToCart({
+        ...product,
+        id: product.dbId || product.id,
+        quantity: 1,
+        selectedSize: product.sizes && product.sizes.length > 0 ? product.sizes[0] : 'Free Size',
+        selectedColor: 'N/A'
+      });
+      success(`${product.name} added to cart!`);
+    } catch (err) {
+      console.error('addToCart error:', err);
+      error(err.message || 'Failed to add to cart');
+    }
   };
 
   useEffect(() => {

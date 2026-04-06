@@ -104,6 +104,20 @@ const cartReducer = (state, action) => {
 export const CartProvider = ({ children }) => {
   const [state, dispatch] = useReducer(cartReducer, initialState);
 
+  const mapCartItem = (item) => ({
+    id: item.products?.slug || item.product_id?.slug || item.id,
+    dbId: item.products?._id || item.product_id?._id || item.product_id,
+    cartItemId: item._id,
+    name: item.products?.name || item.product_id?.name,
+    price: item.products?.sale_price || item.products?.price || item.product_id?.sale_price || item.product_id?.price || 0,
+    image: item.products?.images?.[0] || item.product_id?.images?.[0],
+    quantity: item.quantity,
+    selectedSize: item.size,
+    selectedColor: item.color,
+    size: item.size,
+    color: item.color
+  });
+
   // Load cart from localStorage or backend on mount
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -112,17 +126,7 @@ export const CartProvider = ({ children }) => {
       try {
         const result = await api.get('/cart');
         if (result.success) {
-          const mappedItems = result.data.items.map(item => ({
-            id: item.products?.slug || item.product_id?.slug || item.id,
-            dbId: item.products?._id || item.product_id?._id || item.product_id,
-            cartItemId: item._id,
-            name: item.products?.name || item.product_id?.name,
-            price: item.products?.sale_price || item.products?.price || item.product_id?.sale_price || item.product_id?.price || 0,
-            image: item.products?.images?.[0] || item.product_id?.images?.[0],
-            quantity: item.quantity,
-            selectedSize: item.size,
-            selectedColor: item.color
-          }));
+          const mappedItems = result.data.items.map(mapCartItem);
           dispatch({ type: SET_CART, payload: mappedItems });
         }
       } catch (err) {
@@ -157,19 +161,26 @@ export const CartProvider = ({ children }) => {
   // Actions
   const addToCart = async (product) => {
     const token = localStorage.getItem('token');
-    if (token && product.dbId) {
+    let productToDispatch = product;
+
+    if (token && (product.dbId || product._id)) {
       try {
-        await api.post('/cart/add', {
-          productId: product.dbId,
+        const result = await api.post('/cart/add', {
+          productId: product.dbId || product._id,
           quantity: product.quantity || 1,
-          size: product.selectedSize || 'Free Size',
-          color: product.selectedColor || 'N/A'
+          size: product.selectedSize || product.size || 'Free Size',
+          color: product.selectedColor || product.color || 'N/A'
         });
+        
+        if (result.success && result.data) {
+          productToDispatch = mapCartItem(result.data);
+        }
       } catch (err) {
         console.error('Error adding to backend cart:', err);
+        throw err;
       }
     }
-    dispatch({ type: ADD_TO_CART, payload: product });
+    dispatch({ type: ADD_TO_CART, payload: productToDispatch });
   };
 
   const removeFromCart = async (productId) => {

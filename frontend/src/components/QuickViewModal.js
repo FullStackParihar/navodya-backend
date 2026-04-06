@@ -34,7 +34,8 @@ const QuickViewModal = ({ product, isOpen, onClose }) => {
       success(`${product.name} added to cart!`);
       onClose();
     } catch (err) {
-      error('Failed to add to cart');
+      console.error('Quick view addToCart error:', err);
+      error(err.message || 'Failed to add to cart');
     } finally {
       setIsAddingToCart(false);
     }

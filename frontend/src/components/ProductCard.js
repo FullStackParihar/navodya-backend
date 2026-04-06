@@ -8,7 +8,7 @@ import QuickViewModal from './QuickViewModal';
 const ProductCard = ({ product }) => {
   const { addToCart, isInCart } = useCart();
   const { isInWishlist, toggleWishlist } = useWishlist();
-  const { success, error, info } = useToast();
+  const { success, error } = useToast();
   const [isAdding, setIsAdding] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
@@ -21,12 +21,11 @@ const ProductCard = ({ product }) => {
 
     setIsAdding(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 500));
-      addToCart(product);
+      await addToCart(product);
       success(`${product.name} added to cart!`);
     } catch (err) {
-      error('Failed to add to cart');
+      console.error('addToCart error:', err);
+      error(err.message || 'Failed to add to cart');
     } finally {
       setIsAdding(false);
     }
@@ -53,7 +52,7 @@ const ProductCard = ({ product }) => {
     return 0;
   };
 
-  const discount = calculateDiscount();
+  // const discount = calculateDiscount();
 
   return (
     <div 
