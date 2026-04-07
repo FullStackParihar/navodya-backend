@@ -135,7 +135,6 @@ const HomeUltraModern = () => {
   const [activeTab, setActiveTab] = useState('all');
   const [products, setProducts] = useState([]);
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrollY, setScrollY] = useState(0);
 
   // Parallax scroll effect
@@ -219,8 +218,9 @@ const HomeUltraModern = () => {
             key={section}
             href={`#${section}`}
             className="nav-dot"
+            aria-label={`Navigate to ${section}`}
             style={{ animationDelay: `${index * 0.1}s` }}
-          />
+          > </a>
         ))}
       </div>
 

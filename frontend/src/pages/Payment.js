@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext';
 import { useToast } from '../context/ToastContext';
 import api from '../utils/api';
+import { generateInvoice } from '../utils/invoiceGenerator';
 
 const Payment = () => {
   const { items: cartItems, totalAmount, clearCart } = useCart();
@@ -11,6 +12,7 @@ const Payment = () => {
   const [paymentMethod, setPaymentMethod] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState(false);
+  const [createdOrder, setCreatedOrder] = useState(null);
   const [couponCode, setCouponCode] = useState('');
   const [discountAmount, setDiscountAmount] = useState(0);
   const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
@@ -154,21 +156,40 @@ const Payment = () => {
     return /^\d{6}$/.test(pincode);
   };
 
-  const handleAddAddress = () => {
+  const handleAddAddress = async () => {
     if (!validatePincode(newAddress.pincode)) {
       showToastError('Please enter a valid 6-digit pincode');
       return;
     }
 
-    const address = {
-      ...newAddress,
-      id: Date.now()
-    };
+    try {
+      // Save to backend profile
+      const result = await api.patch('/auth/profile', {
+        address: newAddress.address,
+        city: newAddress.city,
+        state: newAddress.state,
+        pincode: newAddress.pincode,
+        phone: newAddress.phone,
+        name: newAddress.fullName // Update profile name too if needed or use for reference
+      });
 
-    setAddresses([...addresses, address]);
-    setSelectedAddress(address);
-    setShowAddAddress(false);
-    showToastSuccess('Address added successfully');
+      if (result.success) {
+        const address = {
+          ...newAddress,
+          id: Date.now()
+        };
+
+        setAddresses([...addresses, address]);
+        setSelectedAddress(address);
+        setShowAddAddress(false);
+        showToastSuccess('Address added and saved to profile successfully');
+      } else {
+        showToastError(result.message || 'Failed to save address to profile');
+      }
+    } catch (err) {
+      console.error('Error saving address:', err);
+      showToastError(err.message || 'Failed to save address. Please try again.');
+    }
   };
 
   const handlePayment = async () => {
@@ -217,6 +238,7 @@ const Payment = () => {
 
       if (orderResult.success) {
         setOrderPlaced(true);
+        setCreatedOrder(orderResult.data);
         clearCart();
         showToastSuccess('Order placed successfully!');
       } else {
@@ -613,6 +635,16 @@ const Payment = () => {
               <button className="btn-primary" onClick={() => window.location.href = '/'}>
                 <i className="fas fa-shopping-cart"></i> Continue Shopping
               </button>
+              
+              {createdOrder && (
+                <button 
+                  className="btn-secondary" 
+                  onClick={() => generateInvoice(createdOrder)}
+                  style={{ marginTop: '1rem' }}
+                >
+                  <i className="fas fa-file-invoice"></i> Download Invoice
+                </button>
+              )}
             </div>
           </div>
         )}
@@ -959,7 +991,7 @@ const Payment = () => {
           box-shadow: var(--shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1));
           height: fit-content;
           position: sticky;
-          top: 100px;
+          top: 155px;
         }
 
         .order-summary-sidebar h3 {

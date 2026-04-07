@@ -161,22 +161,50 @@ export const CartProvider = ({ children }) => {
   // Actions
   const addToCart = async (product) => {
     const token = localStorage.getItem('token');
-    let productToDispatch = product;
+    
+    // Determine default size and color intelligently
+    let sizeToAdd = product.selectedSize || product.size;
+    if (!sizeToAdd) {
+      if (Array.isArray(product.sizes) && product.sizes.length > 0) {
+        sizeToAdd = typeof product.sizes[0] === 'object' ? product.sizes[0].size : product.sizes[0];
+      } else {
+        sizeToAdd = 'Free Size';
+      }
+    }
 
-    if (token && (product.dbId || product._id)) {
+    let colorToAdd = product.selectedColor || product.color;
+    if (!colorToAdd) {
+      if (Array.isArray(product.colors) && product.colors.length > 0) {
+        colorToAdd = typeof product.colors[0] === 'object' ? product.colors[0].name || product.colors[0].color : product.colors[0];
+      } else {
+        colorToAdd = 'N/A';
+      }
+    }
+
+    let productToDispatch = {
+        ...product,
+        size: sizeToAdd,
+        color: colorToAdd,
+        selectedSize: sizeToAdd,
+        selectedColor: colorToAdd
+    };
+
+    // Use dbId if available, fallback to _id or id
+    const productId = product.dbId || product._id || (typeof product.id === 'string' && product.id.length === 24 ? product.id : null);
+    
+    if (token && productId) {
       try {
         const result = await api.post('/cart/add', {
-          productId: product.dbId || product._id,
+          productId: productId,
           quantity: product.quantity || 1,
-          size: product.selectedSize || product.size || 'Free Size',
-          color: product.selectedColor || product.color || 'N/A'
+          size: sizeToAdd,
+          color: colorToAdd
         });
         
         if (result.success && result.data) {
           productToDispatch = mapCartItem(result.data);
         }
       } catch (err) {
-        console.error('Error adding to backend cart:', err);
         throw err;
       }
     }

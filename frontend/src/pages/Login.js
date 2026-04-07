@@ -18,8 +18,6 @@ const Login = () => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
-  const [otpSent, setOtpSent] = useState(false);
-  const [otp, setOtp] = useState('');
   
   const navigate = useNavigate();
 
@@ -34,25 +32,6 @@ const Login = () => {
   const handleGoogleLogin = () => {
     // Google OAuth integration - placeholder
     window.open('https://accounts.google.com/oauth/authorize?client_id=YOUR_CLIENT_ID&redirect_uri=YOUR_REDIRECT_URI&response_type=code&scope=email%20profile', '_blank');
-  };
-
-  const handleSendOTP = async () => {
-    if (!formData.email) {
-      setError('Please enter your email address');
-      return;
-    }
-    
-    setIsLoading(true);
-    try {
-      // Simulate OTP sending - in production, integrate with SMS service
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      setOtpSent(true);
-      setError('OTP sent to your email');
-    } catch (err) {
-      setError('Failed to send OTP');
-    } finally {
-      setIsLoading(false);
-    }
   };
 
   const handleSubmit = async (e) => {

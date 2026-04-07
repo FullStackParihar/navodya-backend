@@ -236,7 +236,7 @@ const FAQ = () => {
 
         .faq-side {
           position: sticky;
-          top: 110px;
+          top: 155px;
           display: grid;
           gap: 1rem;
         }

@@ -7,7 +7,7 @@ import './AdminProfile.css';
 
 const AdminProfile = () => {
   const navigate = useNavigate();
-  const { success, error, info } = useToast();
+  const { success, error } = useToast();
   
   const [isAdmin, setIsAdmin] = useState(false);
   const [activeTab, setActiveTab] = useState('dashboard');

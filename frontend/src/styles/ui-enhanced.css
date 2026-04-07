@@ -303,8 +303,8 @@ a:hover::after {
 
 /* Main Content Area */
 main {
-    margin-top: 80px;
-    min-height: calc(100vh - 80px);
+    margin-top: 140px;
+    min-height: calc(100vh - 140px);
 }
 
 /* Hero Section - Modern Design */

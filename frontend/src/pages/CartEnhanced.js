@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useToast } from '../context/ToastContext';
-import SkeletonLoader from '../components/SkeletonLoader';
+
 
 const Cart = () => {
   const navigate = useNavigate();
@@ -18,7 +18,7 @@ const Cart = () => {
       return;
     }
     // Navigate to checkout page
-    navigate('/checkout');
+    navigate('/payment');
   };
 
   const handleQuantityChange = (id, newQuantity) => {

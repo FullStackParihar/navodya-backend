@@ -82,7 +82,7 @@ const CheckoutPage = () => {
       if (response.success) {
         success('Order placed successfully!');
         clearCart();
-        navigate('/order-success');
+        navigate('/order-success', { state: { order: response.data } });
       } else {
         error(response.message || 'Failed to place order');
       }

@@ -683,7 +683,7 @@ const UserPanel = () => {
 
         .panel-sidebar {
           position: sticky;
-          top: 110px;
+          top: 155px;
           display: flex;
           flex-direction: column;
           gap: 0.5rem;

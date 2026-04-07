@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../utils/api';
+import { generateInvoice } from '../utils/invoiceGenerator';
 
 const OrderTracking = () => {
   const { orderId } = useParams();
   const navigate = useNavigate();
   const [orderData, setOrderData] = useState(null);
+  const [rawOrder, setRawOrder] = useState(null); // Keep original data for invoice
   const [loading, setLoading] = useState(true);
 
 
@@ -18,6 +20,7 @@ const OrderTracking = () => {
         const result = await api.get(`/orders/${orderId}`);
         if (result.success) {
           const o = result.data;
+          setRawOrder(o);
           
           // Helper for tracking steps base on status
           const getTrackingSteps = (status) => {
@@ -122,6 +125,12 @@ const OrderTracking = () => {
           <div className="order-info">
             <h1>Order #{orderData.id}</h1>
             <p>Placed on {new Date(orderData.orderDate).toLocaleDateString('en-IN')}</p>
+            <button 
+              className="invoice-btn"
+              onClick={() => generateInvoice(rawOrder)}
+            >
+              <i className="fas fa-file-invoice"></i> Download Invoice
+            </button>
           </div>
           <div className="delivery-info">
             <div className="delivery-badge">
@@ -297,7 +306,29 @@ const OrderTracking = () => {
 
         .order-info h1 {
           color: var(--text-primary, #1e293b);
-          margin-bottom: 0.5rem;
+          margin-bottom: 0.25rem;
+        }
+
+        .invoice-btn {
+          background: var(--bg-secondary, #f1f5f9);
+          border: 1px solid var(--border-color, #e2e8f0);
+          padding: 0.5rem 1rem;
+          border-radius: var(--radius-lg, 0.75rem);
+          font-weight: 600;
+          color: var(--primary-color, #ff6b35);
+          cursor: pointer;
+          font-size: 0.875rem;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          margin-top: 0.5rem;
+          transition: all var(--transition-fast);
+        }
+
+        .invoice-btn:hover {
+          background: var(--primary-color, #ff6b35);
+          color: white;
+          border-color: var(--primary-color, #ff6b35);
         }
 
         .delivery-info {

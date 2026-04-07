@@ -21,5 +21,9 @@ export const updateProfileSchema = z.object({
     name: z.string().min(2, 'Name must be at least 2 characters').optional(),
     phone: z.string().optional(),
     avatar: z.string().url('Invalid avatar URL').optional(),
+    address: z.string().optional(),
+    city: z.string().optional(),
+    state: z.string().optional(),
+    pincode: z.string().optional(),
   }),
 });

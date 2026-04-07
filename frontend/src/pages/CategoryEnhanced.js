@@ -216,7 +216,7 @@ const CategoryEnhanced = ({ category = 'tshirts' }) => {
 
         .filters-sidebar {
           position: sticky;
-          top: 100px;
+          top: 155px;
           height: fit-content;
         }
 

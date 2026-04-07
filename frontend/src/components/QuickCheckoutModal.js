@@ -94,7 +94,6 @@ const QuickCheckoutModal = ({
     navigate('/payment');
   };
 
-  const subtotal = calculateSubtotal();
   const total = calculateTotal();
 
   if (!isOpen) return null;

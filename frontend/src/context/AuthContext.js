@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import api from '../utils/api';
 
 const AuthContext = createContext();
@@ -16,6 +16,18 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
+  const validateToken = useCallback(async () => {
+    try {
+      const response = await api.get('/auth/validate');
+      if (!response.success) {
+        logout();
+      }
+    } catch (error) {
+      console.error('Token validation failed:', error);
+      logout();
+    }
+  }, []);
+
   useEffect(() => {
     const token = localStorage.getItem('token');
     const userData = localStorage.getItem('user');
@@ -27,26 +39,14 @@ export const AuthProvider = ({ children }) => {
         setIsAuthenticated(true);
         
         // Validate token with backend
-        validateToken(token);
+        validateToken();
       } catch (error) {
         console.error('Error parsing user data:', error);
         logout();
       }
     }
     setIsLoading(false);
-  }, []);
-
-  const validateToken = async (token) => {
-    try {
-      const response = await api.get('/auth/validate');
-      if (!response.success) {
-        logout();
-      }
-    } catch (error) {
-      console.error('Token validation failed:', error);
-      logout();
-    }
-  };
+  }, [validateToken]);
 
   const login = async (email, password) => {
     try {
@@ -109,7 +109,7 @@ export const AuthProvider = ({ children }) => {
     }
 
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5001/api'}${endpoint}`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000/api'}${endpoint}`, {
         ...options,
         headers: {
           'Content-Type': 'application/json',
@@ -123,7 +123,7 @@ export const AuthProvider = ({ children }) => {
         const newToken = await refreshToken();
         if (newToken) {
           // Retry with new token
-          const retryResponse = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5001/api'}${endpoint}`, {
+          const retryResponse = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000/api'}${endpoint}`, {
             ...options,
             headers: {
               'Content-Type': 'application/json',

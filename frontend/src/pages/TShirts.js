@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import api from '../utils/api';
 import ProductCard from '../components/ProductCard';
-import SizeFilter from '../components/SizeFilter';
 import SkeletonLoader from '../components/SkeletonLoader';
 import './TShirtsEnhanced.css';
 
 const TShirts = () => {
-  const [activeTab, setActiveTab] = useState('all');
+  const activeTab = 'all';
   const [sortBy, setSortBy] = useState('featured');
   const [isLoading, setIsLoading] = useState(true);
   const [products, setProducts] = useState([]);

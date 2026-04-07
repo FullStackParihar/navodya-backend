@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 const ThemeSwitch = () => {
   const [theme, setTheme] = useState(() => {
@@ -66,11 +66,11 @@ const ThemeSwitch = () => {
     setTheme(newTheme);
   };
 
-  const handleKeyDown = (e) => {
+  const handleKeyDown = useCallback((e) => {
     // Ctrl/Cmd + Shift + T to toggle theme
     if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'T') {
       e.preventDefault();
-      toggleTheme();
+      setTheme(prev => prev === 'light' ? 'dark' : 'light');
     }
     
     // Ctrl/Cmd + Shift + L for Light Mode
@@ -84,12 +84,13 @@ const ThemeSwitch = () => {
       e.preventDefault();
       setTheme('dark');
     }
-  };
+  }, []);
 
   useEffect(() => {
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [theme]);
+  }, [handleKeyDown]);
+
 
   return (
     <>

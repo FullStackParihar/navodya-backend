@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import { Request, Response } from 'express';
 import Stripe from 'stripe';
 import { ApiError } from '../utils/ApiError.js';
@@ -17,13 +18,13 @@ const stripe = new Stripe(config.stripe.secretKey, {
 export const createPaymentIntent = asyncHandler(async (req: AuthRequest, res: Response) => {
     const { couponCode, shippingAddress } = req.body;
 
-    // 1. Get Cart Items
-    const cartItems = await CartItem.find({ user_id: req.userId }).populate('product_id');
+    // 1. Get Cart Items with explicit cast
+    const cartItems = await CartItem.find({ user_id: new mongoose.Types.ObjectId(req.userId) }).populate('product_id');
 
-    console.log(`Payment intent: User ${req.userId} has ${cartItems.length} cart items`);
+    console.log(`[PAYMENT_INTENT] User: ${req.userId}, Found Cart Items: ${cartItems?.length || 0}`);
 
     if (!cartItems || cartItems.length === 0) {
-        console.log('Payment intent failed: Cart is empty');
+        console.error(`[PAYMENT_INTENT_ERROR] Cart is empty for user ${req.userId}`);
         throw new ApiError(400, 'Your cart is empty. Please add items to your cart before proceeding to checkout.');
     }
 
@@ -163,6 +164,8 @@ export const createOrder = asyncHandler(async (req: AuthRequest, res: Response) 
 
     // Map Shipping Address to model schema
     const mappedAddress = {
+        name: shippingAddress.fullName || shippingAddress.name || (shippingAddress.firstName ? `${shippingAddress.firstName} ${shippingAddress.lastName || ''}`.trim() : 'N/A'),
+        phone: shippingAddress.phone || 'N/A',
         street: shippingAddress.addressLine || shippingAddress.address || 'N/A',
         city: shippingAddress.city || 'N/A',
         state: shippingAddress.state || 'N/A',
@@ -171,12 +174,13 @@ export const createOrder = asyncHandler(async (req: AuthRequest, res: Response) 
     };
 
     // Get Cart logic again (Should ideally be atomic or locked)
-    const cartItems = await CartItem.find({ user_id: req.userId }).populate('product_id');
+    const cartItems = await CartItem.find({ user_id: new mongoose.Types.ObjectId(req.userId) }).populate('product_id');
     
-    console.log(`Order creation: User ${req.userId} has ${cartItems.length} cart items`);
-    
+    console.log(`[ORDER_CREATION] User: ${req.userId}, Found Cart Items: ${cartItems?.length || 0}`);
+
     if (!cartItems || cartItems.length === 0) {
-        console.log('Order creation failed: Cart is empty');
+        const allUserCartItems = await CartItem.find({ user_id: req.userId });
+        console.error(`[ORDER_CREATION_ERROR] User ${req.userId} has 0 populated items. Raw count in DB: ${allUserCartItems.length}`);
         throw new ApiError(400, 'Your cart is empty. Please add items to your cart before placing an order.');
     }
 

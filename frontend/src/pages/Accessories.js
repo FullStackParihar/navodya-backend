@@ -5,7 +5,7 @@ import SkeletonLoader from '../components/SkeletonLoader';
 import './TShirtsEnhanced.css';
 
 const Accessories = () => {
-  const [activeTab, setActiveTab] = useState('all');
+  const activeTab = 'all';
   const [sortBy, setSortBy] = useState('featured');
   const [isLoading, setIsLoading] = useState(true);
   const [products, setProducts] = useState([]);

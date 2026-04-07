@@ -14,6 +14,8 @@ export interface IOrder extends Document {
     user_id: mongoose.Types.ObjectId;
     items: IOrderItem[];
     shipping_address: {
+        name: string;
+        phone: string;
         street: string;
         city: string;
         state: string;
@@ -54,6 +56,8 @@ const orderSchema = new mongoose.Schema({
         color: String
     }],
     shipping_address: {
+        name: { type: String, required: true },
+        phone: { type: String, required: true },
         street: { type: String, required: true },
         city: { type: String, required: true },
         state: { type: String, required: true },

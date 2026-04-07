@@ -4,7 +4,6 @@ import api from '../utils/api';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { useToast } from '../context/ToastContext';
-import ProductCard from '../components/ProductCard';
 import SkeletonLoader from '../components/SkeletonLoader';
 import './ProductDetailEnhanced.css';
 
@@ -18,12 +17,10 @@ const ProductDetailEnhanced = () => {
   const [product, setProduct] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedSize, setSelectedSize] = useState('');
-  const [selectedColor, setSelectedColor] = useState('');
   const [selectedThemeColor, setSelectedThemeColor] = useState('blue');
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
-  const [activeTab, setActiveTab] = useState('description');
   const [reviews, setReviews] = useState([]);
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
   const [reviewFormData, setReviewFormData] = useState({ rating: 5, comment: '' });
@@ -74,7 +71,6 @@ const ProductDetailEnhanced = () => {
           setProduct(mappedProduct);
           if (mappedProduct.sizes.length > 0) setSelectedSize(mappedProduct.sizes[0]);
           if (mappedProduct.colors.length > 0) {
-            setSelectedColor(mappedProduct.colors[0]);
             setSelectedThemeColor(mappedProduct.colors[0]);
           }
         }
