@@ -50,6 +50,11 @@ const CheckoutPage = () => {
     setIsProcessing(true);
     
     try {
+      if (formData.paymentMethod === 'online') {
+        navigate('/payment');
+        return;
+      }
+
       // Create order using authenticated API call
       const orderData = {
         shippingAddress: {
@@ -62,16 +67,7 @@ const CheckoutPage = () => {
           state: formData.state,
           pincode: formData.pincode
         },
-        paymentMethod: formData.paymentMethod,
-        items: items.map(item => ({
-          productId: item.id,
-          name: item.name,
-          price: item.price,
-          quantity: item.quantity,
-          size: item.size,
-          color: item.color
-        })),
-        totalAmount: totalAmount
+        paymentMethod: formData.paymentMethod
       };
 
       const response = await authenticatedApiCall('/orders/create', {

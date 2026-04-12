@@ -43,10 +43,10 @@ const OrderTracking = () => {
             total: o.pricing.total,
             shippingAddress: {
               fullName: o.shipping_address.name,
-              address: o.shipping_address.address,
+              address: o.shipping_address.street,
               city: o.shipping_address.city,
               state: o.shipping_address.state,
-              pincode: o.shipping_address.pincode
+              pincode: o.shipping_address.zip_code
             },
             items: o.items.map(item => ({
               id: item.product_id,
@@ -104,7 +104,7 @@ const OrderTracking = () => {
           <div className="error-state">
             <i className="fas fa-exclamation-triangle"></i>
             <h2>Order Not Found</h2>
-            <button className="btn-primary" onClick={() => navigate('/profile')}>
+            <button className="btn-primary" onClick={() => navigate('/account?tab=orders')}>
               View My Orders
             </button>
           </div>
@@ -119,7 +119,7 @@ const OrderTracking = () => {
     <div className="order-tracking-page">
       <div className="container">
         <div className="tracking-header">
-          <button className="back-btn" onClick={() => navigate('/profile')}>
+          <button className="back-btn" onClick={() => navigate('/account?tab=orders')}>
             <i className="fas fa-arrow-left"></i> Back to Orders
           </button>
           <div className="order-info">

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
+import { useAuth } from '../context/AuthContext';
 import './Login.css';
 
 const Login = () => {
@@ -20,6 +21,7 @@ const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
   
   const navigate = useNavigate();
+  const { login, setUser } = useAuth();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -41,15 +43,13 @@ const Login = () => {
 
     try {
       const result = isLogin 
-        ? await api.post('/auth/login', { email: formData.email, password: formData.password })
+        ? await login(formData.email, formData.password)
         : await api.post('/auth/register', { name: formData.name, email: formData.email, password: formData.password });
 
       if (result.success) {
-        localStorage.setItem('isAuthenticated', 'true');
-        localStorage.setItem('token', result.data.token);
-        localStorage.setItem('user', JSON.stringify(result.data.user));
-        localStorage.setItem('userEmail', result.data.user.email);
-        localStorage.setItem('userRole', result.data.user.role || 'user');
+        if (!isLogin) {
+          setUser(result.data.user, result.data.token);
+        }
         navigate('/account');
       } else {
         setError(result.message || 'Authentication failed');

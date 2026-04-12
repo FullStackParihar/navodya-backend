@@ -40,7 +40,7 @@ const AdminProfile = () => {
     if (userRole === 'admin' || userEmail === 'admin@navodaya.com') {
       setIsAdmin(true);
     } else {
-      navigate('/user-profile');
+      navigate('/account?tab=profile');
     }
   }, [navigate]);
 
@@ -121,6 +121,13 @@ const AdminProfile = () => {
       const mappedItem = { ...item };
       if (item.category_id) mappedItem.categoryId = typeof item.category_id === 'object' ? item.category_id._id : item.category_id;
       if (item.sale_price) mappedItem.salePrice = item.sale_price;
+      if (Array.isArray(item.colors)) {
+        mappedItem.colors = item.colors.map((color) => ({
+          name: color.name || '',
+          hex: color.hex || '#000000',
+          images: color.images || []
+        }));
+      }
       setFormData(mappedItem);
     } else {
       if (type === 'product') {
@@ -129,7 +136,16 @@ const AdminProfile = () => {
           return;
         }
         setFormData({
-          name: '', slug: '', description: '', price: 0, categoryId: categories[0]?._id || '', subcategory: '', images: [], sizes: [{ size: 'M', stock: 10 }], colors: [{ name: 'Default' }], tags: []
+          name: '',
+          slug: '',
+          description: '',
+          price: 0,
+          categoryId: categories[0]?._id || '',
+          subcategory: '',
+          images: [],
+          sizes: [{ size: 'M', stock: 10 }],
+          colors: [{ name: 'Default', hex: '#000000', images: [] }],
+          tags: []
         });
       } else if (type === 'category') {
         setFormData({
@@ -248,43 +264,110 @@ const AdminProfile = () => {
     }
   };
 
+  const formatCurrency = (amount = 0) =>
+    new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      maximumFractionDigits: 0,
+    }).format(amount);
+
+  const formatOrderDate = (date) =>
+    new Date(date).toLocaleString('en-IN', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+    });
+
+  const getPaymentTone = (status) => {
+    switch ((status || '').toUpperCase()) {
+      case 'PAID':
+        return 'paid';
+      case 'PENDING':
+        return 'pending';
+      case 'FAILED':
+        return 'failed';
+      default:
+        return 'neutral';
+    }
+  };
+
+  const totalProductStock = products.reduce(
+    (sum, product) => sum + (product.sizes || []).reduce((stock, size) => stock + (size.stock || 0), 0),
+    0
+  );
+
+  const activeCoupons = coupons.filter((coupon) => {
+    if (!coupon.valid_until) return true;
+    return new Date(coupon.valid_until) >= new Date();
+  }).length;
+
   const renderDashboard = () => (
-    <div className="stats-dashboard">
+    <div className="admin-section">
       <div className="section-header">
         <h2>System Overview</h2>
         <div className="current-date">{new Date().toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</div>
       </div>
       {stats && (
-        <div className="stats-grid">
-          <div className="stat-card primary">
-            <div className="stat-icon"><i className="fas fa-users"></i></div>
-            <div className="stat-content">
-              <div className="stat-number">{stats.totalUsers}</div>
-              <div className="stat-label">Total Users</div>
+        <>
+          <div className="orders-overview-grid">
+            <div className="orders-overview-card">
+              <span className="orders-overview-label">Total Users</span>
+              <strong>{stats.totalUsers}</strong>
+            </div>
+            <div className="orders-overview-card processing">
+              <span className="orders-overview-label">Total Orders</span>
+              <strong>{stats.totalOrders}</strong>
+            </div>
+            <div className="orders-overview-card revenue">
+              <span className="orders-overview-label">Revenue</span>
+              <strong>₹{stats.revenue?.toLocaleString()}</strong>
+            </div>
+            <div className="orders-overview-card delivered">
+              <span className="orders-overview-label">Products</span>
+              <strong>{stats.totalProducts}</strong>
             </div>
           </div>
-          <div className="stat-card success">
-            <div className="stat-icon"><i className="fas fa-shopping-bag"></i></div>
-            <div className="stat-content">
-              <div className="stat-number">{stats.totalOrders}</div>
-              <div className="stat-label">Total Orders</div>
-            </div>
+
+          <div className="admin-entity-stack">
+            <article className="admin-entity-card">
+              <div className="entity-card-top">
+                <div>
+                  <h3>Admin Pulse</h3>
+                  <p className="entity-card-subtitle">Quick snapshot of the store across users, sales, and inventory.</p>
+                </div>
+                <div className="entity-card-total">
+                  <span>Today</span>
+                  <strong>{new Date().toLocaleDateString('en-IN')}</strong>
+                </div>
+              </div>
+
+              <div className="entity-card-grid">
+                <div className="entity-panel">
+                  <span className="entity-panel-label">Customer Base</span>
+                  <strong>{stats.totalUsers} registered users</strong>
+                  <p>Keep an eye on new signups and repeat buyers from the users tab.</p>
+                </div>
+                <div className="entity-panel">
+                  <span className="entity-panel-label">Sales Health</span>
+                  <strong>{stats.totalOrders} orders placed</strong>
+                  <p>Revenue currently stands at ₹{stats.revenue?.toLocaleString()} across all fulfilled and active orders.</p>
+                </div>
+                <div className="entity-panel">
+                  <span className="entity-panel-label">Catalog</span>
+                  <strong>{stats.totalProducts} live products</strong>
+                  <p>Use products and categories to update listings, pricing, and inventory details.</p>
+                </div>
+                <div className="entity-panel">
+                  <span className="entity-panel-label">Operations</span>
+                  <strong>{orders.filter((order) => order.status === 'PENDING').length} pending orders</strong>
+                  <p>Move to the orders tab to process payments, shipping, and delivery updates.</p>
+                </div>
+              </div>
+            </article>
           </div>
-          <div className="stat-card revenue">
-            <div className="stat-icon"><i className="fas fa-rupee-sign"></i></div>
-            <div className="stat-content">
-              <div className="stat-number">₹{stats.revenue?.toLocaleString()}</div>
-              <div className="stat-label">Total Revenue</div>
-            </div>
-          </div>
-          <div className="stat-card info">
-            <div className="stat-icon"><i className="fas fa-tshirt"></i></div>
-            <div className="stat-content">
-              <div className="stat-number">{stats.totalProducts}</div>
-              <div className="stat-label">Products</div>
-            </div>
-          </div>
-        </div>
+        </>
       )}
     </div>
   );
@@ -297,37 +380,93 @@ const AdminProfile = () => {
           <i className="fas fa-plus"></i> Add Product
         </button>
       </div>
-      <div className="admin-table-container">
-        <table className="admin-table">
-          <thead>
-            <tr>
-              <th>Image</th>
-              <th>Name</th>
-              <th>Category</th>
-              <th>Price</th>
-              <th>Stock</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {products.map(product => (
-              <tr key={product._id}>
-                <td><img src={product.images[0]} alt={product.name} className="table-img" /></td>
-                <td>{product.name}</td>
-                <td>{product.subcategory}</td>
-                <td>
-                  ₹{product.price}
-                  {product.sale_price ? <div style={{fontSize: '11px', color: '#22c55e'}}>Sale: ₹{product.sale_price}</div> : null}
-                </td>
-                <td>{product.sizes?.reduce((acc, s) => acc + s.stock, 0)}</td>
-                <td>
-                  <button className="action-icon edit" onClick={() => handleOpenModal('product', product)}><i className="fas fa-edit"></i></button>
-                  <button className="action-icon delete" onClick={() => deleteItem('product', product._id)}><i className="fas fa-trash"></i></button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="orders-overview-grid">
+        <div className="orders-overview-card">
+          <span className="orders-overview-label">Products</span>
+          <strong>{products.length}</strong>
+        </div>
+        <div className="orders-overview-card processing">
+          <span className="orders-overview-label">In Stock Units</span>
+          <strong>{totalProductStock}</strong>
+        </div>
+        <div className="orders-overview-card pending">
+          <span className="orders-overview-label">Low Stock</span>
+          <strong>{products.filter((product) => (product.sizes || []).reduce((sum, size) => sum + (size.stock || 0), 0) <= 10).length}</strong>
+        </div>
+        <div className="orders-overview-card revenue">
+          <span className="orders-overview-label">On Sale</span>
+          <strong>{products.filter((product) => product.sale_price).length}</strong>
+        </div>
+      </div>
+
+      <div className="admin-entity-stack">
+        {products.map((product) => {
+          const stockCount = (product.sizes || []).reduce((acc, size) => acc + (size.stock || 0), 0);
+          return (
+            <article key={product._id} className="admin-entity-card">
+              <div className="entity-card-top">
+                <div className="entity-title-group">
+                  <img src={product.images?.[0] || 'https://via.placeholder.com/72x72?text=Item'} alt={product.name} className="entity-thumb" />
+                  <div>
+                    <h3>{product.name}</h3>
+                    <p className="entity-card-subtitle">{product.slug}</p>
+                  </div>
+                </div>
+                <div className="entity-card-total">
+                  <span>Base Price</span>
+                  <strong>{formatCurrency(product.price || 0)}</strong>
+                </div>
+              </div>
+
+              <div className="entity-card-grid">
+                <div className="entity-panel">
+                  <span className="entity-panel-label">Category</span>
+                  <strong>{product.subcategory || product.category_id?.name || 'Not assigned'}</strong>
+                  <p>{product.tags?.length ? product.tags.join(', ') : 'No tags added'}</p>
+                </div>
+                <div className="entity-panel">
+                  <span className="entity-panel-label">Inventory</span>
+                  <strong>{stockCount} units available</strong>
+                  <p>{product.sizes?.length || 0} sizes and {product.colors?.length || 0} color variants configured.</p>
+                </div>
+                <div className="entity-panel">
+                  <span className="entity-panel-label">Pricing</span>
+                  <strong>{product.sale_price ? `${formatCurrency(product.sale_price)} sale` : 'Regular pricing'}</strong>
+                  <p>{product.sale_price ? `Discount from ${formatCurrency(product.price || 0)}` : 'No sale price active right now.'}</p>
+                </div>
+                <div className="entity-panel">
+                  <span className="entity-panel-label">Description</span>
+                  <strong>{product.description ? `${product.description.slice(0, 80)}${product.description.length > 80 ? '...' : ''}` : 'No description added'}</strong>
+                </div>
+              </div>
+
+              <div className="entity-card-actions">
+                <div className="entity-chip-row">
+                  {(product.sizes || []).slice(0, 4).map((size) => (
+                    <span key={`${product._id}-${size.size}`} className="entity-chip">
+                      {size.size}: {size.stock}
+                    </span>
+                  ))}
+                </div>
+                <div className="entity-action-row">
+                  <button className="entity-action-btn edit" onClick={() => handleOpenModal('product', product)}>
+                    <i className="fas fa-edit"></i> Edit
+                  </button>
+                  <button className="entity-action-btn delete" onClick={() => deleteItem('product', product._id)}>
+                    <i className="fas fa-trash"></i> Delete
+                  </button>
+                </div>
+              </div>
+            </article>
+          );
+        })}
+        {products.length === 0 && (
+          <div className="empty-admin-state">
+            <i className="fas fa-box-open"></i>
+            <h3>No products yet</h3>
+            <p>Create your first product to start building the catalog.</p>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -340,32 +479,62 @@ const AdminProfile = () => {
           <i className="fas fa-plus"></i> Add Category
         </button>
       </div>
-      <div className="admin-table-container">
-        <table className="admin-table">
-          <thead>
-            <tr>
-              <th>Image</th>
-              <th>Name</th>
-              <th>Slug</th>
-              <th>Description</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {categories.map(cat => (
-              <tr key={cat._id}>
-                <td><img src={cat.image} alt={cat.name} className="table-img" /></td>
-                <td>{cat.name}</td>
-                <td>{cat.slug}</td>
-                <td>{cat.description?.substring(0, 50)}...</td>
-                <td>
-                  <button className="action-icon edit" onClick={() => handleOpenModal('category', cat)}><i className="fas fa-edit"></i></button>
-                  <button className="action-icon delete" onClick={() => deleteItem('category', cat._id)}><i className="fas fa-trash"></i></button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="orders-overview-grid">
+        <div className="orders-overview-card">
+          <span className="orders-overview-label">Categories</span>
+          <strong>{categories.length}</strong>
+        </div>
+        <div className="orders-overview-card delivered">
+          <span className="orders-overview-label">Catalog Groups</span>
+          <strong>{categories.filter((cat) => cat.slug).length}</strong>
+        </div>
+      </div>
+      <div className="admin-entity-stack">
+        {categories.map((cat) => (
+          <article key={cat._id} className="admin-entity-card">
+            <div className="entity-card-top">
+              <div className="entity-title-group">
+                <img src={cat.image || 'https://via.placeholder.com/72x72?text=Cat'} alt={cat.name} className="entity-thumb" />
+                <div>
+                  <h3>{cat.name}</h3>
+                  <p className="entity-card-subtitle">{cat.slug}</p>
+                </div>
+              </div>
+              <div className="entity-card-total">
+                <span>Products</span>
+                <strong>{products.filter((product) => {
+                  const categoryId = typeof product.category_id === 'object' ? product.category_id?._id : product.category_id;
+                  return categoryId === cat._id;
+                }).length}</strong>
+              </div>
+            </div>
+
+            <div className="entity-card-grid">
+              <div className="entity-panel entity-panel-wide">
+                <span className="entity-panel-label">Description</span>
+                <strong>{cat.description || 'No description added yet.'}</strong>
+              </div>
+            </div>
+
+            <div className="entity-card-actions">
+              <div className="entity-action-row">
+                <button className="entity-action-btn edit" onClick={() => handleOpenModal('category', cat)}>
+                  <i className="fas fa-edit"></i> Edit
+                </button>
+                <button className="entity-action-btn delete" onClick={() => deleteItem('category', cat._id)}>
+                  <i className="fas fa-trash"></i> Delete
+                </button>
+              </div>
+            </div>
+          </article>
+        ))}
+        {categories.length === 0 && (
+          <div className="empty-admin-state">
+            <i className="fas fa-tags"></i>
+            <h3>No categories yet</h3>
+            <p>Add categories to organize products and storefront navigation.</p>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -375,46 +544,133 @@ const AdminProfile = () => {
       <div className="section-header">
         <h2>Order Management</h2>
       </div>
-      <div className="admin-table-container">
-        <table className="admin-table">
-          <thead>
-            <tr>
-              <th>Order ID</th>
-              <th>Customer</th>
-              <th>Total</th>
-              <th>Status</th>
-              <th>Date</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {orders.map(order => (
-              <tr key={order._id}>
-                <td>#{order._id.substring(0, 8)}</td>
-                <td>{order.shipping_address?.firstName} {order.shipping_address?.lastName}</td>
-                <td>₹{order.pricing?.total}</td>
-                <td>
+      <div className="orders-overview-grid">
+        <div className="orders-overview-card">
+          <span className="orders-overview-label">Total Orders</span>
+          <strong>{orders.length}</strong>
+        </div>
+        <div className="orders-overview-card pending">
+          <span className="orders-overview-label">Pending</span>
+          <strong>{orders.filter((order) => order.status === 'PENDING').length}</strong>
+        </div>
+        <div className="orders-overview-card processing">
+          <span className="orders-overview-label">Processing</span>
+          <strong>{orders.filter((order) => order.status === 'PROCESSING').length}</strong>
+        </div>
+        <div className="orders-overview-card delivered">
+          <span className="orders-overview-label">Delivered</span>
+          <strong>{orders.filter((order) => order.status === 'DELIVERED').length}</strong>
+        </div>
+        <div className="orders-overview-card revenue">
+          <span className="orders-overview-label">Order Value</span>
+          <strong>{formatCurrency(orders.reduce((sum, order) => sum + (order.pricing?.total || 0), 0))}</strong>
+        </div>
+      </div>
+
+      <div className="orders-stack">
+        {orders.map((order) => (
+          <article key={order._id} className="order-card-admin">
+            <div className="order-card-top">
+              <div>
+                <div className="order-card-id-row">
+                  <h3>Order #{order._id.substring(0, 8)}</h3>
                   <span className={`status-badge ${order.status.toLowerCase()}`}>
                     {order.status}
                   </span>
-                </td>
-                <td>{new Date(order.created_at).toLocaleDateString()}</td>
-                <td>
-                  <select 
-                    value={order.status} 
-                    onChange={(e) => updateOrderStatus(order._id, e.target.value)}
-                    className="status-select"
-                  >
-                    <option value="PROCESSING">Processing</option>
-                    <option value="SHIPPED">Shipped</option>
-                    <option value="DELIVERED">Delivered</option>
-                    <option value="CANCELLED">Cancelled</option>
-                  </select>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                </div>
+                <p className="order-card-date">{formatOrderDate(order.created_at)}</p>
+              </div>
+
+              <div className="order-card-total-block">
+                <span>Total</span>
+                <strong>{formatCurrency(order.pricing?.total || 0)}</strong>
+              </div>
+            </div>
+
+            <div className="order-card-grid">
+              <div className="order-info-panel">
+                <span className="order-panel-label">Customer</span>
+                <strong>{order.shipping_address?.name || 'Unknown Customer'}</strong>
+                <p>{order.shipping_address?.phone || 'No phone added'}</p>
+              </div>
+
+              <div className="order-info-panel">
+                <span className="order-panel-label">Delivery</span>
+                <strong>{order.shipping_address?.city || 'Unknown City'}</strong>
+                <p>
+                  {order.shipping_address?.street || 'No street provided'}
+                  {order.shipping_address?.zip_code ? `, ${order.shipping_address.zip_code}` : ''}
+                </p>
+              </div>
+
+              <div className="order-info-panel">
+                <span className="order-panel-label">Payment</span>
+                <strong>{(order.payment_info?.method || 'card').toUpperCase()}</strong>
+                <p className={`payment-badge ${getPaymentTone(order.payment_info?.status)}`}>
+                  {order.payment_info?.status || 'UNKNOWN'}
+                </p>
+              </div>
+
+              <div className="order-info-panel">
+                <span className="order-panel-label">Items</span>
+                <strong>{order.items?.length || 0} products</strong>
+                <p>
+                  Qty:{' '}
+                  {(order.items || []).reduce((sum, item) => sum + (item.quantity || 0), 0)}
+                </p>
+              </div>
+            </div>
+
+            <div className="order-items-preview">
+              {(order.items || []).slice(0, 3).map((item, index) => (
+                <div key={`${order._id}-${index}`} className="order-item-chip">
+                  <span className="order-item-name">{item.name}</span>
+                  <span className="order-item-meta">
+                    x{item.quantity}
+                    {item.size ? ` • ${item.size}` : ''}
+                    {item.color ? ` • ${item.color}` : ''}
+                  </span>
+                </div>
+              ))}
+              {(order.items || []).length > 3 && (
+                <div className="order-item-chip muted">
+                  +{order.items.length - 3} more items
+                </div>
+              )}
+            </div>
+
+            <div className="order-card-actions">
+              <div className="order-pricing-strip">
+                <span>Subtotal: {formatCurrency(order.pricing?.subtotal || 0)}</span>
+                <span>Discount: {formatCurrency(order.pricing?.discount || 0)}</span>
+                <span>Shipping: {formatCurrency(order.pricing?.shipping_fee || 0)}</span>
+              </div>
+
+              <div className="order-status-control">
+                <label htmlFor={`status-${order._id}`}>Update Status</label>
+                <select
+                  id={`status-${order._id}`}
+                  value={order.status}
+                  onChange={(e) => updateOrderStatus(order._id, e.target.value)}
+                  className="status-select"
+                >
+                  <option value="PENDING">Pending</option>
+                  <option value="PROCESSING">Processing</option>
+                  <option value="SHIPPED">Shipped</option>
+                  <option value="DELIVERED">Delivered</option>
+                  <option value="CANCELLED">Cancelled</option>
+                </select>
+              </div>
+            </div>
+          </article>
+        ))}
+        {orders.length === 0 && (
+          <div className="empty-admin-state">
+            <i className="fas fa-box-open"></i>
+            <h3>No orders yet</h3>
+            <p>New customer orders will appear here with shipping, payment, and item details.</p>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -424,31 +680,135 @@ const AdminProfile = () => {
       <div className="section-header">
         <h2>User Management</h2>
       </div>
-      <div className="admin-table-container">
-        <table className="admin-table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Role</th>
-              <th>Joined At</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map(user => (
-              <tr key={user._id}>
-                <td>{user.name}</td>
-                <td>{user.email}</td>
-                <td><span className={`role-badge ${user.role}`}>{user.role}</span></td>
-                <td>{new Date(user.created_at).toLocaleDateString()}</td>
-                <td>
-                  <button className="action-icon delete" onClick={() => deleteItem('user', user._id)}><i className="fas fa-trash"></i></button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="orders-overview-grid">
+        <div className="orders-overview-card">
+          <span className="orders-overview-label">Total Users</span>
+          <strong>{users.length}</strong>
+        </div>
+        <div className="orders-overview-card processing">
+          <span className="orders-overview-label">Admins</span>
+          <strong>{users.filter((user) => user.role === 'admin').length}</strong>
+        </div>
+        <div className="orders-overview-card delivered">
+          <span className="orders-overview-label">Customers</span>
+          <strong>{users.filter((user) => user.role !== 'admin').length}</strong>
+        </div>
+      </div>
+      <div className="admin-entity-stack">
+        {users.map((user) => (
+          <article key={user._id} className="admin-entity-card">
+            <div className="entity-card-top">
+              <div>
+                <h3>{user.name || 'Unnamed User'}</h3>
+                <p className="entity-card-subtitle">{user.email}</p>
+              </div>
+              <div className="entity-card-total">
+                <span>Role</span>
+                <strong>{user.role || 'user'}</strong>
+              </div>
+            </div>
+
+            <div className="entity-card-grid">
+              <div className="entity-panel">
+                <span className="entity-panel-label">Joined</span>
+                <strong>{new Date(user.created_at).toLocaleDateString('en-IN')}</strong>
+              </div>
+              <div className="entity-panel">
+                <span className="entity-panel-label">Permissions</span>
+                <strong><span className={`role-badge ${user.role}`}>{user.role}</span></strong>
+                <p>{user.role === 'admin' ? 'Full access to dashboard controls.' : 'Standard storefront account.'}</p>
+              </div>
+            </div>
+
+            <div className="entity-card-actions">
+              <div className="entity-action-row">
+                <button className="entity-action-btn delete" onClick={() => deleteItem('user', user._id)}>
+                  <i className="fas fa-trash"></i> Delete User
+                </button>
+              </div>
+            </div>
+          </article>
+        ))}
+        {users.length === 0 && (
+          <div className="empty-admin-state">
+            <i className="fas fa-users"></i>
+            <h3>No users found</h3>
+            <p>Registered users will appear here with role and join-date details.</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
+  const renderCoupons = () => (
+    <div className="admin-section">
+      <div className="section-header">
+        <h2>Coupon Management</h2>
+        <button className="add-btn" onClick={() => handleOpenModal('coupon')}>
+          <i className="fas fa-plus"></i> Add Coupon
+        </button>
+      </div>
+      <div className="orders-overview-grid">
+        <div className="orders-overview-card">
+          <span className="orders-overview-label">Coupons</span>
+          <strong>{coupons.length}</strong>
+        </div>
+        <div className="orders-overview-card delivered">
+          <span className="orders-overview-label">Active</span>
+          <strong>{activeCoupons}</strong>
+        </div>
+        <div className="orders-overview-card revenue">
+          <span className="orders-overview-label">Total Redemptions</span>
+          <strong>{coupons.reduce((sum, coupon) => sum + (coupon.usage_count || 0), 0)}</strong>
+        </div>
+      </div>
+      <div className="admin-entity-stack">
+        {coupons.map((coupon) => (
+          <article key={coupon._id} className="admin-entity-card">
+            <div className="entity-card-top">
+              <div>
+                <h3>{coupon.code}</h3>
+                <p className="entity-card-subtitle">{coupon.type === 'PERCENTAGE' ? 'Percentage discount' : 'Fixed amount discount'}</p>
+              </div>
+              <div className="entity-card-total">
+                <span>Value</span>
+                <strong>{coupon.type === 'PERCENTAGE' ? `${coupon.value}%` : formatCurrency(coupon.value || 0)}</strong>
+              </div>
+            </div>
+
+            <div className="entity-card-grid">
+              <div className="entity-panel">
+                <span className="entity-panel-label">Usage</span>
+                <strong>{coupon.usage_count || 0} / {coupon.usage_limit || 'Unlimited'}</strong>
+                <p>Track how often customers redeem this code.</p>
+              </div>
+              <div className="entity-panel">
+                <span className="entity-panel-label">Eligibility</span>
+                <strong>Min order {formatCurrency(coupon.min_order_amount || 0)}</strong>
+                <p>Max discount {coupon.max_discount_amount ? formatCurrency(coupon.max_discount_amount) : 'Not capped'}</p>
+              </div>
+              <div className="entity-panel">
+                <span className="entity-panel-label">Expiry</span>
+                <strong>{coupon.valid_until ? new Date(coupon.valid_until).toLocaleDateString('en-IN') : 'No expiry'}</strong>
+              </div>
+            </div>
+
+            <div className="entity-card-actions">
+              <div className="entity-action-row">
+                <button className="entity-action-btn delete" onClick={() => deleteItem('coupon', coupon._id)}>
+                  <i className="fas fa-trash"></i> Delete
+                </button>
+              </div>
+            </div>
+          </article>
+        ))}
+        {coupons.length === 0 && (
+          <div className="empty-admin-state">
+            <i className="fas fa-ticket-alt"></i>
+            <h3>No coupons created</h3>
+            <p>Create discount codes to support campaigns and seasonal offers.</p>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -503,45 +863,7 @@ const AdminProfile = () => {
               {activeTab === 'categories' && renderCategories()}
               {activeTab === 'orders' && renderOrders()}
               {activeTab === 'users' && renderUsers()}
-              {activeTab === 'coupons' && (
-                <div className="admin-section">
-                  <div className="section-header">
-                    <h2>Coupon Management</h2>
-                    <button className="add-btn" onClick={() => handleOpenModal('coupon')}>
-                      <i className="fas fa-plus"></i> Add Coupon
-                    </button>
-                  </div>
-                  <div className="admin-table-container">
-                    <table className="admin-table">
-                      <thead>
-                        <tr>
-                          <th>Code</th>
-                          <th>Type</th>
-                          <th>Value</th>
-                          <th>Usage</th>
-                          <th>Expires</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {coupons.map(coupon => (
-                          <tr key={coupon._id}>
-                            <td><strong>{coupon.code}</strong></td>
-                            <td>{coupon.type}</td>
-                            <td>{coupon.type === 'PERCENTAGE' ? `${coupon.value}%` : `₹${coupon.value}`}</td>
-                            <td>{coupon.usage_count} / {coupon.usage_limit || '∞'}</td>
-                            <td>{new Date(coupon.valid_until).toLocaleDateString()}</td>
-                            <td>
-                               <button className="action-icon delete" onClick={() => deleteItem('coupon', coupon._id)}>
-                                 <i className="fas fa-trash"></i>
-                               </button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              )}
+              {activeTab === 'coupons' && renderCoupons()}
             </>
           )}
         </main>

@@ -1,22 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import SearchBarAmazon from './SearchBarAmazon';
 import './Header.css';
 
 import { useWishlist } from '../context/WishlistContext';
+import { useAuth } from '../context/AuthContext';
 
 const Header = () => {
   const location = useLocation();
   const { totalItems } = useCart();
   const { totalItems: wishlistCount } = useWishlist();
+  const { isAuthenticated, user } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
-  // Check if user is authenticated and is admin
-  const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
-  const userEmail = localStorage.getItem('userEmail');
-  const userRole = localStorage.getItem('userRole');
-  const isAdmin = isAuthenticated && (userRole === 'admin' || userEmail === 'admin@navodaya.com');
+  const isAdmin = isAuthenticated && (user?.role === 'admin' || user?.email === 'admin@navodaya.com');
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -55,8 +53,8 @@ const Header = () => {
 
               {isAuthenticated && (
                 <Link 
-                  to="/user-profile" 
-                  className={`nav-item ${location.pathname === '/user-profile' ? 'active' : ''} animate-fadeIn`}
+                  to="/account?tab=profile" 
+                  className={`nav-item ${location.pathname === '/account' ? 'active' : ''} animate-fadeIn`}
                   style={{ animationDelay: '0.15s' }}
                 >
                   <i className="fas fa-user"></i>

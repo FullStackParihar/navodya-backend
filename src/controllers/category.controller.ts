@@ -50,10 +50,13 @@ export const updateCategory = asyncHandler(async (req: Request, res: Response) =
   if (description !== undefined) updateData.description = description;
   if (image !== undefined) updateData.image = image;
 
-  const category = await Category.findByIdAndUpdate(id, updateData, { new: true });
+  const category = await Category.findByIdAndUpdate(id, updateData, {
+    new: true,
+    runValidators: true,
+  });
 
   if (!category) {
-    throw new ApiError(500, 'Failed to update category');
+    throw new ApiError(404, 'Category not found');
   }
 
   res.status(200).json(new ApiResponse(200, category, 'Category updated successfully'));

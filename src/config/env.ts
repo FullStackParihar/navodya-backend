@@ -2,9 +2,15 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+const clientUrls = (process.env.CLIENT_URL || '')
+  .split(',')
+  .map((url) => url.trim())
+  .filter(Boolean);
+
 export const config = {
   port: process.env.PORT || 3000,
   nodeEnv: process.env.NODE_ENV || 'development',
+  clientUrls,
   mongodb: {
     uri: process.env.MONGODB_URI || 'mongodb://localhost:27017/ecommerce',
   },

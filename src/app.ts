@@ -3,12 +3,27 @@ import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import routes from './routes/index.js';
+import { config } from './config/env.js';
 import { errorHandler, notFound } from './middlewares/error.middleware.js';
 
 const app: Application = express();
 
 app.use(cors({
-  origin: process.env.CLIENT_URL || '*',
+  origin: (origin, callback) => {
+    if (!origin) {
+      return callback(null, true);
+    }
+
+    if (config.clientUrls.length === 0) {
+      return callback(null, config.nodeEnv !== 'production');
+    }
+
+    if (config.clientUrls.includes(origin)) {
+      return callback(null, true);
+    }
+
+    return callback(new Error('Not allowed by CORS'));
+  },
   credentials: true,
 }));
 

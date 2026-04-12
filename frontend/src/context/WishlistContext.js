@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import api from '../utils/api';
+import { useAuth } from './AuthContext';
 
 // Wishlist Context
 const WishlistContext = createContext();
@@ -61,27 +62,40 @@ const wishlistReducer = (state, action) => {
 // Provider
 export const WishlistProvider = ({ children }) => {
   const [state, dispatch] = useReducer(wishlistReducer, initialState);
+  const { isAuthenticated } = useAuth();
+
+  const mapFavoriteItem = (item) => {
+    const product = item.products || item.product_id;
+
+    if (!product) {
+      return null;
+    }
+
+    return {
+      id: product.slug,
+      dbId: product._id,
+      name: product.name,
+      description: product.description,
+      price: product.sale_price || product.price,
+      originalPrice: product.sale_price ? product.price : null,
+      image: product.images?.[0],
+      badge: product.tags?.includes('new') ? 'New' : '',
+      reviews: product.review_count || 0,
+      rating: product.rating || 0,
+      sizes: product.sizes || [],
+      colors: product.colors || [],
+    };
+  };
 
   // Load wishlist from localStorage or backend on mount
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    
     const fetchBackendWishlist = async () => {
       try {
         const result = await api.get('/favorites');
         if (result.success) {
-          const mapped = result.data.favorites.map(item => ({
-            id: item.product_id.slug,
-            dbId: item.product_id._id,
-            name: item.product_id.name,
-            description: item.product_id.description,
-            price: item.product_id.sale_price || item.product_id.price,
-            originalPrice: item.product_id.sale_price ? item.product_id.price : null,
-            image: item.product_id.images[0],
-            badge: (item.product_id.tags && item.product_id.tags.includes('new')) ? 'New' : '',
-            reviews: item.product_id.review_count || 0,
-            rating: item.product_id.rating || 0
-          }));
+          const mapped = result.data.favorites
+            .map(mapFavoriteItem)
+            .filter(Boolean);
           dispatch({ type: SET_WISHLIST, payload: mapped });
         }
       } catch (err) {
@@ -89,7 +103,7 @@ export const WishlistProvider = ({ children }) => {
       }
     };
 
-    if (token) {
+    if (isAuthenticated && localStorage.getItem('token')) {
       fetchBackendWishlist();
     } else {
       const savedWishlist = localStorage.getItem('navodayaWishlist');
@@ -102,7 +116,7 @@ export const WishlistProvider = ({ children }) => {
         }
       }
     }
-  }, []);
+  }, [isAuthenticated]);
 
   // Save wishlist to localStorage whenever it changes (only for guest users or as fallback)
   useEffect(() => {
@@ -114,7 +128,6 @@ export const WishlistProvider = ({ children }) => {
 
   // Actions
   const addToWishlist = async (product) => {
-    console.log('Adding to wishlist:', product);
     const token = localStorage.getItem('token');
     
     // Optimistic update
@@ -123,8 +136,7 @@ export const WishlistProvider = ({ children }) => {
     if (token) {
       if (product.dbId) {
         try {
-          const response = await api.post(`/favorites/toggle/${product.dbId}`);
-          console.log('Added to backend favorites:', response);
+          await api.post(`/favorites/toggle/${product.dbId}`);
         } catch (err) {
           console.error('Error adding to favorites backend:', err);
           // Optionally rollback state here if strictly consistent
@@ -136,7 +148,6 @@ export const WishlistProvider = ({ children }) => {
   };
 
   const removeFromWishlist = async (productId) => {
-    console.log('Removing from wishlist:', productId);
     const token = localStorage.getItem('token');
     const item = state.items.find(i => i.id === productId);
     
@@ -146,7 +157,6 @@ export const WishlistProvider = ({ children }) => {
     if (token && item && item.dbId) {
       try {
         await api.delete(`/favorites/${item.dbId}`);
-        console.log('Removed from backend favorites');
       } catch (err) {
         console.error('Error removing from favorites backend:', err);
       }

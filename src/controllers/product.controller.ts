@@ -170,6 +170,15 @@ export const updateProduct = asyncHandler(async (req: Request, res: Response) =>
   const updateData: any = { ...req.body };
 
   if (updateData.categoryId) {
+    if (!mongoose.Types.ObjectId.isValid(updateData.categoryId)) {
+      throw new ApiError(400, 'Invalid categoryId format. Must be a valid MongoDB ObjectId');
+    }
+
+    const category = await Category.findById(updateData.categoryId);
+    if (!category) {
+      throw new ApiError(404, 'Category not found');
+    }
+
     updateData.category_id = updateData.categoryId;
     delete updateData.categoryId;
   }
@@ -182,7 +191,10 @@ export const updateProduct = asyncHandler(async (req: Request, res: Response) =>
     delete updateData.isActive;
   }
 
-  const product = await Product.findByIdAndUpdate(id, updateData, { new: true });
+  const product = await Product.findByIdAndUpdate(id, updateData, {
+    new: true,
+    runValidators: true,
+  });
 
   if (!product) {
     throw new ApiError(404, 'Product not found');

@@ -16,6 +16,17 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
+  const logout = useCallback(() => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    localStorage.removeItem('isAuthenticated');
+    localStorage.removeItem('userEmail');
+    localStorage.removeItem('userRole');
+    
+    setUser(null);
+    setIsAuthenticated(false);
+  }, []);
+
   const validateToken = useCallback(async () => {
     try {
       const response = await api.get('/auth/validate');
@@ -26,27 +37,53 @@ export const AuthProvider = ({ children }) => {
       console.error('Token validation failed:', error);
       logout();
     }
+  }, [logout]);
+
+  const syncUserState = useCallback((userData, token) => {
+    if (token) {
+      localStorage.setItem('token', token);
+    }
+
+    localStorage.setItem('user', JSON.stringify(userData));
+    localStorage.setItem('isAuthenticated', 'true');
+    localStorage.setItem('userEmail', userData.email || '');
+    localStorage.setItem('userRole', userData.role || 'user');
+
+    setUser(userData);
+    setIsAuthenticated(true);
   }, []);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    const userData = localStorage.getItem('user');
-    
-    if (token && userData) {
-      try {
-        const parsedUser = JSON.parse(userData);
-        setUser(parsedUser);
-        setIsAuthenticated(true);
-        
-        // Validate token with backend
-        validateToken();
-      } catch (error) {
-        console.error('Error parsing user data:', error);
-        logout();
+    const initializeAuth = async () => {
+      const token = localStorage.getItem('token');
+      const userData = localStorage.getItem('user');
+      
+      if (token && userData) {
+        try {
+          const parsedUser = JSON.parse(userData);
+          setUser(parsedUser);
+          setIsAuthenticated(true);
+          await validateToken();
+        } catch (error) {
+          console.error('Error parsing user data:', error);
+          logout();
+        }
       }
-    }
-    setIsLoading(false);
-  }, [validateToken]);
+
+      setIsLoading(false);
+    };
+
+    initializeAuth();
+  }, [logout, validateToken]);
+
+  useEffect(() => {
+    const handleLogoutEvent = () => {
+      logout();
+    };
+
+    window.addEventListener('auth:logout', handleLogoutEvent);
+    return () => window.removeEventListener('auth:logout', handleLogoutEvent);
+  }, [logout]);
 
   const login = async (email, password) => {
     try {
@@ -54,15 +91,7 @@ export const AuthProvider = ({ children }) => {
       
       if (response.success) {
         const { token, user: userData } = response.data;
-        
-        localStorage.setItem('token', token);
-        localStorage.setItem('user', JSON.stringify(userData));
-        localStorage.setItem('isAuthenticated', 'true');
-        localStorage.setItem('userEmail', userData.email);
-        localStorage.setItem('userRole', userData.role || 'user');
-        
-        setUser(userData);
-        setIsAuthenticated(true);
+        syncUserState(userData, token);
         
         return { success: true };
       } else {
@@ -72,17 +101,6 @@ export const AuthProvider = ({ children }) => {
       console.error('Login error:', error);
       return { success: false, message: 'Login failed. Please try again.' };
     }
-  };
-
-  const logout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    localStorage.removeItem('isAuthenticated');
-    localStorage.removeItem('userEmail');
-    localStorage.removeItem('userRole');
-    
-    setUser(null);
-    setIsAuthenticated(false);
   };
 
   const refreshToken = async () => {
@@ -102,42 +120,12 @@ export const AuthProvider = ({ children }) => {
 
   // Enhanced API call with token refresh
   const authenticatedApiCall = async (endpoint, options = {}) => {
-    let token = localStorage.getItem('token');
-    
-    if (!token) {
+    if (!localStorage.getItem('token')) {
       throw new Error('No authentication token');
     }
 
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000/api'}${endpoint}`, {
-        ...options,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-          ...options.headers
-        }
-      });
-
-      if (response.status === 401) {
-        // Token expired, try to refresh
-        const newToken = await refreshToken();
-        if (newToken) {
-          // Retry with new token
-          const retryResponse = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000/api'}${endpoint}`, {
-            ...options,
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${newToken}`,
-              ...options.headers
-            }
-          });
-          return retryResponse.json();
-        } else {
-          throw new Error('Token refresh failed');
-        }
-      }
-
-      return response.json();
+      return await api.request(endpoint, options);
     } catch (error) {
       console.error('Authenticated API call failed:', error);
       throw error;
@@ -151,6 +139,7 @@ export const AuthProvider = ({ children }) => {
     login,
     logout,
     refreshToken,
+    setUser: syncUserState,
     authenticatedApiCall
   };
 

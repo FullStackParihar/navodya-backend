@@ -9,7 +9,7 @@ import { Product } from '../models/product.model.js';
 
 export const getAdminStats = asyncHandler(async (req: AuthRequest, res: Response) => {
     const totalUsers = await User.countDocuments();
-    const activeUsers = await User.countDocuments({ is_active: true });
+    const activeUsers = totalUsers;
 
     const orders = await Order.find();
     const totalOrders = orders.length;
@@ -37,7 +37,7 @@ export const getAllOrders = asyncHandler(async (req: AuthRequest, res: Response)
 });
 
 export const getAllUsers = asyncHandler(async (req: AuthRequest, res: Response) => {
-    const users = await User.find().select('-password').sort({ created_at: -1 });
+    const users = await User.find().select('-password_hash').sort({ created_at: -1 });
     res.status(200).json(new ApiResponse(200, users, 'All users retrieved successfully'));
 });
 

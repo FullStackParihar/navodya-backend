@@ -53,8 +53,8 @@ export const getCart = asyncHandler(async (req: AuthRequest, res: Response) => {
       {
         items: itemsWithProduct,
         summary: {
-          itemCount: cartItems.length,
-          totalQuantity: cartItems.reduce((sum, item) => sum + item.quantity, 0),
+          itemCount: validItems.length,
+          totalQuantity: validItems.reduce((sum, item) => sum + item.quantity, 0),
           subtotal: parseFloat(subtotal.toFixed(2)),
         },
       },

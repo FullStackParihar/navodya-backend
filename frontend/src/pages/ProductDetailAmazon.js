@@ -29,9 +29,19 @@ const ProductDetailAmazon = () => {
         
         if (result.success) {
           const p = result.data;
+          const availableSizes = (p.sizes || []).map((size) => ({
+            label: size.size,
+            stock: size.stock,
+            inStock: size.stock > 0,
+          }));
+          const availableColors = (p.colors || []).map((color) => ({
+            label: color.name,
+            hex: color.hex,
+          }));
           const mappedProduct = {
             id: p.slug,
             dbId: p._id,
+            slug: p.slug,
             name: p.name,
             description: p.description,
             price: p.sale_price || p.price,
@@ -41,8 +51,8 @@ const ProductDetailAmazon = () => {
             reviews: p.review_count || 0,
             rating: p.rating || 0,
             category: p.category_id?.name || 'T-Shirts',
-            sizes: ['S', 'M', 'L', 'XL', '2XL'], // Standard sizes for all products
-            colors: ['red', 'yellow', 'blue', 'green', 'black'], // Standard colors for all products
+            sizes: availableSizes,
+            colors: availableColors,
             inStock: p.is_active && p.sizes.some(s => s.stock > 0),
             stockCount: p.sizes.reduce((total, s) => total + s.stock, 0),
             features: p.features && p.features.length > 0 ? p.features : [
@@ -64,8 +74,8 @@ const ProductDetailAmazon = () => {
             }
           };
           setProduct(mappedProduct);
-          setSelectedSize('M'); // Default to Medium
-          setSelectedColor('blue'); // Default to blue
+          setSelectedSize(availableSizes.find((size) => size.inStock)?.label || availableSizes[0]?.label || '');
+          setSelectedColor(availableColors[0]?.label || '');
         }
       } catch (err) {
         console.error('Error fetching product:', err);
@@ -81,7 +91,7 @@ const ProductDetailAmazon = () => {
       const fetchReviews = async () => {
         try {
           const result = await api.get(`/reviews/${product.dbId}`);
-          if (result.success) setReviews(result.data);
+          if (result.success) setReviews(result.data || []);
         } catch (err) {
           console.error('Error fetching reviews:', err);
         }
@@ -93,7 +103,12 @@ const ProductDetailAmazon = () => {
   const handleAddToCart = async () => {
     if (!selectedSize && product.sizes?.length > 0) {
       error('Please select a size');
-      return;
+      return false;
+    }
+
+    if (!selectedColor && product.colors?.length > 0) {
+      error('Please select a color');
+      return false;
     }
     
     setIsAddingToCart(true);
@@ -105,16 +120,20 @@ const ProductDetailAmazon = () => {
         quantity
       });
       success(`${product.name} added to cart!`);
+      return true;
     } catch (err) {
-      error('Failed to add to cart');
+      error(err.message || 'Failed to add to cart');
+      return false;
     } finally {
       setIsAddingToCart(false);
     }
   };
 
   const handleBuyNow = async () => {
-    await handleAddToCart();
-    navigate('/checkout');
+    const added = await handleAddToCart();
+    if (added) {
+      navigate('/payment');
+    }
   };
 
   const handleWishlistToggle = () => {
@@ -301,19 +320,21 @@ const ProductDetailAmazon = () => {
                 <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                   {product.sizes.map(size => (
                     <button
-                      key={size}
-                      onClick={() => setSelectedSize(size)}
+                      key={size.label}
+                      onClick={() => size.inStock && setSelectedSize(size.label)}
                       style={{
                         padding: '8px 16px',
-                        border: `1px solid ${selectedSize === size ? '#B12704' : '#D5D9D9'}`,
-                        backgroundColor: selectedSize === size ? '#F7F8F8' : 'white',
+                        border: `1px solid ${selectedSize === size.label ? '#B12704' : '#D5D9D9'}`,
+                        backgroundColor: selectedSize === size.label ? '#F7F8F8' : 'white',
                         borderRadius: '4px',
-                        cursor: 'pointer',
+                        cursor: size.inStock ? 'pointer' : 'not-allowed',
                         fontSize: '14px',
-                        fontWeight: selectedSize === size ? 'bold' : 'normal'
+                        fontWeight: selectedSize === size.label ? 'bold' : 'normal',
+                        opacity: size.inStock ? 1 : 0.5
                       }}
+                      disabled={!size.inStock}
                     >
-                      {size}
+                      {size.label} {!size.inStock ? '(Out of stock)' : ''}
                     </button>
                   ))}
                 </div>
@@ -328,38 +349,31 @@ const ProductDetailAmazon = () => {
                 </div>
                 <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
                   {product.colors.map(color => {
-                    const colorMap = {
-                      'red': '#DC2626',
-                      'yellow': '#EAB308',
-                      'blue': '#2563EB',
-                      'green': '#16A34A',
-                      'black': '#000000'
-                    };
                     return (
                       <button
-                        key={color}
-                        onClick={() => setSelectedColor(color)}
+                        key={color.label}
+                        onClick={() => setSelectedColor(color.label)}
                         style={{
                           display: 'flex',
                           alignItems: 'center',
                           gap: '8px',
                           padding: '8px 12px',
-                          border: `2px solid ${selectedColor === color ? '#B12704' : '#D5D9D9'}`,
+                          border: `2px solid ${selectedColor === color.label ? '#B12704' : '#D5D9D9'}`,
                           backgroundColor: 'white',
                           borderRadius: '4px',
                           cursor: 'pointer',
                           fontSize: '14px',
-                          fontWeight: selectedColor === color ? 'bold' : 'normal'
+                          fontWeight: selectedColor === color.label ? 'bold' : 'normal'
                         }}
                       >
                         <div style={{
                           width: '20px',
                           height: '20px',
-                          backgroundColor: colorMap[color],
+                          backgroundColor: color.hex || '#999999',
                           border: '1px solid #ddd',
                           borderRadius: '2px'
                         }}></div>
-                        {color.charAt(0).toUpperCase() + color.slice(1)}
+                        {color.label}
                       </button>
                     );
                   })}

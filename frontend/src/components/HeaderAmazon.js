@@ -35,8 +35,8 @@ const HeaderAmazon = () => {
             
             <div className="nav-icons">
               <Link 
-                to="/profile" 
-                className={`nav-item ${location.pathname === '/profile' ? 'active' : ''} animate-fadeIn`}
+                to="/account?tab=profile" 
+                className={`nav-item ${location.pathname === '/account' ? 'active' : ''} animate-fadeIn`}
                 style={{ animationDelay: '0.1s' }}
               >
                 <i className="fas fa-user"></i>

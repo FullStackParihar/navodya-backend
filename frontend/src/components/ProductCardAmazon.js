@@ -40,8 +40,7 @@ const ProductCardAmazon = ({ product }) => {
 
   const handleQuickView = (e) => {
     e.preventDefault();
-    // TODO: Implement quick view modal
-    info('Quick view feature coming soon!');
+    success('Quick view feature coming soon!');
   };
 
   const calculateDiscount = () => {

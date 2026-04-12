@@ -206,11 +206,10 @@ const Payment = () => {
     setIsProcessing(true);
 
     try {
-      let paymentIntentId = '';
+      let paymentIntentId;
       
       if (paymentMethod === 'cod') {
-        // For COD, we don't create a Stripe payment intent
-        paymentIntentId = `cod_${Date.now()}`;
+        paymentIntentId = undefined;
       } else {
         // 1. Create Payment Intent
         const intentResult = await api.post('/orders/create-payment-intent', {

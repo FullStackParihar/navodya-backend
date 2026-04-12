@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import api from '../utils/api';
+import { useAuth } from './AuthContext';
 
 // Cart Context
 const CartContext = createContext();
@@ -17,6 +18,14 @@ const REMOVE_FROM_CART = 'REMOVE_FROM_CART';
 const UPDATE_QUANTITY = 'UPDATE_QUANTITY';
 const CLEAR_CART = 'CLEAR_CART';
 const SET_CART = 'SET_CART';
+
+const getVariantKey = ({ slug, dbId, size, color, id }) =>
+  `${slug || dbId || id}:${size || 'default'}:${color || 'default'}`;
+
+const matchesCartItem = (item, productId) =>
+  item.id === productId ||
+  item.productSlug === productId ||
+  item.dbId === productId;
 
 // Reducer
 const cartReducer = (state, action) => {
@@ -103,9 +112,17 @@ const cartReducer = (state, action) => {
 // Provider
 export const CartProvider = ({ children }) => {
   const [state, dispatch] = useReducer(cartReducer, initialState);
+  const { isAuthenticated } = useAuth();
 
   const mapCartItem = (item) => ({
-    id: item.products?.slug || item.product_id?.slug || item.id,
+    id: getVariantKey({
+      slug: item.products?.slug || item.product_id?.slug,
+      dbId: item.products?._id || item.product_id?._id || item.product_id,
+      size: item.size,
+      color: item.color,
+      id: item.id,
+    }),
+    productSlug: item.products?.slug || item.product_id?.slug || item.id,
     dbId: item.products?._id || item.product_id?._id || item.product_id,
     cartItemId: item._id,
     name: item.products?.name || item.product_id?.name,
@@ -120,8 +137,6 @@ export const CartProvider = ({ children }) => {
 
   // Load cart from localStorage or backend on mount
   useEffect(() => {
-    const token = localStorage.getItem('token');
-
     const fetchBackendCart = async () => {
       try {
         const result = await api.get('/cart');
@@ -134,7 +149,7 @@ export const CartProvider = ({ children }) => {
       }
     };
 
-    if (token) {
+    if (isAuthenticated && localStorage.getItem('token')) {
       fetchBackendCart();
     } else {
       const savedCart = localStorage.getItem('navodayaCart');
@@ -147,7 +162,7 @@ export const CartProvider = ({ children }) => {
         }
       }
     }
-  }, []);
+  }, [isAuthenticated]);
 
   // Save cart to localStorage whenever it changes
   useEffect(() => {
@@ -183,6 +198,13 @@ export const CartProvider = ({ children }) => {
 
     let productToDispatch = {
         ...product,
+        id: getVariantKey({
+          slug: product.productSlug || product.slug || product.id,
+          dbId: product.dbId || product._id,
+          size: sizeToAdd,
+          color: colorToAdd,
+        }),
+        productSlug: product.productSlug || product.slug || product.id,
         size: sizeToAdd,
         color: colorToAdd,
         selectedSize: sizeToAdd,
@@ -213,7 +235,7 @@ export const CartProvider = ({ children }) => {
 
   const removeFromCart = async (productId) => {
     const token = localStorage.getItem('token');
-    const item = state.items.find(i => i.id === productId);
+    const item = state.items.find(i => matchesCartItem(i, productId));
     if (token && item && (item.cartItemId || item.dbId)) {
       try {
         await api.delete(`/cart/remove/${item.cartItemId || item.dbId}`);
@@ -231,7 +253,7 @@ export const CartProvider = ({ children }) => {
     }
 
     const token = localStorage.getItem('token');
-    const item = state.items.find(i => i.id === productId);
+    const item = state.items.find(i => matchesCartItem(i, productId));
     if (token && item && (item.cartItemId || item.dbId)) {
       try {
         await api.patch(`/cart/update/${item.cartItemId || item.dbId}`, { quantity });
@@ -255,12 +277,13 @@ export const CartProvider = ({ children }) => {
   };
 
   const isInCart = (productId) => {
-    return state.items.some(item => item.id === productId);
+    return state.items.some(item => matchesCartItem(item, productId));
   };
 
   const getItemQuantity = (productId) => {
-    const item = state.items.find(item => item.id === productId);
-    return item ? item.quantity : 0;
+    return state.items
+      .filter(item => matchesCartItem(item, productId))
+      .reduce((total, item) => total + item.quantity, 0);
   };
 
   const value = {

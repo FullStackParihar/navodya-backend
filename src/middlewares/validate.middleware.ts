@@ -13,7 +13,12 @@ export const validate = (schema: z.ZodSchema) => {
       next();
     } catch (error) {
       if (error instanceof z.ZodError) {
-        const errorMessages = error.errors.map((err) => err.message).join(', ');
+        const errorMessages = error.errors
+          .map((err) => {
+            const path = err.path.length > 0 ? err.path.join('.') : 'request';
+            return `${path}: ${err.message}`;
+          })
+          .join(', ');
         throw new ApiError(400, errorMessages);
       }
       next(error);

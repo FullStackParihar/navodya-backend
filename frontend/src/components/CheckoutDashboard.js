@@ -56,7 +56,7 @@ const CheckoutDashboard = () => {
   };
 
   const handleViewOrders = () => {
-    navigate('/profile');
+    navigate('/account?tab=orders');
   };
 
   const handleBulkOrder = () => {
