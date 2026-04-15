@@ -1,11 +1,12 @@
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+const RAW_API_URL = process.env.REACT_APP_API_URL || 'https://navodya-backend-o4qxb7ig7.vercel.app';
+
+const API_URL = RAW_API_URL.endsWith('/api')
+  ? RAW_API_URL
+  : `${RAW_API_URL.replace(/\/$/, '')}/api`;
 
 const getHeaders = (customHeaders = {}) => {
   const token = localStorage.getItem('token');
-  const headers = {
-    'Content-Type': 'application/json',
-    ...customHeaders,
-  };
+  const headers = { ...customHeaders };
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
   }
@@ -57,13 +58,15 @@ const refreshAccessToken = async () => {
 const request = async (endpoint, options = {}, retryOnUnauthorized = true) => {
   const isFormData = options.body instanceof FormData;
   const headers = getHeaders(options.headers || {});
+  const method = options.method || 'GET';
 
-  if (isFormData) {
-    delete headers['Content-Type'];
+  if (!isFormData && options.body && !headers['Content-Type']) {
+    headers['Content-Type'] = 'application/json';
   }
 
   const response = await fetch(`${API_URL}${endpoint}`, {
     ...options,
+    method,
     headers,
   });
 

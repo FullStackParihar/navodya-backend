@@ -14,10 +14,6 @@ app.use(cors({
       return callback(null, true);
     }
 
-    if (config.clientUrls.length === 0) {
-      return callback(null, config.nodeEnv !== 'production');
-    }
-
     if (config.clientUrls.includes(origin)) {
       return callback(null, true);
     }
@@ -26,6 +22,8 @@ app.use(cors({
   },
   credentials: true,
 }));
+
+app.options('*', cors());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

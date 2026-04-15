@@ -2,15 +2,23 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+const defaultClientUrls = [
+  'https://navodya-backend-o4qxb7ig7.vercel.app',
+  'http://localhost:3000',
+  'http://127.0.0.1:3000',
+];
+
 const clientUrls = (process.env.CLIENT_URL || '')
   .split(',')
   .map((url) => url.trim())
   .filter(Boolean);
 
+const allowedClientUrls = Array.from(new Set([...defaultClientUrls, ...clientUrls]));
+
 export const config = {
   port: process.env.PORT || 3000,
   nodeEnv: process.env.NODE_ENV || 'development',
-  clientUrls,
+  clientUrls: allowedClientUrls,
   mongodb: {
     uri: process.env.MONGODB_URI || 'mongodb://localhost:27017/ecommerce',
   },
