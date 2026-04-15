@@ -16,8 +16,6 @@ const SearchPage = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [sortBy, setSortBy] = useState('featured');
     const [searchQuery, setSearchQuery] = useState(query);
-    const [selectedCategory, setSelectedCategory] = useState(category);
-    const [suggestions, setSuggestions] = useState([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
 
     // Available pages in the application

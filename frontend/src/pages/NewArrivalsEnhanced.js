@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import api from '../utils/api';
 import ProductCard from '../components/ProductCard';
 import SkeletonLoader from '../components/SkeletonLoader';
@@ -18,8 +18,6 @@ const NewArrivalsEnhanced = () => {
     collections: [],
     newArrivalTypes: []
   });
-  const [currentTime, setCurrentTime] = useState(new Date());
-
   useEffect(() => {
     const fetchNewArrivals = async () => {
       setIsLoading(true);

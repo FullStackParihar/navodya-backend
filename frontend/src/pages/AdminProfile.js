@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 import PrivateRoute from '../components/PrivateRoute';
@@ -44,7 +44,7 @@ const AdminProfile = () => {
     }
   }, [navigate]);
 
-  const fetchData = async (tab) => {
+  const fetchData = useCallback(async (tab) => {
     setLoading(true);
     try {
       let result;
@@ -82,13 +82,13 @@ const AdminProfile = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [error]);
 
   useEffect(() => {
     if (isAdmin) {
       fetchData(activeTab);
     }
-  }, [isAdmin, activeTab]);
+  }, [isAdmin, activeTab, fetchData]);
 
   // Always fetch categories once when entering Admin Panel
   useEffect(() => {

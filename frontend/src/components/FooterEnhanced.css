@@ -353,6 +353,7 @@
   font-weight: 600;
   transition: var(--transition-footer);
   box-shadow: var(--footer-shadow);
+  cursor: pointer;
 }
 
 .app-button:hover {
@@ -492,17 +493,22 @@
   gap: 25px;
 }
 
-.bottom-links a {
+.bottom-links a,
+.bottom-links button {
   color: var(--footer-text-light);
+  background: transparent;
+  border: none;
   text-decoration: none;
   font-size: 0.75rem;
   font-weight: 500;
   transition: var(--transition-footer);
   padding: 4px 8px;
   border-radius: 4px;
+  cursor: pointer;
 }
 
-.bottom-links a::before {
+.bottom-links a::before,
+.bottom-links button::before {
   content: '';
   position: absolute;
   top: 0;
@@ -515,7 +521,8 @@
   border-radius: 6px;
 }
 
-.bottom-links a:hover {
+.bottom-links a:hover,
+.bottom-links button:hover {
   color: var(--footer-accent);
 }
 

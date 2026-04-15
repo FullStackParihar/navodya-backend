@@ -63,11 +63,6 @@ const CheckoutDashboard = () => {
     navigate('/bulk-order');
   };
 
-  const handleQuickCheckoutWithProduct = (product) => {
-    setSelectedProduct(product);
-    setShowQuickCheckout(true);
-  };
-
   return (
     <>
       <div className="checkout-dashboard">

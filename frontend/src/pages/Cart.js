@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
@@ -6,7 +6,6 @@ import { useToast } from '../context/ToastContext';
 import ProductCard from '../components/ProductCard';
 import CartSummary from '../components/CartSummary';
 import CheckoutProgress from '../components/CheckoutProgress';
-import SkeletonLoader from '../components/SkeletonLoader';
 import './CartEnhanced.css';
 
 // Sample recommended products
@@ -52,21 +51,10 @@ const recommendedProducts = [
 ];
 
 const Cart = () => {
-  const { items, totalAmount, updateQuantity, removeFromCart } = useCart();
+  const { items, updateQuantity, removeFromCart } = useCart();
   const { addToWishlist } = useWishlist();
   const { success, error } = useToast();
-  const [promoCode, setPromoCode] = useState('');
-  const [discount, setDiscount] = useState(199);
-  const [isLoading, setIsLoading] = useState(false);
-  const [recommendedLoading, setRecommendedLoading] = useState(true);
-
-  useEffect(() => {
-    // Simulate loading for recommended products
-    const timer = setTimeout(() => {
-      setRecommendedLoading(false);
-    }, 1000);
-    return () => clearTimeout(timer);
-  }, []);
+  const [discount] = useState(199);
 
   const handleSaveForLater = (item) => {
     addToWishlist(item);
@@ -89,40 +77,6 @@ const Cart = () => {
   const handleRemoveItem = (id, name) => {
     removeFromCart(id);
     error(`${name} removed from cart`);
-  };
-
-  const handleApplyPromo = () => {
-    if (!promoCode.trim()) {
-      error('Please enter a promo code');
-      return;
-    }
-    
-    setIsLoading(true);
-    setTimeout(() => {
-      if (promoCode.toUpperCase() === 'JNV2024') {
-        setDiscount(399);
-        success('Promo code applied! You saved ₹399');
-      } else if (promoCode.toUpperCase() === 'ALUMNI20') {
-        setDiscount(Math.floor(totalAmount * 0.2));
-        success('20% discount applied!');
-      } else {
-        error('Invalid promo code');
-        setDiscount(199);
-      }
-      setIsLoading(false);
-    }, 1000);
-  };
-
-  const calculateTotal = () => {
-    return Math.max(0, totalAmount - discount);
-  };
-
-  const calculateSavings = () => {
-    const originalTotal = items.reduce((sum, item) => {
-      const originalPrice = item.originalPrice || item.price;
-      return sum + (originalPrice * item.quantity);
-    }, 0);
-    return originalTotal - totalAmount + discount;
   };
 
   if (items.length === 0) {

@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
-import { useToast } from '../context/ToastContext';
 import './SearchBarAmazon.css';
 
 const SearchBarAmazon = () => {
@@ -12,7 +11,6 @@ const SearchBarAmazon = () => {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [allProducts, setAllProducts] = useState([]);
   const navigate = useNavigate();
-  const { info } = useToast();
   const searchRef = useRef(null);
 
   const categories = [

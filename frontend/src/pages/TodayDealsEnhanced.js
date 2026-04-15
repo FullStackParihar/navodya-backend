@@ -17,8 +17,6 @@ const TodayDealsEnhanced = () => {
     discountRange: [],
     dealTypes: []
   });
-  const [currentTime, setCurrentTime] = useState(new Date());
-
   useEffect(() => {
     const fetchDeals = async () => {
       setIsLoading(true);

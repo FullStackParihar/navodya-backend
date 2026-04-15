@@ -45,15 +45,6 @@ const ProductCard = ({ product }) => {
     setIsQuickViewOpen(true);
   };
 
-  const calculateDiscount = () => {
-    if (product.originalPrice && product.price) {
-      return Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
-    }
-    return 0;
-  };
-
-  // const discount = calculateDiscount();
-
   return (
     <div 
       className="product-card animate-fadeIn"

@@ -6,6 +6,10 @@ const FooterEnhanced = () => {
   const [email, setEmail] = useState('');
   const [showBackToTop, setShowBackToTop] = useState(false);
 
+  const handleComingSoon = (label) => {
+    alert(`${label} is coming soon!`);
+  };
+
   useEffect(() => {
     const handleScroll = () => {
       setShowBackToTop(window.pageYOffset > 300);
@@ -161,14 +165,14 @@ const FooterEnhanced = () => {
             <div className="app-section">
               <h5>Download App</h5>
               <div className="app-buttons">
-                <a href="#" className="app-button">
+                <button type="button" className="app-button" onClick={() => handleComingSoon('Google Play app')}>
                   <i className="fab fa-google-play"></i>
                   <span>Google Play</span>
-                </a>
-                <a href="#" className="app-button">
+                </button>
+                <button type="button" className="app-button" onClick={() => handleComingSoon('App Store app')}>
                   <i className="fab fa-app-store"></i>
                   <span>App Store</span>
-                </a>
+                </button>
               </div>
             </div>
           </div>
@@ -198,10 +202,10 @@ const FooterEnhanced = () => {
           <div className="footer-bottom-content">
             <p className="copyright">© 2025 Navodaya Trendz. All Rights Reserved. | Made with <span>❤️</span> by Navodayans</p>
             <div className="bottom-links">
-              <a href="#">Sitemap</a>
-              <a href="#">Careers</a>
-              <a href="#">Press</a>
-              <a href="#">Partner with Us</a>
+              <button type="button" onClick={() => handleComingSoon('Sitemap')}>Sitemap</button>
+              <button type="button" onClick={() => handleComingSoon('Careers')}>Careers</button>
+              <button type="button" onClick={() => handleComingSoon('Press')}>Press</button>
+              <button type="button" onClick={() => handleComingSoon('Partner with Us')}>Partner with Us</button>
             </div>
           </div>
         </div>
