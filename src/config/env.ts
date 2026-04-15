@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const defaultClientUrls = [
-  'https://navodya-backend-o4qxb7ig7.vercel.app',
+  'https://navodya-backend-ps9lktk6o.vercel.app',
   'http://localhost:3000',
   'http://127.0.0.1:3000',
 ];
