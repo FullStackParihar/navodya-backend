@@ -1,4 +1,4 @@
-const RAW_API_URL = process.env.REACT_APP_API_URL || 'https://navodya-backend-ps9lktk6o.vercel.app';
+const RAW_API_URL = process.env.REACT_APP_API_URL || 'navodya-backend-6uwo4so1d.vercel.app';
 
 const API_URL = RAW_API_URL.endsWith('/api')
   ? RAW_API_URL
