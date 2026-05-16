@@ -3,70 +3,15 @@ import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { useToast } from '../context/ToastContext';
-import ProductCard from '../components/ProductCard';
-import CartSummary from '../components/CartSummary';
-import CheckoutProgress from '../components/CheckoutProgress';
-import SkeletonLoader from '../components/SkeletonLoader';
 import './CartEnhanced.css';
-
-// Sample recommended products
-const recommendedProducts = [
-  {
-    id: 13,
-    name: 'JNV Baseball Cap',
-    description: 'Adjustable | Embroidered Logo',
-    price: 299,
-    originalPrice: 399,
-    image: 'https://images.unsplash.com/photo-1513519245088-0e7839c3c889?w=300&h=400&fit=crop',
-    badge: 'Hot',
-    reviews: 156
-  },
-  {
-    id: 14,
-    name: 'JNV Backpack',
-    description: 'Waterproof | Laptop Compartment',
-    price: 899,
-    originalPrice: 1299,
-    image: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=300&h=400&fit=crop',
-    reviews: 98
-  },
-  {
-    id: 15,
-    name: 'JNV Water Bottle',
-    description: 'Stainless Steel | Insulated',
-    price: 199,
-    originalPrice: 299,
-    image: 'https://images.unsplash.com/photo-1602143403490-42c665fd7239?w=300&h=400&fit=crop',
-    badge: 'New',
-    reviews: 78
-  },
-  {
-    id: 16,
-    name: 'JNV Phone Case',
-    description: 'Protective | Custom Design',
-    price: 149,
-    originalPrice: 199,
-    image: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=300&h=400&fit=crop',
-    reviews: 134
-  }
-];
 
 const Cart = () => {
   const { items, totalAmount, updateQuantity, removeFromCart } = useCart();
   const { addToWishlist } = useWishlist();
   const { success, error } = useToast();
   const [promoCode, setPromoCode] = useState('');
-  const [discount, setDiscount] = useState(199);
-  const [isLoading, setIsLoading] = useState(false);
-  const [recommendedLoading, setRecommendedLoading] = useState(true);
-
-  useEffect(() => {
-    // Simulate loading for recommended products
-    const timer = setTimeout(() => {
-      setRecommendedLoading(false);
-    }, 1000);
-    return () => clearTimeout(timer);
-  }, []);
+  const [discount, setDiscount] = useState(0);
+  const [isPromoApplied, setIsPromoApplied] = useState(false);
 
   const handleSaveForLater = (item) => {
     addToWishlist(item);
@@ -97,229 +42,254 @@ const Cart = () => {
       return;
     }
     
-    setIsLoading(true);
-    setTimeout(() => {
-      if (promoCode.toUpperCase() === 'JNV2024') {
-        setDiscount(399);
-        success('Promo code applied! You saved ₹399');
-      } else if (promoCode.toUpperCase() === 'ALUMNI20') {
-        setDiscount(Math.floor(totalAmount * 0.2));
-        success('20% discount applied!');
-      } else {
-        error('Invalid promo code');
-        setDiscount(199);
-      }
-      setIsLoading(false);
-    }, 1000);
+    if (promoCode.toUpperCase() === 'JNV2024') {
+      setDiscount(200);
+      setIsPromoApplied(true);
+      success('Promo code applied! You saved ₹200');
+    } else if (promoCode.toUpperCase() === 'ALUMNI20') {
+      setDiscount(Math.floor(totalAmount * 0.2));
+      setIsPromoApplied(true);
+      success('20% discount applied!');
+    } else {
+      error('Invalid promo code');
+      setDiscount(0);
+      setIsPromoApplied(false);
+    }
   };
 
   const calculateTotal = () => {
     return Math.max(0, totalAmount - discount);
   };
 
-  const calculateSavings = () => {
-    const originalTotal = items.reduce((sum, item) => {
-      const originalPrice = item.originalPrice || item.price;
-      return sum + (originalPrice * item.quantity);
-    }, 0);
-    return originalTotal - totalAmount + discount;
-  };
-
   if (items.length === 0) {
     return (
-      <div>
-        {/* Hero Section */}
-        <section className="cart-hero animate-fadeIn">
-          <div className="hero-background">
-            <div className="hero-pattern"></div>
+      <div style={{ background: '#f8fafc', minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 20px' }}>
+        <div style={{ textAlign: 'center', maxWidth: '500px' }}>
+          <div style={{ 
+            width: '120px', 
+            height: '120px', 
+            borderRadius: '50%', 
+            background: '#e0e7ff', 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center', 
+            margin: '0 auto 24px',
+            fontSize: '48px'
+          }}>
+            <i className="fas fa-shopping-cart" style={{ color: '#2563eb' }}></i>
           </div>
-          <div className="container">
-            <div className="hero-content">
-              <h1 className="animate-slideDown">Shopping Cart</h1>
-              <p className="animate-slideUp" style={{ animationDelay: '0.2s' }}>
-                Your cart is currently empty
-              </p>
-            </div>
+          <h1 style={{ fontSize: '32px', fontWeight: '800', marginBottom: '12px', color: '#0f172a' }}>Your Cart is Empty</h1>
+          <p style={{ fontSize: '16px', color: '#64748b', marginBottom: '32px' }}>
+            Add some Navodaya merchandise to get started!
+          </p>
+          <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <Link to="/" style={{ 
+              background: '#2563eb', 
+              color: 'white', 
+              padding: '14px 28px', 
+              borderRadius: '10px', 
+              textDecoration: 'none', 
+              fontWeight: '700',
+              fontSize: '16px',
+              transition: 'all 0.2s'
+            }} 
+            onMouseOver={(e) => e.currentTarget.style.background = '#1d4ed8'}
+            onMouseOut={(e) => e.currentTarget.style.background = '#2563eb'}>
+              <i className="fas fa-home" style={{ marginRight: '8px' }}></i> Continue Shopping
+            </Link>
+            <Link to="/tshirts" style={{ 
+              background: 'white', 
+              color: '#0f172a', 
+              padding: '14px 28px', 
+              borderRadius: '10px', 
+              textDecoration: 'none', 
+              fontWeight: '700',
+              fontSize: '16px',
+              border: '2px solid #e2e8f0',
+              transition: 'all 0.2s'
+            }} 
+            onMouseOver={(e) => { e.currentTarget.style.borderColor = '#2563eb'; e.currentTarget.style.color = '#2563eb'; }}
+            onMouseOut={(e) => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.color = '#0f172a'; }}>
+              <i className="fas fa-tshirt" style={{ marginRight: '8px' }}></i> Browse T-Shirts
+            </Link>
           </div>
-        </section>
-
-        {/* Empty Cart */}
-        <section className="empty-cart-section">
-          <div className="container">
-            <div className="empty-cart-enhanced animate-fadeIn">
-              <div className="empty-cart-icon animate-bounce">
-                <i className="fas fa-shopping-cart"></i>
-              </div>
-              <h2 className="animate-slideUp">Your cart is empty</h2>
-              <p className="animate-slideUp" style={{ animationDelay: '0.1s' }}>
-                Add some JNV merchandise to get started!
-              </p>
-              <div className="empty-cart-actions animate-slideUp" style={{ animationDelay: '0.2s' }}>
-                <Link to="/" className="btn-primary">
-                  <i className="fas fa-shopping-bag"></i> Continue Shopping
-                </Link>
-                <Link to="/tshirts" className="btn-secondary">
-                  <i className="fas fa-tshirt"></i> Browse T-Shirts
-                </Link>
-              </div>
-            </div>
-          </div>
-        </section>
+        </div>
       </div>
     );
   }
 
   return (
-    <div>
-      {/* Hero Section */}
-      <section className="cart-hero animate-fadeIn">
-        <div className="hero-background">
-          <div className="hero-pattern"></div>
+    <div style={{ background: '#f8fafc', minHeight: '100vh', padding: '40px 20px' }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+        <div style={{ marginBottom: '32px' }}>
+          <h1 style={{ fontSize: '36px', fontWeight: '800', color: '#0f172a', marginBottom: '8px' }}>Shopping Cart</h1>
+          <p style={{ color: '#64748b', fontSize: '16px' }}>{items.length} {items.length === 1 ? 'item' : 'items'} in your cart</p>
         </div>
-        <div className="container">
-          <div className="hero-content">
-            <h1 className="animate-slideDown">Shopping Cart</h1>
-            <p className="animate-slideUp" style={{ animationDelay: '0.2s' }}>
-              {items.length} {items.length === 1 ? 'item' : 'items'} in your cart
-            </p>
-          </div>
-        </div>
-      </section>
 
-      {/* Cart Page */}
-      <section className="cart-page-enhanced">
-        <div className="container">
-          {/* Checkout Progress */}
-          <CheckoutProgress currentStep={1} />
-          
-          <div className="cart-layout-enhanced">
-            {/* Cart Items */}
-            <div className="cart-items-enhanced animate-slideInLeft">
-              <div className="cart-header">
-                <h2>Your Items</h2>
-                <span className="item-count">{items.length} items</span>
-              </div>
-
-              <div className="cart-items-list">
-                {items.map((item, index) => (
-                  <div key={item.id} className="cart-item-enhanced animate-fadeIn" style={{ animationDelay: `${index * 0.1}s` }}>
-                    <div className="item-image-enhanced">
-                      <img src={item.image} alt={item.name} />
-                      {item.badge && (
-                        <span className="item-badge">{item.badge}</span>
-                      )}
-                    </div>
-                    
-                    <div className="item-details-enhanced">
-                      <h3>
-                        <Link to={`/product/${item.id}`}>{item.name}</Link>
-                      </h3>
-                      <p>{item.description}</p>
-                      <div className="item-price-enhanced">
-                        <span className="current-price">₹{item.price}</span>
-                        {item.originalPrice && (
-                          <span className="original-price">₹{item.originalPrice}</span>
-                        )}
-                      </div>
-                    </div>
-                    
-                    <div className="item-quantity-enhanced">
-                      <label className="qty-label">Quantity</label>
-                      <div className="quantity-controls-enhanced">
-                        <button 
-                          className="qty-btn decrease"
-                          onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
-                          disabled={item.quantity <= 1}
-                        >
-                          <i className="fas fa-minus"></i>
-                        </button>
-                        <input 
-                          type="number" 
-                          className="qty-input" 
-                          value={item.quantity}
-                          onChange={(e) => handleQuantityChange(item.id, parseInt(e.target.value) || 1)}
-                          min="1"
-                          max="10"
-                        />
-                        <button 
-                          className="qty-btn increase"
-                          onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
-                          disabled={item.quantity >= 10}
-                        >
-                          <i className="fas fa-plus"></i>
-                        </button>
-                      </div>
-                    </div>
-                    
-                    <div className="item-total-enhanced">
-                      <label className="total-label">Total</label>
-                      <span className="total-price">₹{item.price * item.quantity}</span>
-                      {item.originalPrice && (
-                        <span className="savings">Save ₹{(item.originalPrice - item.price) * item.quantity}</span>
-                      )}
-                    </div>
-                    
-                    <div className="item-actions-enhanced">
-                      <button 
-                        className="action-btn save"
-                        onClick={() => handleSaveForLater(item)}
-                        title="Save for later"
-                      >
-                        <i className="far fa-heart"></i>
-                      </button>
-                      <button 
-                        className="action-btn remove"
-                        onClick={() => handleRemoveItem(item.id, item.name)}
-                        title="Remove item"
-                      >
-                        <i className="fas fa-trash"></i>
-                      </button>
-                    </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '32px' }}>
+          {/* Cart Items */}
+          <div>
+            {items.map((item, index) => (
+              <div key={item.id} style={{ 
+                background: 'white', 
+                borderRadius: '12px', 
+                padding: '20px', 
+                marginBottom: '16px',
+                boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+                display: 'grid',
+                gridTemplateColumns: '120px 1fr auto auto auto',
+                gap: '20px',
+                alignItems: 'center'
+              }}>
+                <div style={{ width: '120px', height: '120px', borderRadius: '8px', overflow: 'hidden' }}>
+                  <img src={item.image} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                </div>
+                
+                <div>
+                  <Link to={`/product/${item.id}`} style={{ fontSize: '18px', fontWeight: '700', color: '#0f172a', textDecoration: 'none' }}>
+                    {item.name}
+                  </Link>
+                  <p style={{ color: '#64748b', fontSize: '14px', marginTop: '4px', marginBottom: '12px' }}>{item.description}</p>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px' }}>
+                    <span style={{ fontSize: '20px', fontWeight: '800', color: '#0f172a' }}>₹{item.price}</span>
+                    {item.originalPrice && (
+                      <span style={{ fontSize: '14px', color: '#94a3b8', textDecoration: 'line-through' }}>₹{item.originalPrice}</span>
+                    )}
                   </div>
-                ))}
-              </div>
-
-              {/* Cart Summary - Mobile */}
-              <div className="cart-summary-mobile">
-                <CartSummary 
-                  cartItems={items} 
-                  showCheckoutButton={true}
-                  discount={discount}
-                  className="mobile-summary"
-                />
-              </div>
-            </div>
-
-            {/* Order Summary - Desktop */}
-            <div className="order-summary-enhanced animate-slideInRight">
-                <CartSummary 
-                  cartItems={items} 
-                  showCheckoutButton={true}
-                  discount={discount}
-                  className="desktop-summary"
-                />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Recommended Products */}
-      <section className="recommended-products-section">
-        <div className="container">
-          <div className="recommended-header">
-            <h2>You might also like</h2>
-            <p>Complete your JNV collection with these popular items</p>
-          </div>
-          
-          <div className="recommended-products-grid">
-            {recommendedProducts.map((product, index) => (
-              <div key={product.id} className="recommended-product-card animate-fadeIn" style={{ animationDelay: `${index * 0.1}s` }}>
-                <ProductCard product={product} />
+                </div>
+                
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ fontSize: '12px', color: '#64748b', fontWeight: '600' }}>Quantity</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <button 
+                      style={{ width: '36px', height: '36px', borderRadius: '6px', border: '2px solid #e2e8f0', background: 'white', cursor: 'pointer', fontSize: '16px', fontWeight: '700' }}
+                      onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
+                      disabled={item.quantity <= 1}
+                    >-</button>
+                    <span style={{ fontSize: '16px', fontWeight: '700', minWidth: '30px', textAlign: 'center' }}>{item.quantity}</span>
+                    <button 
+                      style={{ width: '36px', height: '36px', borderRadius: '6px', border: '2px solid #e2e8f0', background: 'white', cursor: 'pointer', fontSize: '16px', fontWeight: '700' }}
+                      onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
+                      disabled={item.quantity >= 10}
+                    >+</button>
+                  </div>
+                </div>
+                
+                <div style={{ textAlign: 'right' }}>
+                  <span style={{ fontSize: '12px', color: '#64748b', fontWeight: '600' }}>Total</span>
+                  <div style={{ fontSize: '20px', fontWeight: '800', color: '#0f172a' }}>₹{item.price * item.quantity}</div>
+                </div>
+                
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <button 
+                    style={{ width: '36px', height: '36px', borderRadius: '6px', border: 'none', background: '#f8fafc', color: '#64748b', cursor: 'pointer', fontSize: '16px' }}
+                    onClick={() => handleSaveForLater(item)}
+                    title="Save for later"
+                  >
+                    <i className="far fa-heart"></i>
+                  </button>
+                  <button 
+                    style={{ width: '36px', height: '36px', borderRadius: '6px', border: 'none', background: '#fef2f2', color: '#dc2626', cursor: 'pointer', fontSize: '16px' }}
+                    onClick={() => handleRemoveItem(item.id, item.name)}
+                    title="Remove item"
+                  >
+                    <i className="fas fa-trash"></i>
+                  </button>
+                </div>
               </div>
             ))}
           </div>
+
+          {/* Order Summary */}
+          <div style={{ height: 'fit-content' }}>
+            <div style={{ background: 'white', borderRadius: '12px', padding: '24px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}>
+              <h2 style={{ fontSize: '20px', fontWeight: '800', marginBottom: '20px', color: '#0f172a' }}>Order Summary</h2>
+              
+              <div style={{ marginBottom: '24px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px', color: '#64748b', fontSize: '15px' }}>
+                  <span>Subtotal ({items.length} {items.length === 1 ? 'item' : 'items'})</span>
+                  <span style={{ color: '#0f172a', fontWeight: '600' }}>₹{totalAmount}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px', color: '#64748b', fontSize: '15px' }}>
+                  <span>Shipping</span>
+                  <span style={{ color: '#10b981', fontWeight: '600' }}>Free</span>
+                </div>
+                {discount > 0 && (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px', color: '#64748b', fontSize: '15px' }}>
+                    <span>Discount</span>
+                    <span style={{ color: '#dc2626', fontWeight: '600' }}>-₹{discount}</span>
+                  </div>
+                )}
+              </div>
+
+              <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '16px', marginBottom: '20px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                  <span style={{ fontSize: '16px', fontWeight: '700', color: '#0f172a' }}>Total</span>
+                  <span style={{ fontSize: '28px', fontWeight: '800', color: '#0f172a' }}>₹{calculateTotal()}</span>
+                </div>
+              </div>
+
+              {!isPromoApplied && (
+                <div style={{ marginBottom: '20px' }}>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <input 
+                      type="text" 
+                      value={promoCode} 
+                      onChange={(e) => setPromoCode(e.target.value)} 
+                      placeholder="Enter promo code (e.g., JNV2024)" 
+                      style={{ 
+                        flex: 1, 
+                        padding: '12px', 
+                        borderRadius: '8px', 
+                        border: '2px solid #e2e8f0', 
+                        fontSize: '14px'
+                      }}
+                    />
+                    <button 
+                      style={{ 
+                        padding: '12px 20px', 
+                        background: '#0f172a', 
+                        color: 'white', 
+                        border: 'none', 
+                        borderRadius: '8px', 
+                        fontWeight: '700',
+                        cursor: 'pointer'
+                      }} 
+                      onClick={handleApplyPromo}
+                    >
+                      Apply
+                    </button>
+                  </div>
+                  <p style={{ fontSize: '12px', color: '#64748b', marginTop: '8px' }}>Try JNV2024 or ALUMNI20</p>
+                </div>
+              )}
+
+              <Link to="/checkout" style={{ 
+                display: 'block',
+                width: '100%',
+                padding: '16px',
+                textAlign: 'center',
+                background: '#2563eb',
+                color: 'white',
+                textDecoration: 'none',
+                borderRadius: '10px',
+                fontWeight: '700',
+                fontSize: '16px',
+                transition: 'all 0.2s'
+              }}
+              onMouseOver={(e) => e.currentTarget.style.background = '#1d4ed8'}
+              onMouseOut={(e) => e.currentTarget.style.background = '#2563eb'}>
+                <i className="fas fa-lock" style={{ marginRight: '8px' }}></i> Proceed to Checkout
+              </Link>
+
+              <p style={{ textAlign: 'center', marginTop: '16px', color: '#64748b', fontSize: '13px' }}>
+                <i className="fas fa-shield-alt" style={{ marginRight: '6px', color: '#10b981' }}></i>
+                Secure payment • 100% safe
+              </p>
+            </div>
+          </div>
         </div>
-      </section>
+      </div>
     </div>
   );
 };

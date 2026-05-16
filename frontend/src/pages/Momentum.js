@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import api from '../utils/api';
 import SkeletonLoader from '../components/SkeletonLoader';
 
-const AlumniKits = () => {
+const Momentum = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [products, setProducts] = useState([]);
 
@@ -11,7 +11,7 @@ const AlumniKits = () => {
     const fetchProducts = async () => {
       try {
         setIsLoading(true);
-        const result = await api.get('/products?category=alumni-kits');
+        const result = await api.get('/products?category=momentum');
         if (result.success) {
           const mapped = result.data.products.map(p => ({
             id: p.slug,
@@ -42,7 +42,7 @@ const AlumniKits = () => {
     <div className="product-page-container">
       <section className="products-section" style={{ paddingTop: '40px' }}>
         <div className="container">
-          <h2 style={{ fontSize: '32px', fontWeight: '800', marginBottom: '32px', color: '#0f172a' }}>Alumni Kits</h2>
+          <h2 style={{ fontSize: '32px', fontWeight: '800', marginBottom: '32px', color: '#0f172a' }}>Mementos</h2>
           <div className="products-grid-new">
             {isLoading ? (
               <SkeletonLoader type="product" count={6} />
@@ -87,4 +87,4 @@ const AlumniKits = () => {
   );
 };
 
-export default AlumniKits;
+export default Momentum;

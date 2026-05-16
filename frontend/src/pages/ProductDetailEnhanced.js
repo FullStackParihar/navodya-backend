@@ -28,6 +28,8 @@ const ProductDetailEnhanced = () => {
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
   const [reviewFormData, setReviewFormData] = useState({ rating: 5, comment: '' });
 
+  const fixedSizes = ['S', 'M', 'L', 'XL', '2XL', '3XL'];
+
   useEffect(() => {
     const fetchProductAndRelated = async () => {
       try {
@@ -49,11 +51,11 @@ const ProductDetailEnhanced = () => {
             rating: p.rating || 0,
             category: p.category_id?.name || 'T-Shirts',
             categorySlug: p.category_id?.slug,
-            sizes: p.sizes.map(s => s.size),
+            sizes: fixedSizes,
             colors: p.colors.map(c => c.name),
             colorMap: p.colors.reduce((acc, c) => ({ ...acc, [c.name]: c.hex }), {}),
-            inStock: p.is_active && p.sizes.some(s => s.stock > 0),
-            stockCount: p.sizes.reduce((total, s) => total + s.stock, 0),
+            inStock: p.is_active,
+            stockCount: 100,
             features: p.features && p.features.length > 0 ? p.features : [
               '100% Premium Quality', 'Official Alumni Merchandise', 'Durable and Comfortable', 'Easy Care Fabric'
             ],
@@ -61,7 +63,7 @@ const ProductDetailEnhanced = () => {
             images: p.images.length > 0 ? p.images : ['https://via.placeholder.com/600x800?text=No+Image']
           };
           setProduct(mappedProduct);
-          if (mappedProduct.sizes.length > 0) setSelectedSize(mappedProduct.sizes[0]);
+          setSelectedSize('M');
           if (mappedProduct.colors.length > 0) setSelectedColor(mappedProduct.colors[0]);
 
           if (mappedProduct.categorySlug) {
@@ -169,7 +171,7 @@ const ProductDetailEnhanced = () => {
     const stars = [];
     for (let i = 0; i < 5; i++) {
       stars.push(
-        <i key={i} className={`${i < Math.floor(rating) ? 'fas' : 'far'} fa-star`} style={{ color: 'var(--amazon-orange)' }}></i>
+        <i key={i} className={`${i < Math.floor(rating) ? 'fas' : 'far'} fa-star`} style={{ color: '#f59e0b' }}></i>
       );
     }
     return stars;
@@ -179,80 +181,244 @@ const ProductDetailEnhanced = () => {
   if (!product) return <div className="container p-5 text-center"><h2>Product Not Found</h2><button onClick={() => navigate('/')}>Back Home</button></div>;
 
   return (
-    <div className="product-detail-page">
-      <div className="container">
-        <nav className="breadcrumb">
-          <a href="/">Home</a> / <a href="/tshirts">Products</a> / <span className="current">{product.name}</span>
+    <div className="product-detail-page" style={{ paddingTop: '40px', paddingBottom: '60px', background: '#f8fafc' }}>
+      <div className="container" style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 20px' }}>
+        <nav style={{ marginBottom: '24px', color: '#64748b', fontSize: '14px' }}>
+          <a href="/" style={{ color: '#2563eb', textDecoration: 'none' }}>Home</a> &gt; 
+          <span style={{ marginLeft: '8px', color: '#64748b' }}> {product.name}</span>
         </nav>
-        <div className="product-detail-layout">
-          <div className="product-images-section">
-            <div className="main-image-container">
-              <img src={product.images[selectedImage]} alt={product.name} className="main-image" />
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '48px', background: 'white', borderRadius: '16px', padding: '40px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}>
+          <div>
+            <div style={{ width: '100%', borderRadius: '12px', overflow: 'hidden', marginBottom: '16px' }}>
+              <img src={product.images[selectedImage]} alt={product.name} style={{ width: '100%', height: '500px', objectFit: 'cover' }} />
             </div>
-            <div className="thumbnail-container">
+            <div style={{ display: 'flex', gap: '12px', overflowX: 'auto' }}>
               {product.images.map((img, idx) => (
-                <div key={idx} className={`thumbnail ${selectedImage === idx ? 'active' : ''}`} onClick={() => setSelectedImage(idx)}>
-                  <img src={img} alt="" />
+                <div 
+                  key={idx} 
+                  style={{ 
+                    width: '100px', 
+                    height: '100px', 
+                    borderRadius: '8px', 
+                    overflow: 'hidden', 
+                    cursor: 'pointer',
+                    border: selectedImage === idx ? '3px solid #2563eb' : '2px solid #e2e8f0',
+                    flexShrink: 0
+                  }} 
+                  onClick={() => setSelectedImage(idx)}
+                >
+                  <img src={img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </div>
               ))}
             </div>
           </div>
-          <div className="product-info-section">
-            <h1 className="product-title">{product.name}</h1>
-            <div className="price-section">
-              <span className="current-price">₹{product.price}</span>
+          <div>
+            <h1 style={{ fontSize: '32px', fontWeight: '800', marginBottom: '8px', color: '#0f172a' }}>{product.name}</h1>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                {renderStars(product.rating)}
+                <span style={{ marginLeft: '8px', color: '#64748b', fontSize: '14px' }}>({product.reviews} reviews)</span>
+              </div>
+              {product.originalPrice && (
+                <span style={{ background: '#fef2f2', color: '#dc2626', padding: '4px 12px', borderRadius: '6px', fontSize: '14px', fontWeight: '600' }}>
+                  {Math.round((1 - product.price / product.originalPrice) * 100)}% OFF
+                </span>
+              )}
             </div>
-            <div className="product-options">
-              <div className="size-selection">
-                <h3>Size</h3>
-                <div className="size-options-detail">
-                  {product.sizes.map(s => (
-                    <button key={s} className={`size-option ${selectedSize === s ? 'active' : ''}`} onClick={() => setSelectedSize(s)}>{s}</button>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', marginBottom: '32px' }}>
+              <span style={{ fontSize: '36px', fontWeight: '800', color: '#0f172a' }}>₹{product.price}</span>
+              {product.originalPrice && (
+                <span style={{ fontSize: '20px', color: '#94a3b8', textDecoration: 'line-through' }}>₹{product.originalPrice}</span>
+              )}
+            </div>
+            
+            <div style={{ marginBottom: '24px' }}>
+              <h3 style={{ fontSize: '16px', fontWeight: '700', marginBottom: '12px', color: '#0f172a' }}>Select Size</h3>
+              <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                {product.sizes.map(s => (
+                  <button 
+                    key={s} 
+                    style={{ 
+                      padding: '12px 20px', 
+                      border: selectedSize === s ? '2px solid #2563eb' : '2px solid #e2e8f0', 
+                      borderRadius: '8px', 
+                      background: selectedSize === s ? '#eff6ff' : 'white',
+                      color: selectedSize === s ? '#2563eb' : '#0f172a',
+                      fontWeight: '700',
+                      cursor: 'pointer',
+                      fontSize: '16px',
+                      transition: 'all 0.2s'
+                    }} 
+                    onClick={() => setSelectedSize(s)}
+                    onMouseOver={(e) => {
+                      if (selectedSize !== s) {
+                        e.currentTarget.style.borderColor = '#94a3b8';
+                      }
+                    }}
+                    onMouseOut={(e) => {
+                      if (selectedSize !== s) {
+                        e.currentTarget.style.borderColor = '#e2e8f0';
+                      }
+                    }}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {product.colors.length > 0 && (
+              <div style={{ marginBottom: '32px' }}>
+                <h3 style={{ fontSize: '16px', fontWeight: '700', marginBottom: '12px', color: '#0f172a' }}>Select Color</h3>
+                <div style={{ display: 'flex', gap: '12px' }}>
+                  {product.colors.map(c => (
+                    <button 
+                      key={c} 
+                      style={{ 
+                        width: '40px', 
+                        height: '40px', 
+                        borderRadius: '50%', 
+                        border: selectedColor === c ? '3px solid #2563eb' : '2px solid #e2e8f0', 
+                        background: product.colorMap[c] || '#94a3b8',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s'
+                      }} 
+                      onClick={() => setSelectedColor(c)}
+                      title={c}
+                    />
                   ))}
                 </div>
               </div>
+            )}
+
+            <div style={{ marginBottom: '32px' }}>
+              <h3 style={{ fontSize: '16px', fontWeight: '700', marginBottom: '12px', color: '#0f172a' }}>Quantity</h3>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <button 
+                  style={{ width: '40px', height: '40px', borderRadius: '8px', border: '2px solid #e2e8f0', background: 'white', cursor: 'pointer', fontSize: '18px', fontWeight: '700' }}
+                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                >-</button>
+                <span style={{ fontSize: '18px', fontWeight: '700', minWidth: '40px', textAlign: 'center' }}>{quantity}</span>
+                <button 
+                  style={{ width: '40px', height: '40px', borderRadius: '8px', border: '2px solid #e2e8f0', background: 'white', cursor: 'pointer', fontSize: '18px', fontWeight: '700' }}
+                  onClick={() => setQuantity(quantity + 1)}
+                >+</button>
+              </div>
             </div>
-            <div className="action-buttons">
-              <button className="add-to-cart-btn" onClick={handleAddToCart} disabled={!product.inStock || isAddingToCart}>Add to Cart</button>
-              <button className="buy-now-btn" onClick={handleBuyNow} disabled={!product.inStock}>Buy Now</button>
-              <button className={`wishlist-btn ${isInWishlist(product.id) ? 'active' : ''}`} onClick={handleWishlistToggle}>
-                <i className="fas fa-heart"></i>
+
+            <div style={{ display: 'flex', gap: '12px', marginBottom: '32px' }}>
+              <button 
+                style={{ 
+                  flex: 1, 
+                  padding: '16px', 
+                  borderRadius: '10px', 
+                  border: 'none', 
+                  fontSize: '16px', 
+                  fontWeight: '700', 
+                  cursor: 'pointer',
+                  background: '#2563eb',
+                  color: 'white',
+                  transition: 'all 0.2s'
+                }} 
+                onClick={handleAddToCart} 
+                disabled={!product.inStock || isAddingToCart}
+                onMouseOver={(e) => {
+                  if (!e.currentTarget.disabled) {
+                    e.currentTarget.style.background = '#1d4ed8';
+                  }
+                }}
+                onMouseOut={(e) => {
+                  if (!e.currentTarget.disabled) {
+                    e.currentTarget.style.background = '#2563eb';
+                  }
+                }}
+              >
+                {isAddingToCart ? (
+                  <><i className="fas fa-spinner fa-spin"></i> Adding...</>
+                ) : (
+                  <><i className="fas fa-cart-plus"></i> Add to Cart</>
+                )}
+              </button>
+              <button 
+                style={{ 
+                  flex: 1, 
+                  padding: '16px', 
+                  borderRadius: '10px', 
+                  border: 'none', 
+                  fontSize: '16px', 
+                  fontWeight: '700', 
+                  cursor: 'pointer',
+                  background: '#0f172a',
+                  color: 'white',
+                  transition: 'all 0.2s'
+                }} 
+                onClick={handleBuyNow} 
+                disabled={!product.inStock}
+                onMouseOver={(e) => {
+                  if (!e.currentTarget.disabled) {
+                    e.currentTarget.style.background = '#1e293b';
+                  }
+                }}
+                onMouseOut={(e) => {
+                  if (!e.currentTarget.disabled) {
+                    e.currentTarget.style.background = '#0f172a';
+                  }
+                }}
+              >
+                <i className="fas fa-bolt"></i> Buy Now
+              </button>
+              <button 
+                style={{ 
+                  width: '56px', 
+                  height: '56px', 
+                  borderRadius: '10px', 
+                  border: isInWishlist(product.id) ? '2px solid #dc2626' : '2px solid #e2e8f0', 
+                  background: isInWishlist(product.id) ? '#fef2f2' : 'white', 
+                  cursor: 'pointer',
+                  fontSize: '20px',
+                  color: isInWishlist(product.id) ? '#dc2626' : '#64748b',
+                  transition: 'all 0.2s'
+                }} 
+                onClick={handleWishlistToggle}
+              >
+                <i className={`${isInWishlist(product.id) ? 'fas' : 'far'} fa-heart`}></i>
               </button>
             </div>
-            <div className="product-description mt-4">
-              <h3>Description</h3>
-              <p>{product.description}</p>
+
+            <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '24px', marginBottom: '24px' }}>
+              <h3 style={{ fontSize: '16px', fontWeight: '700', marginBottom: '12px', color: '#0f172a' }}>Description</h3>
+              <p style={{ color: '#64748b', lineHeight: '1.6' }}>{product.description}</p>
             </div>
-          </div>
-        </div>
-        
-        <div className="reviews-section mt-5">
-          <div className="tab-navigation">
-            <button className={`tab-nav-btn ${activeTab === 'reviews' ? 'active' : ''}`} onClick={() => setActiveTab('reviews')}>Reviews</button>
-          </div>
-          <div className="tab-content">
-            <div className="add-review-section mb-4">
-              <h4>Leave a Review</h4>
-              <form onSubmit={handleReviewSubmit}>
-                <textarea 
-                  className="form-control mb-2" 
-                  value={reviewFormData.comment} 
-                  onChange={e => setReviewFormData({ ...reviewFormData, comment: e.target.value })}
-                  placeholder="Your review..."
-                />
-                <button type="submit" className="btn btn-primary">Submit</button>
-              </form>
-            </div>
-            <div className="reviews-list">
-              {reviews.map(r => (
-                <div key={r._id} className="review-item border-bottom py-3">
-                  <strong>{r.user_id?.name || 'User'}</strong> - {renderStars(r.rating)}
-                  <p>{r.comment}</p>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              {product.features.map((feature, idx) => (
+                <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#64748b' }}>
+                  <i className="fas fa-check-circle" style={{ color: '#10b981' }}></i>
+                  <span>{feature}</span>
                 </div>
               ))}
             </div>
           </div>
         </div>
+
+        {relatedProducts.length > 0 && (
+          <div style={{ marginTop: '48px' }}>
+            <h2 style={{ fontSize: '28px', fontWeight: '800', marginBottom: '24px', color: '#0f172a' }}>You May Also Like</h2>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '24px' }}>
+              {relatedProducts.map((p) => (
+                <div key={p.id} style={{ background: 'white', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', cursor: 'pointer' }} onClick={() => navigate(`/product/${p.id}`)}>
+                  <div style={{ height: '250px', overflow: 'hidden' }}>
+                    <img src={p.image} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </div>
+                  <div style={{ padding: '16px' }}>
+                    <h3 style={{ fontSize: '16px', fontWeight: '700', marginBottom: '8px', color: '#0f172a' }}>{p.name}</h3>
+                    <p style={{ fontSize: '20px', fontWeight: '800', color: '#0f172a' }}>₹{p.price}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

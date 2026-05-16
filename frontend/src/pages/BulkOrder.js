@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import '../styles/ui-enhanced.css';
 
 const BulkOrder = () => {
   const [formData, setFormData] = useState({

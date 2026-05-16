@@ -6,6 +6,7 @@ import { useToast } from '../context/ToastContext';
 import ProductCard from '../components/ProductCard';
 import SkeletonLoader from '../components/SkeletonLoader';
 import './WishlistEnhanced.css';
+import '../styles/ui-enhanced.css';
 
 // Sample recently viewed products
 const recentlyViewedProducts = [
@@ -56,6 +57,8 @@ const Wishlist = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [recentlyLoading, setRecentlyLoading] = useState(true);
   const [sortBy, setSortBy] = useState('date');
+  const [selectedSize, setSelectedSize] = useState({});
+  const [selectedColor, setSelectedColor] = useState({});
 
   useEffect(() => {
     // Simulate loading for recently viewed products
@@ -66,9 +69,23 @@ const Wishlist = () => {
   }, []);
 
   const handleAddToCart = (product) => {
+    const size = selectedSize[product.id];
+    const color = selectedColor[product.id];
+    
+    if (!size || !color) {
+      error('Please select size and color');
+      return;
+    }
+
     setIsLoading(true);
     setTimeout(() => {
-      addToCart(product);
+      const cartItem = {
+        ...product,
+        selectedSize: size,
+        selectedColor: color,
+        quantity: 1
+      };
+      addToCart(cartItem);
       success(`${product.name} added to cart!`);
       removeFromWishlist(product.id);
       setIsLoading(false);
@@ -108,6 +125,24 @@ const Wishlist = () => {
       const savings = item.originalPrice ? item.originalPrice - item.price : 0;
       return total + savings;
     }, 0);
+  };
+
+  const renderStars = (rating) => {
+    const stars = [];
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating % 1 !== 0;
+
+    for (let i = 0; i < fullStars; i++) {
+      stars.push(<i key={i} className="fas fa-star"></i>);
+    }
+    if (hasHalfStar) {
+      stars.push(<i key="half" className="fas fa-star-half-alt"></i>);
+    }
+    const emptyStars = 5 - Math.ceil(rating);
+    for (let i = 0; i < emptyStars; i++) {
+      stars.push(<i key={`empty-${i}`} className="far fa-star"></i>);
+    }
+    return stars;
   };
 
   if (items.length === 0) {
@@ -249,6 +284,48 @@ const Wishlist = () => {
                     {item.originalPrice && (
                       <span className="savings">Save ₹{item.originalPrice - item.price}</span>
                     )}
+                  </div>
+                  
+                  <div className="product-options">
+                    <div className="size-selector">
+                      <label>Size:</label>
+                      <div className="size-options">
+                        {(item.sizes || ['S', 'M', 'L', 'XL']).map(size => (
+                          <button
+                            key={size}
+                            className={`size-btn ${selectedSize[item.id] === size ? 'selected' : ''}`}
+                            onClick={() => setSelectedSize({...selectedSize, [item.id]: size})}
+                          >
+                            {size}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    <div className="color-selector">
+                      <label>Color:</label>
+                      <div className="color-options">
+                        {(item.colors || ['Black', 'Navy', 'Gray']).map(color => (
+                          <button
+                            key={color}
+                            className={`color-btn ${selectedColor[item.id] === color ? 'selected' : ''}`}
+                            onClick={() => setSelectedColor({...selectedColor, [item.id]: color})}
+                            title={color}
+                          >
+                            <span className="color-dot" style={{ 
+                              backgroundColor: color.toLowerCase().includes('black') ? '#000' :
+                                                 color.toLowerCase().includes('navy') ? '#000080' :
+                                                 color.toLowerCase().includes('gray') ? '#808080' :
+                                                 color.toLowerCase().includes('maroon') ? '#800020' :
+                                                 color.toLowerCase().includes('red') ? '#FF0000' :
+                                                 color.toLowerCase().includes('blue') ? '#0000FF' :
+                                                 color.toLowerCase().includes('white') ? '#FFFFFF' :
+                                                 color.toLowerCase().includes('green') ? '#008000' : '#333'
+                            }}></span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 </div>
                 
