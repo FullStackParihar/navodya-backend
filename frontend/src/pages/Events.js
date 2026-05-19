@@ -5,11 +5,17 @@ const Events = () => {
   const [selectedEvent, setSelectedEvent] = useState(null);
 
   const events = [
-    { id: 1, title: 'Navodaya Brand Launch Webinar', date: '2024-06-10', time: '7:00 PM', location: 'Online (Zoom)', attendees: 450, maxAttendees: 1000, price: 0, gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', icon: 'fas fa-rocket' },
-    { id: 2, title: 'Alumni Career Consulting Session', date: '2024-06-15', time: '4:00 PM', location: 'Online (Google Meet)', attendees: 280, maxAttendees: 500, price: 199, gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', icon: 'fas fa-briefcase' },
-    { id: 3, title: 'Brand Merchandise Design Workshop', date: '2024-06-20', time: '3:00 PM', location: 'Online (Zoom)', attendees: 150, maxAttendees: 300, price: 0, gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', icon: 'fas fa-palette' },
-    { id: 4, title: 'Digital Marketing for Alumni Entrepreneurs', date: '2024-06-25', time: '6:00 PM', location: 'Online (Teams)', attendees: 320, maxAttendees: 600, price: 299, gradient: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)', icon: 'fas fa-chart-line' },
-    { id: 5, title: 'Navodaya Community Q&A', date: '2024-07-01', time: '8:00 PM', location: 'Online (YouTube Live)', attendees: 600, maxAttendees: 2000, price: 0, gradient: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)', icon: 'fas fa-comments' }
+    { id: 1, title: 'Navodaya Brand Launch Webinar', date: '2024-06-10', time: '7:00 PM', location: 'Online (Zoom)', attendees: 450, maxAttendees: 1000, price: 0, image: 'https://t3.ftcdn.net/jpg/03/16/22/64/360_F_316226483_Ksq9gLfiQBRnDWb6V86TQOCwZcEUW2lg.jpg', icon: 'fas fa-rocket' },
+    { id: 2, title: 'Alumni Career Consulting Session', date: '2024-06-15', time: '4:00 PM', location: 'Online (Google Meet)', attendees: 280, maxAttendees: 500, price: 199, image: 'https://t3.ftcdn.net/jpg/03/16/22/64/360_F_316226483_Ksq9gLfiQBRnDWb6V86TQOCwZcEUW2lg.jpg', icon: 'fas fa-briefcase' },
+    { id: 3, title: 'Brand Merchandise Design Workshop', date: '2024-06-20', time: '3:00 PM', location: 'Online (Zoom)', attendees: 150, maxAttendees: 300, price: 0, image: 'https://t3.ftcdn.net/jpg/03/16/22/64/360_F_316226483_Ksq9gLfiQBRnDWb6V86TQOCwZcEUW2lg.jpg', icon: 'fas fa-palette' },
+    { id: 4, title: 'Digital Marketing for Alumni Entrepreneurs', date: '2024-06-25', time: '6:00 PM', location: 'Online (Teams)', attendees: 320, maxAttendees: 600, price: 299, image: 'https://t3.ftcdn.net/jpg/03/16/22/64/360_F_316226483_Ksq9gLfiQBRnDWb6V86TQOCwZcEUW2lg.jpg', icon: 'fas fa-chart-line' },
+    { id: 5, title: 'Navodaya Community Q&A', date: '2024-07-01', time: '8:00 PM', location: 'Online (YouTube Live)', attendees: 600, maxAttendees: 2000, price: 0, image: 'https://t3.ftcdn.net/jpg/03/16/22/64/360_F_316226483_Ksq9gLfiQBRnDWb6V86TQOCwZcEUW2lg.jpg', icon: 'fas fa-comments' }
+  ];
+
+  const upcomingEvents = [
+    { id: 6, title: 'Alumni Reunion 2025', date: 'December 15, 2025', location: 'Goa, India', image: 'https://t3.ftcdn.net/jpg/03/16/22/64/360_F_316226483_Ksq9gLfiQBRnDWb6V86TQOCwZcEUW2lg.jpg' },
+    { id: 7, title: 'Tech Summit 2025', date: 'November 20, 2025', location: 'Online (Zoom)', image: 'https://t3.ftcdn.net/jpg/03/16/22/64/360_F_316226483_Ksq9gLfiQBRnDWb6V86TQOCwZcEUW2lg.jpg' },
+    { id: 8, title: 'Annual Dinner 2025', date: 'January 10, 2025', location: 'Delhi, India', image: 'https://t3.ftcdn.net/jpg/03/16/22/64/360_F_316226483_Ksq9gLfiQBRnDWb6V86TQOCwZcEUW2lg.jpg' }
   ];
 
   const handleRegister = (event) => {
@@ -39,11 +45,8 @@ const Events = () => {
           <div className="regions-grid">
             {events.map((event) => (
               <div key={event.id} className="region-card">
-                <div className="region-image" style={{ background: event.gradient, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <div style={{ textAlign: 'center', color: 'white' }}>
-                    <i className={event.icon} style={{ fontSize: '64px', marginBottom: '8px' }}></i>
-                    <h3 style={{ fontSize: '20px', fontWeight: '800' }}>{event.title}</h3>
-                  </div>
+                <div className="region-image">
+                  <img src={event.image} alt={event.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </div>
                 <div className="region-content">
                   <h3 style={{ fontSize: '20px', fontWeight: '700', marginBottom: '8px', color: 'var(--text-dark)' }}>{event.title}</h3>
@@ -75,111 +78,39 @@ const Events = () => {
         </div>
       </section>
 
-      <section style={{ background: '#f8fafc', padding: '60px 0' }}>
+      <section style={{ background: '#f8fafc', padding: '120px 0' }}>
         <div className="container">
           <h2 className="about-heading" style={{ marginBottom: '40px' }}>Upcoming Events</h2>
           <div className="regions-grid">
-            <div className="region-card">
-              <div className="region-image" style={{ 
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', 
-                display: 'flex', alignItems: 'center', justifyContent: 'center'
-              }}>
-                <div style={{ textAlign: 'center', color: 'white' }}>
-                  <i className="fas fa-calendar-alt" style={{ fontSize: '64px', marginBottom: '8px' }}></i>
-                  <h3 style={{ fontSize: '20px', fontWeight: '800' }}>Alumni Reunion 2025</h3>
+            {upcomingEvents.map((event) => (
+              <div key={event.id} className="region-card">
+                <div className="region-image">
+                  <img src={event.image} alt={event.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                </div>
+                <div className="region-content">
+                  <h3 style={{ fontSize: '20px', fontWeight: '700', marginBottom: '8px', color: 'var(--text-dark)' }}>{event.title}</h3>
+                  <p style={{ fontSize: '14px', color: 'var(--text-gray)', marginBottom: '8px' }}>
+                    <i className="fas fa-calendar"></i> {event.date}
+                  </p>
+                  <p style={{ fontSize: '14px', color: 'var(--text-gray)', marginBottom: '12px' }}>
+                    <i className="fas fa-map-marker-alt"></i> {event.location}
+                  </p>
+                  <a 
+                    href="https://wa.me/919284490206" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    style={{ 
+                      display: 'inline-flex', alignItems: 'center', gap: '8px', 
+                      padding: '12px 24px', background: '#25D366', color: 'white', 
+                      borderRadius: '12px', textDecoration: 'none', fontWeight: '600', 
+                      fontSize: '16px'
+                    }}
+                  >
+                    <i className="fab fa-whatsapp"></i> Connect on WhatsApp
+                  </a>
                 </div>
               </div>
-              <div className="region-content">
-                <h3 style={{ fontSize: '20px', fontWeight: '700', marginBottom: '8px', color: 'var(--text-dark)' }}>Alumni Reunion 2025</h3>
-                <p style={{ fontSize: '14px', color: 'var(--text-gray)', marginBottom: '8px' }}>
-                  <i className="fas fa-calendar"></i> December 15, 2025
-                </p>
-                <p style={{ fontSize: '14px', color: 'var(--text-gray)', marginBottom: '12px' }}>
-                  <i className="fas fa-map-marker-alt"></i> Goa, India
-                </p>
-                <a 
-                  href="https://wa.me/919284490206" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  style={{ 
-                    display: 'inline-flex', alignItems: 'center', gap: '8px', 
-                    padding: '12px 24px', background: '#25D366', color: 'white', 
-                    borderRadius: '12px', textDecoration: 'none', fontWeight: '600', 
-                    fontSize: '16px'
-                  }}
-                >
-                  <i className="fab fa-whatsapp"></i> Connect on WhatsApp
-                </a>
-              </div>
-            </div>
-
-            <div className="region-card">
-              <div className="region-image" style={{ 
-                background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', 
-                display: 'flex', alignItems: 'center', justifyContent: 'center'
-              }}>
-                <div style={{ textAlign: 'center', color: 'white' }}>
-                  <i className="fas fa-laptop-code" style={{ fontSize: '64px', marginBottom: '8px' }}></i>
-                  <h3 style={{ fontSize: '20px', fontWeight: '800' }}>Tech Summit 2025</h3>
-                </div>
-              </div>
-              <div className="region-content">
-                <h3 style={{ fontSize: '20px', fontWeight: '700', marginBottom: '8px', color: 'var(--text-dark)' }}>Tech Summit 2025</h3>
-                <p style={{ fontSize: '14px', color: 'var(--text-gray)', marginBottom: '8px' }}>
-                  <i className="fas fa-calendar"></i> November 20, 2025
-                </p>
-                <p style={{ fontSize: '14px', color: 'var(--text-gray)', marginBottom: '12px' }}>
-                  <i className="fas fa-map-marker-alt"></i> Online (Zoom)
-                </p>
-                <a 
-                  href="https://wa.me/919284490206" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  style={{ 
-                    display: 'inline-flex', alignItems: 'center', gap: '8px', 
-                    padding: '12px 24px', background: '#25D366', color: 'white', 
-                    borderRadius: '12px', textDecoration: 'none', fontWeight: '600', 
-                    fontSize: '16px'
-                  }}
-                >
-                  <i className="fab fa-whatsapp"></i> Connect on WhatsApp
-                </a>
-              </div>
-            </div>
-
-            <div className="region-card">
-              <div className="region-image" style={{ 
-                background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)', 
-                display: 'flex', alignItems: 'center', justifyContent: 'center'
-              }}>
-                <div style={{ textAlign: 'center', color: 'white' }}>
-                  <i className="fas fa-star" style={{ fontSize: '64px', marginBottom: '8px' }}></i>
-                  <h3 style={{ fontSize: '20px', fontWeight: '800' }}>Annual Dinner 2025</h3>
-                </div>
-              </div>
-              <div className="region-content">
-                <h3 style={{ fontSize: '20px', fontWeight: '700', marginBottom: '8px', color: 'var(--text-dark)' }}>Annual Dinner 2025</h3>
-                <p style={{ fontSize: '14px', color: 'var(--text-gray)', marginBottom: '8px' }}>
-                  <i className="fas fa-calendar"></i> January 10, 2025
-                </p>
-                <p style={{ fontSize: '14px', color: 'var(--text-gray)', marginBottom: '12px' }}>
-                  <i className="fas fa-map-marker-alt"></i> Delhi, India
-                </p>
-                <a 
-                  href="https://wa.me/919284490206" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  style={{ 
-                    display: 'inline-flex', alignItems: 'center', gap: '8px', 
-                    padding: '12px 24px', background: '#25D366', color: 'white', 
-                    borderRadius: '12px', textDecoration: 'none', fontWeight: '600', 
-                    fontSize: '16px'
-                  }}
-                >
-                  <i className="fab fa-whatsapp"></i> Connect on WhatsApp
-                </a>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>

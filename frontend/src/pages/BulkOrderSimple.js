@@ -9,14 +9,16 @@ const BulkOrderSimple = () => {
     email: '',
     phone: '',
     alternatePhone: '',
+    jnvDistrict: '',
+    jnvState: '',
+    batch: '',
     address: '',
     city: '',
     state: '',
     pincode: '',
-    productName: '',
-    category: 'tshirts',
+    selectedProducts: [],
     quantity: '',
-    sizeRange: '',
+    selectedSizes: [],
     colorPreferences: '',
     material: '',
     budgetPerPiece: '',
@@ -31,9 +33,22 @@ const BulkOrderSimple = () => {
   const [submitMessage, setSubmitMessage] = useState('');
 
   const handleInputChange = (e) => {
-    const { name, value, type, files } = e.target;
+    const { name, value, type, files, checked } = e.target;
     if (type === 'file') {
       setFormData(prev => ({ ...prev, [name]: files[0] }));
+    } else if (type === 'checkbox') {
+      setFormData(prev => {
+        const current = [...prev[name]];
+        if (checked) {
+          current.push(value);
+        } else {
+          const index = current.indexOf(value);
+          if (index > -1) {
+            current.splice(index, 1);
+          }
+        }
+        return { ...prev, [name]: current };
+      });
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
     }
@@ -55,14 +70,16 @@ const BulkOrderSimple = () => {
           email: '',
           phone: '',
           alternatePhone: '',
+          jnvDistrict: '',
+          jnvState: '',
+          batch: '',
           address: '',
           city: '',
           state: '',
           pincode: '',
-          productName: '',
-          category: 'tshirts',
+          selectedProducts: [],
           quantity: '',
-          sizeRange: '',
+          selectedSizes: [],
           colorPreferences: '',
           material: '',
           budgetPerPiece: '',
@@ -252,6 +269,42 @@ const BulkOrderSimple = () => {
                 />
               </div>
               <div className="form-group-contact">
+                <label>JNV District</label>
+                <input
+                  type="text"
+                  name="jnvDistrict"
+                  value={formData.jnvDistrict}
+                  onChange={handleInputChange}
+                  className="form-input-contact"
+                  placeholder="e.g., Pune"
+                />
+              </div>
+              <div className="form-group-contact">
+                <label>JNV State</label>
+                <input
+                  type="text"
+                  name="jnvState"
+                  value={formData.jnvState}
+                  onChange={handleInputChange}
+                  className="form-input-contact"
+                  placeholder="e.g., Maharashtra"
+                />
+              </div>
+              <div className="form-group-contact">
+                <label>Batch</label>
+                <select
+                  name="batch"
+                  value={formData.batch}
+                  onChange={handleInputChange}
+                  className="form-input-contact"
+                >
+                  <option value="">Select batch</option>
+                  {Array.from({ length: 2026 - 1985 + 1 }, (_, i) => 1985 + i).map(year => (
+                    <option key={year} value={year.toString()}>{year}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="form-group-contact">
                 <label>Referral Source</label>
                 <select
                   name="referralSource"
@@ -347,31 +400,67 @@ const BulkOrderSimple = () => {
               Product Requirements
             </h3>
             <div className="form-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' }}>
-              <div className="form-group-contact">
-                <label>Product Name *</label>
-                <input
-                  type="text"
-                  name="productName"
-                  value={formData.productName}
-                  onChange={handleInputChange}
-                  required
-                  className="form-input-contact"
-                  placeholder="e.g., Alumni T-Shirt 2025"
-                />
-              </div>
-              <div className="form-group-contact">
-                <label>Category *</label>
-                <select
-                  name="category"
-                  value={formData.category}
-                  onChange={handleInputChange}
-                  required
-                  className="form-input-contact"
-                >
+              <div className="form-group-contact" style={{ gridColumn: 'span 1' }}>
+                <label>Select Products *</label>
+                <div style={{ 
+                  display: 'flex', 
+                  flexDirection: 'column', 
+                  gap: '10px', 
+                  padding: '12px', 
+                  background: '#f8fafc', 
+                  borderRadius: '12px' 
+                }}>
                   {categories.map((cat, idx) => (
-                    <option key={idx} value={cat.value}>{cat.label}</option>
+                    <label key={idx} style={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      gap: '8px', 
+                      cursor: 'pointer',
+                      fontSize: '14px'
+                    }}>
+                      <input
+                        type="checkbox"
+                        name="selectedProducts"
+                        value={cat.value}
+                        checked={formData.selectedProducts.includes(cat.value)}
+                        onChange={handleInputChange}
+                        style={{ width: '16px', height: '16px' }}
+                      />
+                      {cat.label}
+                    </label>
                   ))}
-                </select>
+                </div>
+              </div>
+              <div className="form-group-contact" style={{ gridColumn: 'span 1' }}>
+                <label>Select Sizes *</label>
+                <div style={{ 
+                  display: 'flex', 
+                  flexDirection: 'column', 
+                  gap: '10px', 
+                  padding: '12px', 
+                  background: '#f8fafc', 
+                  borderRadius: '12px' 
+                }}>
+                  {['S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL'].map((size, idx) => (
+                    <label key={idx} style={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      gap: '8px', 
+                      cursor: 'pointer',
+                      fontSize: '14px'
+                    }}>
+                      <input
+                        type="checkbox"
+                        name="selectedSizes"
+                        value={size}
+                        checked={formData.selectedSizes.includes(size)}
+                        onChange={handleInputChange}
+                        style={{ width: '16px', height: '16px' }}
+                      />
+                      {size}
+                    </label>
+                  ))}
+                </div>
               </div>
               <div className="form-group-contact">
                 <label>Quantity *</label>
@@ -384,17 +473,6 @@ const BulkOrderSimple = () => {
                   className="form-input-contact"
                   placeholder="Minimum 50 pieces"
                   min="50"
-                />
-              </div>
-              <div className="form-group-contact">
-                <label>Size Range</label>
-                <input
-                  type="text"
-                  name="sizeRange"
-                  value={formData.sizeRange}
-                  onChange={handleInputChange}
-                  className="form-input-contact"
-                  placeholder="e.g., S, M, L, XL, XXL"
                 />
               </div>
               <div className="form-group-contact">

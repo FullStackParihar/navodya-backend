@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-import { useWishlist } from '../context/WishlistContext';
 
 // Sample product data (in a real app, this would come from an API)
 const productData = {
@@ -27,7 +26,6 @@ const productData = {
 const ProductDetail = () => {
   const { id } = useParams();
   const { addToCart, isInCart } = useCart();
-  const { isInWishlist, toggleWishlist } = useWishlist();
   const [selectedSize, setSelectedSize] = useState('M');
   const [selectedColor, setSelectedColor] = useState('black');
   const [quantity, setQuantity] = useState(1);
@@ -56,10 +54,6 @@ const ProductDetail = () => {
       selectedColor,
       quantity
     });
-  };
-
-  const handleWishlistToggle = () => {
-    toggleWishlist(product);
   };
 
   const sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
@@ -207,13 +201,6 @@ const ProductDetail = () => {
                 </button>
                 <button className="buy-now-btn">
                   <i className="fas fa-bolt"></i> Buy Now
-                </button>
-                <button 
-                  className="wishlist-btn"
-                  onClick={handleWishlistToggle}
-                  style={{ color: isInWishlist(product.id) ? 'var(--primary-color)' : '' }}
-                >
-                  <i className={isInWishlist(product.id) ? 'fas fa-heart' : 'far fa-heart'}></i>
                 </button>
               </div>
 

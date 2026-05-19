@@ -8,56 +8,56 @@ const categories = [
   {
     name: 'T-Shirts',
     description: 'Premium cotton tees',
-    image: 'https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=tshirt%20navodaya&image_size=square_hd',
     link: '/tshirts',
     icon: '👕',
     count: 45,
-    color: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)'
+    color: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
+    slug: 'tshirts'
   },
   {
     name: 'Hoodies',
     description: 'Comfortable hoodies',
-    image: 'https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=hoodie%20navodaya&image_size=square_hd',
     link: '/hoodies',
     icon: '🧥',
     count: 32,
-    color: 'linear-gradient(135deg, #a855f7 0%, #7c3aed 100%)'
+    color: 'linear-gradient(135deg, #a855f7 0%, #7c3aed 100%)',
+    slug: 'hoodies'
   },
   {
     name: 'Mementos',
     description: 'Cherished memories',
-    image: 'https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=mementos%20navodaya&image_size=square_hd',
     link: '/momentum',
     icon: '🏆',
     count: 28,
-    color: 'linear-gradient(135deg, #eab308 0%, #ca8a04 100%)'
+    color: 'linear-gradient(135deg, #eab308 0%, #ca8a04 100%)',
+    slug: 'momentum'
   },
   {
     name: 'Accessories',
     description: 'Daily essentials',
-    image: 'https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=accessories%20navodaya&image_size=square_hd',
     link: '/accessories',
     icon: '⌚',
     count: 56,
-    color: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)'
+    color: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)',
+    slug: 'accessories'
   },
   {
     name: 'Event Merchandise',
     description: 'Special editions',
-    image: 'https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=event%20merchandise%20navodaya&image_size=square_hd',
     link: '/event-merchandise',
     icon: '🎉',
     count: 18,
-    color: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)'
+    color: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+    slug: 'event-merchandise'
   },
   {
     name: 'Custom Orders',
     description: 'Personalized items',
-    image: 'https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=custom%20orders%20navodaya&image_size=square_hd',
     link: '/customize',
     icon: '✨',
     count: 'Unlimited',
-    color: 'linear-gradient(135deg, #ec4899 0%, #db2777 100%)'
+    color: 'linear-gradient(135deg, #ec4899 0%, #db2777 100%)',
+    slug: 'custom'
   }
 ];
 
@@ -78,7 +78,8 @@ const events = [
     attendees: 500, 
     price: 1299, 
     discount: '20%',
-    badge: '500 Attending'
+    badge: '500 Attending',
+    image: 'https://t3.ftcdn.net/jpg/03/16/22/64/360_F_316226483_Ksq9gLfiQBRnDWb6V86TQOCwZcEUW2lg.jpg'
   },
   { 
     name: 'JNV Bangalore Reunion', 
@@ -87,7 +88,8 @@ const events = [
     attendees: 300, 
     price: 899, 
     discount: '20%',
-    badge: '300 Attending'
+    badge: '300 Attending',
+    image: 'https://t3.ftcdn.net/jpg/03/16/22/64/360_F_316226483_Ksq9gLfiQBRnDWb6V86TQOCwZcEUW2lg.jpg'
   },
   { 
     name: 'Navodaya Tech Summit', 
@@ -96,16 +98,18 @@ const events = [
     attendees: 1000, 
     price: 599, 
     discount: '20%',
-    badge: '1000 Attending'
+    badge: '1000 Attending',
+    image: 'https://t3.ftcdn.net/jpg/03/16/22/64/360_F_316226483_Ksq9gLfiQBRnDWb6V86TQOCwZcEUW2lg.jpg'
   }
 ];
 
 const Home = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [products, setProducts] = useState([]);
+  const [categoryProducts, setCategoryProducts] = useState({});
 
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchAllProducts = async () => {
       try {
         setIsLoading(true);
         const result = await api.get('/products');
@@ -123,9 +127,19 @@ const Home = () => {
             reviews: p.review_count,
             rating: p.rating,
             sizes: p.sizes,
-            colors: p.colors
+            colors: p.colors,
+            category: p.category_id?.slug
           }));
           setProducts(mappedProducts);
+
+          const catProducts = {};
+          categories.forEach(cat => {
+            const firstProduct = mappedProducts.find(p => p.category === cat.slug);
+            if (firstProduct) {
+              catProducts[cat.slug] = firstProduct.image;
+            }
+          });
+          setCategoryProducts(catProducts);
         }
       } catch (error) {
         console.error('Error fetching products:', error);
@@ -134,7 +148,7 @@ const Home = () => {
       }
     };
 
-    fetchProducts();
+    fetchAllProducts();
   }, []);
 
   const featuredProducts = products.slice(0, 4);
@@ -206,18 +220,27 @@ const Home = () => {
                 to={category.link} 
                 className="category-card-new"
               >
-                <div className="category-bg" style={{ background: category.color }}>
-                  <div className="category-orbs">
-                    <div className="orb orb-1"></div>
-                    <div className="orb orb-2"></div>
+                <div className="category-image-wrapper">
+                  {categoryProducts[category.slug] ? (
+                    <img 
+                      src={categoryProducts[category.slug]} 
+                      alt={category.name} 
+                      className="category-image"
+                    />
+                  ) : (
+                    <div className="category-placeholder" style={{ background: category.color }}>
+                      {category.icon}
+                    </div>
+                  )}
+                  <div className="category-count-badge">
+                    {category.count} Items
                   </div>
-                  <div className="category-icon-new">{category.icon}</div>
                 </div>
                 <div className="category-content-new">
                   <h3 className="category-name-new">{category.name}</h3>
                   <p className="category-desc-new">{category.description}</p>
-                  <div className="category-count-new">
-                    {category.count} Items <i className="fas fa-arrow-right"></i>
+                  <div className="category-cta">
+                    Shop Now <i className="fas fa-arrow-right"></i>
                   </div>
                 </div>
               </Link>
@@ -321,9 +344,7 @@ const Home = () => {
               <div key={index} className="event-card">
                 <div className="event-badge">{event.badge}</div>
                 <div className="event-image">
-                  <div className="event-placeholder">
-                    <i className="far fa-calendar-alt"></i>
-                  </div>
+                  <img src={event.image} alt={event.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </div>
                 <div className="event-info">
                   <h3 className="event-name">{event.name}</h3>

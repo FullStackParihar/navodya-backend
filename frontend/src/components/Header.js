@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-import { useWishlist } from '../context/WishlistContext';
 
 const Header = () => {
   const location = useLocation();
   const [shopDropdownOpen, setShopDropdownOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { totalItems } = useCart();
-  const { totalItems: wishlistCount } = useWishlist();
   const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
   const userRole = localStorage.getItem('userRole');
   const isAdmin = isAuthenticated && (userRole === 'admin' || localStorage.getItem('userEmail') === 'admin@navodaya.com');
@@ -30,6 +29,23 @@ const Header = () => {
         <Link to="/" className="logo-new">
           <img src="/logo.png" alt="Navodaya Trendz" style={{ height: '100px' }} />
         </Link>
+
+        {/* Mobile Menu Toggle */}
+        <button 
+          className="mobile-menu-toggle"
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          style={{
+            display: 'none',
+            background: 'none',
+            border: 'none',
+            fontSize: '24px',
+            color: '#0f172a',
+            cursor: 'pointer',
+            padding: '8px'
+          }}
+        >
+          <i className={mobileMenuOpen ? 'fas fa-times' : 'fas fa-bars'}></i>
+        </button>
         
         <nav className="nav-links-new">
           <Link to="/" className={location.pathname === '/' ? 'active' : ''}>Home</Link>
@@ -73,9 +89,6 @@ const Header = () => {
                 <i className="fas fa-cog"></i>
               </Link>
             )}
-            <Link to="/wishlist" className="header-icon-btn">
-              <i className="far fa-heart"></i>
-            </Link>
             <Link to="/cart" className="header-icon-btn cart-icon-new">
               <i className="fas fa-shopping-cart"></i>
               {totalItems > 0 && <span className="cart-badge-new">{totalItems}</span>}
@@ -86,6 +99,156 @@ const Header = () => {
           </div>
         </div>
       </div>
+
+      {/* Mobile Menu Overlay */}
+      {mobileMenuOpen && (
+        <div 
+          onClick={() => setMobileMenuOpen(false)}
+          className="mobile-menu-overlay"
+          style={{
+            position: 'fixed',
+            top: '0',
+            left: '0',
+            width: '100%',
+            height: '100%',
+            background: 'rgba(0,0,0,0.5)',
+            zIndex: '1999',
+            display: 'block'
+          }}
+        ></div>
+      )}
+      
+      {/* Mobile Menu */}
+      {mobileMenuOpen && (
+        <div className="mobile-menu" style={{
+          position: 'fixed',
+          top: '0',
+          right: '0',
+          width: '280px',
+          height: '100vh',
+          background: 'white',
+          boxShadow: '0 10px 40px rgba(0,0,0,0.2)',
+          zIndex: '2000',
+          padding: '80px 20px 20px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '12px',
+          overflowY: 'auto'
+        }}>
+          <button 
+            onClick={() => setMobileMenuOpen(false)}
+            style={{
+              position: 'absolute',
+              top: '20px',
+              right: '20px',
+              background: 'none',
+              border: 'none',
+              fontSize: '24px',
+              color: '#0f172a',
+              cursor: 'pointer'
+            }}
+          >
+            <i className="fas fa-times"></i>
+          </button>
+          
+          <Link 
+            to="/" 
+            onClick={() => setMobileMenuOpen(false)}
+            style={{
+              padding: '12px 16px',
+              color: '#0f172a',
+              textDecoration: 'none',
+              fontSize: '16px',
+              fontWeight: '600',
+              borderRadius: '8px'
+            }}
+          >
+            Home
+          </Link>
+          
+          <div style={{ padding: '12px 16px' }}>
+            <div style={{ fontWeight: '700', color: '#0f172a', marginBottom: '8px' }}>Shop</div>
+            {shopCategories.map((cat, idx) => (
+              <Link 
+                key={idx} 
+                to={cat.link} 
+                onClick={() => setMobileMenuOpen(false)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  padding: '8px 0',
+                  color: '#64748b',
+                  textDecoration: 'none',
+                  fontSize: '14px'
+                }}
+              >
+                <i className={cat.icon} style={{ marginRight: '10px', width: '20px' }}></i>
+                {cat.name}
+              </Link>
+            ))}
+          </div>
+          
+          <Link 
+            to="/regional-alumni" 
+            onClick={() => setMobileMenuOpen(false)}
+            style={{
+              padding: '12px 16px',
+              color: '#0f172a',
+              textDecoration: 'none',
+              fontSize: '16px',
+              fontWeight: '600',
+              borderRadius: '8px'
+            }}
+          >
+            Regional Alumni
+          </Link>
+          
+          <Link 
+            to="/events" 
+            onClick={() => setMobileMenuOpen(false)}
+            style={{
+              padding: '12px 16px',
+              color: '#0f172a',
+              textDecoration: 'none',
+              fontSize: '16px',
+              fontWeight: '600',
+              borderRadius: '8px'
+            }}
+          >
+            Events
+          </Link>
+          
+          <Link 
+            to="/bulk-order" 
+            onClick={() => setMobileMenuOpen(false)}
+            style={{
+              padding: '12px 16px',
+              color: '#0f172a',
+              textDecoration: 'none',
+              fontSize: '16px',
+              fontWeight: '600',
+              borderRadius: '8px'
+            }}
+          >
+            Bulk Orders
+          </Link>
+          
+          <Link 
+            to="/about" 
+            onClick={() => setMobileMenuOpen(false)}
+            style={{
+              padding: '12px 16px',
+              color: '#0f172a',
+              textDecoration: 'none',
+              fontSize: '16px',
+              fontWeight: '600',
+              borderRadius: '8px'
+            }}
+          >
+            About Us
+          </Link>
+        </div>
+      )}
     </header>
   );
 };

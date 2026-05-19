@@ -17,7 +17,7 @@ const FooterEnhanced = () => {
           marginBottom: '40px' 
         }}>
           <div>
-            <img src="/logo.png" alt="Navodaya Trendz" style={{ height: '80px', marginBottom: '16px' }} />
+            <img src="/logo.png" alt="Navodaya Trendz" style={{ height: '120px', marginBottom: '16px' }} />
             <p style={{ color: '#dbeafe', marginBottom: '20px', lineHeight: '1.6' }}>
               Made by Navodayans, for Navodayans. Premium quality merchandise celebrating the Navodaya spirit.
             </p>

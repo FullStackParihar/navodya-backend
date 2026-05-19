@@ -15,6 +15,18 @@ body {
     overflow-x: hidden;
 }
 
+.App {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main {
+    flex: 1;
+    margin: 0;
+    padding: 0;
+}
+
 .container {
     max-width: 1280px;
     margin: 0 auto;
@@ -191,6 +203,17 @@ body {
     gap: 8px;
 }
 
+.mobile-menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1999;
+    display: none;
+}
+
 .header-icon-btn {
     width: 40px;
     height: 40px;
@@ -261,9 +284,10 @@ body {
 /* Hero Section */
 .hero-section {
     background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%);
-    padding: 60px 0;
+    padding: 80px 0;
     position: relative;
     overflow: hidden;
+    margin-top: 0;
 }
 
 .hero-section::before,
@@ -439,7 +463,7 @@ body {
 
 /* Categories Section */
 .categories-section-new {
-    padding: 80px 0;
+    padding: 120px 0;
     background: var(--bg-light);
 }
 
@@ -531,9 +555,59 @@ body {
     color: var(--text-dark);
 }
 
+.category-image-wrapper {
+    height: 200px;
+    overflow: hidden;
+    position: relative;
+}
+
+.category-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.category-card-new:hover .category-image {
+    transform: scale(1.1);
+}
+
+.category-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 64px;
+}
+
+.category-count-badge {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: rgba(15, 23, 42, 0.8);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.category-cta {
+    display: flex;
+    align-items: center;
+    color: #2563eb;
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.category-cta i {
+    margin-left: 8px;
+}
+
 /* Featured Products */
 .featured-products-section {
-    padding: 80px 0;
+    padding: 120px 0;
     background: var(--white);
 }
 
@@ -676,7 +750,7 @@ body {
 
 /* States Section */
 .states-section {
-    padding: 80px 0;
+    padding: 120px 0;
     background: var(--bg-light);
 }
 
@@ -768,7 +842,7 @@ body {
 
 /* Events Section */
 .events-section {
-    padding: 80px 0;
+    padding: 120px 0;
     background: var(--white);
 }
 
@@ -962,20 +1036,122 @@ body {
     }
 }
 
-@media (max-width: 640px) {
+/* Mobile Responsive */
+@media (max-width: 1024px) {
+    .nav-links-new {
+        display: none;
+    }
+
+    .mobile-menu-toggle {
+        display: block !important;
+    }
+
+    .header-container {
+        padding: 12px 0 !important;
+    }
+
+    .logo-new img {
+        height: 70px !important;
+    }
+
     .hero-title {
-        font-size: 36px;
+        font-size: 48px;
+    }
+
+    .hero-container {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .hero-subtitle {
+        max-width: 100% !important;
+    }
+
+    .categories-grid-new,
+    .states-grid,
+    .events-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .products-grid-new {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .about-grid,
+    .contact-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .gallery-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .stats-grid-about {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .container {
+        padding: 0 16px !important;
+    }
+
+    .logo-new img {
+        height: 60px !important;
+    }
+
+    .hero-title {
+        font-size: 32px;
     }
 
     .hero-buttons {
         flex-direction: column;
+        width: 100%;
+    }
+
+    .hero-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .stat-number {
+        font-size: 24px;
     }
 
     .categories-grid-new,
     .states-grid,
     .events-grid,
-    .products-grid-new {
+    .products-grid-new,
+    .gallery-grid,
+    .stats-grid-about {
         grid-template-columns: 1fr;
+    }
+
+    .section-title-new {
+        font-size: 28px;
+    }
+
+    .about-heading,
+    .mission-heading,
+    .contact-heading {
+        font-size: 28px;
+    }
+
+    .regions-grid,
+    .alumni-grid,
+    .features-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .footer-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .footer-simple {
+        padding: 40px 0 20px !important;
+    }
+
+    .mobile-menu {
+        width: 100% !important;
     }
 }
 

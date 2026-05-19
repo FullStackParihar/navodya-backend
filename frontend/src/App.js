@@ -15,7 +15,7 @@ import TodayDealsEnhanced from './pages/TodayDealsEnhanced';
 import NewArrivalsEnhanced from './pages/NewArrivalsEnhanced';
 import Customize from './pages/Customize';
 import ProductDetailEnhanced from './pages/ProductDetailEnhanced';
-import BulkOrder from './pages/BulkOrderSimple';
+import BulkOrder from './pages/BulkOrder';
 import AboutUs from './pages/AboutUs';
 import Contact from './pages/Contact';
 import Gallery from './pages/Gallery';

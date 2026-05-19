@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-import { useWishlist } from '../context/WishlistContext';
 import { useToast } from '../context/ToastContext';
 import QuickViewModal from './QuickViewModal';
 
 const ProductCard = ({ product }) => {
   const { addToCart, isInCart } = useCart();
-  const { isInWishlist, toggleWishlist } = useWishlist();
-  const { success, error, info } = useToast();
+  const { success, error } = useToast();
   const [isAdding, setIsAdding] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
@@ -21,7 +19,6 @@ const ProductCard = ({ product }) => {
 
     setIsAdding(true);
     try {
-      // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 500));
       addToCart(product);
       success(`${product.name} added to cart!`);
@@ -30,15 +27,6 @@ const ProductCard = ({ product }) => {
     } finally {
       setIsAdding(false);
     }
-  };
-
-  const handleWishlistToggle = (e) => {
-    e.preventDefault();
-    toggleWishlist(product);
-    const message = isInWishlist(product.id) 
-      ? `${product.name} removed from wishlist!`
-      : `${product.name} added to wishlist!`;
-    success(message);
   };
 
   const handleQuickView = (e) => {
@@ -75,13 +63,6 @@ const ProductCard = ({ product }) => {
         </Link>
         
         <div className="product-actions">
-          <button 
-            className="action-btn"
-            onClick={handleWishlistToggle}
-            title={isInWishlist(product.id) ? 'Remove from wishlist' : 'Add to wishlist'}
-          >
-            <i className={isInWishlist(product.id) ? 'fas fa-heart' : 'far fa-heart'}></i>
-          </button>
           <button 
             className="action-btn"
             onClick={handleQuickView}
