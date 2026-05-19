@@ -167,20 +167,32 @@ export const createProduct = asyncHandler(async (req: Request, res: Response) =>
 
 export const updateProduct = asyncHandler(async (req: Request, res: Response) => {
   const { id } = req.params;
-  const updateData: any = { ...req.body };
+  const {
+    name,
+    description,
+    price,
+    salePrice,
+    images,
+    categoryId,
+    subcategory,
+    sizes,
+    colors,
+    tags,
+    isActive
+  } = req.body;
 
-  if (updateData.categoryId) {
-    updateData.category_id = updateData.categoryId;
-    delete updateData.categoryId;
-  }
-  if (updateData.salePrice !== undefined) {
-    updateData.sale_price = updateData.salePrice;
-    delete updateData.salePrice;
-  }
-  if (updateData.isActive !== undefined) {
-    updateData.is_active = updateData.isActive;
-    delete updateData.isActive;
-  }
+  const updateData: any = {};
+  if (name !== undefined) updateData.name = name;
+  if (description !== undefined) updateData.description = description;
+  if (price !== undefined) updateData.price = price;
+  if (salePrice !== undefined) updateData.sale_price = salePrice;
+  if (images !== undefined) updateData.images = images;
+  if (categoryId !== undefined) updateData.category_id = categoryId;
+  if (subcategory !== undefined) updateData.subcategory = subcategory;
+  if (sizes !== undefined) updateData.sizes = sizes;
+  if (colors !== undefined) updateData.colors = colors;
+  if (tags !== undefined) updateData.tags = tags;
+  if (isActive !== undefined) updateData.is_active = isActive;
 
   const product = await Product.findByIdAndUpdate(id, updateData, { new: true });
 

@@ -19,7 +19,7 @@ import BulkOrder from './pages/BulkOrder';
 import AboutUs from './pages/AboutUs';
 import Contact from './pages/Contact';
 import Gallery from './pages/Gallery';
-import AdminPanel from './pages/AdminPanel';
+
 import Payment from './pages/Payment';
 import OrderTracking from './pages/OrderTracking';
 import CheckoutDashboard from './components/CheckoutDashboard';
@@ -73,7 +73,7 @@ const AppContent = () => {
           <Route path="/about" element={<AboutUs />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/gallery" element={<Gallery />} />
-          <Route path="/admin" element={<AdminPanel />} />
+          <Route path="/admin" element={<PrivateRoute><AdminProfile /></PrivateRoute>} />
           <Route path="/payment" element={<PrivateRoute><Payment /></PrivateRoute>} />
           <Route path="/order/:orderId" element={<PrivateRoute><OrderTracking /></PrivateRoute>} />
           <Route path="/track/:orderId" element={<PrivateRoute><OrderTracking /></PrivateRoute>} />

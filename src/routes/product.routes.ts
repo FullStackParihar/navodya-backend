@@ -14,13 +14,15 @@ import {
   deleteCategory,
 } from '../controllers/category.controller.js';
 import { authenticate, requireAdmin } from '../middlewares/auth.middleware.js';
+import { validate } from '../middlewares/validate.middleware.js';
+import { createProductSchema, updateProductSchema } from '../validations/product.validation.js';
 
 const router = Router();
 
 router.get('/products', getProducts);
 router.get('/products/:slug', getProductBySlug);
-router.post('/products', authenticate, requireAdmin, createProduct);
-router.patch('/products/:id', authenticate, requireAdmin, updateProduct);
+router.post('/products', authenticate, requireAdmin, validate(createProductSchema), createProduct);
+router.patch('/products/:id', authenticate, requireAdmin, validate(updateProductSchema), updateProduct);
 router.delete('/products/:id', authenticate, requireAdmin, deleteProduct);
 
 router.get('/categories', getCategories);

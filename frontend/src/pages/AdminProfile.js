@@ -129,7 +129,7 @@ const AdminProfile = () => {
           return;
         }
         setFormData({
-          name: '', slug: '', description: '', price: 0, categoryId: categories[0]?._id || '', subcategory: '', images: [], sizes: [{ size: 'M', stock: 10 }], colors: [{ name: 'Default' }], tags: []
+          name: '', slug: '', description: 'Default description of the product', price: 100, categoryId: categories[0]?._id || '', subcategory: '', images: [], sizes: [{ size: 'M', stock: 10 }], colors: [{ name: 'Default', hex: '#000000', images: [] }], tags: []
         });
       } else if (type === 'category') {
         setFormData({
@@ -286,6 +286,45 @@ const AdminProfile = () => {
           </div>
         </div>
       )}
+
+      <div style={{ 
+        display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '24px', marginTop: '40px' 
+      }}>
+        <div style={{ 
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', 
+          padding: '40px', borderRadius: '20px', position: 'relative', overflow: 'hidden'
+        }}>
+          <div style={{ 
+            position: 'absolute', top: '-20px', right: '-20px', 
+            fontSize: '120px', opacity: '0.2' 
+          }}>
+            <i className="fas fa-shopping-cart"></i>
+          </div>
+          <h3 style={{ color: 'white', fontSize: '24px', fontWeight: '800', marginBottom: '12px' }}>
+            Navodaya Trendz
+          </h3>
+          <p style={{ color: 'rgba(255,255,255,0.9)', fontSize: '16px' }}>
+            Celebrating the journey of Navodayans through quality merchandise
+          </p>
+        </div>
+        <div style={{ 
+          background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', 
+          padding: '40px', borderRadius: '20px', position: 'relative', overflow: 'hidden'
+        }}>
+          <div style={{ 
+            position: 'absolute', top: '-20px', right: '-20px', 
+            fontSize: '120px', opacity: '0.2' 
+          }}>
+            <i className="fas fa-graduation-cap"></i>
+          </div>
+          <h3 style={{ color: 'white', fontSize: '24px', fontWeight: '800', marginBottom: '12px' }}>
+            Connecting Alumni
+          </h3>
+          <p style={{ color: 'rgba(255,255,255,0.9)', fontSize: '16px' }}>
+            From 660+ JNV schools across 28 states
+          </p>
+        </div>
+      </div>
     </div>
   );
 
@@ -616,6 +655,77 @@ const AdminProfile = () => {
                       <div className="form-group">
                         <label>Description</label>
                         <textarea value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} required />
+                      </div>
+                      <div className="form-group">
+                        <label>Sizes & Stock</label>
+                        {formData.sizes?.map((sizeObj, idx) => (
+                          <div key={idx} style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
+                            <input 
+                              type="text" 
+                              placeholder="Size (e.g. M, L)" 
+                              value={sizeObj.size} 
+                              onChange={(e) => {
+                                const newSizes = [...formData.sizes];
+                                newSizes[idx].size = e.target.value;
+                                setFormData({...formData, sizes: newSizes});
+                              }}
+                              required
+                            />
+                            <input 
+                              type="number" 
+                              placeholder="Stock" 
+                              value={sizeObj.stock} 
+                              onChange={(e) => {
+                                const newSizes = [...formData.sizes];
+                                newSizes[idx].stock = Number(e.target.value);
+                                setFormData({...formData, sizes: newSizes});
+                              }}
+                              required
+                              min="0"
+                            />
+                            <button type="button" onClick={() => {
+                              setFormData({...formData, sizes: formData.sizes.filter((_, i) => i !== idx)});
+                            }} className="btn-danger" style={{ padding: '0 15px', borderRadius: '4px', background: '#ef4444', color: 'white', border: 'none', cursor: 'pointer' }}>&times;</button>
+                          </div>
+                        ))}
+                        <button type="button" onClick={() => {
+                          setFormData({...formData, sizes: [...(formData.sizes || []), { size: '', stock: 0 }]});
+                        }} className="btn-secondary" style={{ width: 'fit-content', padding: '5px 10px', fontSize: '12px', background: '#3b82f6', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>+ Add Size</button>
+                      </div>
+
+                      <div className="form-group">
+                        <label>Colors</label>
+                        {formData.colors?.map((colorObj, idx) => (
+                          <div key={idx} style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
+                            <input 
+                              type="text" 
+                              placeholder="Color Name" 
+                              value={colorObj.name} 
+                              onChange={(e) => {
+                                const newColors = [...formData.colors];
+                                newColors[idx].name = e.target.value;
+                                setFormData({...formData, colors: newColors});
+                              }}
+                              required
+                            />
+                            <input 
+                              type="color" 
+                              value={colorObj.hex || '#000000'} 
+                              onChange={(e) => {
+                                const newColors = [...formData.colors];
+                                newColors[idx].hex = e.target.value;
+                                setFormData({...formData, colors: newColors});
+                              }}
+                              style={{ height: '38px', padding: '0', cursor: 'pointer', border: 'none', borderRadius: '4px' }}
+                            />
+                            <button type="button" onClick={() => {
+                              setFormData({...formData, colors: formData.colors.filter((_, i) => i !== idx)});
+                            }} className="btn-danger" style={{ padding: '0 15px', borderRadius: '4px', background: '#ef4444', color: 'white', border: 'none', cursor: 'pointer' }}>&times;</button>
+                          </div>
+                        ))}
+                        <button type="button" onClick={() => {
+                          setFormData({...formData, colors: [...(formData.colors || []), { name: '', hex: '#000000', images: [] }]});
+                        }} className="btn-secondary" style={{ width: 'fit-content', padding: '5px 10px', fontSize: '12px', background: '#3b82f6', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>+ Add Color</button>
                       </div>
                     </>
                   ) : modalType === 'coupon' ? (

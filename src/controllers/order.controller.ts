@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import Stripe from 'stripe';
+import mongoose from 'mongoose';
 import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
@@ -26,31 +27,24 @@ export const createPaymentIntent = asyncHandler(async (req: AuthRequest, res: Re
 
     // 2. Calculate Subtotal
     let subtotal = 0;
-    const items = [];
 
     for (const item of cartItems) {
         const product = item.product_id as unknown as IProduct;
-        if (!product) continue;
+        if (!product || !product.is_active) {
+            throw new ApiError(400, 'One or more products in your cart are no longer available.');
+        }
 
-        // Check stock here as well? Ideally yes.
+        const sizeData = product.sizes.find(s => s.size === item.size);
+        if (!sizeData || sizeData.stock < item.quantity) {
+            throw new ApiError(400, `Insufficient stock for ${product.name} (Size: ${item.size})`);
+        }
+
         const price = product.sale_price || product.price;
         subtotal += price * item.quantity;
-
-        items.push({
-            product_id: product._id,
-            name: product.name,
-            image: product.images[0],
-            price: price,
-            quantity: item.quantity,
-            size: item.size,
-            color: item.color
-        });
     }
 
     // 3. Apply Coupon
     let discount = 0;
-    let couponId: any = undefined;
-
     if (couponCode) {
         const coupon = await Coupon.findOne({ code: couponCode.toUpperCase() });
         if (coupon && coupon.isValid()) {
@@ -64,60 +58,47 @@ export const createPaymentIntent = asyncHandler(async (req: AuthRequest, res: Re
                     discount = coupon.value;
                 }
                 if (discount > subtotal) discount = subtotal;
-                couponId = coupon._id;
+            } else {
+                throw new ApiError(400, `Coupon requires a minimum order amount of ₹${coupon.min_order_amount}`);
             }
+        } else {
+            throw new ApiError(400, 'Invalid or expired coupon code');
         }
     }
 
-    const shippingFee = 0; // Free shipping for now, or logic based on total
-    const tax = 0; // Simplified
+    const shippingFee = 0; 
+    const tax = 0; 
     const total = subtotal - discount + shippingFee + tax;
 
-    // 4. Create Stripe Intent (with fallback for testing)
-    let paymentIntent;
+    // 4. Create Stripe Intent
     try {
-        paymentIntent = await stripe.paymentIntents.create({
+        const paymentIntent = await stripe.paymentIntents.create({
             amount: Math.round(total * 100), // Stripe expects cents
-            currency: 'inr', // or usd
+            currency: 'inr', 
             metadata: {
                 userId: req.userId as string,
-                couponCode: couponCode || ''
+                couponCode: couponCode ? couponCode.toUpperCase() : ''
             },
             automatic_payment_methods: {
                 enabled: true,
             },
         });
-    } catch (error: any) {
-        // If Stripe key is invalid or not set, return a mock intent for testing
-        if (error.type === 'StripeAuthenticationError' || error.message.includes('Invalid API Key') || config.stripe.secretKey.startsWith('sk_test_placeholder')) {
-            console.warn('Stripe API Key invalid or placeholder. Using Mock Payment Intent.');
-            return res.status(200).json(new ApiResponse(200, {
-                clientSecret: 'mock_secret_for_testing',
-                paymentIntentId: 'mock_pi_' + Date.now(),
-                pricing: {
-                    subtotal,
-                    discount,
-                    shippingFee,
-                    tax,
-                    total
-                },
-                isTestMode: true // Flag to tell frontend to bypass Stripe Elements
-            }, 'Payment intent created (Mock Mode)'));
-        }
-        throw error;
-    }
 
-    res.status(200).json(new ApiResponse(200, {
-        clientSecret: paymentIntent.client_secret,
-        paymentIntentId: paymentIntent.id,
-        pricing: {
-            subtotal,
-            discount,
-            shippingFee,
-            tax,
-            total
-        }
-    }, 'Payment intent created'));
+        res.status(200).json(new ApiResponse(200, {
+            clientSecret: paymentIntent.client_secret,
+            paymentIntentId: paymentIntent.id,
+            pricing: {
+                subtotal,
+                discount,
+                shippingFee,
+                tax,
+                total
+            }
+        }, 'Payment intent created'));
+    } catch (error: any) {
+        console.error('Stripe Payment Intent Error:', error);
+        throw new ApiError(500, 'Failed to initialize payment gateway');
+    }
 });
 
 export const createOrder = asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -127,124 +108,150 @@ export const createOrder = asyncHandler(async (req: AuthRequest, res: Response) 
         throw new ApiError(400, 'Payment Intent ID is required');
     }
 
-    // Verify Payment Intent Status (Mock/COD Bypass)
-    let paymentIntentStub = { status: 'succeeded', metadata: { couponCode: '' } as any, payment_method_types: ['card'] };
-
-    if (paymentIntentId.startsWith('mock_pi_') || paymentIntentId.startsWith('cod_')) {
-        // Bypass Stripe verification
-        paymentIntentStub.metadata.couponCode = req.body.couponCode || '';
-        if (paymentIntentId.startsWith('cod_')) {
-            paymentIntentStub.payment_method_types = ['cod'];
-        }
-    } else {
-        const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
-        if (paymentIntent.status !== 'succeeded') {
-            throw new ApiError(400, 'Payment not successful');
-        }
-        paymentIntentStub = paymentIntent;
-    }
-
-    // Check if order already exists for this intent
+    // 1. Idempotency & Replay Protection
     const existingOrder = await Order.findOne({ 'payment_info.id': paymentIntentId });
     if (existingOrder) {
-        return res.status(200).json(new ApiResponse(200, existingOrder, 'Order already exists'));
+        throw new ApiError(400, 'An order has already been created for this payment');
     }
 
-    // Map Shipping Address to model schema
-    const mappedAddress = {
-        street: shippingAddress.addressLine || shippingAddress.address || 'N/A',
-        city: shippingAddress.city || 'N/A',
-        state: shippingAddress.state || 'N/A',
-        zip_code: shippingAddress.pincode || shippingAddress.zip_code || 'N/A',
-        country: shippingAddress.country || 'India'
-    };
-
-    // Get Cart logic again (Should ideally be atomic or locked)
-    const cartItems = await CartItem.find({ user_id: req.userId }).populate('product_id');
-    if (!cartItems.length) {
-        throw new ApiError(400, 'Cart is empty');
+    // 2. Fetch Payment Intent from Stripe
+    let paymentIntent;
+    try {
+        paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+    } catch (error) {
+        console.error('Stripe Retrieve Error:', error);
+        throw new ApiError(400, 'Invalid payment intent');
     }
 
-    const orderItems: any[] = [];
-    let subtotal = 0;
+    if (paymentIntent.status !== 'succeeded') {
+        throw new ApiError(400, 'Payment has not been completed successfully');
+    }
+    if (paymentIntent.currency !== 'inr') {
+        throw new ApiError(400, 'Invalid payment currency');
+    }
 
-    for (const item of cartItems) {
-        const product = item.product_id as unknown as IProduct;
-        if (!product) continue;
+    // 3. Start Database Transaction
+    const session = await mongoose.startSession();
+    session.startTransaction();
 
-        // Decrement Stock
-        const sizeIndex = product.sizes.findIndex(s => s.size === item.size);
-        if (sizeIndex > -1) {
-            if (product.sizes[sizeIndex].stock < item.quantity) {
+    try {
+        const mappedAddress = {
+            street: shippingAddress.addressLine || shippingAddress.address || 'N/A',
+            city: shippingAddress.city || 'N/A',
+            state: shippingAddress.state || 'N/A',
+            zip_code: shippingAddress.pincode || shippingAddress.zip_code || 'N/A',
+            country: shippingAddress.country || 'India'
+        };
+
+        const cartItems = await CartItem.find({ user_id: req.userId }).populate('product_id').session(session);
+        if (!cartItems.length) {
+            throw new ApiError(400, 'Cart is empty');
+        }
+
+        const orderItems: any[] = [];
+        let subtotal = 0;
+
+        // 4. Calculate totals and deduct stock atomically
+        for (const item of cartItems) {
+            const product = item.product_id as unknown as IProduct;
+            if (!product || !product.is_active) {
+                throw new ApiError(400, 'A product in your cart is no longer available');
+            }
+
+            const sizeIndex = product.sizes.findIndex(s => s.size === item.size);
+            if (sizeIndex === -1 || product.sizes[sizeIndex].stock < item.quantity) {
                 throw new ApiError(400, `Insufficient stock for ${product.name} (Size: ${item.size})`);
             }
-            product.sizes[sizeIndex].stock -= item.quantity;
-            await product.save(); // Save stock update
-        }
 
-        const price = product.sale_price || product.price;
-        subtotal += price * item.quantity;
+            // Atomic decrement to prevent race conditions
+            const updatedProduct = await Product.findOneAndUpdate(
+                { _id: product._id, 'sizes.size': item.size, 'sizes.stock': { $gte: item.quantity } },
+                { $inc: { 'sizes.$.stock': -item.quantity } },
+                { new: true, session }
+            );
 
-        orderItems.push({
-            product_id: product._id,
-            name: product.name,
-            image: product.images[0],
-            price: price,
-            quantity: item.quantity,
-            size: item.size,
-            color: item.color
-        });
-    }
-
-    // Re-calculate details
-    let discount = 0;
-    let couponId: any = undefined;
-    const couponCode = (paymentIntentStub.metadata.couponCode || '').toUpperCase();
-
-    if (couponCode) {
-        const coupon = await Coupon.findOne({ code: couponCode });
-        // Logic to apply discount... (Simplified duplications)
-        if (coupon) {
-            if (coupon.type === 'PERCENTAGE') {
-                discount = (subtotal * coupon.value) / 100;
-                if (coupon.max_discount_amount && discount > coupon.max_discount_amount) discount = coupon.max_discount_amount;
-            } else {
-                discount = coupon.value;
+            if (!updatedProduct) {
+                throw new ApiError(400, `Failed to reserve stock for ${product.name}`);
             }
-            couponId = coupon._id;
 
-            // Update usage count
-            coupon.usage_count += 1;
-            await coupon.save();
+            const price = product.sale_price || product.price;
+            subtotal += price * item.quantity;
+
+            orderItems.push({
+                product_id: product._id,
+                name: product.name,
+                image: product.images[0],
+                price: price,
+                quantity: item.quantity,
+                size: item.size,
+                color: item.color
+            });
         }
+
+        // 5. Apply Coupon
+        let discount = 0;
+        let couponId: any = undefined;
+        const couponCode = (paymentIntent.metadata.couponCode || '').toUpperCase();
+
+        if (couponCode) {
+            const coupon = await Coupon.findOne({ code: couponCode }).session(session);
+            if (coupon && coupon.isValid() && (!coupon.min_order_amount || subtotal >= coupon.min_order_amount)) {
+                if (coupon.type === 'PERCENTAGE') {
+                    discount = (subtotal * coupon.value) / 100;
+                    if (coupon.max_discount_amount && discount > coupon.max_discount_amount) discount = coupon.max_discount_amount;
+                } else {
+                    discount = coupon.value;
+                }
+                if (discount > subtotal) discount = subtotal;
+                couponId = coupon._id;
+
+                // Update usage count
+                await Coupon.findByIdAndUpdate(coupon._id, { $inc: { usage_count: 1 } }, { session });
+            }
+        }
+
+        const total = subtotal - discount;
+
+        // 6. Security Verification: Compare Stripe amount with calculated total
+        const expectedStripeAmount = Math.round(total * 100);
+        if (paymentIntent.amount !== expectedStripeAmount) {
+            console.error(`Fraud attempt detected: Stripe amount ${paymentIntent.amount} != Expected ${expectedStripeAmount}`);
+            throw new ApiError(400, 'Payment amount mismatch. Order verification failed.');
+        }
+
+        // 7. Create Order
+        const order = await Order.create([{
+            user_id: req.userId,
+            items: orderItems,
+            shipping_address: mappedAddress,
+            payment_info: {
+                id: paymentIntentId,
+                status: 'PAID',
+                method: paymentIntent.payment_method_types[0] || 'card'
+            },
+            pricing: {
+                subtotal,
+                discount,
+                shipping_fee: 0,
+                tax: 0,
+                total
+            },
+            coupon_applied: couponId,
+            status: 'PROCESSING'
+        }], { session });
+
+        // 8. Clear Cart
+        await CartItem.deleteMany({ user_id: req.userId }).session(session);
+
+        await session.commitTransaction();
+        session.endSession();
+
+        res.status(201).json(new ApiResponse(201, order[0], 'Order placed successfully'));
+    } catch (error) {
+        await session.abortTransaction();
+        session.endSession();
+        throw error;
     }
-
-    const total = subtotal - discount; // Tax/Shipping assumed same
-
-    const order = await Order.create({
-        user_id: req.userId,
-        items: orderItems,
-        shipping_address: mappedAddress,
-        payment_info: {
-            id: paymentIntentId,
-            status: paymentIntentId.startsWith('cod_') ? 'PENDING' : 'PAID',
-            method: paymentIntentStub.payment_method_types[0]
-        },
-        pricing: {
-            subtotal,
-            discount,
-            shipping_fee: 0,
-            tax: 0,
-            total
-        },
-        coupon_applied: couponId,
-        status: 'PROCESSING'
-    });
-
-    // Clear Cart
-    await CartItem.deleteMany({ user_id: req.userId });
-
-    res.status(201).json(new ApiResponse(201, order, 'Order placed successfully'));
 });
 
 export const getOrders = asyncHandler(async (req: AuthRequest, res: Response) => {

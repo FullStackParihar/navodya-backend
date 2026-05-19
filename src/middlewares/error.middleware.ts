@@ -3,7 +3,7 @@ import { ApiError } from '../utils/ApiError.js';
 import { config } from '../config/env.js';
 
 export const errorHandler = (
-  err: Error | ApiError,
+  err: any,
   req: Request,
   res: Response,
   next: NextFunction
@@ -25,15 +25,25 @@ export const errorHandler = (
   } else if (err.name === 'TokenExpiredError') {
     statusCode = 401;
     message = 'Token expired';
+  } else if (err.code === 11000) {
+    statusCode = 400;
+    message = 'Duplicate field value entered';
+  } else if (err.type === 'StripeInvalidRequestError') {
+    statusCode = 400;
+    message = 'Invalid payment request';
+  } else if (err.type === 'StripeAuthenticationError') {
+    statusCode = 500;
+    message = 'Payment gateway misconfigured';
   }
 
-  if (config.nodeEnv === 'development') {
-    console.error('Error:', err);
+  // Log non-operational (unhandled) errors securely to the server
+  if (config.nodeEnv === 'development' || !isOperational) {
+    console.error(`[ERROR] ${req.method} ${req.originalUrl} >>`, err);
   }
 
   res.status(statusCode).json({
     success: false,
-    message,
+    message: config.nodeEnv === 'production' && statusCode === 500 ? 'Internal server error' : message,
     ...(config.nodeEnv === 'development' && { stack: err.stack }),
   });
 };
