@@ -1,159 +1,139 @@
 import React, { useState, useEffect } from 'react';
-import api from '../utils/api';
+import api, { resolveImageUrl } from '../utils/api';
 import ProductCard from '../components/ProductCard';
 import SkeletonLoader from '../components/SkeletonLoader';
-import './TShirtsEnhanced.css';
+import './TShirtsBeautiful.css';
+
+// Fallback products for hoodies
+const fallbackProducts = [
+  {
+    id: 'classic-navodaya-hoodie',
+    dbId: '5',
+    name: 'Classic Navodaya Hoodie',
+    description: 'Cozy fleece hoodie with JNV logo',
+    price: 999,
+    originalPrice: 1299,
+    image: 'https://images.unsplash.com/photo-1556821840-3a5f3d5fb6c7?w=400&h=500&fit=crop',
+    badge: 'Bestseller',
+    reviews: 456,
+    rating: 4.9,
+    category: 'Hoodies',
+    sizes: ['S', 'M', 'L', 'XL', 'XXL'],
+    colors: ['Navy Blue', 'Black', 'Maroon']
+  },
+  {
+    id: 'alumni-hoodie',
+    dbId: '6',
+    name: 'Alumni Special Hoodie',
+    description: 'Premium quality hoodie for alumni',
+    price: 1199,
+    originalPrice: 1499,
+    image: 'https://images.unsplash.com/photo-1626596738752-e34943c79b53?w=400&h=500&fit=crop',
+    badge: 'New',
+    reviews: 234,
+    rating: 4.8,
+    category: 'Hoodies',
+    sizes: ['M', 'L', 'XL', 'XXL'],
+    colors: ['Olive Green', 'Charcoal']
+  },
+  {
+    id: 'campus-zip-hoodie',
+    dbId: '7',
+    name: 'Campus Zip Hoodie',
+    description: 'Zip-up style with campus print',
+    price: 1099,
+    originalPrice: 1399,
+    image: 'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=400&h=500&fit=crop',
+    badge: 'Hot',
+    reviews: 312,
+    rating: 4.7,
+    category: 'Hoodies',
+    sizes: ['S', 'M', 'L', 'XL'],
+    colors: ['Royal Blue', 'Grey']
+  },
+  {
+    id: 'winter-warm-hoodie',
+    dbId: '8',
+    name: 'Winter Warm Hoodie',
+    description: 'Extra warm for winter season',
+    price: 1299,
+    originalPrice: 1599,
+    image: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=400&h=500&fit=crop',
+    badge: '',
+    reviews: 189,
+    rating: 4.6,
+    category: 'Hoodies',
+    sizes: ['M', 'L', 'XL', 'XXL'],
+    colors: ['Black', 'Navy']
+  }
+];
 
 const Hoodies = () => {
-  const [activeTab, setActiveTab] = useState('all');
-  const [sortBy, setSortBy] = useState('featured');
   const [isLoading, setIsLoading] = useState(true);
   const [products, setProducts] = useState([]);
-  const [selectedFilters, setSelectedFilters] = useState({
-    categories: [],
-    sizes: [],
-    colors: [],
-    priceRange: []
-  });
 
   useEffect(() => {
-    const fetchHoodies = async () => {
+    const fetchProducts = async () => {
       setIsLoading(true);
       try {
         const result = await api.get('/products?category=hoodies');
-        if (result.success) {
+        if (result.success && result.data.products.length > 0) {
           const mapped = result.data.products.map(p => ({
             id: p.slug,
             dbId: p._id,
             name: p.name,
             description: p.description,
             price: p.sale_price || p.price,
-            originalPrice: p.price,
-            image: p.images[0],
-            badge: (p.tags && p.tags.includes('trending')) ? 'Trending' : (p.tags && p.tags.includes('new')) ? 'New' : '',
+            originalPrice: null,
+            image: resolveImageUrl(p.images[0] || 'https://via.placeholder.com/300x400?text=No+Image'),
+            badge: '',
             reviews: p.review_count || 0,
             rating: p.rating || 0,
-            category: p.subcategory || 'Hoodies',
+            category: 'Hoodies',
             sizes: p.sizes ? p.sizes.map(s => s.size) : [],
             colors: p.colors ? p.colors.map(c => c.name) : []
           }));
           setProducts(mapped);
+        } else {
+          setProducts(fallbackProducts);
         }
       } catch (err) {
         console.error('Error fetching hoodies:', err);
+        setProducts(fallbackProducts);
       } finally {
         setIsLoading(false);
       }
     };
-    fetchHoodies();
+    fetchProducts();
   }, []);
 
-  const handleFilterChange = (filterType, value) => {
-    setSelectedFilters(prev => ({
-      ...prev,
-      [filterType]: prev[filterType].includes(value)
-        ? prev[filterType].filter(item => item !== value)
-        : [...prev[filterType], value]
-    }));
-  };
-
-  const filteredProducts = products.filter(product => {
-    if (activeTab === 'trending' && product.badge !== 'Trending') return false;
-    if (activeTab === 'new' && product.badge !== 'New') return false;
-    if (activeTab === 'bestseller' && product.reviews < 300) return false;
-    if (activeTab === 'premium' && product.badge !== 'Premium') return false;
-    if (selectedFilters.categories.length > 0 && !selectedFilters.categories.includes(product.category)) return false;
-    if (selectedFilters.sizes.length > 0) {
-      const hasSelectedSize = product.sizes.some(size => selectedFilters.sizes.includes(size));
-      if (!hasSelectedSize) return false;
-    }
-    if (selectedFilters.colors.length > 0) {
-      const hasSelectedColor = product.colors.some(color => selectedFilters.colors.includes(color));
-      if (!hasSelectedColor) return false;
-    }
-    if (selectedFilters.priceRange.length > 0) {
-      const inRange = selectedFilters.priceRange.some(range => {
-        if (range === 'under-599') return product.price < 599;
-        if (range === '599-799') return product.price >= 599 && product.price <= 799;
-        if (range === '800-999') return product.price >= 800 && product.price <= 999;
-        if (range === 'above-1000') return product.price > 1000;
-        return false;
-      });
-      if (!inRange) return false;
-    }
-    return true;
-  });
-
-  const sortedProducts = [...filteredProducts].sort((a, b) => {
-    switch (sortBy) {
-      case 'price-low': return a.price - b.price;
-      case 'price-high': return b.price - a.price;
-      case 'newest': return b.id - a.id;
-      case 'rating': return b.rating - a.rating;
-      case 'reviews': return b.reviews - a.reviews;
-      default: return 0;
-    }
-  });
-
-  const clearAllFilters = () => {
-    setSelectedFilters({
-      categories: [],
-      sizes: [],
-      colors: [],
-      priceRange: []
-    });
-  };
-
-  const getFilterCount = () => {
-    return Object.values(selectedFilters).reduce((acc, arr) => acc + arr.length, 0);
-  };
-
-  if (isLoading) return <div className="container p-5 text-center"><SkeletonLoader type="product" count={8} /></div>;
-
   return (
-    <div className="category-page">
+    <div className="tshirts-beautiful">
       <div className="container">
-        <section className="tshirt-hero animate-fadeIn">
-          <div className="hero-background"><div className="hero-pattern"></div></div>
-          <div className="hero-content">
-            <h1>JNV Hoodies Collection</h1>
-            <p>Premium quality hoodies designed exclusively for Navodayans</p>
+        <div className="page-header">
+          <h1 className="page-title">
+            <span className="title-accent">JNV</span> Hoodies Collection
+          </h1>
+          <p className="page-subtitle">Cozy & warm hoodies designed exclusively for Navodayans</p>
+        </div>
+
+        {isLoading ? (
+          <div className="loading-container">
+            <SkeletonLoader type="product" count={8} />
           </div>
-        </section>
-        <section className="shop-page-enhanced">
-          <div className="shop-layout-enhanced">
-            <aside className="filters-sidebar-enhanced">
-              <div className="filters-header">
-                <h3>Filters</h3>
-                {getFilterCount() > 0 && <button onClick={clearAllFilters}>Clear All</button>}
+        ) : (
+          <div className="products-grid">
+            {products.map((product, index) => (
+              <div 
+                key={product.id} 
+                className="product-wrapper"
+                style={{ '--delay': `${index * 0.08}s` }}
+              >
+                <ProductCard product={product} />
               </div>
-              <div className="filter-section">
-                <h4>Categories</h4>
-                {['Classic', 'Zipper', 'Sports', 'Alumni', 'Girls', 'Pullover', 'Graphic', 'Winter', 'Batch', 'Lightweight'].map(c => (
-                  <label key={c} className="filter-label">
-                    <input type="checkbox" checked={selectedFilters.categories.includes(c)} onChange={() => handleFilterChange('categories', c)} />
-                    {c}
-                  </label>
-                ))}
-              </div>
-            </aside>
-            <main className="products-main-enhanced">
-              <div className="products-header-enhanced">
-                <h2>{filteredProducts.length} Products</h2>
-                <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-                  <option value="featured">Featured</option>
-                  <option value="price-low">Price: Low to High</option>
-                  <option value="price-high">Price: High to Low</option>
-                  <option value="newest">Newest</option>
-                  <option value="rating">Best Rating</option>
-                </select>
-              </div>
-              <div className="products-grid-enhanced">
-                {sortedProducts.map(p => <ProductCard key={p.id} product={p} />)}
-              </div>
-            </main>
+            ))}
           </div>
-        </section>
+        )}
       </div>
     </div>
   );

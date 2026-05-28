@@ -1,37 +1,92 @@
 import React, { useState, useEffect } from 'react';
-import api from '../utils/api';
+import api, { resolveImageUrl } from '../utils/api';
 import ProductCard from '../components/ProductCard';
-import SizeFilter from '../components/SizeFilter';
 import SkeletonLoader from '../components/SkeletonLoader';
-import './TShirtsEnhanced.css';
+import './TShirtsBeautiful.css';
+
+// Fallback products if API is not available
+const fallbackProducts = [
+  {
+    id: 'navodaya-proud-tshirt',
+    dbId: '1',
+    name: 'Navodaya Proud T-Shirt',
+    description: 'Premium cotton T-shirt with Navodaya branding',
+    price: 499,
+    originalPrice: 699,
+    image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=500&fit=crop',
+    badge: 'Bestseller',
+    reviews: 234,
+    rating: 4.8,
+    category: 'Classic',
+    sizes: ['S', 'M', 'L', 'XL'],
+    colors: ['Navy Blue', 'White', 'Black']
+  },
+  {
+    id: 'jnv-alumni-tshirt',
+    dbId: '2',
+    name: 'JNV Alumni T-Shirt',
+    description: 'Exclusive for Navodaya Alumni',
+    price: 549,
+    originalPrice: 749,
+    image: 'https://images.unsplash.com/photo-1622445275463-04147b1e7c10?w=400&h=500&fit=crop',
+    badge: 'New',
+    reviews: 156,
+    rating: 4.9,
+    category: 'Alumni',
+    sizes: ['S', 'M', 'L', 'XL', 'XXL'],
+    colors: ['Maroon', 'White']
+  },
+  {
+    id: 'campus-retro-tshirt',
+    dbId: '3',
+    name: 'Campus Retro T-Shirt',
+    description: 'Vintage style JNV campus design',
+    price: 449,
+    originalPrice: 599,
+    image: 'https://images.unsplash.com/photo-1503341455253-b2e723bb3dbb?w=400&h=500&fit=crop',
+    badge: 'Hot',
+    reviews: 312,
+    rating: 4.7,
+    category: 'Retro',
+    sizes: ['M', 'L', 'XL'],
+    colors: ['Olive', 'Charcoal']
+  },
+  {
+    id: 'jnv-spirit-tshirt',
+    dbId: '4',
+    name: 'JNV Spirit T-Shirt',
+    description: 'Comfortable fit with school colors',
+    price: 399,
+    originalPrice: 549,
+    image: 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=400&h=500&fit=crop',
+    badge: '',
+    reviews: 189,
+    rating: 4.6,
+    category: 'Comfort',
+    sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
+    colors: ['Royal Blue', 'Red', 'Green']
+  }
+];
 
 const TShirts = () => {
-  const [activeTab, setActiveTab] = useState('all');
-  const [sortBy, setSortBy] = useState('featured');
   const [isLoading, setIsLoading] = useState(true);
   const [products, setProducts] = useState([]);
-  const [selectedFilters, setSelectedFilters] = useState({
-    categories: [],
-    sizes: [],
-    colors: [],
-    priceRange: []
-  });
 
   useEffect(() => {
     const fetchTShirts = async () => {
       setIsLoading(true);
       try {
         const result = await api.get('/products?category=tshirts');
-        if (result.success) {
+        if (result.success && result.data.products.length > 0) {
           const mapped = result.data.products.map(p => ({
             id: p.slug,
             dbId: p._id,
             name: p.name,
             description: p.description,
             price: p.sale_price || p.price,
-            originalPrice: p.sale_price ? p.price : null,
-            image: p.images[0] || 'https://via.placeholder.com/300x400?text=No+Image',
-            badge: p.sale_price ? 'Sale' : (p.rating > 4.5 ? 'Bestseller' : ''),
+            originalPrice: null,
+            image: resolveImageUrl(p.images[0] || 'https://via.placeholder.com/300x400?text=No+Image'),
+            badge: '',
             reviews: p.review_count || 0,
             rating: p.rating || 0,
             category: 'Classic',
@@ -39,9 +94,14 @@ const TShirts = () => {
             colors: p.colors ? p.colors.map(c => c.name) : []
           }));
           setProducts(mapped);
+        } else {
+          // Use fallback if no products from API
+          setProducts(fallbackProducts);
         }
       } catch (err) {
         console.error('Error fetching T-Shirts:', err);
+        // Use fallback if API fails
+        setProducts(fallbackProducts);
       } finally {
         setIsLoading(false);
       }
@@ -49,120 +109,33 @@ const TShirts = () => {
     fetchTShirts();
   }, []);
 
-  const handleFilterChange = (filterType, value) => {
-    setSelectedFilters(prev => ({
-      ...prev,
-      [filterType]: prev[filterType].includes(value)
-        ? prev[filterType].filter(item => item !== value)
-        : [...prev[filterType], value]
-    }));
-  };
-
-  const filteredProducts = products.filter(product => {
-    if (activeTab === 'trending' && product.badge !== 'Hot') return false;
-    if (activeTab === 'new' && product.badge !== 'New') return false;
-    if (activeTab === 'bestseller' && product.reviews < 200) return false;
-    if (selectedFilters.categories.length > 0 && !selectedFilters.categories.includes(product.category)) return false;
-    if (selectedFilters.sizes.length > 0) {
-      const hasSelectedSize = product.sizes.some(size => selectedFilters.sizes.includes(size));
-      if (!hasSelectedSize) return false;
-    }
-    if (selectedFilters.colors.length > 0) {
-      const hasSelectedColor = product.colors.some(color => selectedFilters.colors.includes(color));
-      if (!hasSelectedColor) return false;
-    }
-    if (selectedFilters.priceRange.length > 0) {
-      const inRange = selectedFilters.priceRange.some(range => {
-        if (range === 'under-299') return product.price < 299;
-        if (range === '299-499') return product.price >= 299 && product.price <= 499;
-        if (range === '500-799') return product.price >= 500 && product.price <= 799;
-        if (range === 'above-800') return product.price > 800;
-        return false;
-      });
-      if (!inRange) return false;
-    }
-    return true;
-  });
-
-  const sortedProducts = [...filteredProducts].sort((a, b) => {
-    switch (sortBy) {
-      case 'price-low': return a.price - b.price;
-      case 'price-high': return b.price - a.price;
-      case 'newest': return b.id - a.id;
-      case 'rating': return b.rating - a.rating;
-      case 'reviews': return b.reviews - a.reviews;
-      default: return 0;
-    }
-  });
-
-  const clearAllFilters = () => {
-    setSelectedFilters({
-      categories: [],
-      sizes: [],
-      colors: [],
-      priceRange: []
-    });
-  };
-
-  const getFilterCount = () => {
-    return Object.values(selectedFilters).reduce((acc, arr) => acc + arr.length, 0);
-  };
-
-  if (isLoading) return <div className="container p-5 text-center"><SkeletonLoader type="product" count={8} /></div>;
-
   return (
-    <div className="category-page">
+    <div className="tshirts-beautiful">
       <div className="container">
-        <section className="tshirt-hero animate-fadeIn">
-          <div className="hero-background"><div className="hero-pattern"></div></div>
-          <div className="hero-content">
-            <h1>JNV T-Shirts Collection</h1>
-            <p>Premium quality T-shirts designed exclusively for Navodayans</p>
+        <div className="page-header">
+          <h1 className="page-title">
+            <span className="title-accent">JNV</span> T-Shirts Collection
+          </h1>
+          <p className="page-subtitle">Premium quality T-shirts designed exclusively for Navodayans</p>
+        </div>
+
+        {isLoading ? (
+          <div className="loading-container">
+            <SkeletonLoader type="product" count={8} />
           </div>
-        </section>
-        <section className="shop-page-enhanced">
-          <div className="shop-layout-enhanced">
-            <aside className="filters-sidebar-enhanced">
-              <div className="filters-header">
-                <h3>Filters</h3>
-                {getFilterCount() > 0 && <button onClick={clearAllFilters}>Clear All</button>}
+        ) : (
+          <div className="products-grid">
+            {products.map((product, index) => (
+              <div 
+                key={product.id} 
+                className="product-wrapper"
+                style={{ '--delay': `${index * 0.08}s` }}
+              >
+                <ProductCard product={product} />
               </div>
-              <div className="filter-section">
-                <h4>Categories</h4>
-                {['Classic', 'Polo', 'Sports', 'Vintage', 'Girls', 'V-Neck', 'Graphic'].map(c => (
-                  <label key={c} className="filter-label">
-                    <input type="checkbox" checked={selectedFilters.categories.includes(c)} onChange={() => handleFilterChange('categories', c)} />
-                    {c}
-                  </label>
-                ))}
-              </div>
-              <div className="filter-section">
-                <h4>Size</h4>
-                {['S', 'M', 'L', 'XL', 'XXL'].map(s => (
-                  <label key={s} className="filter-label">
-                    <input type="checkbox" checked={selectedFilters.sizes.includes(s)} onChange={() => handleFilterChange('sizes', s)} />
-                    {s}
-                  </label>
-                ))}
-              </div>
-            </aside>
-            <main className="products-main-enhanced">
-              <div className="products-header-enhanced">
-                <h2>{filteredProducts.length} Products</h2>
-                <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-                  <option value="featured">Featured</option>
-                  <option value="price-low">Price: Low to High</option>
-                  <option value="price-high">Price: High to Low</option>
-                  <option value="newest">Newest</option>
-                  <option value="rating">Best Rating</option>
-                </select>
-              </div>
-              <div className="products-grid-enhanced">
-                {sortedProducts.map(p => <ProductCard key={p.id} product={p} />)}
-              </div>
-            </main>
+            ))}
           </div>
-        </section>
+        )}
       </div>
     </div>
   );

@@ -10,12 +10,18 @@ const Header = () => {
   const { totalItems } = useCart();
   const { totalItems: wishlistCount } = useWishlist();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  
-  // Check if user is authenticated and is admin
-  const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
-  const userEmail = localStorage.getItem('userEmail');
-  const userRole = localStorage.getItem('userRole');
-  const isAdmin = isAuthenticated && (userRole === 'admin' || userEmail === 'admin@navodaya.com');
+
+  // Reactive auth state — re-reads localStorage on every route change
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    const auth = localStorage.getItem('isAuthenticated') === 'true';
+    const role = localStorage.getItem('userRole');
+    const email = localStorage.getItem('userEmail');
+    setIsAuthenticated(auth);
+    setIsAdmin(auth && (role === 'admin' || email === 'admin@navodaya.com'));
+  }, [location.pathname]);
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -156,44 +162,33 @@ const Header = () => {
                 <Link to="/alumni-kits" onClick={() => setIsMobileMenuOpen(false)}>Alumni Kits</Link>
               </li>
               <li>
+                <Link to="/events" onClick={() => setIsMobileMenuOpen(false)}>Events</Link>
+              </li>
+              <li>
+                <Link to="/bulk-order" onClick={() => setIsMobileMenuOpen(false)}>Bulk Order</Link>
+              </li>
+              <li>
                 <Link to="/customize" onClick={() => setIsMobileMenuOpen(false)}>Customize</Link>
               </li>
               <li>
-                <Link 
-                  to="/today-deals" 
-                  className={location.pathname === '/today-deals' ? 'active' : ''}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Today's Deals
-                </Link>
+                <Link to="/today-deals" onClick={() => setIsMobileMenuOpen(false)}>Today's Deals</Link>
               </li>
               <li>
-                <Link 
-                  to="/new-arrivals" 
-                  className={location.pathname === '/new-arrivals' ? 'active' : ''}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  New Arrivals
-                </Link>
+                <Link to="/new-arrivals" onClick={() => setIsMobileMenuOpen(false)}>New Arrivals</Link>
               </li>
-              <li>
-                <Link 
-                  to="/faq" 
-                  className={location.pathname === '/faq' ? 'active' : ''}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  FAQ
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  to="/feedback" 
-                  className={location.pathname === '/feedback' ? 'active' : ''}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Feedback
-                </Link>
-              </li>
+              {isAdmin && (
+                <li>
+                  <Link
+                    to="/admin-profile"
+                    className={location.pathname === '/admin-profile' ? 'active' : ''}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    style={{ color: '#f59e0b', fontWeight: '700' }}
+                  >
+                    <i className="fas fa-shield-alt" style={{ marginRight: '4px' }}></i>
+                    Admin Panel
+                  </Link>
+                </li>
+              )}
             </ul>
           </div>
         </div>

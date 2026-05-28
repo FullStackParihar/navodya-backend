@@ -16,8 +16,8 @@ export const config = {
     secretKey: process.env.STRIPE_SECRET_KEY || 'sk_test_placeholder',
   },
   cloudinary: {
-    cloudName: process.env.CLOUDINARY_CLOUD_NAME,
-    apiKey: process.env.CLOUDINARY_API_KEY,
-    apiSecret: process.env.CLOUDINARY_API_SECRET,
+    cloudName: process.env.CLOUDINARY_CLOUD_NAME || 'demo-cloud-name',
+    apiKey: process.env.CLOUDINARY_API_KEY || 'demo-api-key',
+    apiSecret: process.env.CLOUDINARY_API_SECRET || 'demo-api-secret',
   },
 };

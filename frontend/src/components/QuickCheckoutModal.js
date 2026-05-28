@@ -324,13 +324,14 @@ const QuickCheckoutModal = ({
         }
 
         .modal-content {
-          background: var(--bg-primary, white);
-          border-radius: var(--radius-2xl, 1.5rem);
+          background: #ffffff;
+          border: 2px solid #000000;
+          border-radius: 1.5rem;
           max-width: 600px;
           width: 100%;
           max-height: 90vh;
           overflow-y: auto;
-          box-shadow: var(--shadow-2xl, 0 25px 50px -12px rgb(0 0 0 / 0.25));
+          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
           animation: slideUp 0.3s ease-out;
         }
 
@@ -350,11 +351,11 @@ const QuickCheckoutModal = ({
           justify-content: space-between;
           align-items: center;
           padding: 1.5rem;
-          border-bottom: 1px solid var(--border-color, #e2e8f0);
+          border-bottom: 1px solid #000000;
         }
 
         .modal-header h2 {
-          color: var(--text-primary, #1e293b);
+          color: #000000;
           margin: 0;
         }
 
@@ -368,13 +369,13 @@ const QuickCheckoutModal = ({
           display: flex;
           align-items: center;
           justify-content: center;
-          transition: all var(--transition-fast);
-          color: var(--text-secondary, #64748b);
+          transition: all 0.2s ease;
+          color: #666666;
         }
 
         .close-btn:hover {
-          background: var(--gray-100, #f1f5f9);
-          color: var(--text-primary, #1e293b);
+          background: #f5f5f5;
+          color: #000000;
         }
 
         .modal-body {
@@ -395,7 +396,7 @@ const QuickCheckoutModal = ({
           left: 20px;
           right: 20px;
           height: 2px;
-          background: var(--gray-200, #e2e8f0);
+          background: #e5e5e5;
           z-index: 0;
         }
 
@@ -412,39 +413,39 @@ const QuickCheckoutModal = ({
           width: 40px;
           height: 40px;
           border-radius: 50%;
-          background: var(--gray-200, #e2e8f0);
-          color: var(--text-secondary, #64748b);
+          background: #e5e5e5;
+          color: #666666;
           display: flex;
           align-items: center;
           justify-content: center;
           font-weight: 600;
-          transition: all var(--transition-normal);
+          transition: all 0.2s ease;
         }
 
         .progress-step.active .step-number {
-          background: var(--gradient-primary, linear-gradient(135deg, #ff6b35, #e55a2b));
+          background: #000000;
           color: white;
         }
 
         .progress-step span {
           font-size: 0.75rem;
-          color: var(--text-secondary, #64748b);
+          color: #666666;
           font-weight: 500;
         }
 
         .progress-step.active span {
-          color: var(--primary-color, #ff6b35);
+          color: #000000;
         }
 
         .quick-order-summary {
-          background: var(--gray-50, #f8fafc);
-          border-radius: var(--radius-xl, 1rem);
+          background: #f5f5f5;
+          border-radius: 1rem;
           padding: 1rem;
           margin-bottom: 2rem;
         }
 
         .quick-order-summary h3 {
-          color: var(--text-primary, #1e293b);
+          color: #000000;
           margin-bottom: 1rem;
           font-size: 1rem;
         }
@@ -463,7 +464,7 @@ const QuickCheckoutModal = ({
         .quick-item img {
           width: 40px;
           height: 40px;
-          border-radius: var(--radius-md, 0.5rem);
+          border-radius: 0.5rem;
           object-fit: cover;
         }
 
@@ -473,20 +474,20 @@ const QuickCheckoutModal = ({
 
         .quick-item-details h4 {
           font-size: 0.875rem;
-          color: var(--text-primary, #1e293b);
+          color: #000000;
           margin-bottom: 0.25rem;
           font-weight: 500;
         }
 
         .quick-item-details p {
           font-size: 0.75rem;
-          color: var(--text-secondary, #64748b);
+          color: #666666;
           margin: 0;
         }
 
         .quick-item-price {
           font-weight: 600;
-          color: var(--text-primary, #1e293b);
+          color: #000000;
         }
 
         .quick-total {
@@ -494,9 +495,9 @@ const QuickCheckoutModal = ({
           justify-content: space-between;
           align-items: center;
           font-weight: 600;
-          color: var(--text-primary, #1e293b);
+          color: #000000;
           padding-top: 0.75rem;
-          border-top: 1px solid var(--border-color, #e2e8f0);
+          border-top: 1px solid #000000;
         }
 
         .quick-step {
@@ -504,7 +505,7 @@ const QuickCheckoutModal = ({
         }
 
         .quick-step h3 {
-          color: var(--text-primary, #1e293b);
+          color: #000000;
           margin-bottom: 1rem;
         }
 
@@ -527,23 +528,23 @@ const QuickCheckoutModal = ({
 
         .form-group label {
           font-weight: 500;
-          color: var(--text-primary, #1e293b);
+          color: #000000;
           margin-bottom: 0.5rem;
           font-size: 0.875rem;
         }
 
         .form-group input {
           padding: 0.75rem;
-          border: 1px solid var(--border-color, #e2e8f0);
-          border-radius: var(--radius-lg, 0.75rem);
+          border: 1px solid #000000;
+          border-radius: 0.75rem;
           font-size: 0.875rem;
-          transition: all var(--transition-fast);
+          transition: all 0.2s ease;
         }
 
         .form-group input:focus {
           outline: none;
-          border-color: var(--primary-color, #ff6b35);
-          box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+          border-color: #000000;
+          box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
         }
 
         .quick-payment-methods {
@@ -556,25 +557,27 @@ const QuickCheckoutModal = ({
           align-items: center;
           gap: 1rem;
           padding: 1rem;
-          border: 2px solid var(--border-color, #e2e8f0);
-          border-radius: var(--radius-lg, 0.75rem);
+          border: 2px solid #000000;
+          border-radius: 0.75rem;
           cursor: pointer;
-          transition: all var(--transition-fast);
+          transition: all 0.2s ease;
         }
 
         .quick-payment-option:hover {
-          border-color: var(--primary-color, #ff6b35);
+          border-color: #000000;
+          background: #f5f5f5;
         }
 
         .quick-payment-option.selected {
-          border-color: var(--primary-color, #ff6b35);
-          background: var(--gray-50, #f8fafc);
+          border-color: #000000;
+          background: #000000;
+          color: white;
         }
 
         .payment-icon {
           width: 40px;
           height: 40px;
-          border-radius: var(--radius-lg, 0.75rem);
+          border-radius: 0.75rem;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -588,13 +591,13 @@ const QuickCheckoutModal = ({
         }
 
         .review-section h4 {
-          color: var(--text-primary, #1e293b);
+          color: #000000;
           margin-bottom: 0.5rem;
           font-size: 0.875rem;
         }
 
         .review-section p {
-          color: var(--text-secondary, #64748b);
+          color: #666666;
           margin: 0;
           font-size: 0.875rem;
         }
@@ -605,38 +608,40 @@ const QuickCheckoutModal = ({
           align-items: center;
           gap: 1rem;
           padding: 1.5rem;
-          border-top: 1px solid var(--border-color, #e2e8f0);
+          border-top: 1px solid #000000;
         }
 
         .btn-primary, .btn-secondary {
           padding: 0.75rem 1.5rem;
           border: none;
-          border-radius: var(--radius-lg, 0.75rem);
+          border-radius: 0.75rem;
           font-weight: 600;
           cursor: pointer;
-          transition: all var(--transition-fast);
+          transition: all 0.2s ease;
           display: flex;
           align-items: center;
           gap: 0.5rem;
         }
 
         .btn-primary {
-          background: var(--gradient-primary, linear-gradient(135deg, #ff6b35, #e55a2b));
+          background: #000000;
           color: white;
         }
 
         .btn-primary:hover {
           transform: translateY(-2px);
-          box-shadow: var(--shadow-md, 0 4px 6px -1px rgb(0 0 0 / 0.1));
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+          background: #333333;
         }
 
         .btn-secondary {
-          background: var(--gray-200, #e2e8f0);
-          color: var(--text-primary, #1e293b);
+          background: #f5f5f5;
+          color: #000000;
+          border: 1px solid #000000;
         }
 
         .btn-secondary:hover {
-          background: var(--gray-300, #cbd5e1);
+          background: #e5e5e5;
         }
 
         .btn-large {

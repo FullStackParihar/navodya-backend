@@ -4,6 +4,7 @@ import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { useToast } from '../context/ToastContext';
 import QuickViewModal from './QuickViewModal';
+import { resolveImageUrl } from '../utils/api';
 
 const ProductCard = ({ product }) => {
   const { addToCart, isInCart } = useCart();
@@ -62,14 +63,14 @@ const ProductCard = ({ product }) => {
       onMouseLeave={() => setIsHovered(false)}
     >
       <div className="product-image">
-        <Link to={`/product/${product.id || product.dbId}`}>
+        <Link to={`/product/${product.dbId || product.id}`}>
           <img 
-            src={product.image} 
+            src={resolveImageUrl(product.image)} 
             alt={product.name}
             loading="lazy"
             onError={(e) => {
               e.target.onerror = null; 
-              e.target.src = `https://picsum.photos/seed/${product.id || product.dbId}/300/300`;
+              e.target.src = `https://picsum.photos/seed/${product.dbId || product.id}/300/300`;
             }}
           />
         </Link>
@@ -102,7 +103,7 @@ const ProductCard = ({ product }) => {
       
       <div className="product-info">
         <h3 className="product-title">
-          <Link to={`/product/${product.id}`}>{product.name}</Link>
+          <Link to={`/product/${product.dbId || product.id}`}>{product.name}</Link>
         </h3>
         
         <div className="product-rating">

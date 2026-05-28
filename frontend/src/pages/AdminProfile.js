@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../utils/api';
+import api, { resolveImageUrl } from '../utils/api';
 import PrivateRoute from '../components/PrivateRoute';
 import { useToast } from '../context/ToastContext';
 import './AdminProfile.css';
@@ -26,6 +26,13 @@ const AdminProfile = () => {
   const [modalType, setModalType] = useState(null); // 'product', 'category'
   const [formData, setFormData] = useState({});
   const [isUploading, setIsUploading] = useState(false);
+
+  const getSafeImage = (value) => {
+    if (typeof value !== 'string' || !value.trim()) {
+      return 'https://via.placeholder.com/120x120?text=No+Image';
+    }
+    return resolveImageUrl(value);
+  };
 
   useEffect(() => {
     const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
@@ -149,8 +156,26 @@ const AdminProfile = () => {
     try {
       let result;
       if (modalType === 'product') {
+        if (!Array.isArray(formData.images) || formData.images.length === 0 || !formData.images[0]) {
+          error('Please upload at least one product image before saving.');
+          return;
+        }
+
         if (formData._id) {
-          result = await api.patch(`/products/${formData._id}`, formData);
+          // When editing, `formData` contains backend snake_case fields as well
+          // (`sale_price`, `category_id`, `is_active`). Those can unintentionally
+          // overwrite changes. Send only the editable/canonical fields.
+          const {
+            _id,
+            category_id,
+            sale_price,
+            is_active,
+            created_at,
+            updated_at,
+            ...payload
+          } = formData;
+
+          result = await api.patch(`/products/${formData._id}`, payload);
         } else {
           result = await api.post('/products', formData);
         }
@@ -181,7 +206,9 @@ const AdminProfile = () => {
         error(result.message || 'Operation failed');
       }
     } catch (err) {
-      error('An error occurred');
+      console.error('Admin save error:', err);
+      const msg = err?.message || 'An error occurred';
+      error(msg);
     }
   };
   
@@ -198,10 +225,15 @@ const AdminProfile = () => {
 
       if (result.success) {
         if (field === 'images') {
-          // Navodaya products use an images array
-          setFormData({ ...formData, images: [result.data.url] }); // Replacing for simplicity if single upload
+          const uploadedUrl = result?.data?.url;
+          if (!uploadedUrl) {
+            error('Upload succeeded but no image URL was returned.');
+            return;
+          }
+          // Keep only one primary image for now (admin table uses first image)
+          setFormData((prev) => ({ ...prev, images: [uploadedUrl] }));
         } else {
-          setFormData({ ...formData, [field]: result.data.url });
+          setFormData((prev) => ({ ...prev, [field]: result.data.url }));
         }
         success('Image uploaded successfully');
       } else {
@@ -312,7 +344,16 @@ const AdminProfile = () => {
           <tbody>
             {products.map(product => (
               <tr key={product._id}>
-                <td><img src={product.images[0]} alt={product.name} className="table-img" /></td>
+                <td>
+                  <img
+                    src={getSafeImage(product.images?.[0])}
+                    alt={product.name}
+                    className="table-img"
+                    onError={(e) => {
+                      e.currentTarget.src = 'https://via.placeholder.com/120x120?text=No+Image';
+                    }}
+                  />
+                </td>
                 <td>{product.name}</td>
                 <td>{product.subcategory}</td>
                 <td>
@@ -374,6 +415,9 @@ const AdminProfile = () => {
     <div className="admin-section">
       <div className="section-header">
         <h2>Order Management</h2>
+        <button className="add-btn" onClick={() => navigate('/payment')}>
+          <i className="fas fa-plus"></i> Add Order
+        </button>
       </div>
       <div className="admin-table-container">
         <table className="admin-table">
@@ -606,7 +650,13 @@ const AdminProfile = () => {
                           <div className="image-preview-grid">
                             {formData.images.map((img, idx) => (
                               <div key={idx} className="preview-item">
-                                <img src={img} alt="Preview" />
+                                <img
+                                  src={getSafeImage(img)}
+                                  alt="Preview"
+                                  onError={(e) => {
+                                    e.currentTarget.src = 'https://via.placeholder.com/120x120?text=No+Image';
+                                  }}
+                                />
                                 <button type="button" onClick={() => setFormData({...formData, images: formData.images.filter((_, i) => i !== idx)})}>&times;</button>
                               </div>
                             ))}

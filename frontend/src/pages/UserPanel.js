@@ -570,7 +570,7 @@ const UserPanel = () => {
 
       <style jsx>{`
         .user-panel {
-          background: var(--bg-secondary, #f8fafc);
+          background: #f0f0f0;
           min-height: 100vh;
           padding-bottom: 2rem;
         }
@@ -583,16 +583,14 @@ const UserPanel = () => {
 
         .user-panel-hero {
           padding: 2rem 0;
-          background:
-            radial-gradient(1200px 400px at 20% 0%, rgba(47, 74, 103, 0.16), transparent 60%),
-            radial-gradient(900px 350px at 80% 10%, rgba(86, 113, 141, 0.14), transparent 60%);
+          background: #000000;
         }
 
         .hero-content {
-          background: var(--bg-primary, #fff);
-          border-radius: var(--radius-2xl, 1.5rem);
+          background: #ffffff;
+          border-radius: 1.5rem;
           padding: 2rem;
-          box-shadow: var(--shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1));
+          box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.2);
           display: flex;
           justify-content: space-between;
           align-items: center;
@@ -611,23 +609,24 @@ const UserPanel = () => {
           height: 72px;
           border-radius: 50%;
           object-fit: cover;
-          box-shadow: var(--shadow-md, 0 4px 6px -1px rgb(0 0 0 / 0.1));
+          box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.2);
+          border: 3px solid #000000;
         }
 
         h1 {
           margin: 0;
-          color: var(--text-primary, #1e293b);
+          color: #000000;
         }
 
         .subtitle {
           margin: 0.25rem 0 0;
-          color: var(--text-secondary, #64748b);
+          color: #666666;
           font-weight: 500;
         }
 
         .submeta {
           margin: 0.35rem 0 0;
-          color: var(--text-muted, #94a3b8);
+          color: #999999;
           font-weight: 600;
           font-size: 0.9rem;
         }
@@ -640,34 +639,37 @@ const UserPanel = () => {
 
         .btn-primary, .btn-secondary {
           border: none;
-          border-radius: var(--radius-lg, 0.75rem);
+          border-radius: 0.75rem;
           font-weight: 700;
           cursor: pointer;
           padding: 0.75rem 1.25rem;
           display: inline-flex;
           align-items: center;
           gap: 0.5rem;
-          transition: all var(--transition-fast);
+          transition: all 0.2s ease;
           text-decoration: none;
         }
 
         .btn-primary {
-          background: var(--gradient-primary, linear-gradient(135deg, #2f4a67, #23394f));
-          color: #fff;
+          background: #000000;
+          color: #ffffff;
         }
 
         .btn-primary:hover {
           transform: translateY(-2px);
-          box-shadow: var(--shadow-md, 0 4px 6px -1px rgb(0 0 0 / 0.1));
+          box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.3);
+          background: #333333;
         }
 
         .btn-secondary {
-          background: var(--gray-200, #e2e8f0);
-          color: var(--text-primary, #1e293b);
+          background: #f0f0f0;
+          color: #000000;
+          border: 2px solid #000000;
         }
 
         .btn-secondary:hover {
-          background: var(--gray-300, #cbd5e1);
+          background: #000000;
+          color: #ffffff;
         }
 
         .user-panel-body {
@@ -691,29 +693,29 @@ const UserPanel = () => {
 
         .side-link {
           width: 100%;
-          background: var(--bg-primary, #fff);
-          border: 1px solid var(--border-color, #e2e8f0);
-          border-radius: var(--radius-xl, 1rem);
+          background: #ffffff;
+          border: 2px solid #e0e0e0;
+          border-radius: 1rem;
           padding: 0.9rem 1rem;
           cursor: pointer;
           display: flex;
           align-items: center;
           gap: 0.75rem;
-          color: var(--text-primary, #1e293b);
+          color: #000000;
           font-weight: 700;
-          transition: all var(--transition-fast);
+          transition: all 0.2s ease;
           text-align: left;
         }
 
         .side-link:hover {
           transform: translateY(-2px);
-          box-shadow: var(--shadow-md, 0 4px 6px -1px rgb(0 0 0 / 0.1));
-          border-color: rgba(47, 74, 103, 0.35);
+          box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.2);
+          border-color: #000000;
         }
 
         .side-link.active {
-          background: rgba(47, 74, 103, 0.08);
-          border-color: rgba(47, 74, 103, 0.35);
+          background: #f0f0f0;
+          border-color: #000000;
         }
 
         .stats-card {
@@ -727,9 +729,9 @@ const UserPanel = () => {
         }
 
         .stat {
-          border: 1px solid var(--border-color, #e2e8f0);
-          background: var(--gray-50, #f8fafc);
-          border-radius: var(--radius-xl, 1rem);
+          border: 2px solid #e0e0e0;
+          background: #f9f9f9;
+          border-radius: 1rem;
           padding: 0.9rem;
           display: flex;
           align-items: center;
@@ -740,8 +742,8 @@ const UserPanel = () => {
           width: 40px;
           height: 40px;
           border-radius: 1rem;
-          background: rgba(47, 74, 103, 0.12);
-          color: var(--primary-color, #2f4a67);
+          background: #000000;
+          color: #ffffff;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -749,13 +751,13 @@ const UserPanel = () => {
         }
 
         .stat-value {
-          color: var(--text-primary, #1e293b);
+          color: #000000;
           font-weight: 900;
           line-height: 1.1;
         }
 
         .stat-label {
-          color: var(--text-secondary, #64748b);
+          color: #666666;
           font-weight: 700;
           font-size: 0.8rem;
           margin-top: 0.1rem;
@@ -763,23 +765,23 @@ const UserPanel = () => {
 
         .sidebar-card {
           margin-top: 0.75rem;
-          background: var(--bg-primary, #fff);
-          border: 1px solid var(--border-color, #e2e8f0);
-          border-radius: var(--radius-2xl, 1.5rem);
+          background: #ffffff;
+          border: 2px solid #e0e0e0;
+          border-radius: 1.5rem;
           padding: 1rem;
-          box-shadow: var(--shadow-md, 0 4px 6px -1px rgb(0 0 0 / 0.1));
+          box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.2);
         }
 
         .mini-stat {
           display: flex;
           justify-content: space-between;
           padding: 0.4rem 0;
-          color: var(--text-secondary, #64748b);
+          color: #666666;
           font-weight: 600;
         }
 
         .mini-stat-value {
-          color: var(--text-primary, #1e293b);
+          color: #000000;
           font-weight: 800;
         }
 
@@ -791,22 +793,24 @@ const UserPanel = () => {
         }
 
         .mini-btn {
-          background: var(--gray-100, #f1f5f9);
-          border: 1px solid var(--border-color, #e2e8f0);
-          border-radius: var(--radius-lg, 0.75rem);
+          background: #f0f0f0;
+          border: 2px solid #e0e0e0;
+          border-radius: 0.75rem;
           padding: 0.6rem 0.75rem;
           font-weight: 700;
-          color: var(--text-primary, #1e293b);
+          color: #000000;
           display: inline-flex;
           align-items: center;
           justify-content: center;
           gap: 0.5rem;
           text-decoration: none;
-          transition: all var(--transition-fast);
+          transition: all 0.2s ease;
         }
 
         .mini-btn:hover {
-          background: var(--gray-200, #e2e8f0);
+          background: #000000;
+          color: #ffffff;
+          border-color: #000000;
         }
 
         .panel-content {
@@ -821,10 +825,11 @@ const UserPanel = () => {
 
         .card {
           grid-column: span 12;
-          background: var(--bg-primary, #fff);
-          border-radius: var(--radius-2xl, 1.5rem);
+          background: #ffffff;
+          border-radius: 1.5rem;
           padding: 1.5rem;
-          box-shadow: var(--shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1));
+          box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.2);
+          border: 2px solid #e0e0e0;
         }
 
         .card-head {
@@ -837,7 +842,7 @@ const UserPanel = () => {
 
         .card-head h2 {
           margin: 0;
-          color: var(--text-primary, #1e293b);
+          color: #000000;
           font-size: 1.25rem;
         }
 
@@ -846,8 +851,12 @@ const UserPanel = () => {
           border: none;
           cursor: pointer;
           font-weight: 700;
-          color: var(--primary-color, #2f4a67);
+          color: #000000;
           text-decoration: none;
+        }
+
+        .ghost:hover {
+          text-decoration: underline;
         }
 
         .head-actions {
@@ -863,22 +872,24 @@ const UserPanel = () => {
         }
 
         .quick-link {
-          border: 1px solid var(--border-color, #e2e8f0);
-          background: var(--gray-50, #f8fafc);
-          border-radius: var(--radius-xl, 1rem);
+          border: 2px solid #e0e0e0;
+          background: #f9f9f9;
+          border-radius: 1rem;
           padding: 1rem;
           display: flex;
           align-items: center;
           gap: 0.75rem;
           text-decoration: none;
-          color: var(--text-primary, #1e293b);
+          color: #000000;
           font-weight: 800;
-          transition: all var(--transition-fast);
+          transition: all 0.2s ease;
         }
 
         .quick-link:hover {
           transform: translateY(-2px);
-          border-color: rgba(47, 74, 103, 0.35);
+          border-color: #000000;
+          background: #000000;
+          color: #ffffff;
         }
 
         .latest-order {
@@ -895,23 +906,23 @@ const UserPanel = () => {
 
         .order-id {
           font-weight: 900;
-          color: var(--text-primary, #1e293b);
+          color: #000000;
         }
 
         .order-meta {
-          color: var(--text-secondary, #64748b);
+          color: #666666;
           font-weight: 600;
           font-size: 0.875rem;
           margin-top: 0.25rem;
         }
 
         .muted {
-          color: var(--text-secondary, #64748b);
+          color: #666666;
           font-weight: 600;
         }
 
         .strong {
-          color: var(--text-primary, #1e293b);
+          color: #000000;
           font-weight: 900;
         }
 
@@ -927,22 +938,22 @@ const UserPanel = () => {
         }
 
         .badge.processing {
-          background: var(--warning-color, #d97706);
-          color: var(--gray-900, #0f172a);
+          background: #666666;
+          color: #ffffff;
         }
 
         .badge.shipped {
-          background: var(--info-color, #2563eb);
+          background: #333333;
           color: #fff;
         }
 
         .badge.out {
-          background: var(--primary-color, #2f4a67);
+          background: #000000;
           color: #fff;
         }
 
         .badge.delivered {
-          background: var(--success-color, #16a34a);
+          background: #000000;
           color: #fff;
         }
 
@@ -959,9 +970,9 @@ const UserPanel = () => {
         }
 
         .order-card {
-          background: var(--gray-50, #f8fafc);
-          border: 1px solid var(--border-color, #e2e8f0);
-          border-radius: var(--radius-2xl, 1.5rem);
+          background: #f9f9f9;
+          border: 2px solid #e0e0e0;
+          border-radius: 1.5rem;
           padding: 1.25rem;
         }
 
@@ -994,15 +1005,15 @@ const UserPanel = () => {
         }
 
         .address {
-          border: 1px solid var(--border-color, #e2e8f0);
-          background: var(--gray-50, #f8fafc);
-          border-radius: var(--radius-2xl, 1.5rem);
+          border: 2px solid #e0e0e0;
+          background: #f9f9f9;
+          border-radius: 1.5rem;
           padding: 1.25rem;
         }
 
         .address.default {
-          border-color: rgba(6, 255, 165, 0.6);
-          box-shadow: 0 0 0 3px rgba(6, 255, 165, 0.15);
+          border-color: #000000;
+          box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
         }
 
         .address-top {
@@ -1017,11 +1028,11 @@ const UserPanel = () => {
           align-items: center;
           gap: 0.5rem;
           font-weight: 900;
-          color: var(--text-primary, #1e293b);
+          color: #000000;
         }
 
         .btn-logout {
-  background: #dc2626;
+  background: #333333;
   color: white;
   border: none;
   padding: 14px 24px;
@@ -1033,20 +1044,20 @@ const UserPanel = () => {
 }
 
 .btn-logout:hover {
-  background: #b91c1c;
+  background: #000000;
   transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(220, 38, 38, 0.3);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
 }
 
 .default-pill {
           margin-left: 0.5rem;
-          background: rgba(6, 255, 165, 0.2);
-          border: 1px solid rgba(6, 255, 165, 0.35);
+          background: #000000;
+          border: none;
           padding: 0.2rem 0.5rem;
           border-radius: 9999px;
           font-size: 0.75rem;
           font-weight: 900;
-          color: var(--gray-900, #0f172a);
+          color: #ffffff;
           display: inline-flex;
           align-items: center;
           gap: 0.35rem;
@@ -1059,15 +1070,15 @@ const UserPanel = () => {
 
         .empty {
           padding: 1.25rem;
-          border: 1px dashed var(--border-color, #e2e8f0);
-          border-radius: var(--radius-2xl, 1.5rem);
+          border: 2px dashed #e0e0e0;
+          border-radius: 1.5rem;
           text-align: center;
-          color: var(--text-secondary, #64748b);
+          color: #666666;
         }
 
         .empty i {
           font-size: 1.5rem;
-          color: var(--primary-color, #2f4a67);
+          color: #000000;
           margin-bottom: 0.75rem;
         }
 
@@ -1081,9 +1092,9 @@ const UserPanel = () => {
           align-items: center;
           gap: 0.75rem;
           padding: 0.75rem;
-          border-radius: var(--radius-xl, 1rem);
-          background: var(--gray-50, #f8fafc);
-          border: 1px solid var(--border-color, #e2e8f0);
+          border-radius: 1rem;
+          background: #f9f9f9;
+          border: 2px solid #e0e0e0;
         }
 
         .list-item img {
@@ -1100,9 +1111,9 @@ const UserPanel = () => {
         }
 
         .wishlist-item {
-          background: var(--gray-50, #f8fafc);
-          border: 1px solid var(--border-color, #e2e8f0);
-          border-radius: var(--radius-2xl, 1.5rem);
+          background: #f9f9f9;
+          border: 2px solid #e0e0e0;
+          border-radius: 1.5rem;
           overflow: hidden;
           display: flex;
           flex-direction: column;
@@ -1134,26 +1145,28 @@ const UserPanel = () => {
         }
 
         .support-card {
-          border: 1px solid var(--border-color, #e2e8f0);
-          background: var(--gray-50, #f8fafc);
-          border-radius: var(--radius-2xl, 1.5rem);
+          border: 2px solid #e0e0e0;
+          background: #f9f9f9;
+          border-radius: 1.5rem;
           padding: 1.25rem;
           cursor: pointer;
-          transition: all var(--transition-fast);
+          transition: all 0.2s ease;
           text-align: left;
         }
 
         .support-card:hover {
           transform: translateY(-2px);
-          box-shadow: var(--shadow-md, 0 4px 6px -1px rgb(0 0 0 / 0.1));
-          border-color: rgba(47, 74, 103, 0.35);
+          box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.2);
+          border-color: #000000;
+          background: #000000;
+          color: #ffffff;
         }
 
         .support-icon {
           width: 44px;
           height: 44px;
           border-radius: 1rem;
-          background: var(--primary-color, #2f4a67);
+          background: #000000;
           color: #fff;
           display: flex;
           align-items: center;
@@ -1162,12 +1175,12 @@ const UserPanel = () => {
         }
 
         .support-icon.whatsapp {
-          background: #25D366;
+          background: #000000;
         }
 
         .support-title {
           font-weight: 900;
-          color: var(--text-primary, #1e293b);
+          color: #000000;
           margin-bottom: 0.25rem;
         }
 

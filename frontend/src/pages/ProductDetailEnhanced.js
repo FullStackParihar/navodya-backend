@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import api from '../utils/api';
+import api, { resolveImageUrl } from '../utils/api';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { useToast } from '../context/ToastContext';
@@ -32,7 +32,7 @@ const ProductDetailEnhanced = () => {
     const fetchProductAndRelated = async () => {
       try {
         setIsLoading(true);
-        const result = await api.get(`/products/${id}`);
+        const result = await api.get(`/products/id/${id}`);
         
         if (result.success) {
           const p = result.data;
@@ -43,7 +43,7 @@ const ProductDetailEnhanced = () => {
             description: p.description,
             price: p.sale_price || p.price,
             originalPrice: p.sale_price ? p.price : null,
-            image: p.images[0] || 'https://via.placeholder.com/600x800?text=No+Image',
+            image: resolveImageUrl(p.images[0] || 'https://via.placeholder.com/600x800?text=No+Image'),
             badge: p.sale_price ? 'Sale' : (p.rating > 4.5 ? 'Bestseller' : ''),
             reviews: p.review_count || 0,
             rating: p.rating || 0,
@@ -58,7 +58,7 @@ const ProductDetailEnhanced = () => {
               '100% Premium Quality', 'Official Alumni Merchandise', 'Durable and Comfortable', 'Easy Care Fabric'
             ],
             specifications: p.specifications || { material: 'Premium Cotton/Fleece', origin: 'Made in India', fit: 'Standard Fit' },
-            images: p.images.length > 0 ? p.images : ['https://via.placeholder.com/600x800?text=No+Image']
+            images: p.images.map(img => resolveImageUrl(img))
           };
           setProduct(mappedProduct);
           if (mappedProduct.sizes.length > 0) setSelectedSize(mappedProduct.sizes[0]);
@@ -68,13 +68,13 @@ const ProductDetailEnhanced = () => {
             const relResult = await api.get(`/products?category=${mappedProduct.categorySlug}&limit=4`);
             if (relResult.success) {
               const mappedRelated = relResult.data.products
-                .filter(item => item.slug !== id)
+                .filter(item => item._id !== id)
                 .map(item => ({
                   id: item.slug,
                   dbId: item._id,
                   name: item.name,
                   price: item.sale_price || item.price,
-                  image: item.images[0],
+                  image: resolveImageUrl(item.images[0]),
                   rating: item.rating || 0
                 }));
               setRelatedProducts(mappedRelated);

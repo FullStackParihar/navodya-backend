@@ -1,4 +1,5 @@
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
+const BASE_URL = API_URL.replace('/api', '');
 
 const getHeaders = () => {
   const token = localStorage.getItem('token');
@@ -9,6 +10,17 @@ const getHeaders = () => {
     headers['Authorization'] = `Bearer ${token}`;
   }
   return headers;
+};
+
+const resolveImageUrl = (url) => {
+  if (!url) return 'https://via.placeholder.com/400x500?text=No+Image';
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    return url;
+  }
+  if (url.startsWith('/')) {
+    return `${BASE_URL}${url}`;
+  }
+  return url;
 };
 
 export const api = {
@@ -58,4 +70,5 @@ export const api = {
   },
 };
 
+export { resolveImageUrl };
 export default api;

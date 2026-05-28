@@ -3,19 +3,19 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #2f4a67 0%, #1a2332 100%);
+  background: #000000;
   font-family: 'Poppins', sans-serif;
   padding: 20px;
 }
 
 .login-card {
-  background: white;
+  background: #ffffff;
   padding: 40px;
   border-radius: 12px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
   width: 100%;
   max-width: 450px;
-  border: 1px solid #e1e5e9;
+  border: 2px solid #000000;
 }
 
 .login-header {
@@ -24,22 +24,22 @@
 }
 
 .login-header h2 {
-  color: #2f4a67;
+  color: #000000;
   font-size: 28px;
   font-weight: 600;
   margin-bottom: 8px;
 }
 
 .login-subtitle {
-  color: #64748b;
+  color: #666666;
   font-size: 14px;
   margin-bottom: 0;
 }
 
 .error-message {
-  background: #fef2f2;
-  border: 1px solid #fecaca;
-  color: #dc2626;
+  background: #000000;
+  border: 2px solid #000000;
+  color: #ffffff;
   padding: 12px;
   border-radius: 6px;
   margin-bottom: 20px;
@@ -50,9 +50,10 @@
 .auth-tabs {
   display: flex;
   margin-bottom: 25px;
-  background: #f8fafc;
+  background: #f0f0f0;
   border-radius: 8px;
   padding: 4px;
+  border: 1px solid #000000;
 }
 
 .tab-btn {
@@ -60,7 +61,7 @@
   padding: 12px;
   border: none;
   background: transparent;
-  color: #64748b;
+  color: #666666;
   font-weight: 500;
   cursor: pointer;
   border-radius: 6px;
@@ -68,16 +69,16 @@
 }
 
 .tab-btn.active {
-  background: #2f4a67;
+  background: #000000;
   color: white;
 }
 
 .google-btn {
   width: 100%;
   padding: 14px;
-  border: 2px solid #e1e5e9;
+  border: 2px solid #000000;
   background: white;
-  color: #374151;
+  color: #000000;
   border-radius: 6px;
   font-size: 16px;
   font-weight: 500;
@@ -91,13 +92,13 @@
 }
 
 .google-btn:hover {
-  background: #f8fafc;
-  border-color: #2f4a67;
+  background: #000000;
+  color: white;
 }
 
 .divider {
   text-align: center;
-  color: #9ca3af;
+  color: #666666;
   font-size: 14px;
   margin: 20px 0;
   position: relative;
@@ -110,22 +111,22 @@
   left: 0;
   right: 0;
   height: 1px;
-  background: #e1e5e9;
+  background: #000000;
   z-index: -1;
 }
 
 .otp-section {
   margin-bottom: 20px;
   padding: 15px;
-  background: #f8fafc;
+  background: #f0f0f0;
   border-radius: 8px;
-  border: 1px solid #e1e5e9;
+  border: 1px solid #000000;
 }
 
 .otp-btn {
   width: 100%;
   padding: 10px;
-  background: #64748b;
+  background: #000000;
   color: white;
   border: none;
   border-radius: 6px;
@@ -137,7 +138,7 @@
 }
 
 .otp-btn:hover:not(:disabled) {
-  background: #475569;
+  background: #333333;
 }
 
 .otp-btn:disabled {
@@ -148,19 +149,19 @@
 .demo-info {
   margin-top: 25px;
   padding: 15px;
-  background: #f0f9ff;
+  background: #f0f0f0;
   border-radius: 8px;
-  border: 1px solid #dbeafe;
+  border: 1px solid #000000;
   font-size: 12px;
 }
 
 .demo-info p {
   margin: 5px 0;
-  color: #64748b;
+  color: #000000;
 }
 
 .demo-info strong {
-  color: #2f4a67;
+  color: #000000;
 }
 
 .login-form {
@@ -176,28 +177,29 @@
 }
 
 .form-group label {
-  color: #374151;
+  color: #000000;
   font-weight: 500;
   font-size: 14px;
 }
 
 .form-group input {
   padding: 12px 16px;
-  border: 1px solid #d1d5db;
+  border: 2px solid #000000;
   border-radius: 6px;
   font-size: 16px;
-  transition: border-color 0.3s ease;
+  transition: all 0.3s ease;
   background: #ffffff;
+  color: #000000;
 }
 
 .form-group input:focus {
   outline: none;
-  border-color: #2f4a67;
-  box-shadow: 0 0 0 3px rgba(47, 74, 103, 0.1);
+  border-color: #333333;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
 }
 
 .login-button {
-  background: #2f4a67;
+  background: #000000;
   color: white;
   border: none;
   padding: 14px 24px;
@@ -209,9 +211,9 @@
 }
 
 .login-button:hover:not(:disabled) {
-  background: #23394f;
+  background: #333333;
   transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(47, 74, 103, 0.3);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
 }
 
 .login-button:disabled {

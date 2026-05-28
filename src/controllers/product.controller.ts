@@ -22,7 +22,8 @@ export const getProducts = asyncHandler(async (req: Request, res: Response) => {
     limit = '20',
   } = req.query;
 
-  const filter: any = { is_active: true };
+  const isAdmin = (req as any).user?.role === 'admin';
+  const filter: any = isAdmin ? {} : { is_active: true };
 
   if (category) {
     const catDoc = await Category.findOne({ slug: category as string });

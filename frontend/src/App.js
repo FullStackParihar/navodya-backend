@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import FooterEnhanced from './components/FooterEnhanced';
 import ThemeSwitch from './components/ThemeSwitch';
-import Home from './pages/Home';
+import HomeEpic from './pages/HomeEpic';
 import TShirts from './pages/TShirts';
 import Hoodies from './pages/Hoodies';
 import Accessories from './pages/Accessories';
@@ -32,6 +32,7 @@ import { CartProvider } from './context/CartContext';
 import { WishlistProvider } from './context/WishlistContext';
 import { ToastProvider, useToast } from './context/ToastContext';
 import PrivateRoute from './components/PrivateRoute';
+import Events from './pages/Events';
 import Login from './pages/Login';
 
 const AppContent = () => {
@@ -45,7 +46,8 @@ const AppContent = () => {
         <Header />
         <main>
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<HomeEpic />} />
+            <Route path="/events" element={<Events />} />
             <Route path="/tshirts" element={<TShirts />} />
             <Route path="/hoodies" element={<Hoodies />} />
             <Route path="/accessories" element={<Accessories />} />

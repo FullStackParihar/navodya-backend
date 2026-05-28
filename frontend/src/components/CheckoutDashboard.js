@@ -262,7 +262,7 @@ const CheckoutDashboard = () => {
         .checkout-dashboard {
           padding: 2rem 0;
           min-height: 100vh;
-          background: var(--bg-secondary, #f8fafc);
+          background: #ffffff;
         }
 
         .dashboard-header {
@@ -272,12 +272,12 @@ const CheckoutDashboard = () => {
 
         .dashboard-header h1 {
           font-size: 2.5rem;
-          color: var(--text-primary, #1e293b);
+          color: #000000;
           margin-bottom: 0.5rem;
         }
 
         .dashboard-header p {
-          color: var(--text-secondary, #64748b);
+          color: #666666;
           font-size: 1.125rem;
         }
 
@@ -289,11 +289,12 @@ const CheckoutDashboard = () => {
         }
 
         .dashboard-section {
-          background: var(--bg-primary, white);
-          border-radius: var(--radius-2xl, 1.5rem);
+          background: #ffffff;
+          border: 2px solid #000000;
+          border-radius: 1.5rem;
           padding: 2rem;
-          box-shadow: var(--shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1));
-          transition: transform var(--transition-fast);
+          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+          transition: transform 0.2s ease;
         }
 
         .dashboard-section:hover {
@@ -310,9 +311,9 @@ const CheckoutDashboard = () => {
         .section-icon {
           width: 50px;
           height: 50px;
-          background: var(--gradient-primary, linear-gradient(135deg, #2f4a67, #23394f));
+          background: #000000;
           color: white;
-          border-radius: var(--radius-xl, 1rem);
+          border-radius: 1rem;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -320,12 +321,12 @@ const CheckoutDashboard = () => {
         }
 
         .section-info h2 {
-          color: var(--text-primary, #1e293b);
+          color: #000000;
           margin-bottom: 0.25rem;
         }
 
         .section-info p {
-          color: var(--text-secondary, #64748b);
+          color: #666666;
           margin: 0;
         }
 
@@ -337,32 +338,34 @@ const CheckoutDashboard = () => {
         .btn-primary, .btn-secondary {
           padding: 0.75rem 1.5rem;
           border: none;
-          border-radius: var(--radius-lg, 0.75rem);
+          border-radius: 0.75rem;
           font-weight: 600;
           cursor: pointer;
-          transition: all var(--transition-fast);
+          transition: all 0.2s ease;
           display: flex;
           align-items: center;
           gap: 0.5rem;
         }
 
         .btn-primary {
-          background: var(--gradient-primary, linear-gradient(135deg, #2f4a67, #23394f));
+          background: #000000;
           color: white;
         }
 
         .btn-primary:hover {
           transform: translateY(-2px);
-          box-shadow: var(--shadow-md, 0 4px 6px -1px rgb(0 0 0 / 0.1));
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+          background: #333333;
         }
 
         .btn-secondary {
-          background: var(--gray-200, #e2e8f0);
-          color: var(--text-primary, #1e293b);
+          background: #f5f5f5;
+          color: #000000;
+          border: 1px solid #000000;
         }
 
         .btn-secondary:hover {
-          background: var(--gray-300, #cbd5e1);
+          background: #e5e5e5;
         }
 
         .action-grid {
@@ -372,12 +375,12 @@ const CheckoutDashboard = () => {
         }
 
         .action-btn {
-          background: var(--gray-50, #f8fafc);
-          border: 1px solid var(--border-color, #e2e8f0);
-          border-radius: var(--radius-lg, 0.75rem);
+          background: #ffffff;
+          border: 1px solid #000000;
+          border-radius: 0.75rem;
           padding: 1rem;
           cursor: pointer;
-          transition: all var(--transition-fast);
+          transition: all 0.2s ease;
           display: flex;
           flex-direction: column;
           align-items: center;
@@ -385,9 +388,9 @@ const CheckoutDashboard = () => {
         }
 
         .action-btn:hover {
-          background: var(--primary-color, #2f4a67);
+          background: #000000;
           color: white;
-          border-color: var(--primary-color, #2f4a67);
+          border-color: #000000;
           transform: translateY(-2px);
         }
 
@@ -412,17 +415,18 @@ const CheckoutDashboard = () => {
           justify-content: space-between;
           align-items: center;
           padding: 1rem;
-          background: var(--gray-50, #f8fafc);
-          border-radius: var(--radius-lg, 0.75rem);
-          transition: all var(--transition-fast);
+          background: #f5f5f5;
+          border: 1px solid #000000;
+          border-radius: 0.75rem;
+          transition: all 0.2s ease;
         }
 
         .order-item:hover {
-          background: var(--gray-100, #f1f5f9);
+          background: #e5e5e5;
         }
 
         .order-info h3 {
-          color: var(--text-primary, #1e293b);
+          color: #000000;
           margin-bottom: 0.5rem;
           font-size: 0.875rem;
         }
@@ -436,49 +440,49 @@ const CheckoutDashboard = () => {
 
         .status-badge {
           padding: 0.25rem 0.75rem;
-          border-radius: var(--radius-full, 9999px);
+          border-radius: 9999px;
           font-size: 0.75rem;
           font-weight: 600;
           text-transform: uppercase;
         }
 
         .status-badge.shipped {
-          background: var(--info-color, #2563eb);
+          background: #000000;
           color: white;
         }
 
         .status-badge.delivered {
-          background: var(--success-color, #16a34a);
+          background: #000000;
           color: white;
         }
 
         .status-badge.processing {
-          background: var(--warning-color, #d97706);
-          color: var(--gray-900, #0f172a);
+          background: #666666;
+          color: white;
         }
 
         .order-date, .order-total {
-          color: var(--text-secondary, #64748b);
+          color: #666666;
           font-size: 0.75rem;
         }
 
         .track-btn {
-          background: var(--primary-color, #2f4a67);
+          background: #000000;
           color: white;
           border: none;
           padding: 0.5rem 1rem;
-          border-radius: var(--radius-lg, 0.75rem);
+          border-radius: 0.75rem;
           font-size: 0.875rem;
           font-weight: 600;
           cursor: pointer;
-          transition: all var(--transition-fast);
+          transition: all 0.2s ease;
           display: flex;
           align-items: center;
           gap: 0.5rem;
         }
 
         .track-btn:hover {
-          background: var(--primary-dark, #23394f);
+          background: #333333;
           transform: translateY(-2px);
         }
 
@@ -493,12 +497,12 @@ const CheckoutDashboard = () => {
         }
 
         .support-btn {
-          background: var(--gray-50, #f8fafc);
-          border: 1px solid var(--border-color, #e2e8f0);
-          border-radius: var(--radius-lg, 0.75rem);
+          background: #ffffff;
+          border: 1px solid #000000;
+          border-radius: 0.75rem;
           padding: 1rem;
           cursor: pointer;
-          transition: all var(--transition-fast);
+          transition: all 0.2s ease;
           display: flex;
           flex-direction: column;
           align-items: center;
@@ -506,9 +510,9 @@ const CheckoutDashboard = () => {
         }
 
         .support-btn:hover {
-          background: var(--primary-color, #2f4a67);
+          background: #000000;
           color: white;
-          border-color: var(--primary-color, #2f4a67);
+          border-color: #000000;
           transform: translateY(-2px);
         }
 
@@ -533,27 +537,28 @@ const CheckoutDashboard = () => {
         }
 
         .stat-card {
-          background: var(--bg-primary, white);
-          border-radius: var(--radius-xl, 1rem);
+          background: #ffffff;
+          border: 2px solid #000000;
+          border-radius: 1rem;
           padding: 1.5rem;
-          box-shadow: var(--shadow-md, 0 4px 6px -1px rgb(0 0 0 / 0.1));
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
           display: flex;
           align-items: center;
           gap: 1rem;
-          transition: transform var(--transition-fast);
+          transition: transform 0.2s ease;
         }
 
         .stat-card:hover {
           transform: translateY(-4px);
-          box-shadow: var(--shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1));
+          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
 
         .stat-icon {
           width: 40px;
           height: 40px;
-          background: var(--gradient-primary, linear-gradient(135deg, #2f4a67, #23394f));
+          background: #000000;
           color: white;
-          border-radius: var(--radius-lg, 0.75rem);
+          border-radius: 0.75rem;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -561,13 +566,13 @@ const CheckoutDashboard = () => {
         }
 
         .stat-info h3 {
-          color: var(--text-primary, #1e293b);
+          color: #000000;
           margin-bottom: 0.25rem;
           font-size: 1.25rem;
         }
 
         .stat-info p {
-          color: var(--text-secondary, #64748b);
+          color: #666666;
           margin: 0;
         }
 

@@ -217,14 +217,14 @@ const FooterEnhanced = () => {
 
       {/* Enhanced Footer Styles */}
       <style jsx>{`
-        /* Amazon-Inspired Footer Variables */
+        /* Black & White Footer Variables */
         :root {
-          --footer-primary: #131921;
-          --footer-secondary: #232f3e;
-          --footer-accent: #2f4a67;
+          --footer-primary: #000000;
+          --footer-secondary: #111111;
+          --footer-accent: #ffffff;
           --footer-text: #ffffff;
           --footer-text-light: #999999;
-          --footer-border: #37475a;
+          --footer-border: #333333;
           --transition-footer: all 0.3s ease;
         }
 
@@ -301,11 +301,17 @@ const FooterEnhanced = () => {
           border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
+        .social-link:nth-child(1) { color: #1877F2; }
+        .social-link:nth-child(2) { color: #E4405F; }
+        .social-link:nth-child(3) { color: #1DA1F2; }
+        .social-link:nth-child(4) { color: #0A66C2; }
+        .social-link:nth-child(5) { color: #25D366; }
+
         .social-link:hover {
           background: var(--footer-accent);
-          color: white;
+          color: #000000;
           transform: translateY(-3px);
-          box-shadow: 0 6px 12px rgba(255, 153, 0, 0.3);
+          box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
         }
 
         .social-link i {
@@ -422,8 +428,18 @@ const FooterEnhanced = () => {
           border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
+        .payment-icon:nth-child(1) { color: #1A1F71; }
+        .payment-icon:nth-child(2) { color: #EB001B; }
+        .payment-icon:nth-child(3) { color: #006FCF; }
+        .payment-icon:nth-child(4) { color: #003087; }
+        .payment-icon:nth-child(5) { color: #4285F4; }
+        .payment-icon:nth-child(6) { color: #000000; }
+        .payment-icon:nth-child(7) { color: #4CAF50; }
+        .payment-icon:nth-child(8) { color: #FF9800; }
+
         .payment-icon:hover {
           background: var(--footer-accent);
+          color: #000000;
           transform: translateY(-2px);
         }
 
@@ -482,7 +498,7 @@ const FooterEnhanced = () => {
 
         .app-button:hover {
           background: var(--footer-accent);
-          color: white;
+          color: #000000;
           transform: translateY(-2px);
         }
 
@@ -492,7 +508,7 @@ const FooterEnhanced = () => {
 
         /* Newsletter Section */
         .newsletter-section {
-          background: linear-gradient(135deg, var(--footer-accent) 0%, #23394f 100%);
+          background: #ffffff;
           padding: 40px 0;
           text-align: center;
         }
@@ -506,13 +522,13 @@ const FooterEnhanced = () => {
         .newsletter-content h3 {
           font-size: 28px;
           font-weight: 700;
-          color: white;
+          color: #000000;
           margin: 0 0 10px 0;
         }
 
         .newsletter-content p {
           font-size: 16px;
-          color: rgba(255, 255, 255, 0.9);
+          color: rgba(0, 0, 0, 0.8);
           margin: 0 0 25px 0;
         }
 
@@ -526,16 +542,17 @@ const FooterEnhanced = () => {
         .newsletter-input {
           flex: 1;
           padding: 12px 20px;
-          border: none;
+          border: 2px solid #000000;
           border-radius: 6px;
           font-size: 14px;
           outline: none;
-          background: rgba(255, 255, 255, 0.9);
+          background: #ffffff;
+          color: #000000;
         }
 
         .newsletter-button {
           padding: 12px 25px;
-          background: var(--footer-primary);
+          background: #000000;
           color: white;
           border: none;
           border-radius: 6px;
@@ -547,7 +564,7 @@ const FooterEnhanced = () => {
         }
 
         .newsletter-button:hover {
-          background: var(--footer-secondary);
+          background: #333333;
           transform: translateY(-2px);
         }
 
@@ -600,7 +617,7 @@ const FooterEnhanced = () => {
           right: 30px;
           width: 50px;
           height: 50px;
-          background: var(--footer-accent);
+          background: #000000;
           color: white;
           border: none;
           border-radius: 50%;
@@ -612,7 +629,7 @@ const FooterEnhanced = () => {
           opacity: 0;
           visibility: hidden;
           z-index: 1000;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         }
 
         .back-to-top.show {
@@ -621,9 +638,9 @@ const FooterEnhanced = () => {
         }
 
         .back-to-top:hover {
-          background: #23394f;
+          background: #333333;
           transform: translateY(-3px);
-          box-shadow: 0 6px 20px rgba(47, 74, 103, 0.4);
+          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
         }
 
         .back-to-top i {
