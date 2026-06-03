@@ -36,7 +36,7 @@ const FooterEnhanced = () => {
           <div className="footer-top-content">
             {/* Brand Section */}
             <div className="footer-brand footer-animate">
-              <h3>Navodaya<span>Trendz</span></h3>
+              <img src="/logo2.png" alt="Navodaya Trendz" style={{ height: '80px', width: 'auto', marginBottom: '10px' }} />
               <p>Made by Navodayans, for Navodayans. Your trusted partner for JNV alumni merchandise.</p>
               <div className="footer-social">
                 <a href="https://facebook.com" className="social-link" aria-label="Facebook" target="_blank" rel="noopener noreferrer">
@@ -64,8 +64,8 @@ const FooterEnhanced = () => {
                 <li><Link to="/tshirts"><i className="fas fa-chevron-right"></i> T-Shirts</Link></li>
                 <li><Link to="/hoodies"><i className="fas fa-chevron-right"></i> Hoodies</Link></li>
                 <li><Link to="/accessories"><i className="fas fa-chevron-right"></i> Accessories</Link></li>
-                <li><Link to="/alumni-kits"><i className="fas fa-chevron-right"></i> Alumni Kits</Link></li>
-                <li><Link to="/customize"><i className="fas fa-chevron-right"></i> Customize</Link></li>
+
+                <li><Link to="/about-us"><i className="fas fa-chevron-right"></i> About Us</Link></li>
                 <li><Link to="/today-deals"><i className="fas fa-chevron-right"></i> Today's Deals</Link></li>
                 <li><Link to="/new-arrivals"><i className="fas fa-chevron-right"></i> New Arrivals</Link></li>
               </ul>
@@ -260,6 +260,12 @@ const FooterEnhanced = () => {
           gap: 20px;
         }
 
+        .footer-brand img {
+          height: 80px !important;
+          width: auto !important;
+          max-height: none !important;
+        }
+
         .footer-brand h3 {
           font-size: 28px;
           font-weight: 700;
@@ -301,17 +307,17 @@ const FooterEnhanced = () => {
           border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        .social-link:nth-child(1) { color: #1877F2; }
-        .social-link:nth-child(2) { color: #E4405F; }
-        .social-link:nth-child(3) { color: #1DA1F2; }
-        .social-link:nth-child(4) { color: #0A66C2; }
-        .social-link:nth-child(5) { color: #25D366; }
+        .social-link:nth-child(1) { color: #fff; background: rgba(255, 255, 255, 0.1); }
+        .social-link:nth-child(2) { color: #fff; background: rgba(255, 255, 255, 0.1); }
+        .social-link:nth-child(3) { color: #fff; background: rgba(255, 255, 255, 0.1); }
+        .social-link:nth-child(4) { color: #fff; background: rgba(255, 255, 255, 0.1); }
+        .social-link:nth-child(5) { color: #fff; background: rgba(255, 255, 255, 0.1); }
 
         .social-link:hover {
-          background: var(--footer-accent);
+          transform: translateY(-3px) scale(1.1);
+          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+          background: #ffffff;
           color: #000000;
-          transform: translateY(-3px);
-          box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
         }
 
         .social-link i {
@@ -428,19 +434,20 @@ const FooterEnhanced = () => {
           border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        .payment-icon:nth-child(1) { color: #1A1F71; }
-        .payment-icon:nth-child(2) { color: #EB001B; }
-        .payment-icon:nth-child(3) { color: #006FCF; }
-        .payment-icon:nth-child(4) { color: #003087; }
-        .payment-icon:nth-child(5) { color: #4285F4; }
-        .payment-icon:nth-child(6) { color: #000000; }
-        .payment-icon:nth-child(7) { color: #4CAF50; }
-        .payment-icon:nth-child(8) { color: #FF9800; }
+        .payment-icon:nth-child(1) { color: #fff; background: rgba(255, 255, 255, 0.1); }
+        .payment-icon:nth-child(2) { color: #fff; background: rgba(255, 255, 255, 0.1); }
+        .payment-icon:nth-child(3) { color: #fff; background: rgba(255, 255, 255, 0.1); }
+        .payment-icon:nth-child(4) { color: #fff; background: rgba(255, 255, 255, 0.1); }
+        .payment-icon:nth-child(5) { color: #fff; background: rgba(255, 255, 255, 0.1); }
+        .payment-icon:nth-child(6) { color: #fff; background: rgba(255, 255, 255, 0.1); }
+        .payment-icon:nth-child(7) { color: #fff; background: rgba(255, 255, 255, 0.1); }
+        .payment-icon:nth-child(8) { color: #fff; background: rgba(255, 255, 255, 0.1); }
 
         .payment-icon:hover {
-          background: var(--footer-accent);
+          transform: translateY(-3px) scale(1.1);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+          background: #ffffff;
           color: #000000;
-          transform: translateY(-2px);
         }
 
         .trust-badges {

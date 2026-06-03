@@ -15,7 +15,6 @@ const seedData = async () => {
             { name: 'T-Shirts', slug: 'tshirts', description: 'Premium JNV T-Shirts' },
             { name: 'Hoodies', slug: 'hoodies', description: 'Comfortable JNV Hoodies' },
             { name: 'Accessories', slug: 'accessories', description: 'JNV Branded Accessories' },
-            { name: 'Alumni Kits', slug: 'alumni-kits', description: 'Complete Alumni Packages' },
         ];
 
         const categories = [];
@@ -43,7 +42,14 @@ const seedData = async () => {
                 sale_price: 399,
                 images: ['https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&h=600&fit=crop'],
                 category_id: catMap['tshirts'],
-                sizes: [{ size: 'S', stock: 10 }, { size: 'M', stock: 20 }, { size: 'L', stock: 15 }],
+                sizes: [
+                    { size: 'S', stock: 10 }, 
+                    { size: 'M', stock: 20 }, 
+                    { size: 'L', stock: 15 }, 
+                    { size: 'XL', stock: 12 }, 
+                    { size: '2XL', stock: 8 }, 
+                    { size: '3XL', stock: 5 }
+                ],
                 colors: [{ name: 'Black', hex: '#000000' }, { name: 'White', hex: '#FFFFFF' }],
                 tags: ['classic', 'tshirt'],
                 rating: 4.5,
@@ -57,7 +63,14 @@ const seedData = async () => {
                 sale_price: 799,
                 images: ['https://images.unsplash.com/photo-1556821840-3a5f3d5fb6c7?w=800&h=600&fit=crop'],
                 category_id: catMap['hoodies'],
-                sizes: [{ size: 'M', stock: 15 }, { size: 'L', stock: 25 }, { size: 'XL', stock: 10 }],
+                sizes: [
+                    { size: 'S', stock: 8 }, 
+                    { size: 'M', stock: 15 }, 
+                    { size: 'L', stock: 25 }, 
+                    { size: 'XL', stock: 18 }, 
+                    { size: '2XL', stock: 10 }, 
+                    { size: '3XL', stock: 6 }
+                ],
                 colors: [{ name: 'Navy', hex: '#000080' }, { name: 'Gray', hex: '#808080' }],
                 tags: ['hoodie', 'alumni'],
                 rating: 4.8,

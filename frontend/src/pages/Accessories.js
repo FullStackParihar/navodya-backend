@@ -12,14 +12,14 @@ const fallbackProducts = [
     name: 'JNV Baseball Cap',
     description: 'Adjustable cap with embroidered logo',
     price: 299,
-    originalPrice: 399,
+    originalPrice: null,
     image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=500&fit=crop',
     badge: 'Bestseller',
     reviews: 567,
     rating: 4.8,
     category: 'Accessories',
     sizes: ['One Size'],
-    colors: ['Navy Blue', 'Black', 'White']
+    colors: ['Black', 'White']
   },
   {
     id: 'navodaya-water-bottle',
@@ -27,14 +27,14 @@ const fallbackProducts = [
     name: 'Navodaya Water Bottle',
     description: 'Stainless steel insulated bottle',
     price: 499,
-    originalPrice: 649,
+    originalPrice: null,
     image: 'https://images.unsplash.com/photo-1602143403490-42c665fd7239?w=400&h=500&fit=crop',
     badge: 'New',
     reviews: 234,
     rating: 4.9,
     category: 'Accessories',
     sizes: ['One Size'],
-    colors: ['Blue', 'Green', 'Silver']
+    colors: ['Black', 'White']
   },
   {
     id: 'jnv-backpack',
@@ -42,14 +42,14 @@ const fallbackProducts = [
     name: 'JNV Backpack',
     description: 'Durable backpack with laptop compartment',
     price: 899,
-    originalPrice: 1199,
+    originalPrice: null,
     image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=500&fit=crop',
     badge: 'Hot',
     reviews: 389,
     rating: 4.7,
     category: 'Accessories',
     sizes: ['One Size'],
-    colors: ['Navy', 'Black', 'Grey']
+    colors: ['Black', 'White']
   },
   {
     id: 'alumni-key-chain',
@@ -57,14 +57,14 @@ const fallbackProducts = [
     name: 'Alumni Key Chain',
     description: 'Premium metal key chain',
     price: 149,
-    originalPrice: 199,
+    originalPrice: null,
     image: 'https://images.unsplash.com/photo-1586769852044-692d6e3703f0?w=400&h=500&fit=crop',
     badge: '',
     reviews: 156,
     rating: 4.5,
     category: 'Accessories',
     sizes: ['One Size'],
-    colors: ['Silver', 'Gold']
+    colors: ['Black', 'White']
   }
 ];
 

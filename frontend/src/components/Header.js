@@ -34,8 +34,7 @@ const Header = () => {
         <div className="container">
           <div className="top-nav-content">
             <Link to="/" className="logo animate-fadeIn">
-              <i className="fas fa-graduation-cap"></i>
-              Navodaya<span>Trendz</span>
+              <img src="/logo2.png" alt="Navodaya Trendz" style={{ height: '70px', width: 'auto' }} />
             </Link>
             
             <div className="delivery-info animate-slideDown">
@@ -88,7 +87,7 @@ const Header = () => {
                 <div className="cart-icon-wrapper">
                   <i className="fas fa-heart"></i>
                   {wishlistCount > 0 && (
-                    <span className="cart-count animate-bounce" style={{backgroundColor: '#ef4444'}}>{wishlistCount}</span>
+                    <span className="cart-count animate-bounce" style={{backgroundColor: '#000000'}}>{wishlistCount}</span>
                   )}
                 </div>
                 <span>Wishlist</span>
@@ -158,9 +157,7 @@ const Header = () => {
               <li>
                 <Link to="/accessories" onClick={() => setIsMobileMenuOpen(false)}>Accessories</Link>
               </li>
-              <li>
-                <Link to="/alumni-kits" onClick={() => setIsMobileMenuOpen(false)}>Alumni Kits</Link>
-              </li>
+
               <li>
                 <Link to="/events" onClick={() => setIsMobileMenuOpen(false)}>Events</Link>
               </li>
@@ -168,7 +165,7 @@ const Header = () => {
                 <Link to="/bulk-order" onClick={() => setIsMobileMenuOpen(false)}>Bulk Order</Link>
               </li>
               <li>
-                <Link to="/customize" onClick={() => setIsMobileMenuOpen(false)}>Customize</Link>
+                <Link to="/about-us" onClick={() => setIsMobileMenuOpen(false)}>About Us</Link>
               </li>
               <li>
                 <Link to="/today-deals" onClick={() => setIsMobileMenuOpen(false)}>Today's Deals</Link>

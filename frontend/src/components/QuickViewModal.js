@@ -44,24 +44,27 @@ const QuickViewModal = ({ product, isOpen, onClose }) => {
             
             <div className="quickview-price">
               <span className="current-price">₹{product.price}</span>
-              {product.originalPrice && (
-                <span className="original-price">₹{product.originalPrice}</span>
-              )}
             </div>
             
             <p className="quickview-description">{product.description}</p>
             
             <div className="quickview-options">
-              {product.sizes && product.sizes.length > 0 && (
-                <div className="option-group">
-                  <label>Size:</label>
-                  <div className="size-chips">
-                    {product.sizes.map(size => (
-                      <span key={size} className="size-chip">{size}</span>
-                    ))}
+              {(() => {
+                const defaultSizes = ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
+                const sizesToShow = (product.category === 'T-Shirts' || product.category === 'Hoodies' || product.category === 'Alumni Kits') 
+                  ? defaultSizes 
+                  : (product.sizes || ['One Size']);
+                return sizesToShow.length > 0 && (
+                  <div className="option-group">
+                    <label>Size:</label>
+                    <div className="size-chips">
+                      {sizesToShow.map(size => (
+                        <span key={size} className="size-chip">{size}</span>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
+                );
+              })()}
               
               {product.colors && product.colors.length > 0 && (
                 <div className="option-group">

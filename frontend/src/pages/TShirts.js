@@ -12,14 +12,14 @@ const fallbackProducts = [
     name: 'Navodaya Proud T-Shirt',
     description: 'Premium cotton T-shirt with Navodaya branding',
     price: 499,
-    originalPrice: 699,
+    originalPrice: null,
     image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=500&fit=crop',
     badge: 'Bestseller',
     reviews: 234,
     rating: 4.8,
     category: 'Classic',
-    sizes: ['S', 'M', 'L', 'XL'],
-    colors: ['Navy Blue', 'White', 'Black']
+    sizes: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
+    colors: ['Black', 'White']
   },
   {
     id: 'jnv-alumni-tshirt',
@@ -27,14 +27,14 @@ const fallbackProducts = [
     name: 'JNV Alumni T-Shirt',
     description: 'Exclusive for Navodaya Alumni',
     price: 549,
-    originalPrice: 749,
+    originalPrice: null,
     image: 'https://images.unsplash.com/photo-1622445275463-04147b1e7c10?w=400&h=500&fit=crop',
     badge: 'New',
     reviews: 156,
     rating: 4.9,
     category: 'Alumni',
-    sizes: ['S', 'M', 'L', 'XL', 'XXL'],
-    colors: ['Maroon', 'White']
+    sizes: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
+    colors: ['Black', 'White']
   },
   {
     id: 'campus-retro-tshirt',
@@ -42,14 +42,14 @@ const fallbackProducts = [
     name: 'Campus Retro T-Shirt',
     description: 'Vintage style JNV campus design',
     price: 449,
-    originalPrice: 599,
+    originalPrice: null,
     image: 'https://images.unsplash.com/photo-1503341455253-b2e723bb3dbb?w=400&h=500&fit=crop',
     badge: 'Hot',
     reviews: 312,
     rating: 4.7,
     category: 'Retro',
-    sizes: ['M', 'L', 'XL'],
-    colors: ['Olive', 'Charcoal']
+    sizes: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
+    colors: ['Black', 'White']
   },
   {
     id: 'jnv-spirit-tshirt',
@@ -57,14 +57,14 @@ const fallbackProducts = [
     name: 'JNV Spirit T-Shirt',
     description: 'Comfortable fit with school colors',
     price: 399,
-    originalPrice: 549,
+    originalPrice: null,
     image: 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=400&h=500&fit=crop',
     badge: '',
     reviews: 189,
     rating: 4.6,
     category: 'Comfort',
-    sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
-    colors: ['Royal Blue', 'Red', 'Green']
+    sizes: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
+    colors: ['Black', 'White']
   }
 ];
 

@@ -1,139 +1,89 @@
-import React, { useState, useEffect } from 'react';
-import api, { resolveImageUrl } from '../utils/api';
-import ProductCard from '../components/ProductCard';
-import SkeletonLoader from '../components/SkeletonLoader';
-import './TShirtsBeautiful.css';
-
-// Fallback products for alumni kits
-const fallbackProducts = [
-  {
-    id: 'silver-jubilee-kit',
-    dbId: '13',
-    name: 'Silver Jubilee Kit',
-    description: 'Special kit for 25th anniversary alumni',
-    price: 2499,
-    originalPrice: 2999,
-    image: 'https://images.unsplash.com/photo-1523531294919-4bcd7c65e216?w=400&h=500&fit=crop',
-    badge: 'Special',
-    reviews: 123,
-    rating: 4.9,
-    category: 'Alumni Kits',
-    sizes: ['M', 'L', 'XL'],
-    colors: ['Navy']
-  },
-  {
-    id: 'graduation-kit',
-    dbId: '14',
-    name: 'Graduation Kit',
-    description: 'Perfect gift for graduating students',
-    price: 1999,
-    originalPrice: 2499,
-    image: 'https://images.unsplash.com/photo-1627555893653-19380420e195?w=400&h=500&fit=crop',
-    badge: 'New',
-    reviews: 89,
-    rating: 4.8,
-    category: 'Alumni Kits',
-    sizes: ['One Size'],
-    colors: ['Blue']
-  },
-  {
-    id: 'alumni-reunion-kit',
-    dbId: '15',
-    name: 'Alumni Reunion Kit',
-    description: 'Complete kit for reunion events',
-    price: 2199,
-    originalPrice: 2699,
-    image: 'https://images.unsplash.com/photo-1511578314322-379afb476865?w=400&h=500&fit=crop',
-    badge: 'Hot',
-    reviews: 156,
-    rating: 4.7,
-    category: 'Alumni Kits',
-    sizes: ['M', 'L', 'XL'],
-    colors: ['Maroon']
-  },
-  {
-    id: 'premium-alumni-kit',
-    dbId: '16',
-    name: 'Premium Alumni Kit',
-    description: 'Luxury kit for distinguished alumni',
-    price: 3499,
-    originalPrice: 4299,
-    image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&h=500&fit=crop',
-    badge: 'Premium',
-    reviews: 67,
-    rating: 4.9,
-    category: 'Alumni Kits',
-    sizes: ['L', 'XL'],
-    colors: ['Black']
-  }
-];
+import React from 'react';
+import { Link } from 'react-router-dom';
+import './Events.css'; // reuse the same CSS for consistency
 
 const AlumniKits = () => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [products, setProducts] = useState([]);
-
-  useEffect(() => {
-    const fetchProducts = async () => {
-      setIsLoading(true);
-      try {
-        const result = await api.get('/products?category=alumni-kits');
-        if (result.success && result.data.products.length > 0) {
-          const mapped = result.data.products.map(p => ({
-            id: p.slug,
-            dbId: p._id,
-            name: p.name,
-            description: p.description,
-            price: p.sale_price || p.price,
-            originalPrice: null,
-            image: resolveImageUrl(p.images[0] || 'https://via.placeholder.com/300x400?text=No+Image'),
-            badge: '',
-            reviews: p.review_count || 0,
-            rating: p.rating || 0,
-            category: 'Alumni Kits',
-            sizes: p.sizes ? p.sizes.map(s => s.size) : [],
-            colors: p.colors ? p.colors.map(c => c.name) : []
-          }));
-          setProducts(mapped);
-        } else {
-          setProducts(fallbackProducts);
-        }
-      } catch (err) {
-        console.error('Error fetching alumni kits:', err);
-        setProducts(fallbackProducts);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchProducts();
-  }, []);
+  const kits = [
+    {
+      id: 'basic',
+      title: 'Basic Alumni Kit',
+      price: '₹499',
+      description: 'T-shirt + Cap + Keychain',
+      image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&h=400&fit=crop'
+    },
+    {
+      id: 'premium',
+      title: 'Premium Alumni Kit',
+      price: '₹999',
+      description: 'T-shirt + Hoodie + Cap + Keychain + Sticker Pack',
+      image: 'https://images.unsplash.com/photo-1556821840-3a5f3d5fb6c7?w=600&h=400&fit=crop'
+    },
+    {
+      id: 'deluxe',
+      title: 'Deluxe Alumni Kit',
+      price: '₹1499',
+      description: 'Premium T-shirt + Premium Hoodie + Cap + Keychain + Sticker Pack + Mug',
+      image: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=600&h=400&fit=crop'
+    }
+  ];
 
   return (
-    <div className="tshirts-beautiful">
-      <div className="container">
-        <div className="page-header">
-          <h1 className="page-title">
-            <span className="title-accent">JNV</span> Alumni Kits
-          </h1>
-          <p className="page-subtitle">Special packages designed exclusively for JNV alumni</p>
+    <div className="events-page">
+      {/* Hero Section */}
+      <section className="events-hero">
+        <div className="container">
+          <div className="events-hero-content">
+            <span className="events-badge">Alumni Kits</span>
+            <h1 className="events-title">Complete Your <span className="highlight">Navodaya Collection</span></h1>
+            <p className="events-subtitle">Premium quality kits for Navodaya alumni to show your pride!</p>
+          </div>
         </div>
+      </section>
 
-        {isLoading ? (
-          <div className="loading-container">
-            <SkeletonLoader type="product" count={8} />
+      <div className="container">
+        <div className="events-layout">
+          <div className="events-list-section">
+            <h2 className="section-heading">
+              <i className="fas fa-box"></i>
+              Available Kits
+            </h2>
+            <div className="events-list">
+              {kits.map((kit, index) => (
+                <div key={kit.id} className="event-card animate-fade-up" style={{ animationDelay: `${index * 0.1}s` }}>
+                  <div className="event-card-image">
+                    <img src={kit.image} alt={kit.title} />
+                    <div className="event-price-tag">{kit.price}</div>
+                  </div>
+                  <div className="event-card-content">
+                    <span className="event-category">Kit</span>
+                    <h3 className="event-card-title">{kit.title}</h3>
+                    <p className="event-card-desc">{kit.description}</p>
+                    <Link to="/" className="btn btn-primary btn-small">
+                      <i className="fas fa-shopping-cart"></i>
+                      Shop Now
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
-        ) : (
-          <div className="products-grid">
-            {products.map((product, index) => (
-              <div 
-                key={product.id} 
-                className="product-wrapper"
-                style={{ '--delay': `${index * 0.08}s` }}
-              >
-                <ProductCard product={product} />
+
+          <div className="registration-section">
+            <div className="registration-card">
+              <div className="registration-header">
+                <div className="registration-icon">
+                  <i className="fas fa-gift"></i>
+                </div>
+                <h2>Custom Kit</h2>
+                <p>Can't find what you want? Create your own custom kit!</p>
               </div>
-            ))}
+              <Link to="/customize" className="btn btn-primary btn-full">
+                <i className="fas fa-palette"></i>
+                Customize Now
+              </Link>
+            </div>
           </div>
-        )}
+        </div>
       </div>
     </div>
   );

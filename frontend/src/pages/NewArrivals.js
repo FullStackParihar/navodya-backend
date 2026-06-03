@@ -10,14 +10,14 @@ const newArrivalsProducts = [
     name: 'JNV Summer Collection T-Shirt',
     description: 'Summer 2024 | Breathable Fabric | New Design',
     price: 449,
-    originalPrice: 599,
+    originalPrice: null,
     image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=300&h=400&fit=crop',
     badge: 'Just In',
     reviews: 45,
     rating: 4.7,
     category: 'T-Shirts',
-    sizes: ['S', 'M', 'L', 'XL'],
-    colors: ['White', 'Sky Blue', 'Mint', 'Coral'],
+    sizes: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
+    colors: ['Black', 'White'],
     arrivalDate: '2024-01-20'
   },
   {
@@ -25,14 +25,14 @@ const newArrivalsProducts = [
     name: 'JNV Tech Hoodie',
     description: 'Tech Wear | Smart Fabric | Modern Fit',
     price: 899,
-    originalPrice: 1199,
+    originalPrice: null,
     image: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=300&h=400&fit=crop',
     badge: 'New',
     reviews: 38,
     rating: 4.8,
     category: 'Hoodies',
-    sizes: ['M', 'L', 'XL'],
-    colors: ['Black', 'Charcoal', 'Navy'],
+    sizes: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
+    colors: ['Black', 'White'],
     arrivalDate: '2024-01-19'
   },
   {
@@ -40,14 +40,14 @@ const newArrivalsProducts = [
     name: 'JNV Smart Backpack',
     description: 'Smart Features | USB Charging | Anti-Theft',
     price: 1299,
-    originalPrice: 1699,
+    originalPrice: null,
     image: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=300&h=400&fit=crop',
     badge: 'Latest',
     reviews: 52,
     rating: 4.6,
     category: 'Accessories',
     sizes: ['One Size'],
-    colors: ['Black', 'Gray', 'Navy'],
+    colors: ['Black', 'White'],
     arrivalDate: '2024-01-18'
   },
   {
@@ -55,14 +55,14 @@ const newArrivalsProducts = [
     name: 'JNV Eco Water Bottle',
     description: 'Eco Friendly | Bamboo Design | Sustainable',
     price: 299,
-    originalPrice: 399,
+    originalPrice: null,
     image: 'https://images.unsplash.com/photo-1602143403490-42c665fd7239?w=300&h=400&fit=crop',
     badge: 'Eco',
     reviews: 67,
     rating: 4.5,
     category: 'Accessories',
     sizes: ['750ml'],
-    colors: ['Green', 'Bamboo', 'Natural'],
+    colors: ['Black', 'White'],
     arrivalDate: '2024-01-17'
   },
   {
@@ -70,14 +70,14 @@ const newArrivalsProducts = [
     name: 'JNV Wireless Earbuds Case',
     description: 'Wireless Compatible | Premium Leather | Magnetic',
     price: 399,
-    originalPrice: 549,
+    originalPrice: null,
     image: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=300&h=400&fit=crop',
     badge: 'Tech',
     reviews: 41,
     rating: 4.4,
     category: 'Accessories',
     sizes: ['Universal'],
-    colors: ['Black', 'Brown', 'Blue'],
+    colors: ['Black', 'White'],
     arrivalDate: '2024-01-16'
   },
   {
@@ -85,14 +85,14 @@ const newArrivalsProducts = [
     name: 'JNV Minimalist Wallet',
     description: 'Minimalist Design | RFID Protected | Slim',
     price: 349,
-    originalPrice: 499,
+    originalPrice: null,
     image: 'https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=300&h=400&fit=crop',
     badge: 'Modern',
     reviews: 58,
     rating: 4.7,
     category: 'Accessories',
     sizes: ['One Size'],
-    colors: ['Black', 'Tan', 'Gray'],
+    colors: ['Black', 'White'],
     arrivalDate: '2024-01-15'
   },
   {
@@ -100,14 +100,14 @@ const newArrivalsProducts = [
     name: 'JNV Sports Pro Jersey',
     description: 'Pro Series | Performance Fabric | Limited Edition',
     price: 799,
-    originalPrice: 1099,
+    originalPrice: null,
     image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=300&h=400&fit=crop',
     badge: 'Limited',
     reviews: 73,
     rating: 4.9,
     category: 'T-Shirts',
-    sizes: ['S', 'M', 'L', 'XL'],
-    colors: ['Navy', 'White', 'Red'],
+    sizes: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
+    colors: ['Black', 'White'],
     arrivalDate: '2024-01-14'
   },
   {
@@ -115,14 +115,14 @@ const newArrivalsProducts = [
     name: 'JNV Vintage Cap Collection',
     description: 'Vintage Series | Retro Design | Premium Quality',
     price: 349,
-    originalPrice: 449,
+    originalPrice: null,
     image: 'https://images.unsplash.com/photo-1513519245088-0e7839c3c889?w=300&h=400&fit=crop',
     badge: 'Vintage',
     reviews: 62,
     rating: 4.6,
     category: 'Accessories',
     sizes: ['One Size'],
-    colors: ['Brown', 'Navy', 'Forest Green'],
+    colors: ['Black', 'White'],
     arrivalDate: '2024-01-13'
   },
   {
@@ -130,14 +130,14 @@ const newArrivalsProducts = [
     name: 'JNV Premium Alumni Kit 2024',
     description: '2024 Edition | Premium Items | Exclusive',
     price: 2499,
-    originalPrice: 3299,
+    originalPrice: null,
     image: 'https://images.unsplash.com/photo-1523381210434-274e6fd17544?w=300&h=400&fit=crop',
     badge: 'Exclusive',
     reviews: 89,
     rating: 4.8,
     category: 'Alumni Kits',
-    sizes: ['S', 'M', 'L', 'XL'],
-    colors: ['Black', 'Gold', 'Navy'],
+    sizes: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
+    colors: ['Black', 'White'],
     arrivalDate: '2024-01-12'
   },
   {
@@ -145,14 +145,14 @@ const newArrivalsProducts = [
     name: 'JNV Athleisure Hoodie',
     description: 'Athleisure Wear | Comfort Fit | Stylish',
     price: 799,
-    originalPrice: 999,
+    originalPrice: null,
     image: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=300&h=400&fit=crop',
     badge: 'Trending',
     reviews: 94,
     rating: 4.5,
     category: 'Hoodies',
-    sizes: ['S', 'M', 'L', 'XL'],
-    colors: ['Gray', 'Black', 'Olive'],
+    sizes: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
+    colors: ['Black', 'White'],
     arrivalDate: '2024-01-11'
   },
   {
@@ -160,14 +160,14 @@ const newArrivalsProducts = [
     name: 'JNV Smart Watch Band',
     description: 'Smart Watch Compatible | Silicone | Sport',
     price: 199,
-    originalPrice: 299,
+    originalPrice: null,
     image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300&h=400&fit=crop',
     badge: 'Smart',
     reviews: 76,
     rating: 4.3,
     category: 'Accessories',
     sizes: ['Universal'],
-    colors: ['Black', 'White', 'Blue', 'Pink'],
+    colors: ['Black', 'White'],
     arrivalDate: '2024-01-10'
   },
   {
@@ -175,14 +175,14 @@ const newArrivalsProducts = [
     name: 'JNV Sustainable Notebook Set',
     description: 'Sustainable Materials | Recycled Paper | Eco-Friendly',
     price: 199,
-    originalPrice: 299,
+    originalPrice: null,
     image: 'https://images.unsplash.com/photo-1563013544-b8e825b3e4c8?w=300&h=400&fit=crop',
     badge: 'Sustainable',
     reviews: 83,
     rating: 4.6,
     category: 'Accessories',
     sizes: ['A5'],
-    colors: ['Kraft', 'Green', 'Blue'],
+    colors: ['Black', 'White'],
     arrivalDate: '2024-01-09'
   }
 ];
@@ -391,7 +391,7 @@ const NewArrivals = () => {
               <div className="filter-section">
                 <h4>Size</h4>
                 <div className="size-options">
-                  {['One Size', 'Universal', '750ml', 'A5', 'S', 'M', 'L', 'XL'].map(size => (
+                  {['One Size', 'Universal', '750ml', 'A5', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'].map(size => (
                     <label key={size} className="size-label">
                       <input 
                         type="checkbox" 
@@ -430,25 +430,7 @@ const NewArrivals = () => {
                 <div className="color-options-enhanced">
                   {[
                     { name: 'Black', hex: '#000000' },
-                    { name: 'White', hex: '#ffffff' },
-                    { name: 'Navy', hex: '#000080' },
-                    { name: 'Gray', hex: '#808080' },
-                    { name: 'Sky Blue', hex: '#87CEEB' },
-                    { name: 'Mint', hex: '#98FF98' },
-                    { name: 'Coral', hex: '#FF7F50' },
-                    { name: 'Charcoal', hex: '#36454f' },
-                    { name: 'Green', hex: '#008000' },
-                    { name: 'Bamboo', hex: '#d2b48c' },
-                    { name: 'Natural', hex: '#f5deb3' },
-                    { name: 'Blue', hex: '#0000ff' },
-                    { name: 'Brown', hex: '#964B00' },
-                    { name: 'Tan', hex: '#D2B48C' },
-                    { name: 'Olive', hex: '#808000' },
-                    { name: 'Gold', hex: '#64748b' },
-                    { name: 'Red', hex: '#ff0000' },
-                    { name: 'Forest Green', hex: '#228B22' },
-                    { name: 'Pink', hex: '#ffc0cb' },
-                    { name: 'Kraft', hex: '#8B4513' }
+                    { name: 'White', hex: '#ffffff' }
                   ].map(color => (
                     <label key={color.name} className="color-label">
                       <input 

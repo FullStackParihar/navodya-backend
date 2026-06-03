@@ -47,14 +47,7 @@ const ProductCard = ({ product }) => {
     setIsQuickViewOpen(true);
   };
 
-  const calculateDiscount = () => {
-    if (product.originalPrice && product.price) {
-      return Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
-    }
-    return 0;
-  };
 
-  const discount = calculateDiscount();
 
   return (
     <div 
@@ -96,9 +89,7 @@ const ProductCard = ({ product }) => {
           <div className="product-badge">{product.badge}</div>
         )}
         
-        {discount > 0 && (
-          <div className="discount-badge">-{discount}%</div>
-        )}
+
       </div>
       
       <div className="product-info">
@@ -122,9 +113,6 @@ const ProductCard = ({ product }) => {
         
         <div className="product-price">
           <span className="current-price">₹{product.price}</span>
-          {product.originalPrice && (
-            <span className="original-price">₹{product.originalPrice}</span>
-          )}
         </div>
         
         <button 

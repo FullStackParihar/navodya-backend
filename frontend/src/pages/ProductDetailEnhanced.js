@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import api, { resolveImageUrl } from '../utils/api';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
@@ -36,20 +36,24 @@ const ProductDetailEnhanced = () => {
         
         if (result.success) {
           const p = result.data;
+          
+          // Ensure we have S to 3XL sizes available
+          const productSizes = ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
+          
           const mappedProduct = {
             id: p.slug,
             dbId: p._id,
             name: p.name,
             description: p.description,
-            price: p.sale_price || p.price,
-            originalPrice: p.sale_price ? p.price : null,
+            price: p.price,
+            originalPrice: null,
             image: resolveImageUrl(p.images[0] || 'https://via.placeholder.com/600x800?text=No+Image'),
-            badge: p.sale_price ? 'Sale' : (p.rating > 4.5 ? 'Bestseller' : ''),
+            badge: p.rating > 4.5 ? 'Bestseller' : '',
             reviews: p.review_count || 0,
             rating: p.rating || 0,
             category: p.category_id?.name || 'T-Shirts',
             categorySlug: p.category_id?.slug,
-            sizes: p.sizes.map(s => s.size),
+            sizes: productSizes,
             colors: p.colors.map(c => c.name),
             colorMap: p.colors.reduce((acc, c) => ({ ...acc, [c.name]: c.hex }), {}),
             inStock: p.is_active && p.sizes.some(s => s.stock > 0),
@@ -58,7 +62,7 @@ const ProductDetailEnhanced = () => {
               '100% Premium Quality', 'Official Alumni Merchandise', 'Durable and Comfortable', 'Easy Care Fabric'
             ],
             specifications: p.specifications || { material: 'Premium Cotton/Fleece', origin: 'Made in India', fit: 'Standard Fit' },
-            images: p.images.map(img => resolveImageUrl(img))
+            images: p.images.length > 0 ? p.images.map(img => resolveImageUrl(img)) : [resolveImageUrl('https://via.placeholder.com/600x800?text=No+Image')]
           };
           setProduct(mappedProduct);
           if (mappedProduct.sizes.length > 0) setSelectedSize(mappedProduct.sizes[0]);
@@ -169,90 +173,280 @@ const ProductDetailEnhanced = () => {
     const stars = [];
     for (let i = 0; i < 5; i++) {
       stars.push(
-        <i key={i} className={`${i < Math.floor(rating) ? 'fas' : 'far'} fa-star`} style={{ color: 'var(--amazon-orange)' }}></i>
+        <i key={i} className={`${i < Math.floor(rating) ? 'fas' : 'far'} fa-star`} style={{ color: 'var(--text-primary)' }}></i>
       );
     }
     return stars;
   };
 
-  if (isLoading) return <div className="container p-5 text-center"><SkeletonLoader type="product" count={1} /></div>;
-  if (!product) return <div className="container p-5 text-center"><h2>Product Not Found</h2><button onClick={() => navigate('/')}>Back Home</button></div>;
+  if (isLoading) return <div className="product-detail-page"><div className="container"><SkeletonLoader type="product" count={1} /></div></div>;
+  if (!product) return <div className="product-detail-page"><div className="container"><h2>Product Not Found</h2><Link to="/" className="btn btn-primary mt-3">Back Home</Link></div></div>;
 
   return (
     <div className="product-detail-page">
       <div className="container">
+        {/* Breadcrumb */}
         <nav className="breadcrumb">
-          <a href="/">Home</a> / <a href="/tshirts">Products</a> / <span className="current">{product.name}</span>
+          <Link to="/">Home</Link>
+          <span className="separator">/</span>
+          <Link to={`/products?category=${product.categorySlug || 'all'}`}>{product.category}</Link>
+          <span className="separator">/</span>
+          <span className="current">{product.name}</span>
         </nav>
+
+        {/* Main Content */}
         <div className="product-detail-layout">
+          {/* Image Gallery */}
           <div className="product-images-section">
-            <div className="main-image-container">
-              <img src={product.images[selectedImage]} alt={product.name} className="main-image" />
+            <div className="main-image-wrapper">
+              <div className="main-image-container">
+                <img src={product.images[selectedImage]} alt={product.name} className="main-image" />
+              </div>
+
             </div>
             <div className="thumbnail-container">
               {product.images.map((img, idx) => (
-                <div key={idx} className={`thumbnail ${selectedImage === idx ? 'active' : ''}`} onClick={() => setSelectedImage(idx)}>
-                  <img src={img} alt="" />
-                </div>
+                <button 
+                  key={idx} 
+                  className={`thumbnail ${selectedImage === idx ? 'active' : ''}`} 
+                  onClick={() => setSelectedImage(idx)}
+                  aria-label={`View image ${idx + 1}`}
+                >
+                  <img src={img} alt={`Product view ${idx + 1}`} />
+                </button>
               ))}
             </div>
           </div>
+
+          {/* Product Info */}
           <div className="product-info-section">
-            <h1 className="product-title">{product.name}</h1>
+            <div className="product-header-info">
+              <h1 className="product-title">{product.name}</h1>
+              <div className="product-rating">
+                {renderStars(product.rating)}
+                <span className="rating-text">{product.rating.toFixed(1)}</span>
+                <span className="reviews-link">({product.reviews} reviews)</span>
+              </div>
+            </div>
+
             <div className="price-section">
               <span className="current-price">₹{product.price}</span>
             </div>
+
+            <div className="stock-status">
+              <span className={`stock-indicator ${product.inStock ? 'in-stock' : 'out-of-stock'}`}>
+                <i className={`fas ${product.inStock ? 'fa-check-circle' : 'fa-times-circle'}`}></i>
+                {product.inStock ? 'In Stock' : 'Out of Stock'}
+              </span>
+            </div>
+
             <div className="product-options">
+              {/* Size Selection */}
               <div className="size-selection">
-                <h3>Size</h3>
-                <div className="size-options-detail">
-                  {product.sizes.map(s => (
-                    <button key={s} className={`size-option ${selectedSize === s ? 'active' : ''}`} onClick={() => setSelectedSize(s)}>{s}</button>
+                <div className="option-header">
+                  <h3 className="option-title">Select Size</h3>
+                  <button className="size-guide-btn">Size Guide</button>
+                </div>
+                <div className="size-options-grid">
+                  {product.sizes.map(size => (
+                    <button
+                      key={size}
+                      className={`size-option ${selectedSize === size ? 'active' : ''}`}
+                      onClick={() => setSelectedSize(size)}
+                    >
+                      {size}
+                    </button>
                   ))}
                 </div>
               </div>
+
+              {/* Color Selection */}
+              {product.colors.length > 0 && (
+                <div className="color-selection">
+                  <h3 className="option-title">Select Color</h3>
+                  <div className="color-options-grid">
+                    {product.colors.map(color => (
+                      <button
+                        key={color}
+                        className={`color-option ${selectedColor === color ? 'active' : ''}`}
+                        onClick={() => setSelectedColor(color)}
+                        style={{ backgroundColor: product.colorMap[color] || '#000' }}
+                        title={color}
+                      >
+                        {selectedColor === color && <i className="fas fa-check"></i>}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Quantity */}
+              <div className="quantity-selection">
+                <h3 className="option-title">Quantity</h3>
+                <div className="quantity-controls">
+                  <button 
+                    className="qty-btn decrease"
+                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                    disabled={quantity <= 1}
+                  >
+                    <i className="fas fa-minus"></i>
+                  </button>
+                  <input 
+                    type="number" 
+                    className="qty-input" 
+                    value={quantity}
+                    onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+                    min="1" 
+                    max="10" 
+                  />
+                  <button 
+                    className="qty-btn increase"
+                    onClick={() => setQuantity(Math.min(10, quantity + 1))}
+                    disabled={quantity >= 10}
+                  >
+                    <i className="fas fa-plus"></i>
+                  </button>
+                </div>
+              </div>
             </div>
+
+            {/* Action Buttons */}
             <div className="action-buttons">
-              <button className="add-to-cart-btn" onClick={handleAddToCart} disabled={!product.inStock || isAddingToCart}>Add to Cart</button>
-              <button className="buy-now-btn" onClick={handleBuyNow} disabled={!product.inStock}>Buy Now</button>
-              <button className={`wishlist-btn ${isInWishlist(product.id) ? 'active' : ''}`} onClick={handleWishlistToggle}>
-                <i className="fas fa-heart"></i>
+              <button 
+                className="add-to-cart-btn"
+                onClick={handleAddToCart}
+                disabled={!product.inStock || isAddingToCart}
+              >
+                <i className="fas fa-shopping-bag"></i>
+                {isAddingToCart ? 'Adding...' : 'Add to Cart'}
+              </button>
+              <button 
+                className="buy-now-btn"
+                onClick={handleBuyNow}
+                disabled={!product.inStock}
+              >
+                <i className="fas fa-bolt"></i>
+                Buy Now
+              </button>
+              <button 
+                className={`wishlist-btn ${isInWishlist(product.id) ? 'active' : ''}`}
+                onClick={handleWishlistToggle}
+                title="Add to Wishlist"
+              >
+                <i className={`${isInWishlist(product.id) ? 'fas' : 'far'} fa-heart`}></i>
               </button>
             </div>
-            <div className="product-description mt-4">
-              <h3>Description</h3>
-              <p>{product.description}</p>
-            </div>
-          </div>
-        </div>
-        
-        <div className="reviews-section mt-5">
-          <div className="tab-navigation">
-            <button className={`tab-nav-btn ${activeTab === 'reviews' ? 'active' : ''}`} onClick={() => setActiveTab('reviews')}>Reviews</button>
-          </div>
-          <div className="tab-content">
-            <div className="add-review-section mb-4">
-              <h4>Leave a Review</h4>
-              <form onSubmit={handleReviewSubmit}>
-                <textarea 
-                  className="form-control mb-2" 
-                  value={reviewFormData.comment} 
-                  onChange={e => setReviewFormData({ ...reviewFormData, comment: e.target.value })}
-                  placeholder="Your review..."
-                />
-                <button type="submit" className="btn btn-primary">Submit</button>
-              </form>
-            </div>
-            <div className="reviews-list">
-              {reviews.map(r => (
-                <div key={r._id} className="review-item border-bottom py-3">
-                  <strong>{r.user_id?.name || 'User'}</strong> - {renderStars(r.rating)}
-                  <p>{r.comment}</p>
+
+            {/* Features */}
+            <div className="product-features">
+              {product.features.map((feature, idx) => (
+                <div key={idx} className="feature-item">
+                  <i className="fas fa-check"></i>
+                  <span>{feature}</span>
                 </div>
               ))}
             </div>
           </div>
         </div>
+
+        {/* Tabs Section */}
+        <div className="product-tabs-section">
+          <div className="tab-navigation">
+            <button 
+              className={`tab-nav-btn ${activeTab === 'description' ? 'active' : ''}`}
+              onClick={() => setActiveTab('description')}
+            >
+              Description
+            </button>
+            <button 
+              className={`tab-nav-btn ${activeTab === 'specifications' ? 'active' : ''}`}
+              onClick={() => setActiveTab('specifications')}
+            >
+              Specifications
+            </button>
+            <button 
+              className={`tab-nav-btn ${activeTab === 'reviews' ? 'active' : ''}`}
+              onClick={() => setActiveTab('reviews')}
+            >
+              Reviews ({product.reviews})
+            </button>
+          </div>
+
+          <div className="tab-content">
+            {activeTab === 'description' && (
+              <div className="tab-pane">
+                <h3>Product Description</h3>
+                <p>{product.description}</p>
+              </div>
+            )}
+
+            {activeTab === 'specifications' && (
+              <div className="tab-pane">
+                <h3>Specifications</h3>
+                <div className="specs-grid">
+                  {Object.entries(product.specifications).map(([key, value]) => (
+                    <div key={key} className="spec-item">
+                      <span className="spec-label">{key}</span>
+                      <span className="spec-value">{value}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'reviews' && (
+              <div className="tab-pane">
+                <div className="add-review-section">
+                  <h3>Write a Review</h3>
+                  <form onSubmit={handleReviewSubmit} className="review-form">
+                    <textarea 
+                      className="review-textarea" 
+                      value={reviewFormData.comment} 
+                      onChange={e => setReviewFormData({ ...reviewFormData, comment: e.target.value })}
+                      placeholder="Share your thoughts about this product..."
+                      rows="4"
+                    />
+                    <button type="submit" className="submit-review-btn" disabled={isSubmittingReview}>
+                      {isSubmittingReview ? 'Submitting...' : 'Submit Review'}
+                    </button>
+                  </form>
+                </div>
+                <div className="reviews-list">
+                  {reviews.length === 0 ? (
+                    <p className="no-reviews">No reviews yet. Be the first to review this product!</p>
+                  ) : (
+                    reviews.map(r => (
+                      <div key={r._id} className="review-item">
+                        <div className="review-header">
+                          <div className="reviewer-info">
+                            <strong>{r.user_id?.name || 'User'}</strong>
+                            <span className="review-date">{new Date(r.created_at || Date.now()).toLocaleDateString()}</span>
+                          </div>
+                          <div className="review-rating">
+                            {renderStars(r.rating)}
+                          </div>
+                        </div>
+                        <p className="review-comment">{r.comment}</p>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Related Products */}
+        {relatedProducts.length > 0 && (
+          <div className="related-products-section">
+            <h2>You May Also Like</h2>
+            <div className="related-products-grid">
+              {relatedProducts.map((prod, idx) => (
+                <ProductCard key={idx} product={prod} />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

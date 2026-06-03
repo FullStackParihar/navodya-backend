@@ -8,9 +8,10 @@ import TShirts from './pages/TShirts';
 import Hoodies from './pages/Hoodies';
 import Accessories from './pages/Accessories';
 import AlumniKits from './pages/AlumniKits';
+
 import TodayDealsEnhanced from './pages/TodayDealsEnhanced';
 import NewArrivalsEnhanced from './pages/NewArrivalsEnhanced';
-import Customize from './pages/Customize';
+import AboutUs from './pages/AboutUs';
 import ProductDetailEnhanced from './pages/ProductDetailEnhanced';
 import BulkOrder from './pages/BulkOrder';
 import Payment from './pages/Payment';
@@ -52,11 +53,12 @@ const AppContent = () => {
             <Route path="/hoodies" element={<Hoodies />} />
             <Route path="/accessories" element={<Accessories />} />
             <Route path="/alumni-kits" element={<AlumniKits />} />
+
             <Route path="/today-deals" element={<TodayDealsEnhanced />} />
             <Route path="/today-deals-enhanced" element={<TodayDealsEnhanced />} />
             <Route path="/new-arrivals" element={<NewArrivalsEnhanced />} />
             <Route path="/new-arrivals-enhanced" element={<NewArrivalsEnhanced />} />
-            <Route path="/customize" element={<Customize />} />
+            <Route path="/about-us" element={<AboutUs />} />
             <Route path="/bulk-order" element={<BulkOrder />} />
             <Route path="/payment" element={<PrivateRoute><Payment /></PrivateRoute>} />
             <Route path="/order/:orderId" element={<PrivateRoute><OrderTracking /></PrivateRoute>} />
