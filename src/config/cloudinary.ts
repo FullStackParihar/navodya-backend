@@ -5,12 +5,12 @@ import { config } from './env.js';
 import fs from 'fs';
 import path from 'path';
 
-const isCloudinaryConfigured = 
-  config.cloudinary.cloudName && 
+const isCloudinaryConfigured =
+  config.cloudinary.cloudName &&
   config.cloudinary.cloudName !== 'demo-cloud-name' &&
-  config.cloudinary.apiKey && 
+  config.cloudinary.apiKey &&
   config.cloudinary.apiKey !== 'demo-api-key' &&
-  config.cloudinary.apiSecret && 
+  config.cloudinary.apiSecret &&
   config.cloudinary.apiSecret !== 'demo-api-secret';
 
 let storage: multer.StorageEngine;
@@ -18,7 +18,7 @@ let upload: multer.Multer;
 
 if (isCloudinaryConfigured) {
   console.log('Cloudinary configured successfully.');
-  
+
   cloudinary.config({
     cloud_name: config.cloudinary.cloudName,
     api_key: config.cloudinary.apiKey,
@@ -36,13 +36,13 @@ if (isCloudinaryConfigured) {
     },
   });
 
-  upload = multer({ 
+  upload = multer({
     storage: storage,
-    limits: { fileSize: 20 * 1024 * 1024 }, 
+    limits: { fileSize: 20 * 1024 * 1024 },
   });
 } else {
   console.warn('Cloudinary not configured. Using local file storage for development.');
-  
+
   const uploadDir = path.join(process.cwd(), 'uploads');
   if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
@@ -58,9 +58,9 @@ if (isCloudinaryConfigured) {
     }
   });
 
-  upload = multer({ 
+  upload = multer({
     storage: storage,
-    limits: { fileSize: 20 * 1024 * 1024 }, 
+    limits: { fileSize: 20 * 1024 * 1024 },
   });
 }
 
