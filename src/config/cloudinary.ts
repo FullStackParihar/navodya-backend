@@ -13,8 +13,8 @@ const isCloudinaryConfigured =
   config.cloudinary.apiSecret && 
   config.cloudinary.apiSecret !== 'demo-api-secret';
 
-let storage;
-let upload;
+let storage: multer.StorageEngine;
+let upload: multer.Multer;
 
 if (isCloudinaryConfigured) {
   console.log('Cloudinary configured successfully.');
