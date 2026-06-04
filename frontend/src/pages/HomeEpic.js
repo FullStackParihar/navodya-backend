@@ -521,14 +521,17 @@ const HomeEpic = () => {
                   className="region-card" 
                   style={{ '--delay': `${index * 0.12}s` }}
                 >
-                  <div className="region-image-container">
-                    <img src={region.image} alt={region.name} className="region-image" />
-                    <div className="region-overlay">
-                      <h3>{region.name}</h3>
+                  <div className="region-card-inner">
+                    <div className="region-card-front">
+                      <img src={region.image} alt={region.name} className="region-image" />
+                      <div className="region-overlay">
+                        <h3>{region.name}</h3>
+                      </div>
                     </div>
-                  </div>
-                  <div className="region-caption-container">
-                    <p className="region-caption">{region.caption}</p>
+                    <div className="region-card-back">
+                      <h3>{region.name}</h3>
+                      <p className="region-caption">{region.caption}</p>
+                    </div>
                   </div>
                 </div>
               ))}

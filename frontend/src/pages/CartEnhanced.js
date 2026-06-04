@@ -392,28 +392,7 @@ const Cart = () => {
             </div>
           </div>
 
-          {/* Recommended Products */}
-          <div className="recommended-products-enhanced">
-            <div className="recommended-header">
-              <h3>You might also like</h3>
-              <Link to="/tshirts" className="view-all-link">View All Products</Link>
-            </div>
-            <div className="recommended-grid">
-              {recommendedLoading ? (
-                <SkeletonLoader type="product" count={4} />
-              ) : (
-                recommendedProducts.map((product, index) => (
-                  <div 
-                    key={product.id} 
-                    className="animate-fadeIn"
-                    style={{ animationDelay: `${index * 0.1}s` }}
-                  >
-                    <ProductCard product={product} />
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
+
         </div>
       </section>
     </div>

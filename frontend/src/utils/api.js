@@ -1,6 +1,15 @@
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
 const BASE_URL = API_URL.replace('/api', '');
 
+const handle401 = () => {
+  localStorage.removeItem('isAuthenticated');
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+  localStorage.removeItem('userEmail');
+  localStorage.removeItem('userRole');
+  window.location.href = '/login';
+};
+
 const getHeaders = () => {
   const token = localStorage.getItem('token');
   const headers = {
@@ -28,6 +37,10 @@ export const api = {
     const response = await fetch(`${API_URL}${endpoint}`, {
       headers: getHeaders(),
     });
+    if (response.status === 401) {
+      handle401();
+      return { success: false, message: 'Unauthorized' };
+    }
     return response.json();
   },
 
@@ -43,6 +56,10 @@ export const api = {
       headers: headers,
       body: isFormData ? data : JSON.stringify(data),
     });
+    if (response.status === 401) {
+      handle401();
+      return { success: false, message: 'Unauthorized' };
+    }
     return response.json();
   },
 
@@ -58,6 +75,10 @@ export const api = {
       headers: headers,
       body: isFormData ? data : JSON.stringify(data),
     });
+    if (response.status === 401) {
+      handle401();
+      return { success: false, message: 'Unauthorized' };
+    }
     return response.json();
   },
 
@@ -66,6 +87,10 @@ export const api = {
       method: 'DELETE',
       headers: getHeaders(),
     });
+    if (response.status === 401) {
+      handle401();
+      return { success: false, message: 'Unauthorized' };
+    }
     return response.json();
   },
 };

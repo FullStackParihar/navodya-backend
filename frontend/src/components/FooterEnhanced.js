@@ -36,7 +36,6 @@ const FooterEnhanced = () => {
           <div className="footer-top-content">
             {/* Brand Section */}
             <div className="footer-brand footer-animate">
-              <img src="/logo2.png" alt="Navodaya Trendz" style={{ height: '80px', width: 'auto', marginBottom: '10px' }} />
               <p>Made by Navodayans, for Navodayans. Your trusted partner for JNV alumni merchandise.</p>
               <div className="footer-social">
                 <a href="https://facebook.com" className="social-link" aria-label="Facebook" target="_blank" rel="noopener noreferrer">
@@ -260,11 +259,7 @@ const FooterEnhanced = () => {
           gap: 20px;
         }
 
-        .footer-brand img {
-          height: 80px !important;
-          width: auto !important;
-          max-height: none !important;
-        }
+
 
         .footer-brand h3 {
           font-size: 28px;

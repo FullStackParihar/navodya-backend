@@ -1113,9 +1113,160 @@
 }
 
 .gallery-float-item img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+    /* Hero Section */
+    .hero-epic {
+        padding: 60px 0 !important;
+    }
+
+    .hero-content {
+        flex-direction: column !important;
+        gap: 40px !important;
+    }
+
+    .hero-left {
+        width: 100%;
+        text-align: center;
+    }
+
+    .hero-title {
+        font-size: clamp(22px, 5vw, 32px) !important;
+    }
+
+    .hero-description {
+        font-size: 14px;
+    }
+
+    .hero-actions {
+        flex-direction: row !important;
+        gap: 12px !important;
+    }
+
+    .hero-actions .btn {
+        width: 48% !important;
+        min-height: 44px;
+    }
+
+    .hero-products {
+        width: 100%;
+        overflow-x: auto;
+        padding-bottom: 16px;
+    }
+
+    .hero-products .product-float {
+        flex-shrink: 0;
+        width: 160px !important;
+        height: 200px !important;
+        border-radius: 12px !important;
+    }
+
+    /* Stats Row */
+    .hero-stats {
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 16px !important;
+    }
+
+    .hero-stats .stat {
+        flex-direction: column !important;
+        text-align: center !important;
+    }
+
+    .hero-stats .stat-number {
+        font-size: 22px !important;
+    }
+
+    .hero-stats .stat-label {
+        font-size: 11px !important;
+    }
+
+    /* Events/Category Cards */
+    .categories-grid,
+    .events-grid,
+    .giveaways-grid,
+    .live-events-grid {
+        display: flex !important;
+        overflow-x: auto !important;
+        gap: 12px !important;
+        padding: 0 1rem !important;
+        scroll-snap-type: x mandatory !important;
+    }
+
+    .categories-grid > *,
+    .events-grid > *,
+    .giveaways-grid > *,
+    .live-events-grid > * {
+        scroll-snap-align: start !important;
+        flex-shrink: 0 !important;
+        min-width: 160px !important;
+    }
+
+    .category-card,
+    .event-card,
+    .giveaway-card,
+    .live-event-card {
+        width: 160px !important;
+    }
+
+    .category-image,
+    .event-image-container,
+    .giveaway-image-container,
+    .live-image-container {
+        height: 140px !important;
+    }
+
+    .category-card h3,
+    .event-card h3,
+    .giveaway-card h3,
+    .live-event-card h3 {
+        font-size: 13px !important;
+        display: -webkit-box !important;
+        -webkit-line-clamp: 2 !important;
+        -webkit-box-orient: vertical !important;
+        overflow: hidden !important;
+    }
+
+    /* Regions Grid */
+    .regions-wrapper {
+        display: block !important;
+    }
+
+    .regions-grid {
+        display: flex !important;
+        overflow-x: auto !important;
+        gap: 16px !important;
+        padding: 0 1rem !important;
+        scroll-snap-type: x mandatory !important;
+    }
+
+    .region-card {
+        flex-shrink: 0 !important;
+        min-width: 280px !important;
+        scroll-snap-align: start !important;
+    }
+
+    .region-image-container {
+        height: 200px !important;
+    }
+
+    /* Font Sizes */
+    .section-title {
+        font-size: 20px !important;
+    }
+
+    h3 {
+        font-size: 16px !important;
+    }
+
+    body {
+        font-size: 14px !important;
+    }
 }
 
 /* Region Section */
@@ -1164,28 +1315,54 @@
 .regions-grid .region-card {
   flex: 0 0 340px;
   min-width: 340px;
-  background: #000000;
-  border-radius: 24px;
-  border: 2px solid #ffffff;
-  overflow: hidden;
+  height: 400px;
+  perspective: 1000px;
   animation: slideUp 0.8s ease-out forwards;
   animation-delay: var(--delay);
   opacity: 0;
 }
 
-.region-image-container {
+.region-card-inner {
   position: relative;
-  height: 200px;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.8s;
+  transform-style: preserve-3d;
+}
+
+.region-card:hover .region-card-inner,
+.region-card:focus-within .region-card-inner {
+  transform: rotateY(180deg);
+}
+
+.region-card-front,
+.region-card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 24px;
+  border: 2px solid #ffffff;
   overflow: hidden;
 }
 
-.region-image {
+.region-card-front {
+  background: #000000;
+}
+
+.region-card-front .region-image-container {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+}
+
+.region-card-front .region-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.region-overlay {
+.region-card-front .region-overlay {
   position: absolute;
   bottom: 0;
   left: 0;
@@ -1197,7 +1374,7 @@
   padding: 16px;
 }
 
-.region-overlay h3 {
+.region-card-front .region-overlay h3 {
   color: #ffffff !important;
   font-size: 1.2rem;
   font-weight: 800;
@@ -1205,17 +1382,28 @@
   text-shadow: 0 3px 12px rgba(0, 0, 0, 1);
 }
 
-.region-caption-container {
-  padding: 16px;
+.region-card-back {
   background: #000000;
+  color: #ffffff;
+  transform: rotateY(180deg);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
 }
 
-.region-caption {
+.region-card-back h3 {
+  font-size: 1.3rem;
+  font-weight: 800;
+  margin-bottom: 16px;
+}
+
+.region-card-back .region-caption {
   color: #ffffff;
   font-size: 0.95rem;
   line-height: 1.7;
   margin: 0;
-  text-align: left;
   word-wrap: break-word;
   hyphens: auto;
 }

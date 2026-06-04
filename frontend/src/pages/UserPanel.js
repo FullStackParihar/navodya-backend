@@ -14,12 +14,12 @@ const UserPanel = () => {
   const [activeTab, setActiveTab] = useState('overview');
 
   const [accountData, setAccountData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
+    firstName: localStorage.getItem('userFirstName') || 'Navodayan',
+    lastName: localStorage.getItem('userLastName') || 'User',
+    email: localStorage.getItem('userEmail') || '',
     phone: '',
-    jnvSchool: '',
-    batchYear: '',
+    jnvSchool: localStorage.getItem('userJnvSchool') || 'JNV',
+    batchYear: localStorage.getItem('userBatchYear') || '',
     avatar: 'https://i.pravatar.cc/150?img=5'
   });
 
@@ -128,19 +128,16 @@ const UserPanel = () => {
       <section className="user-panel-hero">
         <div className="container">
           <div className="hero-content">
-            <div className="hero-user">
-              <img className="avatar" src={user.avatar} alt="User" />
-              <div>
-                <h1>{user.firstName} {user.lastName}</h1>
-                <p className="subtitle">{user.jnvSchool} • Batch {user.batchYear}</p>
-                <p className="submeta">{user.email} • {user.phone}</p>
+            <div className="hero-user" style={{ display: 'flex', alignItems: 'center', gap: '16px', width: '100%' }}>
+              <img className="avatar" src={user.avatar} alt="User" style={{ display: 'block' }} />
+              <div className="hero-user-info" style={{ flex: 1, minWidth: 0, display: 'block' }}>
+                <h1 style={{ color: '#000000', margin: '0 0 8px 0', fontSize: '24px', fontWeight: 'bold' }}>{user.firstName || 'Navodayan'} {user.lastName || 'User'}</h1>
+                <p className="subtitle" style={{ color: '#666666', margin: '0 0 4px 0', fontSize: '14px' }}>{user.jnvSchool || 'JNV'} {user.batchYear ? `• Batch ${user.batchYear}` : ''}</p>
+                <p className="submeta" style={{ color: '#999999', margin: 0, fontSize: '12px' }}>{user.email || ''} {user.phone ? `• ${user.phone}` : ''}</p>
               </div>
             </div>
 
             <div className="hero-actions">
-              <button className="btn-secondary" onClick={() => navigate('/profile')}>
-                <i className="fas fa-user"></i> Open Profile
-              </button>
               <button className="btn-primary" onClick={() => navigate('/checkout')}>
                 <i className="fas fa-bolt"></i> Checkout Center
               </button>
@@ -419,9 +416,6 @@ const UserPanel = () => {
                                 <button className="btn-primary" onClick={() => navigate(`/order/${o.id}`)}>
                                   <i className="fas fa-map-marker-alt"></i> Track
                                 </button>
-                                <button className="btn-secondary" onClick={() => navigate('/profile')}>
-                                  <i className="fas fa-eye"></i> Details
-                                </button>
                               </div>
                             </div>
                           </div>
@@ -446,17 +440,16 @@ const UserPanel = () => {
                       {addresses.map((a) => (
                         <div key={a.id} className={`address ${a.isDefault ? 'default' : ''}`}>
                           <div className="address-top">
-                            <div className="address-title">
-                              <i className="fas fa-home"></i>
-                              <span>{a.type}</span>
-                              {a.isDefault && (
-                                <span className="default-pill">
-                                  <i className="fas fa-check"></i> Default
-                                </span>
-                              )}
+                              <div className="address-title">
+                                <i className="fas fa-home"></i>
+                                <span>{a.type}</span>
+                                {a.isDefault && (
+                                  <span className="default-pill">
+                                    <i className="fas fa-check"></i> Default
+                                  </span>
+                                )}
+                              </div>
                             </div>
-                            <button className="ghost" onClick={() => navigate('/profile')}>Manage</button>
-                          </div>
                           <div className="address-body">
                             <div className="strong">{a.name}</div>
                             <div className="muted">{a.phone}</div>
@@ -602,6 +595,11 @@ const UserPanel = () => {
           display: flex;
           align-items: center;
           gap: 1rem;
+        }
+
+        .hero-user-info {
+          display: block;
+          min-width: 0;
         }
 
         .avatar {

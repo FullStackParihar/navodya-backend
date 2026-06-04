@@ -2,13 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 import { useCart } from '../context/CartContext';
-import QuickCheckoutModal from './QuickCheckoutModal';
 
 const CheckoutDashboard = () => {
   const navigate = useNavigate();
   const { items } = useCart();
-  const [showQuickCheckout, setShowQuickCheckout] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState(null);
   const [orders, setOrders] = useState([]);
   const [isLoadingOrders, setIsLoadingOrders] = useState(true);
 
@@ -35,580 +32,386 @@ const CheckoutDashboard = () => {
     fetchOrders();
   }, []);
 
-  const handleViewCart = () => {
-    navigate('/cart');
-  };
+  const handleViewCart = () => navigate('/cart');
+  const handleViewPayment = () => navigate('/payment');
+  const handleTrackOrder = (orderId) => navigate(`/order/${orderId}`);
+  const handleViewOrders = () => navigate('/account');
+  const handleBulkOrder = () => navigate('/bulk-order');
 
-  const handleQuickCheckout = () => {
-    if (items.length > 0) {
-      setShowQuickCheckout(true);
-    } else {
-      alert('Your cart is empty. Please add items to proceed.');
-    }
-  };
-
-  const handleViewPayment = () => {
-    navigate('/payment');
-  };
-
-  const handleTrackOrder = (orderId) => {
-    navigate(`/order/${orderId}`);
-  };
-
-  const handleViewOrders = () => {
-    navigate('/profile');
-  };
-
-  const handleBulkOrder = () => {
-    navigate('/bulk-order');
-  };
-
-  const handleQuickCheckoutWithProduct = (product) => {
-    setSelectedProduct(product);
-    setShowQuickCheckout(true);
-  };
+  const cartTotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
   return (
-    <>
-      <div className="checkout-dashboard">
-        <div className="dashboard-header">
-          <h1>Checkout Center</h1>
-          <p>Manage your orders, track deliveries, and complete purchases</p>
-        </div>
+    <div className="checkout-dashboard">
+      <div className="dashboard-header">
+        <h1>Checkout Center</h1>
+        <p>Complete your purchase and manage orders</p>
+      </div>
 
-        <div className="dashboard-grid">
-          {/* Cart Section */}
-          <div className="dashboard-section cart-section">
-            <div className="section-header">
-              <div className="section-icon">
-                <i className="fas fa-shopping-cart"></i>
-              </div>
-              <div className="section-info">
-                <h2>Shopping Cart</h2>
-                <p>{items.length} items • ₹{items.reduce((sum, item) => sum + (item.price * item.quantity), 0)}</p>
-              </div>
+      <div className="dashboard-content">
+        {/* Cart Summary */}
+        <div className="section cart-summary">
+          <h2 className="section-title">Your Cart</h2>
+          <div className="cart-info">
+            <div className="cart-items">
+              <i className="fas fa-shopping-bag"></i>
+              <span>{items.length} items</span>
             </div>
-            <div className="section-actions">
-              <button className="btn-primary" onClick={handleViewCart}>
-                <i className="fas fa-eye"></i> View Cart
-              </button>
-              <button className="btn-secondary" onClick={handleQuickCheckout}>
-                <i className="fas fa-bolt"></i> Quick Checkout
-              </button>
+            <div className="cart-total">
+              <span className="label">Total</span>
+              <span className="amount">₹{cartTotal}</span>
             </div>
           </div>
-
-          {/* Quick Actions */}
-          <div className="dashboard-section quick-actions">
-            <div className="section-header">
-              <div className="section-icon">
-                <i className="fas fa-rocket"></i>
-              </div>
-              <div className="section-info">
-                <h2>Quick Actions</h2>
-                <p>Fast checkout and order management</p>
-              </div>
-            </div>
-            <div className="action-grid">
-              <button className="action-btn" onClick={handleViewPayment}>
-                <i className="fas fa-credit-card"></i>
-                <span>Go to Payment</span>
-              </button>
-              <button className="action-btn" onClick={handleViewOrders}>
-                <i className="fas fa-list"></i>
-                <span>My Orders</span>
-              </button>
-              <button className="action-btn" onClick={handleBulkOrder}>
-                <i className="fas fa-users"></i>
-                <span>Bulk Order</span>
-              </button>
-              <button className="action-btn" onClick={() => setShowQuickCheckout(true)}>
-                <i className="fas fa-bolt"></i>
-                <span>Quick Checkout</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Order Tracking */}
-          <div className="dashboard-section tracking-section">
-            <div className="section-header">
-              <div className="section-icon">
-                <i className="fas fa-truck"></i>
-              </div>
-              <div className="section-info">
-                <h2>Track Orders</h2>
-                <p>Monitor your order status and delivery</p>
-              </div>
-            </div>
-            <div className="orders-list">
-              {isLoadingOrders ? (
-                <div className="loading-orders">Loading orders...</div>
-              ) : orders.length > 0 ? (
-                orders.map((order) => (
-                  <div key={order.id} className="order-item">
-                    <div className="order-info">
-                      <h3>Order #{order.id.slice(-8).toUpperCase()}</h3>
-                      <div className="order-meta">
-                        <span className={`status-badge ${order.status}`}>
-                          {order.status.toUpperCase()}
-                        </span>
-                        <span className="order-date">{order.date}</span>
-                        <span className="order-total">₹{order.total}</span>
-                      </div>
-                    </div>
-                    <button 
-                      className="track-btn"
-                      onClick={() => handleTrackOrder(order.id)}
-                    >
-                      <i className="fas fa-map-marker-alt"></i>
-                      Track
-                    </button>
-                  </div>
-                ))
-              ) : (
-                <div className="no-orders">No orders found</div>
-              )}
-            </div>
-            <button className="btn-secondary full-width" onClick={handleViewOrders}>
-              <i className="fas fa-list"></i> View All Orders
+          <div className="cart-actions">
+            <button className="btn btn-secondary" onClick={handleViewCart}>
+              View Cart
+            </button>
+            <button className="btn btn-primary" onClick={handleViewPayment}>
+              Proceed to Payment
             </button>
           </div>
+        </div>
 
-          {/* Support */}
-          <div className="dashboard-section support-section">
-            <div className="section-header">
-              <div className="section-icon">
-                <i className="fas fa-headset"></i>
-              </div>
-              <div className="section-info">
-                <h2>Customer Support</h2>
-                <p>Get help with your orders and payments</p>
-              </div>
-            </div>
-            <div className="support-options">
-              <button className="support-btn" onClick={() => window.open('tel:+9118001234567')}>
-                <i className="fas fa-phone"></i>
-                <span>Call Support</span>
-              </button>
-              <button className="support-btn" onClick={() => window.open('mailto:support@navodayatrendz.com')}>
-                <i className="fas fa-envelope"></i>
-                <span>Email Support</span>
-              </button>
-              <button className="support-btn whatsapp" onClick={() => window.open('https://wa.me/919284490206')}>
-                <i className="fab fa-whatsapp"></i>
-                <span>WhatsApp</span>
-              </button>
-              <button className="support-btn" onClick={() => alert('Live chat would open here')}>
-                <i className="fas fa-comments"></i>
-                <span>Live Chat</span>
-              </button>
-            </div>
+        {/* Quick Actions */}
+        <div className="section quick-actions">
+          <h2 className="section-title">Quick Actions</h2>
+          <div className="actions-grid">
+            <button className="action-card" onClick={handleViewOrders}>
+              <i className="fas fa-list-ul"></i>
+              <span>My Orders</span>
+            </button>
+            <button className="action-card" onClick={handleBulkOrder}>
+              <i className="fas fa-users"></i>
+              <span>Bulk Order</span>
+            </button>
           </div>
         </div>
 
-        {/* Quick Stats */}
-        <div className="dashboard-stats">
-          <div className="stat-card">
-            <div className="stat-icon">
-              <i className="fas fa-shopping-bag"></i>
-            </div>
-            <div className="stat-info">
-              <h3>{items.length}</h3>
-              <p>Items in Cart</p>
-            </div>
+        {/* Recent Orders */}
+        <div className="section recent-orders">
+          <h2 className="section-title">Recent Orders</h2>
+          <div className="orders-list">
+            {isLoadingOrders ? (
+              <div className="loading">Loading orders...</div>
+            ) : orders.length > 0 ? (
+              orders.slice(0, 3).map((order) => (
+                <div key={order.id} className="order-card">
+                  <div className="order-header">
+                    <h3>Order #{order.id.slice(-8).toUpperCase()}</h3>
+                    <span className={`status ${order.status}`}>{order.status.toUpperCase()}</span>
+                  </div>
+                  <div className="order-details">
+                    <span className="date">{order.date}</span>
+                    <span className="total">₹{order.total}</span>
+                  </div>
+                  <button className="track-btn" onClick={() => handleTrackOrder(order.id)}>
+                    Track Order
+                  </button>
+                </div>
+              ))
+            ) : (
+              <div className="no-orders">No orders yet</div>
+            )}
           </div>
-          <div className="stat-card">
-            <div className="stat-icon">
-              <i className="fas fa-rupee-sign"></i>
-            </div>
-            <div className="stat-info">
-              <h3>₹{items.reduce((sum, item) => sum + (item.price * item.quantity), 0)}</h3>
-              <p>Cart Total</p>
-            </div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-icon">
-              <i className="fas fa-box"></i>
-            </div>
-            <div className="stat-info">
-              <h3>{orders.length}</h3>
-              <p>Active Orders</p>
-            </div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-icon">
-              <i className="fas fa-truck"></i>
-            </div>
-            <div className="stat-info">
-              <h3>2</h3>
-              <p>Out for Delivery</p>
-            </div>
+          {orders.length > 3 && (
+            <button className="view-all" onClick={handleViewOrders}>View All Orders</button>
+          )}
+        </div>
+
+        {/* Support */}
+        <div className="section support">
+          <h2 className="section-title">Need Help?</h2>
+          <div className="support-options">
+            <a href="tel:+9118001234567" className="support-link">
+              <i className="fas fa-phone"></i>
+              <span>Call Support</span>
+            </a>
+            <a href="mailto:support@navodayatrendz.com" className="support-link">
+              <i className="fas fa-envelope"></i>
+              <span>Email Us</span>
+            </a>
+            <a href="https://wa.me/919284490206" target="_blank" rel="noopener noreferrer" className="support-link whatsapp">
+              <i className="fab fa-whatsapp"></i>
+              <span>WhatsApp</span>
+            </a>
           </div>
         </div>
       </div>
 
-      {/* Quick Checkout Modal */}
-      <QuickCheckoutModal
-        isOpen={showQuickCheckout}
-        onClose={() => {
-          setShowQuickCheckout(false);
-          setSelectedProduct(null);
-        }}
-        cartItems={items}
-        product={selectedProduct}
-      />
-
       <style jsx>{`
         .checkout-dashboard {
-          padding: 2rem 0;
+          padding: 2rem 1rem;
           min-height: 100vh;
-          background: #ffffff;
+          background: #f8f8f8;
+          max-width: 1200px;
+          margin: 0 auto;
         }
 
         .dashboard-header {
           text-align: center;
-          margin-bottom: 3rem;
+          margin-bottom: 2rem;
         }
 
         .dashboard-header h1 {
-          font-size: 2.5rem;
-          color: #000000;
+          font-size: 2rem;
+          color: #000;
           margin-bottom: 0.5rem;
         }
 
         .dashboard-header p {
-          color: #666666;
-          font-size: 1.125rem;
-        }
-
-        .dashboard-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-          gap: 2rem;
-          margin-bottom: 2rem;
-        }
-
-        .dashboard-section {
-          background: #ffffff;
-          border: 2px solid #000000;
-          border-radius: 1.5rem;
-          padding: 2rem;
-          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-          transition: transform 0.2s ease;
-        }
-
-        .dashboard-section:hover {
-          transform: translateY(-4px);
-        }
-
-        .section-header {
-          display: flex;
-          align-items: center;
-          gap: 1rem;
-          margin-bottom: 2rem;
-        }
-
-        .section-icon {
-          width: 50px;
-          height: 50px;
-          background: #000000;
-          color: white;
-          border-radius: 1rem;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 1.25rem;
-        }
-
-        .section-info h2 {
-          color: #000000;
-          margin-bottom: 0.25rem;
-        }
-
-        .section-info p {
-          color: #666666;
+          color: #666;
           margin: 0;
         }
 
-        .section-actions {
-          display: flex;
-          gap: 1rem;
+        .dashboard-content {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+          gap: 1.5rem;
         }
 
-        .btn-primary, .btn-secondary {
-          padding: 0.75rem 1.5rem;
-          border: none;
-          border-radius: 0.75rem;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.2s ease;
+        .section {
+          background: #fff;
+          border: 2px solid #000;
+          border-radius: 1.5rem;
+          padding: 1.5rem;
+        }
+
+        .section-title {
+          font-size: 1.25rem;
+          color: #000;
+          margin-bottom: 1rem;
+          margin-top: 0;
+        }
+
+        /* Cart Summary */
+        .cart-info {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 1rem;
+          background: #f5f5f5;
+          border-radius: 1rem;
+          margin-bottom: 1rem;
+        }
+
+        .cart-items {
           display: flex;
           align-items: center;
           gap: 0.5rem;
+          color: #000;
+          font-weight: 600;
+        }
+
+        .cart-total {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-end;
+          gap: 0.25rem;
+        }
+
+        .cart-total .label {
+          font-size: 0.875rem;
+          color: #666;
+        }
+
+        .cart-total .amount {
+          font-size: 1.5rem;
+          font-weight: bold;
+          color: #000;
+        }
+
+        .cart-actions {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 1rem;
+        }
+
+        .btn {
+          padding: 0.875rem 1.5rem;
+          border-radius: 1rem;
+          font-weight: 600;
+          cursor: pointer;
+          border: none;
+          transition: all 0.2s;
+          font-size: 1rem;
         }
 
         .btn-primary {
-          background: #000000;
-          color: white;
+          background: #000;
+          color: #fff;
         }
 
         .btn-primary:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-          background: #333333;
+          background: #333;
         }
 
         .btn-secondary {
           background: #f5f5f5;
-          color: #000000;
-          border: 1px solid #000000;
+          color: #000;
+          border: 1px solid #000;
         }
 
         .btn-secondary:hover {
           background: #e5e5e5;
         }
 
-        .action-grid {
+        /* Quick Actions */
+        .actions-grid {
           display: grid;
-          grid-template-columns: repeat(2, 1fr);
+          grid-template-columns: 1fr 1fr;
           gap: 1rem;
         }
 
-        .action-btn {
-          background: #ffffff;
-          border: 1px solid #000000;
-          border-radius: 0.75rem;
-          padding: 1rem;
+        .action-card {
+          background: #fff;
+          border: 1px solid #000;
+          border-radius: 1rem;
+          padding: 1.5rem 1rem;
           cursor: pointer;
-          transition: all 0.2s ease;
           display: flex;
           flex-direction: column;
           align-items: center;
-          gap: 0.5rem;
+          gap: 0.75rem;
+          transition: all 0.2s;
         }
 
-        .action-btn:hover {
-          background: #000000;
-          color: white;
-          border-color: #000000;
-          transform: translateY(-2px);
+        .action-card:hover {
+          background: #000;
+          color: #fff;
         }
 
-        .action-btn i {
-          font-size: 1.25rem;
+        .action-card i {
+          font-size: 1.75rem;
         }
 
-        .action-btn span {
-          font-size: 0.875rem;
-          font-weight: 500;
-        }
-
+        /* Recent Orders */
         .orders-list {
           display: flex;
           flex-direction: column;
           gap: 1rem;
-          margin-bottom: 2rem;
         }
 
-        .order-item {
+        .order-card {
+          background: #f5f5f5;
+          border-radius: 1rem;
+          padding: 1rem;
+        }
+
+        .order-header {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          padding: 1rem;
-          background: #f5f5f5;
-          border: 1px solid #000000;
-          border-radius: 0.75rem;
-          transition: all 0.2s ease;
-        }
-
-        .order-item:hover {
-          background: #e5e5e5;
-        }
-
-        .order-info h3 {
-          color: #000000;
           margin-bottom: 0.5rem;
-          font-size: 0.875rem;
         }
 
-        .order-meta {
-          display: flex;
-          gap: 1rem;
-          align-items: center;
-          flex-wrap: wrap;
+        .order-header h3 {
+          font-size: 1rem;
+          color: #000;
+          margin: 0;
         }
 
-        .status-badge {
+        .status {
           padding: 0.25rem 0.75rem;
-          border-radius: 9999px;
+          border-radius: 999px;
           font-size: 0.75rem;
-          font-weight: 600;
-          text-transform: uppercase;
+          font-weight: bold;
+          background: #666;
+          color: #fff;
         }
 
-        .status-badge.shipped {
-          background: #000000;
-          color: white;
+        .status.delivered, .status.shipped {
+          background: #000;
         }
 
-        .status-badge.delivered {
-          background: #000000;
-          color: white;
-        }
-
-        .status-badge.processing {
-          background: #666666;
-          color: white;
-        }
-
-        .order-date, .order-total {
-          color: #666666;
-          font-size: 0.75rem;
+        .order-details {
+          display: flex;
+          justify-content: space-between;
+          color: #666;
+          font-size: 0.875rem;
+          margin-bottom: 1rem;
         }
 
         .track-btn {
-          background: #000000;
-          color: white;
+          width: 100%;
+          padding: 0.625rem;
+          background: #000;
+          color: #fff;
           border: none;
-          padding: 0.5rem 1rem;
           border-radius: 0.75rem;
-          font-size: 0.875rem;
           font-weight: 600;
           cursor: pointer;
-          transition: all 0.2s ease;
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
         }
 
         .track-btn:hover {
-          background: #333333;
-          transform: translateY(-2px);
+          background: #333;
         }
 
-        .full-width {
+        .view-all {
           width: 100%;
-        }
-
-        .support-options {
-          display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 1rem;
-        }
-
-        .support-btn {
-          background: #ffffff;
-          border: 1px solid #000000;
+          margin-top: 1rem;
+          padding: 0.75rem;
+          background: transparent;
+          border: 1px solid #000;
           border-radius: 0.75rem;
-          padding: 1rem;
+          font-weight: 600;
           cursor: pointer;
-          transition: all 0.2s ease;
+        }
+
+        .view-all:hover {
+          background: #000;
+          color: #fff;
+        }
+
+        /* Support */
+        .support-options {
           display: flex;
           flex-direction: column;
+          gap: 0.75rem;
+        }
+
+        .support-link {
+          display: flex;
           align-items: center;
-          gap: 0.5rem;
+          gap: 0.75rem;
+          padding: 1rem;
+          border: 1px solid #000;
+          border-radius: 1rem;
+          color: #000;
+          text-decoration: none;
+          font-weight: 600;
+          transition: all 0.2s;
         }
 
-        .support-btn:hover {
-          background: #000000;
-          color: white;
-          border-color: #000000;
-          transform: translateY(-2px);
+        .support-link:hover {
+          background: #000;
+          color: #fff;
         }
 
-        .support-btn.whatsapp:hover {
+        .support-link.whatsapp:hover {
           background: #25D366;
           border-color: #25D366;
         }
 
-        .support-btn i {
-          font-size: 1.25rem;
-        }
-
-        .support-btn span {
-          font-size: 0.875rem;
-          font-weight: 500;
-        }
-
-        .dashboard-stats {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-          gap: 1.5rem;
-        }
-
-        .stat-card {
-          background: #ffffff;
-          border: 2px solid #000000;
-          border-radius: 1rem;
-          padding: 1.5rem;
-          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-          display: flex;
-          align-items: center;
-          gap: 1rem;
-          transition: transform 0.2s ease;
-        }
-
-        .stat-card:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-        }
-
-        .stat-icon {
-          width: 40px;
-          height: 40px;
-          background: #000000;
-          color: white;
-          border-radius: 0.75rem;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 1rem;
-        }
-
-        .stat-info h3 {
-          color: #000000;
-          margin-bottom: 0.25rem;
-          font-size: 1.25rem;
-        }
-
-        .stat-info p {
-          color: #666666;
-          margin: 0;
+        .loading, .no-orders {
+          text-align: center;
+          color: #666;
+          padding: 2rem;
         }
 
         @media (max-width: 768px) {
-          .dashboard-grid {
+          .checkout-dashboard {
+            padding: 1rem;
+          }
+
+          .cart-actions {
             grid-template-columns: 1fr;
           }
 
-          .action-grid {
+          .actions-grid {
             grid-template-columns: 1fr;
-          }
-
-          .support-options {
-            grid-template-columns: 1fr;
-          }
-
-          .section-actions {
-            flex-direction: column;
-          }
-
-          .dashboard-stats {
-            grid-template-columns: repeat(2, 1fr);
-          }
-
-          .order-item {
-            flex-direction: column;
-            gap: 1rem;
-            align-items: stretch;
-          }
-
-          .order-meta {
-            justify-content: center;
           }
         }
       `}</style>
-    </>
+    </div>
   );
 };
 

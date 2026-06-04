@@ -22,7 +22,6 @@ import FAQ from './pages/FAQ';
 import Feedback from './pages/Feedback';
 import Cart from './pages/Cart';
 import Wishlist from './pages/Wishlist';
-import Profile from './pages/Profile';
 import UserProfile from './pages/UserProfile';
 import AdminProfile from './pages/AdminProfile';
 import SearchPage from './pages/SearchPage';
@@ -68,8 +67,7 @@ const AppContent = () => {
             <Route path="/product-enhanced/:id" element={<ProductDetailEnhanced />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/wishlist" element={<Wishlist />} />
-            <Route path="/profile" element={<PrivateRoute><UserProfile /></PrivateRoute>} />
-            <Route path="/user-profile" element={<PrivateRoute><UserProfile /></PrivateRoute>} />
+
             <Route path="/admin-profile" element={<PrivateRoute><AdminProfile /></PrivateRoute>} />
             <Route path="/login" element={<Login />} />
             <Route path="/account" element={<PrivateRoute><UserPanel /></PrivateRoute>} />

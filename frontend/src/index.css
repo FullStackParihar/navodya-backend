@@ -712,6 +712,18 @@ main {
     color: rgba(255, 255, 255, 0.9);
 }
 
+/* Hide mobile-only elements on desktop */
+.top-nav-row-1,
+.quick-category-pills,
+.mobile-drawer {
+    display: none;
+}
+
+/* Show desktop logo on desktop */
+.desktop-logo {
+    display: flex;
+}
+
 /* Mobile Menu Toggle */
 .mobile-menu-toggle {
     display: none;
@@ -732,75 +744,208 @@ main {
 
 /* Responsive Design */
 @media (max-width: 768px) {
-    .top-nav-content {
-        flex-wrap: wrap;
-        gap: 12px;
-    }
-    
-    .search-container {
-        order: 3;
-        max-width: 100%;
-        flex-basis: 100%;
-        margin-top: 12px;
-    }
-    
-    .nav-links {
-        display: none;
-    }
-    
-    .hero-content h1 {
-        font-size: 32px;
-    }
-    
-    .product-grid {
-        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-        gap: 16px;
-    }
-    
-    .categories-grid {
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    }
-
-    .mobile-menu-toggle {
-        display: block;
-        position: absolute;
-        top: 18px;
-        right: 24px;
-    }
-
-    .nav-links {
-        position: fixed;
-        top: 0;
-        left: -100%;
-        width: 300px;
-        height: 100vh;
-        background: var(--header-bg);
-        flex-direction: column;
-        padding: 90px 24px 24px;
-        box-shadow: var(--jnv-shadow-xl);
-        transition: left 0.3s ease;
-        z-index: 1000;
-        overflow-y: auto;
+    /* Show mobile-only elements */
+    .top-nav-row-1,
+    .quick-category-pills {
         display: flex;
     }
 
-    .nav-links.mobile-open {
+    /* Header Top Row */
+    .top-nav {
+        padding: 12px 0;
+    }
+
+    .top-nav-content {
+        flex-direction: column;
+        gap: 12px;
+        padding: 0 16px !important;
+    }
+
+    .top-nav-content .container {
+        padding: 0 !important;
+    }
+
+    /* Hide desktop-only top nav elements */
+    .top-nav-content > .desktop-logo,
+    .top-nav-content > .mobile-menu-toggle {
+        display: none;
+    }
+
+    /* Row 1: Logo + Hamburger */
+    .top-nav-row-1 {
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    .top-nav-row-1 .logo,
+    .top-nav-row-1 .mobile-menu-toggle {
+        display: flex !important;
+    }
+
+    .logo img {
+        height: 50px !important;
+    }
+
+    /* Row 2: Delivery Info */
+    .delivery-info {
+        width: 100%;
+        justify-content: center;
+    }
+
+    /* Row 3: Search Bar */
+    .search-container {
+        max-width: 100%;
+        width: 100%;
+        order: 3;
+    }
+
+    .search-wrapper {
+        width: 100%;
+    }
+
+    .search-category,
+    .search-input,
+    .search-button {
+        min-height: 44px;
+    }
+
+    /* Row 4: Nav Icons */
+    .nav-icons {
+        width: 100%;
+        justify-content: space-evenly;
+        gap: 8px;
+        order: 4;
+    }
+
+    .nav-item {
+        padding: 8px 8px;
+        min-width: 60px;
+        min-height: 44px;
+    }
+
+    /* Secondary Nav: Hide on mobile */
+    .secondary-nav {
+        display: none;
+    }
+
+    /* Mobile Drawer */
+    .mobile-drawer {
+        display: none;
+    }
+
+    .mobile-drawer.open {
+        display: flex;
+        position: fixed;
+        top: 0;
         left: 0;
+        width: 100%;
+        height: 100vh;
+        z-index: 1100;
     }
 
-    .nav-links a {
+    .drawer-backdrop {
+        flex: 1;
+        background: rgba(0,0,0,0.5);
+    }
+
+    .drawer-content {
+        width: 80%;
+        max-width: 320px;
+        background: var(--header-bg);
+        padding: 80px 20px 20px;
+        overflow-y: auto;
+    }
+
+    .drawer-close {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: rgba(0,0,0,0.1);
+        border: none;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        font-size: 24px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .drawer-content ul {
+        list-style: none;
+    }
+
+    .drawer-content a {
         display: block;
-        padding: 16px 20px;
+        color: var(--header-text);
+        text-decoration: none;
+        padding: 16px 12px;
         border-bottom: 1px solid var(--border-color);
-        border-radius: var(--jnv-radius-lg);
-        margin-bottom: 8px;
-        transition: var(--jnv-transition);
+        font-size: 16px;
+        font-weight: 600;
     }
 
-    .nav-links a:hover {
-        background: var(--primary-color);
-        color: var(--bg-primary);
-        transform: translateX(8px);
+    /* Quick Category Pills */
+    .quick-category-pills {
+        overflow-x: auto;
+        gap: 12px;
+        padding: 12px 16px;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        background: var(--header-bg);
+        border-top: 1px solid var(--border-color);
+    }
+
+    .quick-category-pills::-webkit-scrollbar {
+        display: none;
+    }
+
+    .quick-category-pills a {
+        scroll-snap-align: start;
+        flex-shrink: 0;
+        padding: 10px 20px;
+        border-radius: var(--jnv-radius-lg);
+        background: rgba(128,128,128,0.1);
+        color: var(--header-text);
+        text-decoration: none;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    /* Global Mobile Rules */
+    body {
+        overflow-x: hidden;
+    }
+
+    main {
+        padding-top: 220px;
+    }
+
+    .container {
+        padding: 0 16px;
+    }
+
+    /* Product Cards Horizontal Scroll */
+    .horizontal-scroll {
+        display: flex;
+        gap: 12px;
+        overflow-x: auto;
+        padding: 0 1rem;
+        scroll-snap-type: x mandatory;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    .horizontal-scroll::-webkit-scrollbar {
+        display: none;
+    }
+
+    .horizontal-scroll > * {
+        scroll-snap-align: start;
     }
 }
 

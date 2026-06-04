@@ -47,7 +47,7 @@
 
 .filter-label {
   font-weight: 600;
-  color: #374151;
+  color: #000000;
   font-size: 0.9rem;
   margin-bottom: 0.5rem;
 }
@@ -58,7 +58,7 @@
   border-radius: 6px;
   background: white;
   font-size: 0.9rem;
-  color: #374151;
+  color: #000000;
   transition: all 0.3s ease;
 }
 
@@ -147,7 +147,7 @@
 
 .original-price {
   font-size: 0.9rem;
-  color: #9ca3af;
+  color: #666666;
   text-decoration: line-through;
 }
 
@@ -177,7 +177,7 @@
 
 .item-tag {
   background: #f1f5f9;
-  color: #374151;
+  color: #000000;
   padding: 0.25rem 0.75rem;
   border-radius: 20px;
   font-size: 0.8rem;

@@ -20,7 +20,7 @@ const categories = [
   {
     name: 'Accessories',
     description: 'Complete Style',
-    image: 'https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=600&h=700&fit=crop',
+    image: 'https://assets.winni.in/product/primary/2023/4/84207.jpeg?dpr=2&w=220',
     link: '/accessories',
     icon: 'fa-hat-cowboy'
   },
@@ -153,7 +153,17 @@ const galleryImages = [
   '/g5.jpeg',
   '/g6.jpeg',
   '/g7.jpeg',
-  '/g8.jpeg'
+  '/g8.jpeg',
+  '/g9.jpeg',
+  '/g10.jpeg',
+  '/g11.jpeg',
+  '/g12.jpeg',
+  '/g13.jpeg',
+  '/g14.jpeg',
+  '/g15.jpeg',
+  '/g16.jpeg'
+  
+
 ];
 
 const Events = () => {
