@@ -266,42 +266,7 @@ section {
   background: #f9f9f9;
 }
 
-.registration-form {
-  max-width: 800px;
-  margin: 0 auto;
-  background: #fff;
-  padding: 40px;
-  border-radius: 20px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-}
-
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  margin-bottom: 20px;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-}
-
-.form-group label {
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 8px;
-}
-
-.form-group input,
-.form-group select {
-  padding: 14px;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  font-size: 16px;
-}
-
-.registration-success {
+.registration-box {
   max-width: 600px;
   margin: 0 auto;
   background: #fff;
@@ -309,23 +274,26 @@ section {
   border-radius: 20px;
   text-align: center;
   box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  border: 2px solid #000;
 }
 
-.registration-success i {
+.registration-box .check-icon {
   font-size: 80px;
   color: #000;
   margin-bottom: 20px;
 }
 
-.registration-success h3 {
+.registration-box h3 {
   font-size: 28px;
   font-weight: 700;
   margin-bottom: 10px;
+  color: #000;
 }
 
-.registration-success p {
+.registration-box p {
   color: #666;
   margin-bottom: 30px;
+  font-size: 18px;
 }
 
 .events-regions-grid {

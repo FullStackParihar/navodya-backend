@@ -1,5 +1,4 @@
-import React, { useState, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useRef } from 'react';
 import './Events.css';
 
 const categories = [
@@ -59,34 +58,40 @@ const giveaways = [
 
 const alumniMeets = [
   {
-    name: 'JNV Delhi 2015 Batch Reunion',
-    jnv: 'JNV Delhi',
-    batch: '2015',
-    date: '2025-06-15',
-    location: 'New Delhi',
-    attendees: 150,
-    image: 'https://images.unsplash.com/photo-1511765224389-37f0e77cf0eb?w=600&h=400&fit=crop',
+    name: 'Annual Alumni Meet 2024',
+    jnv: 'JNV Main Campus',
+    batch: '2000-2024',
+    location: 'JNV Campus',
+    attendees: 450,
+    image: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=600&h=400&fit=crop',
     icon: 'fa-graduation-cap'
   },
   {
-    name: 'JNV Mumbai 2012 Batch Meet',
-    jnv: 'JNV Mumbai',
-    batch: '2012',
-    date: '2025-06-22',
-    location: 'Mumbai',
-    attendees: 200,
-    image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&h=400&fit=crop',
+    name: 'Silver Jubilee Reunion',
+    jnv: 'JNV Delhi',
+    batch: '2000 Batch',
+    location: 'Hotel Grand Palace',
+    attendees: 320,
+    image: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600&h=400&fit=crop',
     icon: 'fa-users'
   },
   {
-    name: 'JNV Bangalore 2010 Batch Reunion',
+    name: 'JNV Bangalore Reunion',
     jnv: 'JNV Bangalore',
-    batch: '2010',
-    date: '2025-07-01',
-    location: 'Bangalore',
-    attendees: 120,
+    batch: '2010-2014',
+    location: 'IT Park Bangalore',
+    attendees: 280,
     image: 'https://images.unsplash.com/photo-1528605248640-18d5526e4802?w=600&h=400&fit=crop',
-    icon: 'fa-school'
+    icon: 'fa-building'
+  },
+  {
+    name: 'Mumbai Alumni Meet',
+    jnv: 'JNV Mumbai',
+    batch: '2005-2009',
+    location: 'Marine Drive',
+    attendees: 350,
+    image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&h=400&fit=crop',
+    icon: 'fa-anchor'
   }
 ];
 
@@ -167,33 +172,7 @@ const galleryImages = [
 ];
 
 const Events = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    jnv: '',
-    batch: '',
-    city: '',
-    tshirtSize: '',
-    event: ''
-  });
-  const [showSuccess, setShowSuccess] = useState(false);
   const galleryRef = useRef(null);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setShowSuccess(true);
-    setFormData({
-      name: '',
-      email: '',
-      phone: '',
-      jnv: '',
-      batch: '',
-      city: '',
-      tshirtSize: '',
-      event: ''
-    });
-  };
 
   const scrollGallery = (direction) => {
     if (galleryRef.current) {
@@ -207,23 +186,6 @@ const Events = () => {
 
   return (
     <div className="events-page">
-      {/* Hero Section */}
-      <section className="events-hero">
-        <div className="container">
-          <div className="hero-content">
-            <span className="hero-tag">Welcome to</span>
-            <h1 className="hero-title">Navodaya Trendz Events</h1>
-            <p className="hero-subtitle">Connect, Celebrate, and Reunite with your fellow Navodayans</p>
-            <div className="hero-buttons">
-              <Link to="#alumni-meets" className="btn btn-primary">Explore Meets</Link>
-              <Link to="#giveaways" className="btn btn-secondary">Join Contests</Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
-
-
       {/* Giveaways */}
       <section className="events-giveaways" id="giveaways">
         <div className="container">
@@ -246,7 +208,14 @@ const Events = () => {
                   <div className="giveaway-meta">
                     <span><i className="fas fa-gift"></i> {item.prize}</span>
                   </div>
-                  <button className="btn btn-primary btn-small">Join Now</button>
+                  <a 
+                    href="https://docs.google.com/forms/d/e/1FAIpQLSev2_RPJq8HJYznckGKKEWbzj1K0rNzNN8SIFk2dYZ8WFK3KQ/viewform?usp=publish-editor" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="btn btn-primary btn-small"
+                  >
+                    Join Now
+                  </a>
                 </div>
               </div>
             ))}
@@ -278,7 +247,14 @@ const Events = () => {
                     <span><i className="fas fa-map-marker-alt"></i> {meet.location}</span>
                     <span><i className="fas fa-users"></i> {meet.attendees} Attendees</span>
                   </div>
-                  <button className="btn btn-primary btn-small">Register</button>
+                  <a 
+                    href="https://docs.google.com/forms/d/e/1FAIpQLSev2_RPJq8HJYznckGKKEWbzj1K0rNzNN8SIFk2dYZ8WFK3KQ/viewform?usp=publish-editor" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="btn btn-primary btn-small"
+                  >
+                    Register Now
+                  </a>
                 </div>
               </div>
             ))}
@@ -310,7 +286,14 @@ const Events = () => {
                     <span><i className="fas fa-clock"></i> {event.time}</span>
                     <span><i className="fas fa-video"></i> {event.platform}</span>
                   </div>
-                  <button className="btn btn-primary btn-small">Join</button>
+                  <a 
+                    href="https://docs.google.com/forms/d/e/1FAIpQLSev2_RPJq8HJYznckGKKEWbzj1K0rNzNN8SIFk2dYZ8WFK3KQ/viewform?usp=publish-editor" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="btn btn-primary btn-small"
+                  >
+                    Join
+                  </a>
                 </div>
               </div>
             ))}
@@ -325,114 +308,19 @@ const Events = () => {
             <span className="section-tag">Register</span>
             <h2 className="section-title">Event <span className="highlight">Registration</span></h2>
           </div>
-          {!showSuccess ? (
-            <form className="registration-form" onSubmit={handleSubmit}>
-              <div className="form-row">
-                <div className="form-group">
-                  <label>Full Name</label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.name}
-                    onChange={(e) => setFormData({...formData, name: e.target.value})}
-                    placeholder="Enter your full name"
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Email</label>
-                  <input
-                    type="email"
-                    required
-                    value={formData.email}
-                    onChange={(e) => setFormData({...formData, email: e.target.value})}
-                    placeholder="Enter your email"
-                  />
-                </div>
-              </div>
-              <div className="form-row">
-                <div className="form-group">
-                  <label>Phone</label>
-                  <input
-                    type="tel"
-                    required
-                    value={formData.phone}
-                    onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                    placeholder="Enter your phone number"
-                  />
-                </div>
-                <div className="form-group">
-                  <label>JNV Name</label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.jnv}
-                    onChange={(e) => setFormData({...formData, jnv: e.target.value})}
-                    placeholder="Your JNV"
-                  />
-                </div>
-              </div>
-              <div className="form-row">
-                <div className="form-group">
-                  <label>Batch Year</label>
-                  <input
-                    type="number"
-                    required
-                    value={formData.batch}
-                    onChange={(e) => setFormData({...formData, batch: e.target.value})}
-                    placeholder="Your batch year"
-                  />
-                </div>
-                <div className="form-group">
-                  <label>City</label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.city}
-                    onChange={(e) => setFormData({...formData, city: e.target.value})}
-                    placeholder="Your city"
-                  />
-                </div>
-              </div>
-              <div className="form-row">
-                <div className="form-group">
-                  <label>T-Shirt Size</label>
-                  <select
-                    required
-                    value={formData.tshirtSize}
-                    onChange={(e) => setFormData({...formData, tshirtSize: e.target.value})}
-                  >
-                    <option value="">Select size</option>
-                    <option value="S">S</option>
-                    <option value="M">M</option>
-                    <option value="L">L</option>
-                    <option value="XL">XL</option>
-                    <option value="XXL">XXL</option>
-                  </select>
-                </div>
-                <div className="form-group">
-                  <label>Event</label>
-                  <select
-                    required
-                    value={formData.event}
-                    onChange={(e) => setFormData({...formData, event: e.target.value})}
-                  >
-                    <option value="">Select event</option>
-                    {alumniMeets.map((meet, idx) => (
-                      <option key={idx} value={meet.name}>{meet.name}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-              <button type="submit" className="btn btn-primary btn-large">Register Now</button>
-            </form>
-          ) : (
-            <div className="registration-success">
-              <i className="fas fa-check-circle"></i>
-              <h3>Registration Successful!</h3>
-              <p>Check your email for confirmation</p>
-              <button className="btn btn-primary" onClick={() => setShowSuccess(false)}>Register Another</button>
-            </div>
-          )}
+          <div className="registration-box">
+            <i className="fas fa-clipboard-list check-icon"></i>
+            <h3>Ready to join us?</h3>
+            <p>Click the button below to register for upcoming events</p>
+            <a 
+              href="https://docs.google.com/forms/d/e/1FAIpQLSev2_RPJq8HJYznckGKKEWbzj1K0rNzNN8SIFk2dYZ8WFK3KQ/viewform?usp=publish-editor" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="btn btn-primary btn-large"
+            >
+              <i className="fas fa-external-link-alt"></i> Register via Google Form
+            </a>
+          </div>
         </div>
       </section>
 
