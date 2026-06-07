@@ -1,4 +1,41 @@
-node_modules
+# Node dependencies
+node_modules/
+
+# Environment files
 .env
-dist
-uploads
+.env.*.local
+
+# Build outputs
+dist/
+build/
+frontend/build/
+
+# Uploaded files
+uploads/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# TypeScript
+*.tsbuildinfo
+
+# Coverage and test outputs
+coverage/
+.nyc_output/
+
+# Editor directories and files
+.vscode/
+.idea/
+.DS_Store
+
+# OS files
+Thumbs.db
+
+# Caches
+.cache/
+.next/
+.parcel-cache/
