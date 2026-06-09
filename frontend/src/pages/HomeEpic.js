@@ -31,21 +31,21 @@ const categories = [
   {
     name: 'Accessories',
     description: 'Complete Style',
-    image: 'https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=600&h=700&fit=crop',
+    image: 'https://storoot.com/cdn/shop/files/Giftsethamber.webp?v=1755176454&width=1080',
     link: '/accessories',
     icon: 'fa-hat-cowboy'
   },
   {
     name: "Today's Deals",
     description: 'Limited Offers',
-    image: 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=600&h=700&fit=crop',
+    image: 'https://img.magnific.com/free-vector/comic-style-deals-background-purple-yellow-color_1017-63309.jpg?semt=ais_hybrid&w=740&q=80',
     link: '/today-deals',
     icon: 'fa-percent'
   },
   {
     name: 'Events',
     description: 'Meet & Celebrate',
-    image: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600&h=700&fit=crop',
+    image: 'https://www.zkipster.com/hs-fs/hubfs/Imported_Blog_Media/67ad19a313bff21b2e879cff_AD_4nXfZKUOS-ulGklFau_BL1Xtl8MS6gbBroLrBRnC-c-ID0qhyNmYoaoQfSjqbYwIZo41Shyep1pYQqGlzJrrCcdEldZdq7WDPsrrejPpVC3vLJy3kx8tLworq-2.jpg?width=1600&height=1066&name=67ad19a313bff21b2e879cff_AD_4nXfZKUOS-ulGklFau_BL1Xtl8MS6gbBroLrBRnC-c-ID0qhyNmYoaoQfSjqbYwIZo41Shyep1pYQqGlzJrrCcdEldZdq7WDPsrrejPpVC3vLJy3kx8tLworq-2.jpg',
     link: '/events',
     icon: 'fa-calendar-days'
   }

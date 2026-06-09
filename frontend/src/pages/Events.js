@@ -19,14 +19,14 @@ const categories = [
   {
     name: 'Accessories',
     description: 'Complete Style',
-    image: 'https://assets.winni.in/product/primary/2023/4/84207.jpeg?dpr=2&w=220',
+    image: 'https://storoot.com/cdn/shop/files/Giftsethamber.webp?v=1755176454&width=1080',
     link: '/accessories',
     icon: 'fa-hat-cowboy'
   },
   {
     name: "Today's Deals",
     description: 'Limited Offers',
-    image: 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=600&h=700&fit=crop',
+    image: 'https://img.magnific.com/free-vector/comic-style-deals-background-purple-yellow-color_1017-63309.jpg?semt=ais_hybrid&w=740&q=80',
     link: '/today-deals',
     icon: 'fa-percent'
   }
