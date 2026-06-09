@@ -17,21 +17,21 @@ const categories = [
   {
     name: 'T-Shirts',
     description: 'Premium Cotton',
-    image: 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=600&h=700&fit=crop',
+    image: '/t.png',
     link: '/tshirts',
     icon: 'fa-shirt-long-sleeve'
   },
   {
     name: 'Hoodies',
     description: 'Cozy & Warm',
-    image: 'https://assets.ajio.com/medias/sys_master/root1/20260121/pQRe/6970620d7ef0c7385c7f28a5/-473Wx593H-700751556-teal-MODEL.jpg',
+    image: '/ho.png',
     link: '/hoodies',
     icon: 'fa-shirt'
   },
   {
     name: 'Accessories',
     description: 'Complete Style',
-    image: 'https://storoot.com/cdn/shop/files/Giftsethamber.webp?v=1755176454&width=1080',
+    image: '/a.png',
     link: '/accessories',
     icon: 'fa-hat-cowboy'
   },
@@ -45,7 +45,7 @@ const categories = [
   {
     name: 'Events',
     description: 'Meet & Celebrate',
-    image: 'https://www.zkipster.com/hs-fs/hubfs/Imported_Blog_Media/67ad19a313bff21b2e879cff_AD_4nXfZKUOS-ulGklFau_BL1Xtl8MS6gbBroLrBRnC-c-ID0qhyNmYoaoQfSjqbYwIZo41Shyep1pYQqGlzJrrCcdEldZdq7WDPsrrejPpVC3vLJy3kx8tLworq-2.jpg?width=1600&height=1066&name=67ad19a313bff21b2e879cff_AD_4nXfZKUOS-ulGklFau_BL1Xtl8MS6gbBroLrBRnC-c-ID0qhyNmYoaoQfSjqbYwIZo41Shyep1pYQqGlzJrrCcdEldZdq7WDPsrrejPpVC3vLJy3kx8tLworq-2.jpg',
+    image: '/e.jpeg',
     link: '/events',
     icon: 'fa-calendar-days'
   }
@@ -320,14 +320,7 @@ const HomeEpic = () => {
             <div className="hero-right">
               <div className="hero-products">
                 <div className="product-float product-1">
-                  <div className="product-tag">HOT</div>
-                  <img src="https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=400&h=500&fit=crop" alt="T-Shirt" />
-                </div>
-                <div className="product-float product-2">
-                  <img src="https://assets.ajio.com/medias/sys_master/root1/20260121/pQRe/6970620d7ef0c7385c7f28a5/-473Wx593H-700751556-teal-MODEL.jpg" alt="Hoodie" />
-                </div>
-                <div className="product-float product-3">
-                  <img src="https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=400&h=500&fit=crop" alt="Cap" />
+                  <img src="/h.jpeg" alt="Product" />
                 </div>
               </div>
             </div>

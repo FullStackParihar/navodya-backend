@@ -39,13 +39,13 @@ const Header = () => {
           <div className="top-nav-content">
             {/* Desktop Logo */}
             <Link to="/" className="logo animate-fadeIn desktop-logo">
-              <img src="/logo2.png" alt="Navodaya Trendz" style={{ height: '90px', width: 'auto' }} />
+              <img src="/logo2.png" alt="Navodaya Trendz" style={{ height: '120px', width: 'auto' }} />
             </Link>
 
             {/* Row 1: Logo + Hamburger (Mobile only) */}
             <div className="top-nav-row-1">
               <Link to="/" className="logo animate-fadeIn">
-                <img src="/logo2.png" alt="Navodaya Trendz" style={{ height: '50px', width: 'auto' }} />
+                <img src="/logo2.png" alt="Navodaya Trendz" style={{ height: '70px', width: 'auto' }} />
               </Link>
               
               <button 

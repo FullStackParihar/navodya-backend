@@ -5,21 +5,21 @@ const categories = [
   {
     name: 'T-Shirts',
     description: 'Premium Cotton',
-    image: 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=600&h=700&fit=crop',
+    image: '/t.png',
     link: '/tshirts',
     icon: 'fa-shirt-long-sleeve'
   },
   {
     name: 'Hoodies',
     description: 'Cozy & Warm',
-    image: 'https://assets.ajio.com/medias/sys_master/root1/20260121/pQRe/6970620d7ef0c7385c7f28a5/-473Wx593H-700751556-teal-MODEL.jpg',
+    image: '/ho.png',
     link: '/hoodies',
     icon: 'fa-shirt'
   },
   {
     name: 'Accessories',
     description: 'Complete Style',
-    image: 'https://storoot.com/cdn/shop/files/Giftsethamber.webp?v=1755176454&width=1080',
+    image: '/a.png',
     link: '/accessories',
     icon: 'fa-hat-cowboy'
   },
