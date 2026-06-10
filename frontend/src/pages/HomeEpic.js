@@ -17,14 +17,14 @@ const categories = [
   {
     name: 'T-Shirts',
     description: 'Premium Cotton',
-    image: '/t.png',
+    image: 'https://ih1.redbubble.net/image.2005741463.0268/ssrco,classic_tee,mens_02,fafafa:ca443f4786,front,square_close_portrait,x1000.jpg',
     link: '/tshirts',
     icon: 'fa-shirt-long-sleeve'
   },
   {
     name: 'Hoodies',
     description: 'Cozy & Warm',
-    image: '/ho.png',
+    image: 'https://ih1.redbubble.net/image.2021696386.4856/ssrco,oversized_hoodie,mens_01,111112:1f01311efe,front,square_close_portrait,x1000.jpg',
     link: '/hoodies',
     icon: 'fa-shirt'
   },
@@ -38,14 +38,14 @@ const categories = [
   {
     name: "Today's Deals",
     description: 'Limited Offers',
-    image: 'https://img.magnific.com/free-vector/comic-style-deals-background-purple-yellow-color_1017-63309.jpg?semt=ais_hybrid&w=740&q=80',
+    image: 'https://cdn.vectorstock.com/i/500p/76/69/best-offer-special-price-sale-sign-vector-35567669.jpg',
     link: '/today-deals',
     icon: 'fa-percent'
   },
   {
     name: 'Events',
     description: 'Meet & Celebrate',
-    image: '/e.jpeg',
+    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTT8dGnGbGHa076LrdgGh91HBTV4pg1ERNvNg&s',
     link: '/events',
     icon: 'fa-calendar-days'
   }
@@ -320,7 +320,7 @@ const HomeEpic = () => {
             <div className="hero-right">
               <div className="hero-products">
                 <div className="product-float product-1">
-                  <img src="/h.jpeg" alt="Product" />
+                  <img src="/h2o.jpeg" alt="Product" />
                 </div>
               </div>
             </div>

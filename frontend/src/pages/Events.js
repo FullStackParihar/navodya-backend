@@ -81,7 +81,7 @@ const alumniMeets = [
     batch: '2010-2014',
     location: 'IT Park Bangalore',
     attendees: 280,
-    image: 'https://images.unsplash.com/photo-1528605248640-18d5526e4802?w=600&h=400&fit=crop',
+    image: 'https://www.cvent.com/sites/default/files/image/2023-10/Event_Experience-Cvent_CONNECT_2023.jpg',
     icon: 'fa-building'
   },
   {
