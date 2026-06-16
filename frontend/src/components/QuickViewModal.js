@@ -6,14 +6,18 @@ import './QuickViewModal.css';
 
 const QuickViewModal = ({ product, isOpen, onClose }) => {
   const { addToCart } = useCart();
-  const { success } = useToast();
+  const { success, error } = useToast();
 
   if (!isOpen || !product) return null;
 
-  const handleAddToCart = () => {
-    addToCart(product);
-    success(`${product.name} added to cart!`);
-    onClose();
+  const handleAddToCart = async () => {
+    try {
+      await addToCart(product);
+      success(`${product.name} added to cart!`);
+      onClose();
+    } catch (err) {
+      error(err.message || 'Failed to add to cart');
+    }
   };
 
   return (

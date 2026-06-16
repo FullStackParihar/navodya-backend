@@ -7,7 +7,7 @@ import { useToast } from '../context/ToastContext';
 const ProductCardAmazon = ({ product }) => {
   const { addToCart, isInCart } = useCart();
   const { isInWishlist, toggleWishlist } = useWishlist();
-  const { success, error } = useToast();
+  const { success, error, info } = useToast();
   const [isAdding, setIsAdding] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
@@ -21,10 +21,10 @@ const ProductCardAmazon = ({ product }) => {
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 500));
-      addToCart(product);
+      await addToCart(product);
       success(`${product.name} added to cart!`);
     } catch (err) {
-      error('Failed to add to cart');
+      error(err.message || 'Failed to add to cart');
     } finally {
       setIsAdding(false);
     }

@@ -18,6 +18,36 @@ const UPDATE_QUANTITY = 'UPDATE_QUANTITY';
 const CLEAR_CART = 'CLEAR_CART';
 const SET_CART = 'SET_CART';
 
+const getOptionName = (option, key) => {
+  if (!option) return '';
+  return typeof option === 'string' ? option : option[key] || '';
+};
+
+const findMatchingOption = (options = [], selectedValue, key) => {
+  if (!selectedValue) return null;
+  return options.find(option => (
+    getOptionName(option, key).toLowerCase() === selectedValue.toLowerCase()
+  ));
+};
+
+const getFirstAvailableSize = (sizes = []) => {
+  const firstAvailable = sizes.find(size => (
+    typeof size === 'string' || size.stock === undefined || size.stock > 0
+  ));
+  return getOptionName(firstAvailable, 'size');
+};
+
+const normalizeCartProduct = (product) => {
+  const selectedSizeOption = findMatchingOption(product.sizes, product.selectedSize, 'size');
+  const selectedColorOption = findMatchingOption(product.colors, product.selectedColor, 'name');
+
+  return {
+    ...product,
+    selectedSize: getOptionName(selectedSizeOption, 'size') || product.selectedSize || getFirstAvailableSize(product.sizes) || 'Free Size',
+    selectedColor: getOptionName(selectedColorOption, 'name') || product.selectedColor || getOptionName(product.colors?.[0], 'name') || 'N/A'
+  };
+};
+
 // Reducer
 const cartReducer = (state, action) => {
   switch (action.type) {
@@ -156,20 +186,25 @@ export const CartProvider = ({ children }) => {
 
   // Actions
   const addToCart = async (product) => {
+    const cartProduct = normalizeCartProduct(product);
     const token = localStorage.getItem('token');
-    if (token && product.dbId) {
+    if (token && cartProduct.dbId) {
       try {
-        await api.post('/cart/add', {
-          productId: product.dbId,
-          quantity: product.quantity || 1,
-          size: product.selectedSize || 'Free Size',
-          color: product.selectedColor || 'N/A'
+        const result = await api.post('/cart/add', {
+          productId: cartProduct.dbId,
+          quantity: cartProduct.quantity || 1,
+          size: cartProduct.selectedSize,
+          color: cartProduct.selectedColor
         });
+        if (!result.success) {
+          throw new Error(result.message || 'Failed to add item to cart');
+        }
       } catch (err) {
         console.error('Error adding to backend cart:', err);
+        throw err;
       }
     }
-    dispatch({ type: ADD_TO_CART, payload: product });
+    dispatch({ type: ADD_TO_CART, payload: cartProduct });
   };
 
   const removeFromCart = async (productId) => {

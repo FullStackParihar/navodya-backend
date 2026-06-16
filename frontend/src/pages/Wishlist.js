@@ -65,14 +65,18 @@ const Wishlist = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  const handleAddToCart = (product) => {
+  const handleAddToCart = async (product) => {
     setIsLoading(true);
-    setTimeout(() => {
-      addToCart(product);
+    try {
+      await new Promise(resolve => setTimeout(resolve, 500));
+      await addToCart(product);
       success(`${product.name} added to cart!`);
       removeFromWishlist(product.id);
+    } catch (err) {
+      error(err.message || 'Failed to add to cart');
+    } finally {
       setIsLoading(false);
-    }, 500);
+    }
   };
 
   const handleRemoveFromWishlist = (id, name) => {

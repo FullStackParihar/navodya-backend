@@ -137,17 +137,21 @@ const ProductDetailEnhanced = () => {
     }
   };
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     if (!selectedSize) {
       error('Please select a size');
       return;
     }
     setIsAddingToCart(true);
-    setTimeout(() => {
-      addToCart({ ...product, selectedSize, selectedColor, quantity });
+    try {
+      await new Promise(resolve => setTimeout(resolve, 500));
+      await addToCart({ ...product, selectedSize, selectedColor, quantity });
       success(`${product.name} added to cart!`);
+    } catch (err) {
+      error(err.message || 'Failed to add to cart');
+    } finally {
       setIsAddingToCart(false);
-    }, 500);
+    }
   };
 
   const handleWishlistToggle = () => {
@@ -160,13 +164,17 @@ const ProductDetailEnhanced = () => {
     }
   };
 
-  const handleBuyNow = () => {
+  const handleBuyNow = async () => {
     if (!selectedSize) {
       error('Please select a size');
       return;
     }
-    addToCart({ ...product, selectedSize, selectedColor, quantity });
-    navigate('/cart');
+    try {
+      await addToCart({ ...product, selectedSize, selectedColor, quantity });
+      navigate('/cart');
+    } catch (err) {
+      error(err.message || 'Failed to add to cart');
+    }
   };
 
   const renderStars = (rating) => {

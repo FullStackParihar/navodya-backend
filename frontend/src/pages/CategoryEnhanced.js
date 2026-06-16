@@ -13,7 +13,7 @@ const CategoryEnhanced = ({ category = 'tshirts' }) => {
   const [sortBy, setSortBy] = useState('featured');
   const [loading, setLoading] = useState(true);
   const { addToCart } = useCart();
-  const { success } = useToast();
+  const { success, error } = useToast();
 
   const handleSizeChange = (size) => {
     if (selectedSizes.includes(size)) {
@@ -23,15 +23,19 @@ const CategoryEnhanced = ({ category = 'tshirts' }) => {
     }
   };
 
-  const handleAddToCart = (product) => {
-    addToCart({
-      ...product,
-      id: product.dbId || product.id,
-      quantity: 1,
-      selectedSize: product.sizes && product.sizes.length > 0 ? product.sizes[0] : 'Free Size',
-      selectedColor: 'N/A'
-    });
-    success(`${product.name} added to cart!`);
+  const handleAddToCart = async (product) => {
+    try {
+      await addToCart({
+        ...product,
+        id: product.dbId || product.id,
+        quantity: 1,
+        selectedSize: product.sizes && product.sizes.length > 0 ? product.sizes[0] : 'Free Size',
+        selectedColor: product.colors && product.colors.length > 0 ? product.colors[0] : 'N/A'
+      });
+      success(`${product.name} added to cart!`);
+    } catch (err) {
+      error(err.message || 'Failed to add to cart');
+    }
   };
 
   useEffect(() => {
@@ -48,6 +52,7 @@ const CategoryEnhanced = ({ category = 'tshirts' }) => {
             originalPrice: p.sale_price ? p.price : null,
             image: p.images[0] || 'https://via.placeholder.com/400/300?text=No+Image',
             sizes: p.sizes.map(s => s.size),
+            colors: p.colors ? p.colors.map(c => c.name) : [],
             rating: p.rating,
             reviews: p.review_count,
             badge: p.sale_price ? 'Sale' : (p.rating > 4.5 ? 'Bestseller' : '')

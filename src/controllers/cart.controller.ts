@@ -64,13 +64,18 @@ export const addToCart = asyncHandler(async (req: AuthRequest, res: Response) =>
     throw new ApiError(404, 'Product not found or not available');
   }
 
-  const sizeData = product.sizes.find((s) => s.size === size);
+  const requestedSize = String(size || '').trim();
+  const requestedColor = String(color || '').trim();
+
+  const sizeData = product.sizes.find((s) => s.size.toLowerCase() === requestedSize.toLowerCase());
   if (!sizeData || sizeData.stock < quantity) {
     console.log(`addToCart: Invalid size/stock. Available: ${JSON.stringify(product.sizes)}`);
     throw new ApiError(400, 'Selected size not available or insufficient stock');
   }
 
-  const colorExists = product.colors.some((c) => c.name === color);
+  const colorData = product.colors.find((c) => c.name.toLowerCase() === requestedColor.toLowerCase());
+  const normalizedColor = colorData?.name || requestedColor || 'N/A';
+  const colorExists = product.colors.length === 0 || !!colorData;
   if (!colorExists) {
     console.log(`addToCart: Invalid color ${color}. Available: ${JSON.stringify(product.colors)}`);
     throw new ApiError(400, 'Selected color not available');
@@ -79,8 +84,8 @@ export const addToCart = asyncHandler(async (req: AuthRequest, res: Response) =>
   let cartItem = await CartItem.findOne({
     user_id: req.userId,
     product_id: productId,
-    size,
-    color,
+    size: sizeData.size,
+    color: normalizedColor,
   });
 
   if (cartItem) {
@@ -97,8 +102,8 @@ export const addToCart = asyncHandler(async (req: AuthRequest, res: Response) =>
       user_id: req.userId,
       product_id: productId,
       quantity,
-      size,
-      color,
+      size: sizeData.size,
+      color: normalizedColor,
     });
   }
 

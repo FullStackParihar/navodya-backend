@@ -171,12 +171,12 @@ const Login = () => {
         </form>
 
         {/* Demo Credentials Info */}
-        <div className="demo-info">
+        {/* <div className="demo-info">
           <p><strong>Demo Credentials:</strong></p>
           <p>Email: admin@navodaya.com</p>
           <p>Password: admin123!@#</p>
           {isLogin && <p>OTP for testing: 123456</p>}
-        </div>
+        </div> */}
       </div>
     </div>
   );
