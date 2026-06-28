@@ -117,7 +117,7 @@ const ThemeButtons = () => {
         </button>
       </div>
       
-      <style jsx>{`
+      <style>{`
         /* Theme Buttons Container */
         .theme-buttons-container {
           position: fixed;

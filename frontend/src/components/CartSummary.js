@@ -55,7 +55,7 @@ const CartSummary = ({
             <img src={item.image} alt={item.name} />
             <div className="summary-item-details">
               <h4>{item.name}</h4>
-              <p>Qty: {item.quantity} | Size: {item.size}</p>
+              <p>Qty: {item.quantity} | Size: {item.size || item.selectedSize}{item.color && item.color !== 'N/A' ? ` | Color: ${item.color}` : ''}</p>
             </div>
             <div className="summary-item-price">
               ₹{item.price * item.quantity}
@@ -113,7 +113,7 @@ const CartSummary = ({
         <span>Secure Payment</span>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .cart-summary {
           background: var(--bg-primary, white);
           border-radius: var(--radius-2xl, 1.5rem);

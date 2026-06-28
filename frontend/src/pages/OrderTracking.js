@@ -256,7 +256,7 @@ const OrderTracking = () => {
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .order-tracking-page {
           padding: 2rem 0;
           min-height: 100vh;

@@ -215,6 +215,12 @@ const Cart = () => {
                         <Link to={`/product/${item.id}`}>{item.name}</Link>
                       </h3>
                       <p>{item.description}</p>
+                      <div className="item-meta-info" style={{ display: 'flex', gap: '12px', fontSize: '0.85rem', color: '#666', marginTop: '4px', marginBottom: '8px' }}>
+                        <span>Size: <strong style={{ color: 'var(--text-primary, #000)' }}>{item.selectedSize || item.size}</strong></span>
+                        {item.selectedColor && item.selectedColor !== 'N/A' && (
+                          <span>Color: <strong style={{ color: 'var(--text-primary, #000)' }}>{item.selectedColor || item.color}</strong></span>
+                        )}
+                      </div>
                       <div className="item-price-enhanced">
                         <span className="current-price">₹{item.price}</span>
                         {item.originalPrice && (

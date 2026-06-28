@@ -4,6 +4,9 @@ import { Link } from 'react-router-dom';
 const FooterEnhanced = () => {
   const [email, setEmail] = useState('');
   const [showBackToTop, setShowBackToTop] = useState(false);
+  const [footerTheme, setFooterTheme] = useState(() => {
+    return localStorage.getItem('theme') || 'light';
+  });
 
   useEffect(() => {
     const handleScroll = () => {
@@ -12,6 +15,14 @@ const FooterEnhanced = () => {
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const handleThemeChange = () => {
+      setFooterTheme(localStorage.getItem('theme') || 'light');
+    };
+    window.addEventListener('theme-change', handleThemeChange);
+    return () => window.removeEventListener('theme-change', handleThemeChange);
   }, []);
 
   const handleNewsletterSubmit = (e) => {
@@ -200,6 +211,22 @@ const FooterEnhanced = () => {
               <a href="#">Careers</a>
               <a href="#">Press</a>
               <a href="#">Partner with Us</a>
+              <span 
+                className="theme-toggle-link"
+                onClick={() => {
+                  const currentTheme = localStorage.getItem('theme') || 'light';
+                  const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                  localStorage.setItem('theme', newTheme);
+                  document.documentElement.setAttribute('data-theme', newTheme);
+                  document.body.classList.remove('theme-light', 'theme-dark');
+                  document.body.classList.add(`theme-${newTheme}`);
+                  window.dispatchEvent(new Event('theme-change'));
+                }}
+                style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+              >
+                <i className={`fas ${footerTheme === 'light' ? 'fa-moon' : 'fa-sun'}`}></i>
+                Theme: {footerTheme === 'light' ? 'Dark' : 'Light'}
+              </span>
             </div>
           </div>
         </div>
@@ -215,7 +242,7 @@ const FooterEnhanced = () => {
       </button>
 
       {/* Enhanced Footer Styles */}
-      <style jsx>{`
+      <style>{`
         /* Black & White Footer Variables */
         :root {
           --footer-primary: #000000;
@@ -830,14 +857,88 @@ const FooterEnhanced = () => {
           }
           
           .back-to-top {
-            width: 45px;
-            height: 45px;
-            bottom: 20px;
-            right: 20px;
+            bottom: 85px;
+            right: 15px;
+            width: 42px;
+            height: 42px;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .universal-footer {
+            margin-top: 60px;
+          }
+          
+          .footer-top {
+            padding: 25px 0;
+          }
+          
+          .footer-brand h3 {
+            font-size: 24px;
+          }
+          
+          .footer-brand p {
+            font-size: 15px;
+          }
+          
+          .footer-section h4 {
+            font-size: 16px;
+          }
+          
+          .footer-links a {
+            font-size: 14px;
+          }
+          
+          .newsletter-content h3 {
+            font-size: 24px;
+          }
+          
+          .newsletter-content p {
+            font-size: 15px;
+          }
+          
+          .trust-badges {
+            grid-template-columns: 1fr;
+            gap: 8px;
+          }
+          
+          .trust-badge {
+            padding: 6px 10px;
+          }
+          
+          .trust-badge span {
+            font-size: 11px;
+          }
+          
+          .app-buttons {
+            flex-direction: column;
+            align-items: center;
+          }
+          
+          .app-button {
+            width: 200px;
+            justify-content: center;
+          }
+          
+          .payment-icons {
+            gap: 8px;
+          }
+          
+          .payment-icon {
+            width: 35px;
+            height: 22px;
+            font-size: 14px;
+          }
+          
+          .back-to-top {
+            width: 40px;
+            height: 40px;
+            bottom: 85px;
+            right: 15px;
           }
           
           .back-to-top i {
-            font-size: 18px;
+            font-size: 16px;
           }
         }
       `}</style>

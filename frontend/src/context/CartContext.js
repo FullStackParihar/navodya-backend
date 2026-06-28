@@ -40,11 +40,15 @@ const getFirstAvailableSize = (sizes = []) => {
 const normalizeCartProduct = (product) => {
   const selectedSizeOption = findMatchingOption(product.sizes, product.selectedSize, 'size');
   const selectedColorOption = findMatchingOption(product.colors, product.selectedColor, 'name');
+  const sizeVal = getOptionName(selectedSizeOption, 'size') || product.selectedSize || getFirstAvailableSize(product.sizes) || 'Free Size';
+  const colorVal = getOptionName(selectedColorOption, 'name') || product.selectedColor || getOptionName(product.colors?.[0], 'name') || 'N/A';
 
   return {
     ...product,
-    selectedSize: getOptionName(selectedSizeOption, 'size') || product.selectedSize || getFirstAvailableSize(product.sizes) || 'Free Size',
-    selectedColor: getOptionName(selectedColorOption, 'name') || product.selectedColor || getOptionName(product.colors?.[0], 'name') || 'N/A'
+    selectedSize: sizeVal,
+    selectedColor: colorVal,
+    size: sizeVal,
+    color: colorVal
   };
 };
 
@@ -151,7 +155,9 @@ export const CartProvider = ({ children }) => {
             image: item.products?.images?.[0] || item.product_id?.images?.[0],
             quantity: item.quantity,
             selectedSize: item.size,
-            selectedColor: item.color
+            selectedColor: item.color,
+            size: item.size,
+            color: item.color
           }));
           dispatch({ type: SET_CART, payload: mappedItems });
         }

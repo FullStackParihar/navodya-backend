@@ -624,7 +624,7 @@ const BulkOrder = () => {
         )}
       </div>
 
-      <style jsx>{`
+      <style>{`
         .bulk-order-page {
           padding: 2rem 0;
           min-height: 100vh;

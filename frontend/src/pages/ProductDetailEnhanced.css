@@ -306,6 +306,19 @@
   color: var(--bg-primary);
 }
 
+.size-option:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  text-decoration: line-through;
+  background: var(--bg-secondary, #f1f5f9);
+  border-color: var(--border-color);
+  color: var(--text-muted, #94a3b8);
+}
+
+.size-option:disabled:hover {
+  border-color: var(--border-color);
+}
+
 .color-selection {
   margin-top: 0;
 }
@@ -766,8 +779,10 @@
     flex-direction: column;
   }
 
+  .add-to-cart-btn,
+  .buy-now-btn,
   .wishlist-btn {
-    width: 100%;
+    width: 100% !important;
     border-radius: 12px;
   }
 

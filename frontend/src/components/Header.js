@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import SearchBarAmazon from './SearchBarAmazon';
-
 import { useWishlist } from '../context/WishlistContext';
 
 const Header = () => {
@@ -10,6 +9,18 @@ const Header = () => {
   const { totalItems } = useCart();
   const { totalItems: wishlistCount } = useWishlist();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [drawerTheme, setDrawerTheme] = useState(() => {
+    return localStorage.getItem('theme') || 'light';
+  });
+
+  useEffect(() => {
+    const handleThemeChange = () => {
+      setDrawerTheme(localStorage.getItem('theme') || 'light');
+    };
+    window.addEventListener('theme-change', handleThemeChange);
+    return () => window.removeEventListener('theme-change', handleThemeChange);
+  }, []);
 
   // Reactive auth state — re-reads localStorage on every route change
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -23,6 +34,14 @@ const Header = () => {
     setIsAdmin(auth && (role === 'admin' || email === 'admin@navodaya.com'));
   }, [location.pathname]);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 40);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
@@ -32,29 +51,65 @@ const Header = () => {
   };
 
   return (
-    <header className="header">
+    <header className={`header ${isScrolled ? 'scrolled' : ''}`}>
       {/* Top Navigation Bar */}
       <div className="top-nav">
         <div className="container">
           <div className="top-nav-content">
             {/* Desktop Logo */}
             <Link to="/" className="logo animate-fadeIn desktop-logo">
-              <img src="/logo2.png" alt="Navodaya Trendz" style={{ height: '120px', width: 'auto' }} />
+              <img src="/logo2.png" alt="Navodaya Trendz" style={{ height: '95px', width: 'auto' }} />
             </Link>
 
-            {/* Row 1: Logo + Hamburger (Mobile only) */}
+            {/* Row 1: Logo + Actions + Hamburger (Mobile only) */}
             <div className="top-nav-row-1">
               <Link to="/" className="logo animate-fadeIn">
-                <img src="/logo2.png" alt="Navodaya Trendz" style={{ height: '70px', width: 'auto' }} />
+                <img src="/logo2.png" alt="Navodaya Trendz" style={{ height: '65px', width: 'auto' }} />
               </Link>
               
-              <button 
-                className="mobile-menu-toggle"
-                onClick={toggleMobileMenu}
-                aria-label="Toggle menu"
-              >
-                <i className={`fas ${isMobileMenuOpen ? 'fa-times' : 'fa-bars'}`}></i>
-              </button>
+              <div className="mobile-actions-wrapper">
+                <Link 
+                  to={isAuthenticated ? "/account" : "/login"} 
+                  className="mobile-action-item"
+                  aria-label="Account"
+                >
+                  <i className="fas fa-user-circle"></i>
+                </Link>
+                
+                <Link 
+                  to="/wishlist" 
+                  className="mobile-action-item"
+                  aria-label="Wishlist"
+                >
+                  <div className="cart-icon-wrapper">
+                    <i className="fas fa-heart"></i>
+                    {wishlistCount > 0 && (
+                      <span className="cart-count" style={{ backgroundColor: '#000000', border: '1px solid #ffffff' }}>{wishlistCount}</span>
+                    )}
+                  </div>
+                </Link>
+                
+                <Link 
+                  to="/cart" 
+                  className="mobile-action-item"
+                  aria-label="Cart"
+                >
+                  <div className="cart-icon-wrapper">
+                    <i className="fas fa-shopping-cart"></i>
+                    {totalItems > 0 && (
+                      <span className="cart-count">{totalItems}</span>
+                    )}
+                  </div>
+                </Link>
+                
+                <button 
+                  className="mobile-menu-toggle"
+                  onClick={toggleMobileMenu}
+                  aria-label="Toggle menu"
+                >
+                  <i className={`fas ${isMobileMenuOpen ? 'fa-times' : 'fa-bars'}`}></i>
+                </button>
+              </div>
             </div>
 
             {/* Row 2: Delivery Info */}
@@ -69,7 +124,7 @@ const Header = () => {
             {/* Row 3: Search Bar */}
             <SearchBarAmazon />
 
-            {/* Row 4: Nav Icons */}
+            {/* Row 4: Nav Icons (Desktop only) */}
             <div className="nav-icons">
               <Link 
                 to={isAuthenticated ? "/account" : "/login"} 
@@ -80,8 +135,6 @@ const Header = () => {
                 <span>{isAuthenticated ? 'Account' : 'Login'}</span>
               </Link>
 
-
-              
               {isAdmin && (
                 <Link 
                   to="/admin-profile" 
@@ -246,6 +299,37 @@ const Header = () => {
                 </Link>
               </li>
             )}
+            <li style={{ marginTop: '16px', listStyle: 'none' }}>
+              <div 
+                className="drawer-theme-toggle" 
+                onClick={() => {
+                  const currentTheme = localStorage.getItem('theme') || 'light';
+                  const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                  localStorage.setItem('theme', newTheme);
+                  document.documentElement.setAttribute('data-theme', newTheme);
+                  document.body.classList.remove('theme-light', 'theme-dark');
+                  document.body.classList.add(`theme-${newTheme}`);
+                  window.dispatchEvent(new Event('theme-change'));
+                  closeMobileMenu();
+                }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  padding: '12px 16px',
+                  color: 'var(--text-primary)',
+                  fontSize: '14px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  borderRadius: '8px',
+                  transition: 'background 0.2s',
+                  background: 'rgba(128,128,128,0.06)'
+                }}
+              >
+                <i className={`fas ${drawerTheme === 'light' ? 'fa-moon' : 'fa-sun'}`} style={{ width: '16px', textAlign: 'center' }}></i>
+                <span>Switch to {drawerTheme === 'light' ? 'Dark' : 'Light'} Mode</span>
+              </div>
+            </li>
           </ul>
         </div>
       </div>

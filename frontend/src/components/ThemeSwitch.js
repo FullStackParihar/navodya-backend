@@ -20,6 +20,17 @@ const ThemeSwitch = () => {
   }, [theme]);
 
   useEffect(() => {
+    const handleThemeChange = () => {
+      const savedTheme = localStorage.getItem('theme') || 'light';
+      if (savedTheme !== theme) {
+        setTheme(savedTheme);
+      }
+    };
+    window.addEventListener('theme-change', handleThemeChange);
+    return () => window.removeEventListener('theme-change', handleThemeChange);
+  }, [theme]);
+
+  useEffect(() => {
     // Listen for system theme changes
     const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
     
@@ -112,15 +123,16 @@ const ThemeSwitch = () => {
         </div>
       </div>
       
-      <style jsx>{`
+      <style>{`
         /* Theme Switch Container */
         .theme-switch-container {
+          display: none !important;
           position: fixed;
-          top: 20px;
-          right: 20px;
+          bottom: 20px;
+          left: 20px;
           z-index: 1000;
           background: var(--bg-primary, #ffffff);
-          padding: 15px;
+          padding: 10px 14px;
           border-radius: 16px;
           box-shadow: 0 8px 24px rgba(0,0,0,0.12);
           border: 1px solid var(--border-color, #dee2e6);
@@ -238,76 +250,7 @@ const ThemeSwitch = () => {
         /* Responsive Design */
         @media (max-width: 768px) {
           .theme-switch-container {
-            top: 15px;
-            right: 15px;
-            padding: 12px;
-          }
-          
-          .theme-switch {
-            width: 70px;
-            height: 35px;
-          }
-          
-          .theme-switch-knob {
-            width: 26px;
-            height: 26px;
-            top: 2.5px;
-            left: 2.5px;
-          }
-          
-          .theme-switch.active .theme-switch-knob {
-            left: 37.5px;
-          }
-          
-          .theme-switch-label {
-            font-size: 11px;
-            margin-bottom: 10px;
-          }
-          
-          .theme-labels {
-            margin-top: 8px;
-          }
-          
-          .theme-label {
-            font-size: 9px;
-          }
-        }
-
-        @media (max-width: 480px) {
-          .theme-switch-container {
-            top: 10px;
-            right: 10px;
-            padding: 10px;
-          }
-          
-          .theme-switch {
-            width: 60px;
-            height: 30px;
-          }
-          
-          .theme-switch-knob {
-            width: 22px;
-            height: 22px;
-            top: 2px;
-            left: 2px;
-            font-size: 12px;
-          }
-          
-          .theme-switch.active .theme-switch-knob {
-            left: 32px;
-          }
-          
-          .theme-switch-label {
-            font-size: 10px;
-            margin-bottom: 8px;
-          }
-          
-          .theme-labels {
-            margin-top: 6px;
-          }
-          
-          .theme-label {
-            font-size: 8px;
+            display: none !important;
           }
         }
       `}</style>

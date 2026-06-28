@@ -60,7 +60,7 @@ const SizeFilter = ({ onSizeChange, selectedSizes = [] }) => {
         ))}
       </div>
 
-      <style jsx>{`
+      <style>{`
         .size-filter {
           background: var(--bg-primary, white);
           border: 1px solid var(--border-color, #e2e8f0);

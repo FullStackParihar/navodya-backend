@@ -8,6 +8,8 @@ import ProductCard from '../components/ProductCard';
 import SkeletonLoader from '../components/SkeletonLoader';
 import './ProductDetailEnhanced.css';
 
+const fallbackImage = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="800" viewBox="0 0 600 800"><rect width="600" height="800" fill="%23f1f5f9"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="24" fill="%2394a3b8">Navodaya Trendz</text></svg>`;
+
 const ProductDetailEnhanced = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -37,8 +39,13 @@ const ProductDetailEnhanced = () => {
         if (result.success) {
           const p = result.data;
           
-          // Ensure we have S to 3XL sizes available
-          const productSizes = ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
+          // Get all sizes from database, even if stock is 0
+          let productSizes = [];
+          if (p.sizes && p.sizes.length > 0) {
+            productSizes = p.sizes.map(s => s.size);
+          } else {
+            productSizes = ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
+          }
           
           const mappedProduct = {
             id: p.slug,
@@ -54,6 +61,7 @@ const ProductDetailEnhanced = () => {
             category: p.category_id?.name || 'T-Shirts',
             categorySlug: p.category_id?.slug,
             sizes: productSizes,
+            sizeStocks: p.sizes && p.sizes.length > 0 ? p.sizes.reduce((acc, s) => ({ ...acc, [s.size]: s.stock }), {}) : {},
             colors: p.colors.map(c => c.name),
             colorMap: p.colors.reduce((acc, c) => ({ ...acc, [c.name]: c.hex }), {}),
             inStock: p.is_active && p.sizes.some(s => s.stock > 0),
@@ -65,7 +73,18 @@ const ProductDetailEnhanced = () => {
             images: p.images.length > 0 ? p.images.map(img => resolveImageUrl(img)) : [resolveImageUrl('https://via.placeholder.com/600x800?text=No+Image')]
           };
           setProduct(mappedProduct);
-          if (mappedProduct.sizes.length > 0) setSelectedSize(mappedProduct.sizes[0]);
+          
+          // Select first available (in stock) size, or fallback to first option
+          const firstInStockSize = productSizes.find(size => {
+            const stock = p.sizes?.find(s => s.size === size)?.stock;
+            return stock !== undefined ? stock > 0 : true;
+          });
+          if (firstInStockSize) {
+            setSelectedSize(firstInStockSize);
+          } else if (mappedProduct.sizes.length > 0) {
+            setSelectedSize(mappedProduct.sizes[0]);
+          }
+
           if (mappedProduct.colors.length > 0) setSelectedColor(mappedProduct.colors[0]);
 
           if (mappedProduct.categorySlug) {
@@ -208,7 +227,15 @@ const ProductDetailEnhanced = () => {
           <div className="product-images-section">
             <div className="main-image-wrapper">
               <div className="main-image-container">
-                <img src={product.images[selectedImage]} alt={product.name} className="main-image" />
+                <img 
+                  src={product.images[selectedImage]} 
+                  alt={product.name} 
+                  className="main-image" 
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = fallbackImage;
+                  }}
+                />
               </div>
 
             </div>
@@ -220,7 +247,14 @@ const ProductDetailEnhanced = () => {
                   onClick={() => setSelectedImage(idx)}
                   aria-label={`View image ${idx + 1}`}
                 >
-                  <img src={img} alt={`Product view ${idx + 1}`} />
+                  <img 
+                    src={img} 
+                    alt={`Product view ${idx + 1}`} 
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = fallbackImage;
+                    }}
+                  />
                 </button>
               ))}
             </div>
@@ -256,15 +290,21 @@ const ProductDetailEnhanced = () => {
                   <button className="size-guide-btn">Size Guide</button>
                 </div>
                 <div className="size-options-grid">
-                  {product.sizes.map(size => (
-                    <button
-                      key={size}
-                      className={`size-option ${selectedSize === size ? 'active' : ''}`}
-                      onClick={() => setSelectedSize(size)}
-                    >
-                      {size}
-                    </button>
-                  ))}
+                  {product.sizes.map(size => {
+                    const stock = product.sizeStocks?.[size] !== undefined ? product.sizeStocks[size] : 10;
+                    const isOutOfStock = stock <= 0;
+                    return (
+                      <button
+                        key={size}
+                        className={`size-option ${selectedSize === size ? 'active' : ''}`}
+                        disabled={isOutOfStock}
+                        onClick={() => setSelectedSize(size)}
+                        title={isOutOfStock ? `${size} (Out of Stock)` : ''}
+                      >
+                        {size}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 

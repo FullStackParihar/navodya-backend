@@ -90,7 +90,7 @@ const ThemeToggle = () => {
         <span>{theme === 'light' ? 'Dark' : 'Light'}</span>
       </button>
       
-      <style jsx>{`
+      <style>{`
         /* Theme Toggle Button */
         .theme-toggle {
           position: fixed;

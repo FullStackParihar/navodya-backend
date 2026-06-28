@@ -69,7 +69,7 @@ const HeaderWithCart = () => {
         cartItems={items}
       />
 
-      <style jsx>{`
+      <style>{`
         .header-actions {
           display: flex;
           align-items: center;

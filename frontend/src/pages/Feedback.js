@@ -163,7 +163,7 @@ const Feedback = () => {
         </div>
       </section>
 
-      <style jsx>{`
+      <style>{`
         .feedback-page {
           background: var(--bg-secondary, #f8fafc);
           min-height: 100vh;

@@ -6,6 +6,8 @@ import { useToast } from '../context/ToastContext';
 import QuickViewModal from './QuickViewModal';
 import { resolveImageUrl } from '../utils/api';
 
+const fallbackImage = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 300 300"><rect width="300" height="300" fill="%23f1f5f9"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="16" fill="%2394a3b8">Navodaya Trendz</text></svg>`;
+
 const ProductCard = ({ product }) => {
   const { addToCart, isInCart } = useCart();
   const { isInWishlist, toggleWishlist } = useWishlist();
@@ -47,8 +49,6 @@ const ProductCard = ({ product }) => {
     setIsQuickViewOpen(true);
   };
 
-
-
   return (
     <div 
       className="product-card animate-fadeIn"
@@ -63,7 +63,7 @@ const ProductCard = ({ product }) => {
             loading="lazy"
             onError={(e) => {
               e.target.onerror = null; 
-              e.target.src = `https://picsum.photos/seed/${product.dbId || product.id}/300/300`;
+              e.target.src = fallbackImage;
             }}
           />
         </Link>

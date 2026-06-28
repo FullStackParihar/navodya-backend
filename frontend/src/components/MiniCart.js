@@ -109,7 +109,7 @@ const MiniCart = ({
       {/* Overlay */}
       {isOpen && <div className="mini-cart-overlay" onClick={onClose}></div>}
 
-      <style jsx>{`
+      <style>{`
         .mini-cart {
           position: fixed;
           top: 0;

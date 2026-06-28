@@ -46,7 +46,7 @@ const CheckoutProgress = ({ currentStep = 1, steps = [] }) => {
         })}
       </div>
 
-      <style jsx>{`
+      <style>{`
         .checkout-progress {
           background: var(--bg-primary, white);
           border-radius: var(--radius-xl, 1rem);

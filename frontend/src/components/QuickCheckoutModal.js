@@ -309,7 +309,7 @@ const QuickCheckoutModal = ({
 
       <div className="modal-overlay" onClick={onClose}></div>
 
-      <style jsx>{`
+      <style>{`
         .quick-checkout-modal {
           position: fixed;
           top: 0;

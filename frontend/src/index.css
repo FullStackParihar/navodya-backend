@@ -129,7 +129,7 @@ main {
 }
 
 .logo img {
-    height: 70px !important;
+    height: 95px !important;
     width: auto !important;
     max-height: none !important;
 }
@@ -784,20 +784,19 @@ main {
     }
 
     .logo img {
-        height: 50px !important;
+        height: 65px !important;
     }
 
-    /* Row 2: Delivery Info */
+    /* Row 2: Delivery Info - Hide on mobile to save space */
     .delivery-info {
-        width: 100%;
-        justify-content: center;
+        display: none !important;
     }
 
     /* Row 3: Search Bar */
     .search-container {
         max-width: 100%;
         width: 100%;
-        order: 3;
+        order: 2; /* Reposition search under logo */
     }
 
     .search-wrapper {
@@ -810,18 +809,41 @@ main {
         min-height: 44px;
     }
 
-    /* Row 4: Nav Icons */
+    /* Row 4: Nav Icons - Hide on mobile since they are now in the top row actions wrapper */
     .nav-icons {
-        width: 100%;
-        justify-content: space-evenly;
-        gap: 8px;
-        order: 4;
+        display: none !important;
     }
 
-    .nav-item {
-        padding: 8px 8px;
-        min-width: 60px;
-        min-height: 44px;
+    /* Mobile actions wrapper styling */
+    .mobile-actions-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .mobile-action-item {
+        color: var(--header-text);
+        font-size: 20px;
+        padding: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        position: relative;
+    }
+
+    .mobile-action-item:hover {
+        opacity: 0.8;
+    }
+
+    /* Dynamic collapsed styles on scroll */
+    .header.scrolled .search-container,
+    .header.scrolled .quick-category-pills {
+        display: none !important;
+    }
+
+    .header.scrolled .top-nav {
+        padding: 6px 0;
     }
 
     /* Secondary Nav: Hide on mobile */
@@ -922,7 +944,7 @@ main {
     }
 
     main {
-        padding-top: 220px;
+        padding-top: 175px;
     }
 
     .container {

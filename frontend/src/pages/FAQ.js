@@ -113,7 +113,7 @@ const FAQ = () => {
         </div>
       </section>
 
-      <style jsx>{`
+      <style>{`
         .faq-page {
           background: var(--bg-secondary, #f8fafc);
           min-height: 100vh;

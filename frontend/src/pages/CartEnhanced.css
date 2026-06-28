@@ -339,6 +339,7 @@
   cursor: pointer;
   transition: all 0.3s ease;
   color: #000000;
+  flex-shrink: 0;
 }
 
 .action-btn:hover {
@@ -692,7 +693,7 @@
   }
 
   .order-summary-enhanced {
-    position: static;
+    display: none !important;
   }
 
   .cart-summary-mobile {

@@ -561,7 +561,7 @@ const UserPanel = () => {
         </div>
       </section>
 
-      <style jsx>{`
+      <style>{`
         .user-panel {
           background: #f0f0f0;
           min-height: 100vh;

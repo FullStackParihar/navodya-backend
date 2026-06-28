@@ -137,7 +137,7 @@ const CheckoutDashboard = () => {
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .checkout-dashboard {
           padding: 2rem 1rem;
           min-height: 100vh;
