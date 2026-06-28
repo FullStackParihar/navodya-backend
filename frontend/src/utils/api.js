@@ -1,4 +1,4 @@
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
+const API_URL = process.env.REACT_APP_API_URL || 'https://navodya-backend.onrender.com/api';
 const BASE_URL = API_URL.replace('/api', '');
 
 const handle401 = () => {
