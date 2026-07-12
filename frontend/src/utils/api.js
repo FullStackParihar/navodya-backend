@@ -82,6 +82,19 @@ export const api = {
     return response.json();
   },
 
+  put: async (endpoint, data) => {
+    const response = await fetch(`${API_URL}${endpoint}`, {
+      method: 'PUT',
+      headers: getHeaders(),
+      body: JSON.stringify(data),
+    });
+    if (response.status === 401) {
+      handle401();
+      return { success: false, message: 'Unauthorized' };
+    }
+    return response.json();
+  },
+
   delete: async (endpoint) => {
     const response = await fetch(`${API_URL}${endpoint}`, {
       method: 'DELETE',

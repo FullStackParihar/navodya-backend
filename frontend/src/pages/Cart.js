@@ -158,9 +158,6 @@ const Cart = () => {
                 <Link to="/" className="btn-primary">
                   <i className="fas fa-shopping-bag"></i> Continue Shopping
                 </Link>
-                <Link to="/tshirts" className="btn-secondary">
-                  <i className="fas fa-tshirt"></i> Browse T-Shirts
-                </Link>
               </div>
             </div>
           </div>

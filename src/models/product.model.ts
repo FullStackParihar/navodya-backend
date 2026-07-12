@@ -1,5 +1,15 @@
 import mongoose, { Document } from 'mongoose';
 
+export interface IFabricVariant {
+    _id: mongoose.Types.ObjectId;
+    name: string;
+    price: number;
+    sale_price?: number;
+    stock?: number;
+    sku?: string;
+    is_active: boolean;
+}
+
 export interface IProduct extends Document {
     name: string;
     slug: string;
@@ -11,6 +21,7 @@ export interface IProduct extends Document {
     subcategory?: string;
     sizes: { size: string; stock: number }[];
     colors: { name: string; hex?: string; images?: string[] }[];
+    fabric_variants: IFabricVariant[];
     tags: string[];
     features?: string[];
     specifications?: Record<string, string>;
@@ -32,6 +43,14 @@ const productSchema = new mongoose.Schema({
     subcategory: { type: String },
     sizes: [{ size: String, stock: Number }],
     colors: [{ name: String, hex: String, images: [String] }],
+    fabric_variants: [{
+        name: { type: String, required: true, trim: true },
+        price: { type: Number, required: true, min: 0 },
+        sale_price: { type: Number, min: 0 },
+        stock: { type: Number, min: 0 },
+        sku: { type: String, trim: true },
+        is_active: { type: Boolean, default: true }
+    }],
     tags: [String],
     features: [String],
     specifications: { type: Map, of: String },

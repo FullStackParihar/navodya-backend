@@ -147,9 +147,6 @@ const Wishlist = () => {
                 <Link to="/" className="btn-primary">
                   <i className="fas fa-shopping-bag"></i> Continue Shopping
                 </Link>
-                <Link to="/tshirts" className="btn-secondary">
-                  <i className="fas fa-tshirt"></i> Browse T-Shirts
-                </Link>
               </div>
             </div>
           </div>
@@ -230,6 +227,7 @@ const Wishlist = () => {
                     <Link to={`/product/${item.id}`}>{item.name}</Link>
                   </h3>
                   <p>{item.description}</p>
+                  {item.selectedFabric?.name && <p className="wishlist-fabric-quality">Fabric: <strong>{item.selectedFabric.name}</strong></p>}
                   
                   <div className="item-rating-enhanced">
                     <div className="rating-stars">

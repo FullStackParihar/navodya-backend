@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import multer from 'multer';
 import {
   register,
   login,
@@ -15,11 +16,22 @@ import {
 } from '../validations/auth.validation.js';
 
 const router = Router();
+const profileUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    if (!['image/jpeg', 'image/png', 'image/webp', 'image/jpg'].includes(file.mimetype)) {
+      cb(new Error('Only JPG, PNG, and WEBP profile images are allowed'));
+      return;
+    }
+    cb(null, true);
+  },
+});
 
 router.post('/register', validate(registerSchema), register);
 router.post('/login', validate(loginSchema), login);
 router.post('/logout', authenticate, logout);
 router.get('/profile', authenticate, getProfile);
-router.patch('/profile', authenticate, validate(updateProfileSchema), updateProfile);
+router.patch('/profile', authenticate, profileUpload.single('avatar'), validate(updateProfileSchema), updateProfile);
 
 export default router;

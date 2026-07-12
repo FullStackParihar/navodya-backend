@@ -8,11 +8,28 @@ import { Order } from '../models/order.model.js';
 import { CartItem } from '../models/cartItem.model.js';
 import { Coupon } from '../models/coupon.model.js';
 import { Product, IProduct } from '../models/product.model.js';
+import { User } from '../models/user.model.js';
 import { config } from '../config/env.js';
+import PDFDocument from 'pdfkit';
 
 const stripe = new Stripe(config.stripe.secretKey, {
     apiVersion: 'latest' as any,
 });
+
+const resolveItemFabric = (item: any, product: IProduct) => {
+    if (!item.fabric_variant_id) {
+        if (product.fabric_variants?.some(v => v.is_active)) {
+            throw new ApiError(400, `Select a fabric quality for ${product.name}`);
+        }
+        return null;
+    }
+    const variant = product.fabric_variants?.find(v => String(v._id) === String(item.fabric_variant_id));
+    if (!variant?.is_active) throw new ApiError(400, `Selected fabric quality is no longer available for ${product.name}`);
+    if (variant.stock !== undefined && variant.stock < item.quantity) {
+        throw new ApiError(400, `Insufficient ${variant.name} stock for ${product.name}`);
+    }
+    return variant;
+};
 
 export const createPaymentIntent = asyncHandler(async (req: AuthRequest, res: Response) => {
     const { couponCode, shippingAddress } = req.body;
@@ -33,7 +50,8 @@ export const createPaymentIntent = asyncHandler(async (req: AuthRequest, res: Re
         if (!product) continue;
 
         // Check stock here as well? Ideally yes.
-        const price = product.sale_price || product.price;
+        const fabric = resolveItemFabric(item, product);
+        const price = fabric ? (fabric.sale_price ?? fabric.price) : (product.sale_price ?? product.price);
         subtotal += price * item.quantity;
 
         items.push({
@@ -44,6 +62,9 @@ export const createPaymentIntent = asyncHandler(async (req: AuthRequest, res: Re
             quantity: item.quantity,
             size: item.size,
             color: item.color
+            ,fabric_variant_id: fabric?._id
+            ,fabric_name: fabric?.name
+            ,fabric_price: fabric ? (fabric.sale_price ?? fabric.price) : undefined
         });
     }
 
@@ -172,6 +193,8 @@ export const createOrder = asyncHandler(async (req: AuthRequest, res: Response) 
         const product = item.product_id as unknown as IProduct;
         if (!product) continue;
 
+        const fabric = resolveItemFabric(item, product);
+
         // Decrement Stock
         const sizeIndex = product.sizes.findIndex(s => s.size === item.size);
         if (sizeIndex > -1) {
@@ -179,10 +202,12 @@ export const createOrder = asyncHandler(async (req: AuthRequest, res: Response) 
                 throw new ApiError(400, `Insufficient stock for ${product.name} (Size: ${item.size})`);
             }
             product.sizes[sizeIndex].stock -= item.quantity;
-            await product.save(); // Save stock update
         }
 
-        const price = product.sale_price || product.price;
+        if (fabric?.stock !== undefined) fabric.stock -= item.quantity;
+        await product.save();
+
+        const price = fabric ? (fabric.sale_price ?? fabric.price) : (product.sale_price ?? product.price);
         subtotal += price * item.quantity;
 
         orderItems.push({
@@ -193,6 +218,9 @@ export const createOrder = asyncHandler(async (req: AuthRequest, res: Response) 
             quantity: item.quantity,
             size: item.size,
             color: item.color
+            ,fabric_variant_id: fabric?._id
+            ,fabric_name: fabric?.name
+            ,fabric_price: fabric ? (fabric.sale_price ?? fabric.price) : undefined
         });
     }
 
@@ -261,4 +289,112 @@ export const getOrderById = asyncHandler(async (req: AuthRequest, res: Response)
     }
 
     res.status(200).json(new ApiResponse(200, order, 'Order retrieved successfully'));
+});
+
+export const downloadInvoice = asyncHandler(async (req: AuthRequest, res: Response) => {
+    const { id } = req.params;
+    
+    // Find order and verify access (must be owner or admin)
+    // Note: The route should use authenticate middleware.
+    // We fetch the order. If req.user is an admin (we check via a property or just assume admin route handles it differently).
+    // Let's just fetch by ID, and if the user is not admin, ensure they own it.
+    let order;
+    
+    // Check if admin (Assuming req.user is set by auth middleware, but we only have req.userId)
+    const user = await User.findById(req.userId);
+    const isAdmin = user && user.role === 'admin';
+
+    if (isAdmin) {
+        order = await Order.findById(id);
+    } else {
+        order = await Order.findOne({ _id: id, user_id: req.userId });
+    }
+
+    if (!order) {
+        throw new ApiError(404, 'Order not found or unauthorized');
+    }
+
+    // Initialize PDF Document
+    const doc = new PDFDocument({ margin: 50 });
+
+    // Stream directly to response
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename=invoice-${order._id}.pdf`);
+    
+    doc.pipe(res);
+
+    // Build the PDF
+    // Header
+    doc.fontSize(25).font('Helvetica-Bold').text('NAVODAYA TRENDZ', { align: 'center' });
+    doc.fontSize(10).font('Helvetica').text('Premium Alumni Merchandise', { align: 'center' });
+    doc.moveDown();
+    
+    doc.fontSize(20).text('INVOICE', { align: 'center' });
+    doc.moveDown();
+
+    // Order Info
+    doc.fontSize(12).font('Helvetica-Bold').text(`Order ID: `, { continued: true }).font('Helvetica').text(order._id.toString());
+    doc.font('Helvetica-Bold').text(`Date: `, { continued: true }).font('Helvetica').text(new Date(order.created_at).toLocaleDateString());
+    doc.font('Helvetica-Bold').text(`Status: `, { continued: true }).font('Helvetica').text(order.status);
+    doc.moveDown();
+
+    // Customer Info
+    doc.font('Helvetica-Bold').text('Bill To:');
+    doc.font('Helvetica').text(`Customer ID: ${order.user_id}`);
+    doc.text(`Address: ${order.shipping_address.street}, ${order.shipping_address.city}, ${order.shipping_address.state}, ${order.shipping_address.zip_code}, ${order.shipping_address.country}`);
+    doc.moveDown();
+
+    // Table Header
+    const tableTop = doc.y;
+    doc.font('Helvetica-Bold');
+    doc.text('Item', 50, tableTop);
+    doc.text('Qty', 350, tableTop);
+    doc.text('Price', 400, tableTop);
+    doc.text('Total', 480, tableTop);
+    
+    doc.moveTo(50, tableTop + 15).lineTo(550, tableTop + 15).stroke();
+    
+    let yPosition = tableTop + 25;
+    doc.font('Helvetica');
+
+    // Table Rows
+    order.items.forEach((item: any) => {
+        const options = [item.size, item.fabric_name].filter(Boolean).join(', ') || 'N/A';
+        doc.text(`${item.name} (${options})`, 50, yPosition, { width: 280 });
+        doc.text(item.quantity.toString(), 350, yPosition);
+        doc.text(`Rs. ${item.price}`, 400, yPosition);
+        doc.text(`Rs. ${item.price * item.quantity}`, 480, yPosition);
+        yPosition += 25;
+    });
+
+    doc.moveTo(50, yPosition).lineTo(550, yPosition).stroke();
+    yPosition += 15;
+
+    // Totals
+    doc.font('Helvetica-Bold');
+    doc.text('Subtotal:', 380, yPosition);
+    doc.font('Helvetica').text(`Rs. ${order.pricing.subtotal}`, 480, yPosition);
+    yPosition += 20;
+
+    if (order.pricing.discount > 0) {
+        doc.font('Helvetica-Bold').text('Discount:', 380, yPosition);
+        doc.font('Helvetica').text(`- Rs. ${order.pricing.discount}`, 480, yPosition);
+        yPosition += 20;
+    }
+
+    if (order.pricing.shipping_fee > 0) {
+        doc.font('Helvetica-Bold').text('Shipping:', 380, yPosition);
+        doc.font('Helvetica').text(`Rs. ${order.pricing.shipping_fee}`, 480, yPosition);
+        yPosition += 20;
+    }
+
+    doc.font('Helvetica-Bold').fontSize(14).text('Total Amount:', 350, yPosition + 10);
+    doc.text(`Rs. ${order.pricing.total}`, 480, yPosition + 10);
+
+    // Footer
+    doc.moveDown(4);
+    doc.fontSize(10).font('Helvetica-Oblique').text('Thank you for shopping with Navodaya Trendz!', { align: 'center' });
+
+    // Finalize PDF
+    doc.end();
 });

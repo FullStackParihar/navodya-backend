@@ -71,7 +71,7 @@ const MiniCart = ({
                   <img src={item.image} alt={item.name} />
                   <div className="item-details">
                     <h4>{item.name}</h4>
-                    <p>Size: {item.size} | Color: {item.color}</p>
+                    <p>Size: {item.size} | Color: {item.color}{item.fabricName ? ` | Fabric: ${item.fabricName}` : ''}</p>
                     <div className="item-price-qty">
                       <span className="price">₹{item.price}</span>
                       <span className="quantity">Qty: {item.quantity}</span>

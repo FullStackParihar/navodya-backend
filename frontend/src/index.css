@@ -988,3 +988,1566 @@ main {
         font-size: 28px;
     }
 }
+
+/* =====================================================
+   Production Header / Layout Polish
+   Keeps existing navigation and search behavior intact.
+   ===================================================== */
+
+.header {
+    background: rgba(255, 255, 255, 0.98);
+    border-bottom: 1px solid #e5e7eb;
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.06);
+    backdrop-filter: blur(14px);
+}
+
+.header a::after,
+.header button::after,
+.universal-footer a::after {
+    display: none !important;
+}
+
+.header .container {
+    max-width: 1640px;
+    padding-left: clamp(18px, 4vw, 48px);
+    padding-right: clamp(18px, 4vw, 48px);
+}
+
+.top-nav {
+    padding: 12px 0;
+}
+
+.top-nav-content {
+    min-height: 74px;
+    gap: clamp(14px, 2vw, 28px);
+}
+
+.desktop-logo {
+    flex: 0 0 auto;
+}
+
+.logo {
+    min-width: max-content;
+}
+
+.logo img {
+    height: 64px !important;
+    max-width: 170px;
+    object-fit: contain;
+}
+
+.delivery-info {
+    min-height: 56px;
+    padding: 10px 18px;
+    border-radius: 8px;
+    background: #f3f4f6;
+    color: #111827;
+    flex: 0 0 auto;
+    box-shadow: none;
+}
+
+.delivery-info i {
+    font-size: 20px;
+}
+
+.search-container {
+    flex: 1 1 520px;
+    max-width: 640px;
+    min-width: 280px;
+}
+
+.search-wrapper {
+    height: 50px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    overflow: visible;
+}
+
+.search-category {
+    min-width: 130px;
+    height: 100%;
+    padding: 0 14px;
+    border: 0;
+    border-right: 1px solid #e5e7eb;
+    border-radius: 8px 0 0 8px;
+    background: #f8fafc;
+    color: #111827;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.search-form {
+    min-width: 0;
+}
+
+.search-input {
+    height: 100%;
+    border: 0;
+    padding: 0 16px;
+    font-size: 15px;
+}
+
+.search-input:focus {
+    box-shadow: inset 0 0 0 2px rgba(47, 74, 103, 0.25);
+}
+
+.search-button {
+    width: 54px;
+    height: 100%;
+    padding: 0;
+    border-radius: 0 8px 8px 0;
+    background: #2f4a67;
+}
+
+.nav-icons {
+    flex: 0 0 auto;
+    gap: 12px;
+}
+
+.nav-item {
+    min-width: 76px;
+    min-height: 70px;
+    padding: 9px 12px;
+    border-radius: 8px;
+    background: #f3f4f6;
+    color: #111827;
+    box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.03);
+}
+
+.nav-item i {
+    font-size: 22px;
+}
+
+.nav-item:hover,
+.nav-item.active {
+    background: #2f4a67;
+    color: #ffffff;
+    transform: translateY(-2px);
+}
+
+.nav-item:hover i,
+.nav-item.active i,
+.nav-item:hover span,
+.nav-item.active span {
+    color: #ffffff;
+}
+
+.secondary-nav {
+    padding: 10px 0;
+    border-top: 1px solid #eef2f7;
+    background: rgba(255, 255, 255, 0.98);
+}
+
+.secondary-nav-content {
+    gap: 14px;
+    align-items: center;
+}
+
+.menu-toggle,
+.nav-links a {
+    min-height: 44px;
+    border-radius: 999px;
+    background: #f3f4f6;
+    color: #111827;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.02);
+}
+
+.menu-toggle {
+    flex: 0 0 auto;
+    padding: 0 18px;
+}
+
+.nav-links {
+    flex: 1;
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 10px;
+    overflow-x: auto;
+    padding: 2px 0 4px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.nav-links::-webkit-scrollbar {
+    display: none;
+}
+
+.nav-links li {
+    flex: 0 0 auto;
+}
+
+.nav-links a {
+    padding: 0 20px;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.menu-toggle:hover,
+.nav-links a:hover,
+.nav-links a.active {
+    background: #2f4a67;
+    color: #ffffff !important;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 18px rgba(47, 74, 103, 0.16);
+}
+
+main {
+    padding-top: 158px;
+}
+
+.App:has(.admin-profile-new) .universal-footer {
+    margin-top: 0;
+}
+
+.universal-footer {
+    clear: both;
+}
+
+@media (max-width: 1180px) {
+    .top-nav-content {
+        gap: 14px;
+    }
+
+    .delivery-info {
+        display: none;
+    }
+
+    .search-container {
+        max-width: none;
+    }
+
+    .nav-item {
+        min-width: 68px;
+    }
+}
+
+@media (max-width: 768px) {
+    .header .container {
+        padding-left: 14px;
+        padding-right: 14px;
+    }
+
+    .top-nav {
+        padding: 10px 0;
+    }
+
+    .top-nav-content {
+        gap: 10px;
+        min-height: 0;
+        padding: 0 !important;
+    }
+
+    .top-nav-row-1 {
+        min-height: 54px;
+    }
+
+    .logo img {
+        height: 48px !important;
+        max-width: 132px;
+    }
+
+    .mobile-actions-wrapper {
+        gap: 8px;
+    }
+
+    .mobile-action-item,
+    .mobile-menu-toggle {
+        width: 38px;
+        height: 38px;
+        border-radius: 8px;
+        background: #f3f4f6;
+        color: #111827;
+    }
+
+    .search-container {
+        margin-top: 0;
+        order: 2;
+        flex-basis: 100%;
+        min-width: 0;
+    }
+
+    .search-wrapper {
+        height: 46px;
+        border-radius: 8px;
+    }
+
+    .search-category {
+        min-width: 92px;
+        max-width: 110px;
+        padding: 0 8px;
+        font-size: 12px;
+    }
+
+    .search-input {
+        min-width: 0;
+        font-size: 15px;
+    }
+
+    .search-button {
+        width: 46px;
+    }
+
+    .quick-category-pills {
+        gap: 8px;
+        padding: 8px 14px 10px;
+    }
+
+    .quick-category-pills a {
+        min-height: 36px;
+        padding: 8px 14px;
+        border-radius: 999px;
+    }
+
+    main {
+        padding-top: 126px;
+    }
+}
+
+@media (max-width: 480px) {
+    .mobile-actions-wrapper {
+        gap: 6px;
+    }
+
+    .mobile-action-item,
+    .mobile-menu-toggle {
+        width: 34px;
+        height: 34px;
+        font-size: 17px;
+    }
+
+    .logo img {
+        height: 42px !important;
+        max-width: 118px;
+    }
+
+    .search-category {
+        min-width: 76px;
+        max-width: 84px;
+    }
+}
+
+/* =====================================================
+   Final E-commerce Header Refinement
+   UI-only: keeps all existing links, handlers, search, cart and auth logic.
+   ===================================================== */
+
+.public-app .header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: rgba(255, 255, 255, 0.98);
+    border-bottom: 1px solid #e5e7eb;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+    backdrop-filter: blur(16px);
+}
+
+.public-app .header .container {
+    width: 100%;
+    max-width: 1560px;
+    padding-left: clamp(16px, 3vw, 40px);
+    padding-right: clamp(16px, 3vw, 40px);
+}
+
+.public-app .top-nav {
+    padding: 10px 0;
+}
+
+.public-app .top-nav-content {
+    min-height: 64px;
+    display: grid;
+    grid-template-columns: auto auto minmax(320px, 1fr) auto;
+    align-items: center;
+    gap: 16px;
+}
+
+.public-app .desktop-logo {
+    min-width: 0;
+}
+
+.public-app .logo {
+    min-width: 0;
+    transform: none;
+}
+
+.public-app .logo:hover {
+    transform: none;
+}
+
+.public-app .logo img {
+    height: 54px !important;
+    width: auto !important;
+    max-width: 150px;
+    object-fit: contain;
+    display: block;
+}
+
+.public-app .delivery-info {
+    min-height: 48px;
+    padding: 8px 14px;
+    gap: 10px;
+    border-radius: 12px;
+    background: #f3f4f6;
+    color: #111827;
+    border: 1px solid #eceff3;
+    box-shadow: none;
+}
+
+.public-app .delivery-info:hover {
+    background: #eef2f7;
+    transform: translateY(-1px);
+}
+
+.public-app .delivery-info i {
+    margin-right: 0;
+    font-size: 18px;
+    color: #111827;
+}
+
+.public-app .delivery-info div div {
+    font-size: 12px;
+    line-height: 1.1;
+    color: #4b5563;
+}
+
+.public-app .delivery-info strong {
+    display: block;
+    margin-top: 2px;
+    font-size: 13px;
+    line-height: 1.15;
+    color: #111827;
+}
+
+.public-app .search-container {
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+    flex: initial;
+    position: relative;
+}
+
+.public-app .search-wrapper {
+    height: 46px;
+    display: grid;
+    grid-template-columns: 126px minmax(0, 1fr);
+    border: 1px solid #dbe2ea;
+    border-radius: 12px;
+    background: #ffffff;
+    overflow: visible;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+}
+
+.public-app .search-wrapper:focus-within {
+    border-color: #2f4a67;
+    box-shadow: 0 0 0 3px rgba(47, 74, 103, 0.13);
+}
+
+.public-app .search-category {
+    width: 126px;
+    min-width: 126px;
+    max-width: 126px;
+    height: 44px;
+    padding: 0 14px;
+    border: 0;
+    border-right: 1px solid #e5e7eb;
+    border-radius: 12px 0 0 12px;
+    background: #f8fafc;
+    color: #111827;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.public-app .search-form {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 48px;
+    min-width: 0;
+}
+
+.public-app .search-input {
+    min-width: 0;
+    height: 44px;
+    padding: 0 14px;
+    border: 0;
+    background: #ffffff;
+    color: #111827;
+    font-size: 14px;
+}
+
+.public-app .search-input:focus {
+    box-shadow: none;
+}
+
+.public-app .search-button {
+    width: 48px;
+    height: 44px;
+    padding: 0;
+    border-radius: 0 12px 12px 0;
+    background: #2f4a67;
+    color: #ffffff;
+    box-shadow: none;
+}
+
+.public-app .search-button:hover {
+    background: #23394f;
+    transform: none;
+    box-shadow: none;
+}
+
+.public-app .search-button i {
+    font-size: 14px;
+}
+
+.public-app .nav-icons {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.public-app .nav-item {
+    width: 68px;
+    min-width: 68px;
+    min-height: 58px;
+    padding: 8px 6px;
+    border-radius: 12px;
+    background: #f3f4f6;
+    color: #111827;
+    font-size: 12px;
+    font-weight: 600;
+    gap: 4px;
+    border: 1px solid #eceff3;
+    box-shadow: none;
+}
+
+.public-app .nav-item i {
+    margin-bottom: 0;
+    font-size: 18px;
+    line-height: 1;
+    color: #111827;
+}
+
+.public-app .nav-item span {
+    line-height: 1.1;
+}
+
+.public-app .nav-item:hover,
+.public-app .nav-item.active {
+    background: #2f4a67;
+    color: #ffffff;
+    border-color: #2f4a67;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 18px rgba(47, 74, 103, 0.15);
+}
+
+.public-app .nav-item:hover i,
+.public-app .nav-item.active i {
+    color: #ffffff;
+}
+
+.public-app .cart-count {
+    top: -7px;
+    right: -8px;
+    width: 18px;
+    height: 18px;
+    font-size: 10px;
+    color: #ffffff;
+    background: #2f4a67;
+    border: 2px solid #ffffff;
+}
+
+.public-app .secondary-nav {
+    padding: 8px 0 10px;
+    border-top: 1px solid #eef2f7;
+    background: rgba(255, 255, 255, 0.98);
+}
+
+.public-app .secondary-nav-content {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 12px;
+    align-items: center;
+}
+
+.public-app .menu-toggle,
+.public-app .nav-links a {
+    min-height: 38px;
+    border-radius: 999px;
+    background: #f3f4f6;
+    color: #111827;
+    border: 1px solid #eceff3;
+    box-shadow: none;
+}
+
+.public-app .menu-toggle {
+    padding: 0 16px;
+    font-size: 14px;
+}
+
+.public-app .menu-toggle i {
+    font-size: 16px;
+}
+
+.public-app .nav-links {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 8px;
+    min-width: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 2px 2px 4px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.public-app .nav-links::-webkit-scrollbar {
+    display: none;
+}
+
+.public-app .nav-links li {
+    flex: 0 0 auto;
+}
+
+.public-app .nav-links a {
+    padding: 0 16px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.public-app .menu-toggle:hover,
+.public-app .nav-links a:hover,
+.public-app .nav-links a.active {
+    background: #2f4a67;
+    color: #ffffff !important;
+    border-color: #2f4a67;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 18px rgba(47, 74, 103, 0.15);
+}
+
+.public-app main,
+.public-app .public-main {
+    padding-top: 132px;
+}
+
+@media (max-width: 1240px) {
+    .public-app .top-nav-content {
+        grid-template-columns: auto minmax(280px, 1fr) auto;
+    }
+
+    .public-app .delivery-info {
+        display: none;
+    }
+
+    .public-app .nav-item {
+        width: 62px;
+        min-width: 62px;
+    }
+}
+
+@media (max-width: 900px) {
+    .public-app .top-nav-content {
+        grid-template-columns: auto minmax(240px, 1fr);
+        grid-template-areas:
+            "mobile mobile"
+            "search search";
+    }
+
+    .public-app .top-nav-row-1 {
+        grid-area: mobile;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    .public-app .desktop-logo,
+    .public-app .delivery-info,
+    .public-app .nav-icons {
+        display: none !important;
+    }
+
+    .public-app .search-container {
+        grid-area: search;
+    }
+
+    .public-app .secondary-nav {
+        display: none;
+    }
+
+    .public-app .quick-category-pills {
+        display: flex;
+        gap: 8px;
+        padding: 8px 16px 10px;
+        overflow-x: auto;
+        scrollbar-width: none;
+        background: #ffffff;
+        border-top: 1px solid #eef2f7;
+    }
+
+    .public-app .quick-category-pills::-webkit-scrollbar {
+        display: none;
+    }
+
+    .public-app .quick-category-pills a {
+        flex: 0 0 auto;
+        min-height: 34px;
+        padding: 7px 13px;
+        border-radius: 999px;
+        background: #f3f4f6;
+        color: #111827;
+        font-size: 13px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .public-app .mobile-actions-wrapper {
+        gap: 8px;
+    }
+
+    .public-app .mobile-action-item,
+    .public-app .mobile-menu-toggle {
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        border-radius: 10px;
+        background: #f3f4f6;
+        color: #111827;
+        border: 1px solid #eceff3;
+        font-size: 16px;
+    }
+
+    .public-app .mobile-menu-toggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .public-app .logo img {
+        height: 46px !important;
+        max-width: 130px;
+    }
+
+    .public-app main,
+    .public-app .public-main {
+        padding-top: 142px;
+    }
+}
+
+@media (max-width: 520px) {
+    .public-app .header .container {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    .public-app .top-nav {
+        padding: 8px 0;
+    }
+
+    .public-app .top-nav-content {
+        gap: 8px;
+    }
+
+    .public-app .search-wrapper {
+        grid-template-columns: 88px minmax(0, 1fr);
+        height: 42px;
+    }
+
+    .public-app .search-category {
+        width: 88px;
+        min-width: 88px;
+        max-width: 88px;
+        height: 40px;
+        padding: 0 8px;
+        font-size: 12px;
+    }
+
+    .public-app .search-input {
+        height: 40px;
+        padding: 0 10px;
+        font-size: 14px;
+    }
+
+    .public-app .search-button {
+        width: 42px;
+        height: 40px;
+    }
+
+    .public-app .mobile-actions-wrapper {
+        gap: 6px;
+    }
+
+    .public-app .mobile-action-item,
+    .public-app .mobile-menu-toggle {
+        width: 34px;
+        height: 34px;
+    }
+
+    .public-app .logo img {
+        height: 40px !important;
+        max-width: 116px;
+    }
+
+    .public-app main,
+    .public-app .public-main {
+        padding-top: 134px;
+    }
+}
+
+/* =====================================================
+   Sticky Top Header Only
+   UI-only: category/filter rows remain in normal page flow.
+   ===================================================== */
+
+.public-app {
+    --public-top-nav-height: 86px;
+}
+
+.public-app .header {
+    position: relative;
+    top: auto;
+    left: auto;
+    right: auto;
+    width: 100%;
+    z-index: 1000;
+    padding-top: var(--public-top-nav-height);
+    background: transparent !important;
+    border-bottom: 0 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+}
+
+.public-app .top-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1200;
+    padding: 10px 0;
+    background: rgba(255, 255, 255, 0.96);
+    border-bottom: 1px solid rgba(226, 232, 240, 0.92);
+    box-shadow: 0 1px 0 rgba(15, 23, 42, 0.04);
+    backdrop-filter: blur(18px);
+    transition: box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.public-app .header.scrolled .top-nav {
+    background: rgba(255, 255, 255, 0.98);
+    border-bottom-color: rgba(203, 213, 225, 0.95);
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.12) !important;
+}
+
+.public-app .secondary-nav,
+.public-app .quick-category-pills {
+    position: static;
+    z-index: auto;
+}
+
+.public-app .secondary-nav {
+    padding: 10px 0 12px;
+    border-top: 0;
+    border-bottom: 1px solid #eef2f7;
+    background: #ffffff;
+}
+
+.public-app .secondary-nav-content {
+    overflow: hidden;
+}
+
+.public-app .nav-links {
+    padding: 2px 2px 6px;
+    scroll-padding-inline: 8px;
+}
+
+.public-app .menu-toggle,
+.public-app .nav-links a {
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.public-app .menu-toggle:focus-visible,
+.public-app .nav-links a:focus-visible,
+.public-app .nav-item:focus-visible,
+.public-app .mobile-action-item:focus-visible,
+.public-app .mobile-menu-toggle:focus-visible,
+.public-app .search-category:focus-visible,
+.public-app .search-input:focus-visible,
+.public-app .search-button:focus-visible {
+    outline: 3px solid rgba(47, 74, 103, 0.24);
+    outline-offset: 2px;
+}
+
+.public-app .top-nav-content {
+    min-height: 66px;
+    gap: clamp(12px, 1.8vw, 22px);
+}
+
+.public-app .logo img {
+    height: 52px !important;
+}
+
+.public-app .delivery-info {
+    min-width: 160px;
+    min-height: 46px;
+}
+
+.public-app .search-wrapper {
+    height: 46px;
+    border-color: #d8e0e8;
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+}
+
+.public-app .search-category,
+.public-app .search-input,
+.public-app .search-button {
+    cursor: pointer;
+}
+
+.public-app .search-input {
+    cursor: text;
+}
+
+.public-app .search-category:hover {
+    background: #eef2f7;
+}
+
+.public-app .search-button:hover {
+    background: #21364c;
+}
+
+.public-app .nav-icons {
+    gap: 9px;
+}
+
+.public-app .nav-item {
+    width: 66px;
+    min-width: 66px;
+    min-height: 56px;
+    border-radius: 14px;
+}
+
+.public-app .nav-item i {
+    font-size: 17px;
+}
+
+.public-app .nav-item span {
+    font-size: 11px;
+}
+
+.public-app main,
+.public-app .public-main {
+    padding-top: 0 !important;
+}
+
+.public-app .header.scrolled .search-container {
+    display: block !important;
+}
+
+@media (max-width: 1240px) {
+    .public-app {
+        --public-top-nav-height: 86px;
+    }
+
+    .public-app .top-nav-content {
+        grid-template-columns: auto minmax(280px, 1fr) auto;
+    }
+}
+
+@media (max-width: 900px) {
+    .public-app {
+        --public-top-nav-height: 118px;
+    }
+
+    .public-app .top-nav {
+        padding: 8px 0;
+    }
+
+    .public-app .top-nav-content {
+        min-height: 102px;
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-areas:
+            "mobile"
+            "search";
+        gap: 8px;
+    }
+
+    .public-app .secondary-nav {
+        display: none;
+    }
+
+    .public-app .quick-category-pills {
+        display: flex !important;
+        padding: 9px 16px 11px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        background: #ffffff;
+        border-top: 0;
+        border-bottom: 1px solid #eef2f7;
+        box-shadow: none;
+    }
+
+    .public-app .header.scrolled .quick-category-pills {
+        display: flex !important;
+    }
+
+    .public-app .header.scrolled .search-container {
+        display: block !important;
+    }
+}
+
+@media (max-width: 520px) {
+    .public-app {
+        --public-top-nav-height: 108px;
+    }
+
+    .public-app .top-nav {
+        padding: 7px 0;
+    }
+
+    .public-app .top-nav-content {
+        min-height: 94px;
+        gap: 7px;
+    }
+
+    .public-app .search-wrapper {
+        height: 40px;
+        border-radius: 11px;
+    }
+
+    .public-app .search-category,
+    .public-app .search-input,
+    .public-app .search-button {
+        height: 38px;
+    }
+}
+
+/* Final public header production polish */
+.admin-app .header,
+.admin-app .universal-footer {
+    display: none !important;
+}
+
+.public-app .top-nav .container,
+.public-app .secondary-nav .container {
+    max-width: 1480px;
+}
+
+.public-app .top-nav-content {
+    grid-template-columns: minmax(120px, auto) minmax(142px, auto) minmax(360px, 1fr) auto;
+}
+
+.public-app .desktop-logo {
+    display: flex;
+    align-items: center;
+}
+
+.public-app .delivery-info,
+.public-app .nav-item,
+.public-app .menu-toggle,
+.public-app .nav-links a,
+.public-app .mobile-action-item,
+.public-app .mobile-menu-toggle {
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.public-app .delivery-info {
+    justify-content: flex-start;
+    white-space: nowrap;
+}
+
+.public-app .search-wrapper {
+    isolation: isolate;
+}
+
+.public-app .search-category {
+    appearance: auto;
+}
+
+.public-app .search-input::placeholder {
+    color: #8b95a1;
+}
+
+.public-app .nav-item {
+    justify-content: center;
+    text-align: center;
+}
+
+.public-app .nav-item .cart-icon-wrapper {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.public-app .nav-item:hover span,
+.public-app .nav-item.active span {
+    color: #ffffff;
+}
+
+.public-app .menu-toggle {
+    gap: 8px;
+}
+
+.public-app .nav-links a {
+    line-height: 1;
+}
+
+.public-app .nav-links a i {
+    font-size: 13px;
+}
+
+.public-app .quick-category-pills {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.public-app .quick-category-pills::-webkit-scrollbar {
+    display: none;
+}
+
+@media (max-width: 1320px) {
+    .public-app .top-nav-content {
+        grid-template-columns: auto minmax(320px, 1fr) auto;
+    }
+
+    .public-app .delivery-info {
+        display: none;
+    }
+}
+
+@media (max-width: 1040px) {
+    .public-app .nav-item {
+        width: 58px;
+        min-width: 58px;
+        min-height: 52px;
+        padding: 7px 5px;
+    }
+
+    .public-app .nav-item i {
+        font-size: 16px;
+    }
+
+    .public-app .nav-item span {
+        font-size: 10px;
+    }
+
+    .public-app .search-wrapper {
+        grid-template-columns: 112px minmax(0, 1fr);
+    }
+
+    .public-app .search-category {
+        width: 112px;
+        min-width: 112px;
+        max-width: 112px;
+    }
+}
+
+@media (max-width: 900px) {
+    .public-app .top-nav-row-1 {
+        min-width: 0;
+    }
+
+    .public-app .mobile-actions-wrapper {
+        flex-shrink: 0;
+    }
+
+    .public-app .mobile-action-item,
+    .public-app .mobile-menu-toggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 auto;
+    }
+}
+
+@media (max-width: 420px) {
+    .public-app .header .container {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .public-app .logo img {
+        max-width: 106px;
+    }
+
+    .public-app .search-wrapper {
+        grid-template-columns: 78px minmax(0, 1fr);
+    }
+
+    .public-app .search-category {
+        width: 78px;
+        min-width: 78px;
+        max-width: 78px;
+        font-size: 11px;
+    }
+}
+
+/* Responsive public header fix: mobile/tablet layout only */
+@media (max-width: 1023px) {
+    .public-app {
+        --public-top-nav-height: 118px;
+    }
+
+    .public-app .top-nav .container {
+        padding-left: 14px;
+        padding-right: 14px;
+    }
+
+    .public-app .top-nav {
+        padding: 8px 0;
+    }
+
+    .public-app .top-nav-content {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-areas:
+            "mobile"
+            "search";
+        gap: 8px;
+        min-height: 102px;
+        width: 100%;
+    }
+
+    .public-app .desktop-logo,
+    .public-app .delivery-info,
+    .public-app .nav-icons,
+    .public-app .secondary-nav {
+        display: none !important;
+    }
+
+    .public-app .top-nav-row-1 {
+        grid-area: mobile;
+        display: flex !important;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        width: 100%;
+        min-width: 0;
+    }
+
+    .public-app .top-nav-row-1 .logo {
+        flex: 0 0 154px;
+        width: 154px;
+        height: 46px;
+        min-width: 0;
+        overflow: hidden;
+        align-items: flex-start;
+    }
+
+    .public-app .top-nav-row-1 .logo img {
+        display: block;
+        width: 172px !important;
+        height: 172px !important;
+        max-width: none;
+        transform: translateY(-62px);
+    }
+
+    .public-app .mobile-actions-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 7px;
+        flex: 0 0 auto;
+        min-width: 0;
+    }
+
+    .public-app .mobile-action-item,
+    .public-app .mobile-menu-toggle {
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 36px;
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        border-radius: 10px;
+        border: 1px solid #eceff3;
+        background: #f3f4f6;
+        color: #111827;
+        font-size: 16px;
+        line-height: 1;
+    }
+
+    .public-app .mobile-action-item i,
+    .public-app .mobile-menu-toggle i {
+        margin: 0;
+        font-size: 16px;
+        line-height: 1;
+    }
+
+    .public-app .mobile-action-item .cart-icon-wrapper {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+    }
+
+    .public-app .search-container {
+        grid-area: search;
+        width: 100%;
+        max-width: none;
+        min-width: 0;
+        margin: 0;
+        order: initial;
+        flex: initial;
+    }
+
+    .public-app .search-wrapper {
+        display: grid;
+        grid-template-columns: 108px minmax(0, 1fr);
+        width: 100%;
+        height: 42px;
+        min-width: 0;
+        overflow: hidden;
+        border-radius: 11px;
+    }
+
+    .public-app .search-category {
+        width: 108px;
+        min-width: 108px;
+        max-width: 108px;
+        height: 40px;
+        min-height: 0;
+        padding: 0 10px;
+        font-size: 12px;
+        border-radius: 11px 0 0 11px;
+    }
+
+    .public-app .search-form {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 44px;
+        min-width: 0;
+        width: 100%;
+    }
+
+    .public-app .search-input {
+        width: 100%;
+        min-width: 0;
+        height: 40px;
+        min-height: 0;
+        padding: 0 11px;
+        font-size: 16px;
+    }
+
+    .public-app .search-button {
+        width: 44px;
+        min-width: 44px;
+        height: 40px;
+        min-height: 0;
+        padding: 0;
+        border-radius: 0 11px 11px 0;
+    }
+
+    .public-app .quick-category-pills {
+        display: flex !important;
+        gap: 8px;
+        padding: 8px 14px 10px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        background: #ffffff;
+        border-bottom: 1px solid #eef2f7;
+        scrollbar-width: none;
+    }
+
+    .public-app .quick-category-pills a {
+        flex: 0 0 auto;
+        min-height: 34px;
+        padding: 7px 13px;
+        border-radius: 999px;
+        font-size: 13px;
+        white-space: nowrap;
+    }
+}
+
+@media (max-width: 767px) {
+    .public-app {
+        --public-top-nav-height: 108px;
+    }
+
+    .public-app .top-nav .container {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .public-app .top-nav {
+        padding: 7px 0;
+    }
+
+    .public-app .top-nav-content {
+        gap: 7px;
+        min-height: 94px;
+    }
+
+    .public-app .top-nav-row-1 {
+        gap: 8px;
+    }
+
+    .public-app .mobile-actions-wrapper {
+        gap: 6px;
+    }
+
+    .public-app .mobile-action-item,
+    .public-app .mobile-menu-toggle {
+        flex-basis: 34px;
+        width: 34px;
+        height: 34px;
+        border-radius: 9px;
+        font-size: 15px;
+    }
+
+    .public-app .mobile-action-item i,
+    .public-app .mobile-menu-toggle i {
+        font-size: 15px;
+    }
+
+    .public-app .top-nav-row-1 .logo img {
+        width: 172px !important;
+        height: 172px !important;
+        max-width: none;
+    }
+
+    .public-app .search-wrapper {
+        grid-template-columns: 86px minmax(0, 1fr);
+        height: 40px;
+    }
+
+    .public-app .search-category {
+        width: 86px;
+        min-width: 86px;
+        max-width: 86px;
+        height: 38px;
+        padding: 0 8px;
+        font-size: 12px;
+    }
+
+    .public-app .search-form {
+        grid-template-columns: minmax(0, 1fr) 42px;
+    }
+
+    .public-app .search-input,
+    .public-app .search-button {
+        height: 38px;
+    }
+
+    .public-app .search-button {
+        width: 42px;
+        min-width: 42px;
+    }
+
+    .public-app .quick-category-pills {
+        padding: 7px 10px 9px;
+    }
+}
+
+@media (max-width: 360px) {
+    .public-app .top-nav .container {
+        padding-left: 8px;
+        padding-right: 8px;
+    }
+
+    .public-app .top-nav-row-1 {
+        gap: 6px;
+    }
+
+    .public-app .mobile-actions-wrapper {
+        gap: 5px;
+    }
+
+    .public-app .mobile-action-item,
+    .public-app .mobile-menu-toggle {
+        flex-basis: 32px;
+        width: 32px;
+        height: 32px;
+    }
+
+    .public-app .top-nav-row-1 .logo img {
+        width: 172px !important;
+        height: 172px !important;
+        max-width: none;
+    }
+
+    .public-app .search-wrapper {
+        grid-template-columns: 76px minmax(0, 1fr);
+    }
+
+    .public-app .search-category {
+        width: 76px;
+        min-width: 76px;
+        max-width: 76px;
+        padding: 0 6px;
+        font-size: 11px;
+    }
+}
+
+/* Mobile drawer viewport layer: keep it above the fixed search header */
+body.mobile-drawer-open {
+    overflow: hidden;
+    touch-action: none;
+}
+
+@media (max-width: 1023px) {
+    .public-app .header {
+        z-index: 1000;
+        overflow: visible;
+    }
+
+    .public-app .top-nav {
+        z-index: 1200;
+    }
+
+    .public-app .mobile-drawer {
+        display: none;
+        position: fixed;
+        inset: 0;
+        width: 100vw;
+        height: 100vh;
+        height: 100dvh;
+        z-index: 3000;
+        overflow: hidden;
+        pointer-events: none;
+    }
+
+    .public-app .mobile-drawer.open {
+        display: flex !important;
+        align-items: stretch;
+        justify-content: flex-end;
+        pointer-events: auto;
+    }
+
+    .public-app .drawer-backdrop {
+        position: fixed;
+        inset: 0;
+        width: 100vw;
+        height: 100vh;
+        height: 100dvh;
+        background: rgba(15, 23, 42, 0.48);
+        z-index: 0;
+    }
+
+    .public-app .drawer-content {
+        position: relative;
+        z-index: 1;
+        width: min(86vw, 340px);
+        max-width: none;
+        height: 100vh;
+        height: 100dvh;
+        margin-left: auto;
+        padding: 72px 20px 24px;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        background: var(--header-bg, #ffffff);
+        box-shadow: -18px 0 42px rgba(15, 23, 42, 0.18);
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .public-app .drawer-close {
+        position: absolute;
+        top: 18px;
+        right: 18px;
+        z-index: 2;
+    }
+}

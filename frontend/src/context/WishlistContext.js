@@ -70,18 +70,22 @@ export const WishlistProvider = ({ children }) => {
       try {
         const result = await api.get('/favorites');
         if (result.success) {
-          const mapped = result.data.favorites.map(item => ({
-            id: item.product_id.slug,
-            dbId: item.product_id._id,
-            name: item.product_id.name,
-            description: item.product_id.description,
-            price: item.product_id.sale_price || item.product_id.price,
-            originalPrice: item.product_id.sale_price ? item.product_id.price : null,
-            image: item.product_id.images[0],
-            badge: (item.product_id.tags && item.product_id.tags.includes('new')) ? 'New' : '',
-            reviews: item.product_id.review_count || 0,
-            rating: item.product_id.rating || 0
-          }));
+          const mapped = result.data.favorites.map(item => {
+            const product = item.products || item.product_id;
+            return {
+              id: product.slug,
+              dbId: product._id,
+              name: product.name,
+              description: product.description,
+              price: item.fabric_price ?? product.sale_price ?? product.price,
+              originalPrice: item.fabric_sale_price !== undefined ? item.fabric_regular_price : (item.fabric_price === undefined && product.sale_price ? product.price : null),
+              image: product.images[0],
+              badge: (product.tags && product.tags.includes('new')) ? 'New' : '',
+              reviews: product.review_count || 0,
+              rating: product.rating || 0,
+              selectedFabric: item.fabric_variant_id ? { _id: item.fabric_variant_id, name: item.fabric_name, price: item.fabric_regular_price ?? item.fabric_price, salePrice: item.fabric_sale_price } : null
+            };
+          });
           dispatch({ type: SET_WISHLIST, payload: mapped });
         }
       } catch (err) {
@@ -123,7 +127,7 @@ export const WishlistProvider = ({ children }) => {
     if (token) {
       if (product.dbId) {
         try {
-          const response = await api.post(`/favorites/toggle/${product.dbId}`);
+          const response = await api.post(`/favorites/toggle/${product.dbId}`, { fabricVariantId: product.selectedFabric?._id });
           console.log('Added to backend favorites:', response);
         } catch (err) {
           console.error('Error adding to favorites backend:', err);

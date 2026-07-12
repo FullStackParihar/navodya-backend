@@ -136,7 +136,7 @@ const QuickCheckoutModal = ({
                     <img src={item.image} alt={item.name} />
                     <div className="quick-item-details">
                       <h4>{item.name}</h4>
-                      <p>Qty: {item.quantity} | Size: {item.size}</p>
+                      <p>Qty: {item.quantity} | Size: {item.size}{item.fabricName ? ` | Fabric: ${item.fabricName}` : ''}</p>
                     </div>
                     <div className="quick-item-price">
                       ₹{item.price * item.quantity}

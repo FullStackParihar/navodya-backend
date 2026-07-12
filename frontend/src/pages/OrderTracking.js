@@ -52,6 +52,8 @@ const OrderTracking = () => {
               quantity: item.quantity,
               size: item.size,
               color: item.color,
+              fabricName: item.fabric_name,
+              fabricPrice: item.fabric_price,
               image: item.image
             })),
             tracking: getTrackingSteps(o.status),
@@ -136,6 +138,16 @@ const OrderTracking = () => {
         </div>
 
         <div className="tracking-content">
+          <div className="order-items-section">
+            <h2>Order Items</h2>
+            {orderData.items.map(item => (
+              <div className="tracking-order-item" key={`${item.id}-${item.size}-${item.fabricName || ''}`}>
+                <img src={item.image} alt={item.name} />
+                <div><h3>{item.name}</h3><p>Qty: {item.quantity}{item.size ? ` | Size: ${item.size}` : ''}{item.color ? ` | Color: ${item.color}` : ''}{item.fabricName ? ` | Fabric: ${item.fabricName}` : ''}</p></div>
+                <strong>₹{item.price * item.quantity}</strong>
+              </div>
+            ))}
+          </div>
           <div className="timeline-section">
             <h2>Order Status</h2>
             <div className="timeline">
@@ -330,6 +342,10 @@ const OrderTracking = () => {
           padding: 2rem;
           box-shadow: var(--shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1));
         }
+        .order-items-section { margin-bottom: 2rem; }
+        .tracking-order-item { display: grid; grid-template-columns: 56px 1fr auto; gap: 12px; align-items: center; padding: 12px 0; border-bottom: 1px solid #e2e8f0; }
+        .tracking-order-item img { width: 56px; height: 56px; object-fit: cover; border-radius: 8px; }
+        .tracking-order-item h3, .tracking-order-item p { margin: 0 0 4px; }
 
         .timeline {
           position: relative;

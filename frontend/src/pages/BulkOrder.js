@@ -1,1102 +1,1181 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import api from '../utils/api';
+
+const SIZE_KEYS = ['xs', 's', 'm', 'l', 'xl', 'xxl', '3xl', '4xl'];
+const MAX_FILES_PER_PRODUCT = 5;
+const MAX_FILE_SIZE = 10 * 1024 * 1024;
+
+const createProductRow = () => ({
+  productKey: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+  categoryId: '',
+  categoryName: '',
+  categorySlug: '',
+  productId: '',
+  productName: '',
+  sku: '',
+  isCustomProduct: false,
+  description: '',
+  specifications: '',
+  designRequirements: '',
+  sizeQuantities: SIZE_KEYS.reduce((acc, size) => ({ ...acc, [size]: 0 }), {}),
+  generalQuantity: 0,
+  files: [],
+  fileErrors: [],
+});
+
+const initialForm = {
+  organizationName: '',
+  contactPerson: '',
+  email: '',
+  phone: '',
+  deliveryAddress: '',
+  city: '',
+  state: '',
+  pincode: '',
+  requiredDate: '',
+  estimatedBudget: '',
+  additionalNotes: '',
+};
+
+const formatFileSize = (size) => `${(size / 1024 / 1024).toFixed(2)} MB`;
 
 const BulkOrder = () => {
-  const [formData, setFormData] = useState({
-    organizationName: '',
-    contactPerson: '',
-    email: '',
-    phone: '',
-    deliveryAddress: '',
-    city: '',
-    state: '',
-    pincode: '',
-    requiredDate: '',
-    budget: '',
-    additionalNotes: ''
-  });
-
-  const [products, setProducts] = useState([
-    {
-      id: 1,
-      productName: '',
-      category: 'tshirts',
-      quantity: '',
-      sizes: { xs: 0, s: 0, m: 0, l: 0, xl: 0, xxl: 0, '3xl': 0, '4xl': 0 },
-      description: '',
-      specifications: '',
-      uploadedImages: [],
-      designRequirements: ''
-    }
-  ]);
-
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState(initialForm);
+  const [products, setProducts] = useState([createProductRow()]);
+  const [categories, setCategories] = useState([]);
+  const [categoryProducts, setCategoryProducts] = useState({});
+  const [loadingCategories, setLoadingCategories] = useState(false);
+  const [loadingProducts, setLoadingProducts] = useState({});
   const [currentStep, setCurrentStep] = useState(1);
+  const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitMessage, setSubmitMessage] = useState('');
+  const [submitError, setSubmitError] = useState('');
+  const [successResult, setSuccessResult] = useState(null);
 
-  const categories = [
-    { value: 'tshirts', label: 'T-Shirts' },
-    { value: 'hoodies', label: 'Hoodies' },
-    { value: 'polo', label: 'Polo Shirts' },
-    { value: 'caps', label: 'Caps' },
-    { value: 'bags', label: 'Bags' },
-    { value: 'accessories', label: 'Accessories' },
-    { value: 'custom', label: 'Custom Product' }
-  ];
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleProductChange = (index, field, value) => {
-    const updatedProducts = [...products];
-    if (field.includes('.')) {
-      const [parentField, childField] = field.split('.');
-      updatedProducts[index][parentField][childField] = value;
-    } else {
-      updatedProducts[index][field] = value;
-    }
-    setProducts(updatedProducts);
-  };
-
-  const handleImageUpload = (productIndex, e) => {
-    const files = Array.from(e.target.files);
-    const updatedProducts = [...products];
-    
-    files.forEach(file => {
-      if (file.type.startsWith('image/')) {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          updatedProducts[productIndex].uploadedImages.push({
-            name: file.name,
-            url: event.target.result,
-            size: file.size
-          });
-          setProducts([...updatedProducts]);
-        };
-        reader.readAsDataURL(file);
+  useEffect(() => {
+    let mounted = true;
+    const loadCategories = async () => {
+      setLoadingCategories(true);
+      try {
+        const result = await api.get('/categories');
+        if (mounted && result.success) {
+          setCategories(result.data || []);
+        }
+      } catch (err) {
+        if (mounted) setSubmitError('Unable to load categories. Please try again.');
+      } finally {
+        if (mounted) setLoadingCategories(false);
       }
+    };
+    loadCategories();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const grandTotalQuantity = useMemo(() => {
+    return products.reduce((sum, product) => sum + getProductTotal(product), 0);
+  }, [products]);
+
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+    clearError(name);
+  };
+
+  const clearError = (key) => {
+    setErrors(prev => {
+      if (!prev[key]) return prev;
+      const next = { ...prev };
+      delete next[key];
+      return next;
     });
   };
 
-  const removeImage = (productIndex, imageIndex) => {
-    const updatedProducts = [...products];
-    updatedProducts[productIndex].uploadedImages.splice(imageIndex, 1);
-    setProducts(updatedProducts);
+  const loadProductsForCategory = async (category) => {
+    if (!category?.slug || categoryProducts[category._id]) return;
+
+    setLoadingProducts(prev => ({ ...prev, [category._id]: true }));
+    try {
+      const result = await api.get(`/products?category=${encodeURIComponent(category.slug)}&limit=100`);
+      if (result.success) {
+        setCategoryProducts(prev => ({
+          ...prev,
+          [category._id]: result.data?.products || [],
+        }));
+      }
+    } finally {
+      setLoadingProducts(prev => ({ ...prev, [category._id]: false }));
+    }
+  };
+
+  const updateProduct = (index, updates) => {
+    setProducts(prev => prev.map((product, i) => i === index ? { ...product, ...updates } : product));
+  };
+
+  const handleCategoryChange = async (index, categoryId) => {
+    const category = categories.find(item => item._id === categoryId);
+    updateProduct(index, {
+      categoryId,
+      categoryName: category?.name || '',
+      categorySlug: category?.slug || '',
+      productId: '',
+      productName: '',
+      sku: '',
+      isCustomProduct: false,
+      description: '',
+      specifications: '',
+      generalQuantity: 0,
+      sizeQuantities: SIZE_KEYS.reduce((acc, size) => ({ ...acc, [size]: 0 }), {}),
+    });
+    clearError(`products.${index}.categoryId`);
+    clearError(`products.${index}.productId`);
+    if (category) await loadProductsForCategory(category);
+  };
+
+  const handleProductSelection = (index, value) => {
+    const row = products[index];
+    if (value === 'custom') {
+      updateProduct(index, {
+        productId: 'custom',
+        productName: '',
+        sku: '',
+        isCustomProduct: true,
+        description: '',
+        specifications: '',
+      });
+      clearError(`products.${index}.productId`);
+      return;
+    }
+
+    const selectedProduct = (categoryProducts[row.categoryId] || []).find(item => item._id === value);
+    updateProduct(index, {
+      productId: value,
+      productName: selectedProduct?.name || '',
+      sku: selectedProduct?.slug || '',
+      isCustomProduct: false,
+      description: selectedProduct?.description || '',
+      specifications: stringifySpecifications(selectedProduct?.specifications),
+    });
+    clearError(`products.${index}.productId`);
+  };
+
+  const stringifySpecifications = (specifications) => {
+    if (!specifications) return '';
+    if (typeof specifications === 'string') return specifications;
+    return Object.entries(specifications).map(([key, value]) => `${key}: ${value}`).join('\n');
+  };
+
+  const handleSizeQuantity = (index, size, value) => {
+    const safeValue = Math.max(0, Number(value || 0));
+    const nextSizes = {
+      ...products[index].sizeQuantities,
+      [size]: safeValue,
+    };
+    updateProduct(index, { sizeQuantities: nextSizes });
+    clearError(`products.${index}.quantity`);
+  };
+
+  const handleGeneralQuantity = (index, value) => {
+    updateProduct(index, { generalQuantity: Math.max(0, Number(value || 0)) });
+    clearError(`products.${index}.quantity`);
+  };
+
+  const isApparelProduct = (product) => {
+    const text = `${product.categorySlug} ${product.categoryName} ${product.productName}`.toLowerCase();
+    return ['tshirt', 't-shirt', 'hoodie', 'polo', 'apparel', 'shirt'].some(term => text.includes(term));
+  };
+
+  function getProductTotal(product) {
+    const sizeTotal = Object.values(product.sizeQuantities || {}).reduce((sum, qty) => sum + Number(qty || 0), 0);
+    return sizeTotal + Number(product.generalQuantity || 0);
+  }
+
+  const handleFiles = (index, fileList) => {
+    const incomingFiles = Array.from(fileList || []);
+    const product = products[index];
+    const fileErrors = [];
+    const allowedExtensions = ['jpg', 'jpeg', 'png', 'webp', 'pdf', 'ai', 'eps', 'svg'];
+    const existingKeys = new Set(product.files.map(item => `${item.file.name}-${item.file.size}`));
+    const nextFiles = [...product.files];
+
+    incomingFiles.forEach(file => {
+      const extension = file.name.split('.').pop().toLowerCase();
+      const key = `${file.name}-${file.size}`;
+      if (!allowedExtensions.includes(extension)) {
+        fileErrors.push(`${file.name}: unsupported file type`);
+        return;
+      }
+      if (file.size > MAX_FILE_SIZE) {
+        fileErrors.push(`${file.name}: max file size is 10MB`);
+        return;
+      }
+      if (existingKeys.has(key)) {
+        fileErrors.push(`${file.name}: duplicate file`);
+        return;
+      }
+      if (nextFiles.length >= MAX_FILES_PER_PRODUCT) {
+        fileErrors.push(`Maximum ${MAX_FILES_PER_PRODUCT} files allowed per product`);
+        return;
+      }
+      existingKeys.add(key);
+      nextFiles.push({
+        file,
+        previewUrl: file.type.startsWith('image/') ? URL.createObjectURL(file) : '',
+      });
+    });
+
+    updateProduct(index, { files: nextFiles, fileErrors });
+    clearError(`products.${index}.files`);
+  };
+
+  const removeFile = (productIndex, fileIndex) => {
+    const fileItem = products[productIndex].files[fileIndex];
+    if (fileItem?.previewUrl) URL.revokeObjectURL(fileItem.previewUrl);
+    const nextFiles = products[productIndex].files.filter((_, index) => index !== fileIndex);
+    updateProduct(productIndex, { files: nextFiles, fileErrors: [] });
   };
 
   const addProduct = () => {
-    setProducts([...products, {
-      id: Date.now(),
-      productName: '',
-      category: 'tshirts',
-      quantity: '',
-      sizes: { xs: 0, s: 0, m: 0, l: 0, xl: 0, xxl: 0, '3xl': 0, '4xl': 0 },
-      description: '',
-      specifications: '',
-      uploadedImages: [],
-      designRequirements: ''
-    }]);
+    setProducts(prev => [...prev, createProductRow()]);
   };
 
   const removeProduct = (index) => {
-    if (products.length > 1) {
-      setProducts(products.filter((_, i) => i !== index));
-    }
+    if (products.length === 1) return;
+    products[index].files.forEach(item => {
+      if (item.previewUrl) URL.revokeObjectURL(item.previewUrl);
+    });
+    setProducts(prev => prev.filter((_, i) => i !== index));
   };
 
-  const calculateTotalQuantity = (product) => {
-    return Object.values(product.sizes).reduce((sum, qty) => sum + parseInt(qty || 0), 0);
-  };
+  const validate = (step = currentStep) => {
+    const nextErrors = {};
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
-  const validateStep = (step) => {
-    switch (step) {
-      case 1:
-        return formData.organizationName && formData.contactPerson && formData.email && formData.phone;
-      case 2:
-        return products.some(p => p.productName && p.category && calculateTotalQuantity(p) > 0);
-      case 3:
-        return products.every(p => p.uploadedImages.length > 0 || p.designRequirements);
-      default:
-        return true;
+    if (step >= 1) {
+      if (!formData.organizationName.trim()) nextErrors.organizationName = 'Organization name is required';
+      if (!formData.contactPerson.trim()) nextErrors.contactPerson = 'Contact person is required';
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) nextErrors.email = 'Enter a valid email address';
+      if (!/^[+]?\d[\d\s-]{7,14}$/.test(formData.phone)) nextErrors.phone = 'Enter a valid phone number';
+      if (!formData.deliveryAddress.trim()) nextErrors.deliveryAddress = 'Delivery address is required';
+      if (!formData.city.trim()) nextErrors.city = 'City is required';
+      if (!formData.state.trim()) nextErrors.state = 'State is required';
+      if (!/^\d{6}$/.test(formData.pincode)) nextErrors.pincode = 'Enter a valid 6-digit pincode';
+      if (!formData.requiredDate) {
+        nextErrors.requiredDate = 'Required date is required';
+      } else if (new Date(formData.requiredDate) < today) {
+        nextErrors.requiredDate = 'Required date cannot be in the past';
+      }
+      if (formData.estimatedBudget === '' || Number(formData.estimatedBudget) < 0) {
+        nextErrors.estimatedBudget = 'Estimated budget must be zero or more';
+      }
     }
+
+    if (step >= 2) {
+      products.forEach((product, index) => {
+        if (!product.categoryId) nextErrors[`products.${index}.categoryId`] = 'Category is required';
+        if (!product.productId) nextErrors[`products.${index}.productId`] = 'Product is required';
+        if (product.isCustomProduct && !product.productName.trim()) {
+          nextErrors[`products.${index}.productName`] = 'Custom product name is required';
+        }
+        if (getProductTotal(product) <= 0) {
+          nextErrors[`products.${index}.quantity`] = 'Enter quantity greater than zero';
+        }
+      });
+    }
+
+    if (step >= 3) {
+      products.forEach((product, index) => {
+        if (!product.designRequirements.trim()) {
+          nextErrors[`products.${index}.designRequirements`] = 'Design requirements are required';
+        }
+        if (product.files.length === 0) {
+          nextErrors[`products.${index}.files`] = 'Upload at least one design/reference file';
+        }
+      });
+    }
+
+    setErrors(nextErrors);
+    return Object.keys(nextErrors).length === 0;
   };
 
   const nextStep = () => {
-    if (validateStep(currentStep)) {
-      setCurrentStep(currentStep + 1);
-    } else {
-      alert('Please fill in all required fields for this step');
+    if (validate(currentStep)) {
+      setCurrentStep(prev => Math.min(4, prev + 1));
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
   const prevStep = () => {
-    setCurrentStep(currentStep - 1);
+    setCurrentStep(prev => Math.max(1, prev - 1));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const buildPayload = () => ({
+    ...formData,
+    estimatedBudget: Number(formData.estimatedBudget),
+    products: products.map(product => ({
+      productKey: product.productKey,
+      categoryId: product.categoryId,
+      categoryName: product.categoryName,
+      productId: product.isCustomProduct ? 'custom' : product.productId,
+      productName: product.productName,
+      sku: product.sku,
+      isCustomProduct: product.isCustomProduct,
+      description: product.description,
+      specifications: product.specifications,
+      designRequirements: product.designRequirements,
+      sizeQuantities: product.sizeQuantities,
+      generalQuantity: product.generalQuantity,
+    })),
+  });
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setSubmitError('');
+    setSuccessResult(null);
+
+    if (!validate(4)) return;
+
     setIsSubmitting(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setSubmitMessage('Your bulk order request has been submitted successfully! We will contact you within 24 hours.');
-      // Reset form after successful submission
-      setTimeout(() => {
-        setSubmitMessage('');
-        setCurrentStep(1);
-        setFormData({
-          organizationName: '',
-          contactPerson: '',
-          email: '',
-          phone: '',
-          deliveryAddress: '',
-          city: '',
-          state: '',
-          pincode: '',
-          requiredDate: '',
-          budget: '',
-          additionalNotes: ''
+    try {
+      const data = new FormData();
+      data.append('payload', JSON.stringify(buildPayload()));
+      products.forEach(product => {
+        product.files.forEach(fileItem => {
+          data.append(`attachments_${product.productKey}`, fileItem.file);
         });
-        setProducts([{
-          id: 1,
-          productName: '',
-          category: 'tshirts',
-          quantity: '',
-          sizes: { xs: 0, s: 0, m: 0, l: 0, xl: 0, xxl: 0, '3xl': 0, '4xl': 0 },
-          description: '',
-          specifications: '',
-          uploadedImages: [],
-          designRequirements: ''
-        }]);
-      }, 5000);
-    }, 2000);
+      });
+
+      const result = await api.post('/bulk-orders', data);
+      if (!result.success) {
+        try {
+          const parsed = JSON.parse(result.message || '{}');
+          if (parsed.errors) setErrors(parsed.errors);
+          setSubmitError(parsed.message || 'Failed to submit bulk order request');
+        } catch (parseError) {
+          setSubmitError(result.message || 'Failed to submit bulk order request');
+        }
+        return;
+      }
+
+      setSuccessResult({
+        requestNumber: result.data.requestNumber,
+        grandTotalQuantity,
+        products: products.length,
+      });
+      setErrors({});
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (err) {
+      setSubmitError('Network or server error. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
+
+  const handlePlaceAnotherOrder = () => {
+    products.forEach(product => product.files.forEach(item => item.previewUrl && URL.revokeObjectURL(item.previewUrl)));
+    setFormData(initialForm);
+    setProducts([createProductRow()]);
+    setCurrentStep(1);
+    setErrors({});
+    setSubmitError('');
+    setSuccessResult(null);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const renderError = (key) => errors[key] ? <div className="field-error">{errors[key]}</div> : null;
 
   return (
     <div className="bulk-order-page">
-      <div className="container">
-        {/* Header */}
-        <div className="bulk-order-header">
-          <h1>Bulk Order Request</h1>
-          <p>Get custom merchandise for your organization, event, or team</p>
-          
-          {/* Progress Steps */}
-          <div className="progress-steps">
-            <div className={`step ${currentStep >= 1 ? 'active' : ''}`}>
-              <div className="step-number">1</div>
-              <div className="step-label">Contact Info</div>
+      <div className="bulk-container">
+        {successResult ? (
+          <section className="bulk-success-screen" aria-live="polite">
+            <div className="bulk-success-icon">
+              <i className="fas fa-check" />
             </div>
-            <div className={`step ${currentStep >= 2 ? 'active' : ''}`}>
-              <div className="step-number">2</div>
-              <div className="step-label">Product Details</div>
+            <h1>Thank You!</h1>
+            <p className="bulk-success-message">Your bulk order request has been submitted successfully.</p>
+            {successResult.requestNumber && (
+              <div className="bulk-request-id">Request ID: {successResult.requestNumber}</div>
+            )}
+            <p className="bulk-success-support">Our team will review your request and contact you soon.</p>
+            <div className="bulk-success-actions">
+              <button type="button" className="btn-primary bulk-success-action" onClick={() => navigate('/my-bulk-orders')}>
+                View My Bulk Orders
+              </button>
+              <button type="button" className="btn-secondary bulk-success-action" onClick={handlePlaceAnotherOrder}>
+                Place Another Bulk Order
+              </button>
             </div>
-            <div className={`step ${currentStep >= 3 ? 'active' : ''}`}>
-              <div className="step-number">3</div>
-              <div className="step-label">Design & Upload</div>
-            </div>
-            <div className={`step ${currentStep >= 4 ? 'active' : ''}`}>
-              <div className="step-number">4</div>
-              <div className="step-label">Review & Submit</div>
-            </div>
+          </section>
+        ) : (
+          <>
+        <header className="bulk-order-header">
+          <div>
+            <p className="bulk-eyebrow">Organization merchandise</p>
+            <h1>Bulk Order Request</h1>
+            <p>Submit one request with multiple products, sizes, files, and design requirements.</p>
           </div>
+          <div className="bulk-total-pill">
+            <span>Grand Total</span>
+            <strong>{grandTotalQuantity}</strong>
+          </div>
+        </header>
+
+        <div className="progress-steps" aria-label="Bulk order progress">
+          {['Contact Info', 'Products', 'Design Files', 'Review'].map((label, index) => (
+            <div key={label} className={`step ${currentStep >= index + 1 ? 'active' : ''}`}>
+              <span>{index + 1}</span>
+              <p>{label}</p>
+            </div>
+          ))}
         </div>
 
-        <form onSubmit={handleSubmit}>
-          {/* Step 1: Contact Information */}
+        {submitError && <div className="bulk-error-banner">{submitError}</div>}
+
+        <form onSubmit={handleSubmit} className="bulk-form">
           {currentStep === 1 && (
-            <div className="form-step animate-fadeIn">
-              <h2>Organization Information</h2>
-              <div className="form-grid">
-                <div className="form-group">
-                  <label>Organization Name *</label>
-                  <input
-                    type="text"
-                    name="organizationName"
-                    value={formData.organizationName}
-                    onChange={handleInputChange}
-                    placeholder="Your organization name"
-                    required
-                  />
-                </div>
-                
-                <div className="form-group">
-                  <label>Contact Person *</label>
-                  <input
-                    type="text"
-                    name="contactPerson"
-                    value={formData.contactPerson}
-                    onChange={handleInputChange}
-                    placeholder="Name of contact person"
-                    required
-                  />
-                </div>
-                
-                <div className="form-group">
-                  <label>Email Address *</label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    placeholder="your@email.com"
-                    required
-                  />
-                </div>
-                
-                <div className="form-group">
-                  <label>Phone Number *</label>
-                  <input
-                    type="tel"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleInputChange}
-                    placeholder="+91 98765 43210"
-                    required
-                  />
-                </div>
-                
-                <div className="form-group full-width">
-                  <label>Delivery Address</label>
-                  <textarea
-                    name="deliveryAddress"
-                    value={formData.deliveryAddress}
-                    onChange={handleInputChange}
-                    placeholder="Complete delivery address"
-                    rows="3"
-                  />
-                </div>
-                
-                <div className="form-group">
-                  <label>City</label>
-                  <input
-                    type="text"
-                    name="city"
-                    value={formData.city}
-                    onChange={handleInputChange}
-                    placeholder="City name"
-                  />
-                </div>
-                
-                <div className="form-group">
-                  <label>State</label>
-                  <input
-                    type="text"
-                    name="state"
-                    value={formData.state}
-                    onChange={handleInputChange}
-                    placeholder="State name"
-                  />
-                </div>
-                
-                <div className="form-group">
-                  <label>Pincode</label>
-                  <input
-                    type="text"
-                    name="pincode"
-                    value={formData.pincode}
-                    onChange={handleInputChange}
-                    placeholder="6-digit pincode"
-                  />
-                </div>
-                
-                <div className="form-group">
-                  <label>Required Date</label>
-                  <input
-                    type="date"
-                    name="requiredDate"
-                    value={formData.requiredDate}
-                    onChange={handleInputChange}
-                    min={new Date().toISOString().split('T')[0]}
-                  />
-                </div>
-                
-                <div className="form-group">
-                  <label>Estimated Budget</label>
-                  <input
-                    type="text"
-                    name="budget"
-                    value={formData.budget}
-                    onChange={handleInputChange}
-                    placeholder="e.g., ₹50,000 - ₹1,00,000"
-                  />
-                </div>
+            <section className="bulk-panel">
+              <h2>Contact & Delivery Information</h2>
+              <div className="bulk-grid">
+                {[
+                  ['organizationName', 'Organization Name *', 'Your organization name'],
+                  ['contactPerson', 'Contact Person *', 'Name of contact person'],
+                  ['email', 'Email Address *', 'your@email.com', 'email'],
+                  ['phone', 'Phone Number *', '+91 98765 43210', 'tel'],
+                  ['city', 'City *', 'City name'],
+                  ['state', 'State *', 'State name'],
+                  ['pincode', 'Pincode *', '6-digit pincode'],
+                  ['requiredDate', 'Required Date *', '', 'date'],
+                  ['estimatedBudget', 'Estimated Budget *', '50000', 'number'],
+                ].map(([name, label, placeholder, type = 'text']) => (
+                  <label className="bulk-field" key={name}>
+                    <span>{label}</span>
+                    <input
+                      type={type}
+                      name={name}
+                      value={formData[name]}
+                      onChange={handleInputChange}
+                      placeholder={placeholder}
+                      min={type === 'date' ? new Date().toISOString().split('T')[0] : type === 'number' ? '0' : undefined}
+                    />
+                    {renderError(name)}
+                  </label>
+                ))}
+                <label className="bulk-field full">
+                  <span>Delivery Address *</span>
+                  <textarea name="deliveryAddress" value={formData.deliveryAddress} onChange={handleInputChange} rows="3" placeholder="Complete delivery address" />
+                  {renderError('deliveryAddress')}
+                </label>
               </div>
-            </div>
+            </section>
           )}
 
-          {/* Step 2: Product Details */}
           {currentStep === 2 && (
-            <div className="form-step animate-fadeIn">
-              <div className="step-header">
-                <h2>Product Details</h2>
+            <section className="bulk-panel">
+              <div className="bulk-section-title">
+                <div>
+                  <h2>Product Details</h2>
+                  <p>Add all required products under this single bulk request.</p>
+                </div>
                 <button type="button" className="btn-add-product" onClick={addProduct}>
-                  <i className="fas fa-plus"></i> Add Another Product
+                  <i className="fas fa-plus" /> Add Another Product
                 </button>
               </div>
-              
-              {products.map((product, index) => (
-                <div key={product.id} className="product-card">
-                  {products.length > 1 && (
-                    <button
-                      type="button"
-                      className="btn-remove-product"
-                      onClick={() => removeProduct(index)}
-                    >
-                      <i className="fas fa-times"></i>
-                    </button>
-                  )}
-                  
-                  <h3>Product {index + 1}</h3>
-                  
-                  <div className="form-grid">
-                    <div className="form-group">
-                      <label>Product Name *</label>
-                      <input
-                        type="text"
-                        value={product.productName}
-                        onChange={(e) => handleProductChange(index, 'productName', e.target.value)}
-                        placeholder="e.g., JNV Alumni T-Shirt"
-                        required
-                      />
-                    </div>
-                    
-                    <div className="form-group">
-                      <label>Category *</label>
-                      <select
-                        value={product.category}
-                        onChange={(e) => handleProductChange(index, 'category', e.target.value)}
-                        required
-                      >
-                        {categories.map(cat => (
-                          <option key={cat.value} value={cat.value}>{cat.label}</option>
-                        ))}
-                      </select>
-                    </div>
-                    
-                    <div className="form-group full-width">
-                      <label>Description</label>
-                      <textarea
-                        value={product.description}
-                        onChange={(e) => handleProductChange(index, 'description', e.target.value)}
-                        placeholder="Describe your product requirements"
-                        rows="3"
-                      />
-                    </div>
-                    
-                    <div className="form-group full-width">
-                      <label>Specifications</label>
-                      <textarea
-                        value={product.specifications}
-                        onChange={(e) => handleProductChange(index, 'specifications', e.target.value)}
-                        placeholder="Material, quality, printing method, etc."
-                        rows="3"
-                      />
-                    </div>
-                    
-                    <div className="form-group full-width">
-                      <label>Sizes & Quantities</label>
-                      <div className="size-grid">
-                        {Object.entries(product.sizes).map(([size, quantity]) => (
-                          <div key={size} className="size-input">
-                            <label>{size.toUpperCase()}</label>
-                            <input
-                              type="number"
-                              min="0"
-                              value={quantity}
-                              onChange={(e) => handleProductChange(index, `sizes.${size}`, e.target.value)}
-                              placeholder="0"
-                            />
-                          </div>
-                        ))}
-                        <div className="total-quantity">
-                          <label>Total</label>
-                          <input
-                            type="text"
-                            value={calculateTotalQuantity(product)}
-                            readOnly
-                            className="total-input"
-                          />
-                        </div>
+
+              {products.map((product, index) => {
+                const productOptions = categoryProducts[product.categoryId] || [];
+                const showSizeQuantities = isApparelProduct(product);
+                return (
+                  <article className="bulk-product-card" key={product.productKey}>
+                    <div className="product-card-header">
+                      <h3>Product {index + 1}</h3>
+                      <div>
+                        <span className="product-total">Total: {getProductTotal(product)}</span>
+                        {products.length > 1 && (
+                          <button type="button" className="btn-remove-product" onClick={() => removeProduct(index)}>
+                            <i className="fas fa-trash" /> Remove
+                          </button>
+                        )}
                       </div>
                     </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
 
-          {/* Step 3: Design & Upload */}
-          {currentStep === 3 && (
-            <div className="form-step animate-fadeIn">
-              <h2>Design & File Upload</h2>
-              
-              {products.map((product, index) => (
-                <div key={product.id} className="product-card">
-                  <h3>{product.productName || `Product ${index + 1}`}</h3>
-                  
-                  <div className="form-group">
-                    <label>Design Requirements</label>
-                    <textarea
-                      value={product.designRequirements}
-                      onChange={(e) => handleProductChange(index, 'designRequirements', e.target.value)}
-                      placeholder="Describe your design requirements, colors, placement, etc."
-                      rows="4"
-                    />
-                  </div>
-                  
-                  <div className="form-group">
-                    <label>Upload Design Files</label>
-                    <div className="upload-area">
-                      <input
-                        type="file"
-                        id={`files-${product.id}`}
-                        multiple
-                        accept="image/*,.pdf,.ai,.eps,.svg"
-                        onChange={(e) => handleImageUpload(index, e)}
-                        style={{ display: 'none' }}
-                      />
-                      <label htmlFor={`files-${product.id}`} className="upload-label">
-                        <i className="fas fa-cloud-upload-alt"></i>
-                        <span>Click to upload or drag and drop</span>
-                        <small>PNG, JPG, PDF, AI, EPS, SVG (Max 10MB per file)</small>
-                      </label>
-                    </div>
-                    
-                    {product.uploadedImages.length > 0 && (
-                      <div className="uploaded-files">
-                        <h4>Uploaded Files:</h4>
-                        <div className="file-grid">
-                          {product.uploadedImages.map((file, fileIndex) => (
-                            <div key={fileIndex} className="file-item">
-                              <div className="file-preview">
-                                {file.url.includes('data:image') ? (
-                                  <img src={file.url} alt={file.name} />
-                                ) : (
-                                  <div className="file-icon">
-                                    <i className="fas fa-file-image"></i>
-                                  </div>
-                                )}
-                              </div>
-                              <div className="file-info">
-                                <p className="file-name">{file.name}</p>
-                                <p className="file-size">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
-                              </div>
-                              <button
-                                type="button"
-                                className="btn-remove-file"
-                                onClick={() => removeImage(index, fileIndex)}
-                              >
-                                <i className="fas fa-trash"></i>
-                              </button>
-                            </div>
+                    <div className="bulk-grid">
+                      <label className="bulk-field">
+                        <span>Category *</span>
+                        <select value={product.categoryId} onChange={(event) => handleCategoryChange(index, event.target.value)} disabled={loadingCategories}>
+                          <option value="">{loadingCategories ? 'Loading categories...' : 'Select category'}</option>
+                          {categories.map(category => (
+                            <option value={category._id} key={category._id}>{category.name}</option>
                           ))}
-                        </div>
+                        </select>
+                        {renderError(`products.${index}.categoryId`)}
+                      </label>
+
+                      <label className="bulk-field">
+                        <span>Product Name *</span>
+                        <select value={product.productId} onChange={(event) => handleProductSelection(index, event.target.value)} disabled={!product.categoryId || loadingProducts[product.categoryId]}>
+                          <option value="">
+                            {!product.categoryId ? 'Select category first' : loadingProducts[product.categoryId] ? 'Loading products...' : productOptions.length ? 'Select product' : 'No catalogue products found'}
+                          </option>
+                          {productOptions.map(item => (
+                            <option value={item._id} key={item._id}>{item.name}</option>
+                          ))}
+                          <option value="custom">Custom Product</option>
+                        </select>
+                        {renderError(`products.${index}.productId`)}
+                      </label>
+
+                      {product.isCustomProduct && (
+                        <label className="bulk-field">
+                          <span>Custom Product Name *</span>
+                          <input value={product.productName} onChange={(event) => updateProduct(index, { productName: event.target.value })} placeholder="Custom product name" />
+                          {renderError(`products.${index}.productName`)}
+                        </label>
+                      )}
+
+                      <label className="bulk-field full">
+                        <span>Description</span>
+                        <textarea value={product.description} onChange={(event) => updateProduct(index, { description: event.target.value })} rows="3" placeholder="Product requirements, purpose, or notes" />
+                      </label>
+
+                      <label className="bulk-field full">
+                        <span>Specifications / Size or Dimensions</span>
+                        <textarea value={product.specifications} onChange={(event) => updateProduct(index, { specifications: event.target.value })} rows="3" placeholder="Material, print method, dimensions, finish, packaging, etc." />
+                      </label>
+
+                      <div className="bulk-field full">
+                        <span>{showSizeQuantities ? 'Size-wise Quantity *' : 'Quantity *'}</span>
+                        {showSizeQuantities ? (
+                          <div className="size-grid">
+                            {SIZE_KEYS.map(size => (
+                              <label className="size-input" key={size}>
+                                <span>{size.toUpperCase()}</span>
+                                <input type="number" min="0" value={product.sizeQuantities[size]} onChange={(event) => handleSizeQuantity(index, size, event.target.value)} />
+                              </label>
+                            ))}
+                          </div>
+                        ) : (
+                          <input type="number" min="0" value={product.generalQuantity} onChange={(event) => handleGeneralQuantity(index, event.target.value)} placeholder="Total pieces" />
+                        )}
+                        {renderError(`products.${index}.quantity`)}
                       </div>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
+                    </div>
+                  </article>
+                );
+              })}
+            </section>
           )}
 
-          {/* Step 4: Review & Submit */}
-          {currentStep === 4 && (
-            <div className="form-step animate-fadeIn">
-              <h2>Review Your Order</h2>
-              
-              <div className="review-section">
-                <div className="review-card">
-                  <h3>Organization Information</h3>
-                  <div className="review-grid">
-                    <div className="review-item">
-                      <label>Organization:</label>
-                      <span>{formData.organizationName}</span>
-                    </div>
-                    <div className="review-item">
-                      <label>Contact Person:</label>
-                      <span>{formData.contactPerson}</span>
-                    </div>
-                    <div className="review-item">
-                      <label>Email:</label>
-                      <span>{formData.email}</span>
-                    </div>
-                    <div className="review-item">
-                      <label>Phone:</label>
-                      <span>{formData.phone}</span>
-                    </div>
-                    <div className="review-item">
-                      <label>Delivery Address:</label>
-                      <span>{formData.deliveryAddress}</span>
-                    </div>
-                    <div className="review-item">
-                      <label>City:</label>
-                      <span>{formData.city}</span>
-                    </div>
-                    <div className="review-item">
-                      <label>Required Date:</label>
-                      <span>{formData.requiredDate}</span>
-                    </div>
-                    <div className="review-item">
-                      <label>Budget:</label>
-                      <span>{formData.budget}</span>
-                    </div>
+          {currentStep === 3 && (
+            <section className="bulk-panel">
+              <h2>Design Requirements & Attachments</h2>
+              {products.map((product, index) => (
+                <article className="bulk-product-card" key={product.productKey}>
+                  <div className="product-card-header">
+                    <h3>Product {index + 1}: {product.productName || 'Not selected'}</h3>
+                    <span className="product-total">Total: {getProductTotal(product)}</span>
                   </div>
+
+                  <label className="bulk-field">
+                    <span>Design Requirements *</span>
+                    <textarea value={product.designRequirements} onChange={(event) => updateProduct(index, { designRequirements: event.target.value })} rows="4" placeholder="Colors, logo placement, print area, references, text, etc." />
+                    {renderError(`products.${index}.designRequirements`)}
+                  </label>
+
+                  <div className="bulk-field">
+                    <span>Upload Design / Reference Files *</span>
+                    <label className="bulk-upload">
+                      <input type="file" multiple accept=".jpg,.jpeg,.png,.webp,.pdf,.ai,.eps,.svg" onChange={(event) => handleFiles(index, event.target.files)} />
+                      <i className="fas fa-cloud-upload-alt" />
+                      <strong>Choose files</strong>
+                      <small>Images, PDF, AI, EPS, SVG | Max 10MB each | Max {MAX_FILES_PER_PRODUCT} files</small>
+                    </label>
+                    {renderError(`products.${index}.files`)}
+                    {product.fileErrors.map(message => <div className="field-error" key={message}>{message}</div>)}
+                  </div>
+
+                  {product.files.length > 0 && (
+                    <div className="file-grid">
+                      {product.files.map((item, fileIndex) => (
+                        <div className="file-card" key={`${item.file.name}-${fileIndex}`}>
+                          <div className="file-thumb">
+                            {item.previewUrl ? <img src={item.previewUrl} alt={item.file.name} /> : <i className="fas fa-file-alt" />}
+                          </div>
+                          <div>
+                            <strong>{item.file.name}</strong>
+                            <span>{formatFileSize(item.file.size)}</span>
+                          </div>
+                          <button type="button" onClick={() => removeFile(index, fileIndex)} aria-label="Remove file">
+                            <i className="fas fa-times" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </article>
+              ))}
+            </section>
+          )}
+
+          {currentStep === 4 && (
+            <section className="bulk-panel">
+              <h2>Review & Submit</h2>
+              <div className="review-layout">
+                <div className="review-card">
+                  <h3>Customer Information</h3>
+                  <p><strong>Organization:</strong> {formData.organizationName}</p>
+                  <p><strong>Contact:</strong> {formData.contactPerson}</p>
+                  <p><strong>Email:</strong> {formData.email}</p>
+                  <p><strong>Phone:</strong> {formData.phone}</p>
+                  <p><strong>Address:</strong> {formData.deliveryAddress}, {formData.city}, {formData.state} - {formData.pincode}</p>
+                  <p><strong>Required Date:</strong> {formData.requiredDate}</p>
+                  <p><strong>Budget:</strong> ₹{Number(formData.estimatedBudget || 0).toLocaleString('en-IN')}</p>
                 </div>
-                
+
                 <div className="review-card">
                   <h3>Products Summary</h3>
                   {products.map((product, index) => (
-                    <div key={product.id} className="product-review">
+                    <div className="review-product" key={product.productKey}>
                       <h4>Product {index + 1}: {product.productName}</h4>
-                      <div className="product-details">
-                        <p><strong>Category:</strong> {categories.find(c => c.value === product.category)?.label}</p>
-                        <p><strong>Quantity:</strong> {calculateTotalQuantity(product)} pieces</p>
-                        <p><strong>Sizes:</strong> {Object.entries(product.sizes)
-                          .filter(([_, qty]) => qty > 0)
-                          .map(([size, qty]) => `${size.toUpperCase()}: ${qty}`)
-                          .join(', ') || 'Not specified'}</p>
-                        {product.description && (
-                          <p><strong>Description:</strong> {product.description}</p>
-                        )}
-                        {product.uploadedImages.length > 0 && (
-                          <p><strong>Files Uploaded:</strong> {product.uploadedImages.length} files</p>
-                        )}
-                      </div>
+                      <p><strong>Category:</strong> {product.categoryName}</p>
+                      <p><strong>Total Quantity:</strong> {getProductTotal(product)}</p>
+                      <p><strong>Files:</strong> {product.files.length}</p>
+                      <p><strong>Design:</strong> {product.designRequirements}</p>
                     </div>
                   ))}
+                  <div className="grand-total">Grand Total Quantity: {grandTotalQuantity}</div>
                 </div>
-                
-                <div className="form-group">
-                  <label>Additional Notes</label>
-                  <textarea
-                    name="additionalNotes"
-                    value={formData.additionalNotes}
-                    onChange={handleInputChange}
-                    placeholder="Any additional requirements or special instructions"
-                    rows="4"
-                  />
-                </div>
+
+                <label className="bulk-field">
+                  <span>Additional Notes</span>
+                  <textarea name="additionalNotes" value={formData.additionalNotes} onChange={handleInputChange} rows="4" placeholder="Any additional requirements or special instructions" />
+                </label>
               </div>
-            </div>
+            </section>
           )}
 
-          {/* Navigation Buttons */}
           <div className="form-navigation">
             {currentStep > 1 && (
-              <button type="button" className="btn-secondary" onClick={prevStep}>
-                <i className="fas fa-arrow-left"></i> Previous
+              <button type="button" className="btn-secondary" onClick={prevStep} disabled={isSubmitting}>
+                <i className="fas fa-arrow-left" /> Previous
               </button>
             )}
-            
-            {currentStep < 4 && (
+            {currentStep < 4 ? (
               <button type="button" className="btn-primary" onClick={nextStep}>
-                Next <i className="fas fa-arrow-right"></i>
+                Next <i className="fas fa-arrow-right" />
               </button>
-            )}
-            
-            {currentStep === 4 && (
+            ) : (
               <button type="submit" className="btn-primary" disabled={isSubmitting}>
-                {isSubmitting ? (
-                  <>
-                    <i className="fas fa-spinner fa-spin"></i> Submitting...
-                  </>
-                ) : (
-                  <>
-                    <i className="fas fa-check"></i> Submit Order Request
-                  </>
-                )}
+                {isSubmitting ? <><i className="fas fa-spinner fa-spin" /> Submitting...</> : <><i className="fas fa-check" /> Submit Bulk Order</>}
               </button>
             )}
           </div>
         </form>
-
-        {/* Success Message */}
-        {submitMessage && (
-          <div className="success-message animate-fadeIn">
-            <i className="fas fa-check-circle"></i>
-            <p>{submitMessage}</p>
-          </div>
+          </>
         )}
       </div>
 
       <style>{`
         .bulk-order-page {
-          padding: 2rem 0;
           min-height: 100vh;
-          background: var(--bg-secondary, #f8fafc);
+          padding: 32px 0 56px;
+          background: #f8fafc;
+          color: #111827;
         }
-
+        .bulk-container {
+          width: min(1180px, calc(100% - 32px));
+          margin: 0 auto;
+        }
         .bulk-order-header {
-          text-align: center;
-          margin-bottom: 3rem;
-        }
-
-        .bulk-order-header h1 {
-          font-size: 2.5rem;
-          color: var(--text-primary, #1e293b);
-          margin-bottom: 0.5rem;
-        }
-
-        .bulk-order-header p {
-          color: var(--text-secondary, #64748b);
-          font-size: 1.125rem;
-        }
-
-        .progress-steps {
-          display: flex;
-          justify-content: center;
-          gap: 2rem;
-          margin-top: 2rem;
-        }
-
-        .step {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 0.5rem;
-        }
-
-        .step-number {
-          width: 40px;
-          height: 40px;
-          border-radius: 50%;
-          background: var(--gray-200, #e2e8f0);
-          color: var(--text-secondary, #64748b);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-weight: 600;
-          transition: all var(--transition-normal);
-        }
-
-        .step.active .step-number {
-          background: var(--gradient-primary, linear-gradient(135deg, #2f4a67, #23394f));
-          color: white;
-        }
-
-        .step-label {
-          font-size: 0.875rem;
-          color: var(--text-secondary, #64748b);
-          font-weight: 500;
-        }
-
-        .step.active .step-label {
-          color: var(--primary-color, #2f4a67);
-        }
-
-        .form-step {
-          background: var(--bg-primary, white);
-          border-radius: var(--radius-2xl, 1.5rem);
-          padding: 2rem;
-          box-shadow: var(--shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1));
-          margin-bottom: 2rem;
-        }
-
-        .form-step h2 {
-          color: var(--text-primary, #1e293b);
-          margin-bottom: 2rem;
-        }
-
-        .step-header {
           display: flex;
           justify-content: space-between;
-          align-items: center;
-          margin-bottom: 2rem;
+          align-items: flex-end;
+          gap: 24px;
+          margin-bottom: 22px;
         }
-
-        .btn-add-product {
-          background: var(--success-color, #16a34a);
-          color: white;
-          border: none;
-          padding: 0.75rem 1.5rem;
-          border-radius: var(--radius-lg, 0.75rem);
-          font-weight: 600;
-          cursor: pointer;
-          transition: all var(--transition-fast);
+        .bulk-eyebrow {
+          margin: 0 0 8px;
+          color: #2f4a67;
+          font-weight: 800;
+          text-transform: uppercase;
+          font-size: 12px;
+        }
+        .bulk-order-header h1 {
+          margin: 0;
+          font-size: 34px;
+          line-height: 1.1;
+        }
+        .bulk-order-header p {
+          margin: 8px 0 0;
+          color: #64748b;
+        }
+        .bulk-total-pill {
+          min-width: 140px;
+          padding: 14px 18px;
+          border-radius: 8px;
+          background: #ffffff;
+          border: 1px solid #e5e7eb;
+          text-align: center;
+        }
+        .bulk-total-pill span {
+          display: block;
+          color: #64748b;
+          font-size: 12px;
+          font-weight: 700;
+        }
+        .bulk-total-pill strong {
+          display: block;
+          font-size: 28px;
+          color: #2f4a67;
+        }
+        .progress-steps {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 10px;
+          margin-bottom: 22px;
+        }
+        .step {
           display: flex;
           align-items: center;
-          gap: 0.5rem;
+          gap: 10px;
+          min-width: 0;
+          padding: 12px;
+          border-radius: 8px;
+          background: #ffffff;
+          border: 1px solid #e5e7eb;
         }
-
-        .btn-add-product:hover {
-          transform: translateY(-2px);
-          box-shadow: var(--shadow-md, 0 4px 6px -1px rgb(0 0 0 / 0.1));
-        }
-
-        .product-card {
-          border: 1px solid var(--border-color, #e2e8f0);
-          border-radius: var(--radius-xl, 1rem);
-          padding: 1.5rem;
-          margin-bottom: 1.5rem;
-          position: relative;
-        }
-
-        .btn-remove-product {
-          position: absolute;
-          top: 1rem;
-          right: 1rem;
-          background: var(--danger-color, #dc2626);
-          color: white;
-          border: none;
+        .step span {
           width: 30px;
           height: 30px;
           border-radius: 50%;
-          cursor: pointer;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          background: #e5e7eb;
+          color: #64748b;
+          font-weight: 800;
+          flex: 0 0 auto;
+        }
+        .step p {
+          margin: 0;
+          font-weight: 700;
+          font-size: 13px;
+          overflow-wrap: anywhere;
+        }
+        .step.active {
+          border-color: #2f4a67;
+        }
+        .step.active span {
+          background: #2f4a67;
+          color: #ffffff;
+        }
+        .bulk-panel,
+        .bulk-error-banner {
+          background: #ffffff;
+          border: 1px solid #e5e7eb;
+          border-radius: 8px;
+          box-shadow: 0 10px 26px rgba(15, 23, 42, 0.06);
+        }
+        .bulk-panel {
+          padding: 24px;
+        }
+        .bulk-panel h2 {
+          margin: 0 0 18px;
+          font-size: 22px;
+        }
+        .bulk-grid {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 16px;
+        }
+        .bulk-field {
+          display: flex;
+          flex-direction: column;
+          gap: 7px;
+          min-width: 0;
+        }
+        .bulk-field.full {
+          grid-column: 1 / -1;
+        }
+        .bulk-field > span {
+          font-size: 13px;
+          font-weight: 800;
+          color: #334155;
+        }
+        .bulk-field input,
+        .bulk-field select,
+        .bulk-field textarea {
+          width: 100%;
+          min-height: 42px;
+          border: 1px solid #cbd5e1;
+          border-radius: 8px;
+          padding: 10px 12px;
+          font: inherit;
+          background: #ffffff;
+        }
+        .bulk-field textarea {
+          resize: vertical;
+        }
+        .field-error {
+          color: #dc2626;
+          font-size: 12px;
+          font-weight: 700;
+        }
+        .bulk-error-banner {
+          padding: 14px 16px;
+          margin-bottom: 16px;
+          color: #991b1b;
+          background: #fef2f2;
+          border-color: #fecaca;
+          font-weight: 700;
+        }
+        .bulk-success-screen {
+          width: min(680px, 100%);
+          margin: 48px auto 0;
+          padding: 44px 34px;
+          border: 1px solid #dbeafe;
+          border-radius: 12px;
+          background: #ffffff;
+          box-shadow: 0 18px 44px rgba(15, 23, 42, 0.10);
+          text-align: center;
+        }
+        .bulk-success-icon {
+          width: 76px;
+          height: 76px;
+          margin: 0 auto 20px;
+          border-radius: 50%;
           display: flex;
           align-items: center;
           justify-content: center;
-          transition: all var(--transition-fast);
+          background: #ecfdf5;
+          color: #16a34a;
+          border: 1px solid #bbf7d0;
+          font-size: 34px;
         }
-
-        .btn-remove-product:hover {
-          transform: scale(1.1);
+        .bulk-success-screen h1 {
+          margin: 0;
+          color: #111827;
+          font-size: 36px;
+          line-height: 1.1;
         }
-
-        .form-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-          gap: 1.5rem;
+        .bulk-success-message {
+          margin: 14px auto 0;
+          color: #334155;
+          font-size: 18px;
+          font-weight: 700;
+          line-height: 1.5;
         }
-
-        .form-group {
+        .bulk-request-id {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          margin-top: 18px;
+          padding: 10px 16px;
+          border-radius: 8px;
+          background: #eff6ff;
+          color: #1d4ed8;
+          font-family: monospace;
+          font-size: 16px;
+          font-weight: 800;
+        }
+        .bulk-success-support {
+          margin: 18px auto 0;
+          color: #64748b;
+          font-size: 15px;
+          line-height: 1.6;
+        }
+        .bulk-success-actions {
           display: flex;
-          flex-direction: column;
+          justify-content: center;
+          gap: 12px;
+          flex-wrap: wrap;
+          margin-top: 28px;
         }
-
-        .form-group.full-width {
-          grid-column: 1 / -1;
+        .bulk-success-action {
+          min-width: 230px;
+          justify-content: center;
         }
-
-        .form-group label {
-          font-weight: 500;
-          color: var(--text-primary, #1e293b);
-          margin-bottom: 0.5rem;
+        .bulk-section-title,
+        .product-card-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 16px;
+          margin-bottom: 16px;
         }
-
-        .form-group input,
-        .form-group textarea,
-        .form-group select {
-          padding: 0.75rem;
-          border: 1px solid var(--border-color, #e2e8f0);
-          border-radius: var(--radius-lg, 0.75rem);
-          font-size: 0.875rem;
-          transition: all var(--transition-fast);
+        .bulk-section-title p {
+          margin: 4px 0 0;
+          color: #64748b;
         }
-
-        .form-group input:focus,
-        .form-group textarea:focus,
-        .form-group select:focus {
-          outline: none;
-          border-color: var(--primary-color, #2f4a67);
-          box-shadow: 0 0 0 3px rgba(47, 74, 103, 0.18);
+        .btn-add-product,
+        .btn-remove-product,
+        .btn-primary,
+        .btn-secondary {
+          border: 0;
+          border-radius: 8px;
+          min-height: 40px;
+          padding: 0 16px;
+          font-weight: 800;
+          cursor: pointer;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          white-space: nowrap;
         }
-
+        .btn-add-product {
+          background: #16a34a;
+          color: #ffffff;
+        }
+        .btn-remove-product {
+          background: #fee2e2;
+          color: #991b1b;
+        }
+        .btn-primary {
+          background: #2f4a67;
+          color: #ffffff;
+        }
+        .btn-primary:disabled,
+        .btn-secondary:disabled {
+          opacity: 0.65;
+          cursor: not-allowed;
+        }
+        .btn-secondary {
+          background: #e5e7eb;
+          color: #111827;
+        }
+        .bulk-product-card {
+          border: 1px solid #e5e7eb;
+          border-radius: 8px;
+          padding: 18px;
+          margin-bottom: 16px;
+          background: #fbfdff;
+        }
+        .product-card-header h3 {
+          margin: 0;
+          font-size: 18px;
+        }
+        .product-card-header > div {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+        .product-total,
+        .grand-total {
+          background: #eff6ff;
+          color: #1d4ed8;
+          border-radius: 8px;
+          padding: 8px 12px;
+          font-weight: 800;
+          font-size: 13px;
+        }
         .size-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-          gap: 1rem;
+          grid-template-columns: repeat(8, minmax(64px, 1fr));
+          gap: 10px;
         }
-
         .size-input {
           display: flex;
           flex-direction: column;
-          align-items: center;
+          gap: 5px;
         }
-
-        .size-input label {
-          font-size: 0.75rem;
-          font-weight: 600;
-          color: var(--text-secondary, #64748b);
-          margin-bottom: 0.25rem;
+        .size-input span {
+          font-size: 12px;
+          font-weight: 800;
+          color: #64748b;
         }
-
         .size-input input {
-          width: 60px;
           text-align: center;
+          padding: 8px;
         }
-
-        .total-quantity input {
-          background: var(--primary-color, #2f4a67);
-          color: white;
-          font-weight: 600;
-        }
-
-        .upload-area {
-          border: 2px dashed var(--border-color, #e2e8f0);
-          border-radius: var(--radius-xl, 1rem);
-          padding: 2rem;
+        .bulk-upload {
+          border: 2px dashed #cbd5e1;
+          border-radius: 8px;
+          padding: 22px;
           text-align: center;
-          transition: all var(--transition-fast);
-        }
-
-        .upload-area:hover {
-          border-color: var(--primary-color, #2f4a67);
-          background: var(--gray-50, #f8fafc);
-        }
-
-        .upload-label {
           cursor: pointer;
+          background: #f8fafc;
           display: flex;
           flex-direction: column;
+          gap: 6px;
           align-items: center;
-          gap: 0.5rem;
         }
-
-        .upload-label i {
-          font-size: 3rem;
-          color: var(--primary-color, #2f4a67);
+        .bulk-upload input {
+          display: none;
         }
-
-        .upload-label span {
-          font-weight: 600;
-          color: var(--text-primary, #1e293b);
+        .bulk-upload i {
+          font-size: 28px;
+          color: #2f4a67;
         }
-
-        .upload-label small {
-          color: var(--text-secondary, #64748b);
+        .bulk-upload small {
+          color: #64748b;
         }
-
-        .uploaded-files {
-          margin-top: 1.5rem;
-        }
-
         .file-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-          gap: 1rem;
-          margin-top: 1rem;
+          grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+          gap: 12px;
+          margin-top: 14px;
         }
-
-        .file-item {
+        .file-card {
+          display: grid;
+          grid-template-columns: 52px minmax(0, 1fr) 32px;
+          align-items: center;
+          gap: 10px;
+          padding: 10px;
+          border: 1px solid #e5e7eb;
+          border-radius: 8px;
+          background: #ffffff;
+        }
+        .file-thumb {
+          width: 52px;
+          height: 52px;
+          border-radius: 8px;
+          overflow: hidden;
+          background: #f1f5f9;
           display: flex;
           align-items: center;
-          gap: 1rem;
-          padding: 1rem;
-          border: 1px solid var(--border-color, #e2e8f0);
-          border-radius: var(--radius-lg, 0.75rem);
-          position: relative;
+          justify-content: center;
         }
-
-        .file-preview {
-          width: 50px;
-          height: 50px;
-          border-radius: var(--radius-md, 0.5rem);
-          overflow: hidden;
-        }
-
-        .file-preview img {
+        .file-thumb img {
           width: 100%;
           height: 100%;
           object-fit: cover;
         }
-
-        .file-icon {
-          width: 50px;
-          height: 50px;
-          background: var(--gray-100, #f1f5f9);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          border-radius: var(--radius-md, 0.5rem);
-          color: var(--text-secondary, #64748b);
+        .file-card strong,
+        .file-card span {
+          display: block;
+          min-width: 0;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
-
-        .file-info {
-          flex: 1;
+        .file-card span {
+          color: #64748b;
+          font-size: 12px;
+          margin-top: 3px;
         }
-
-        .file-name {
-          font-weight: 500;
-          color: var(--text-primary, #1e293b);
-          margin: 0;
-        }
-
-        .file-size {
-          font-size: 0.75rem;
-          color: var(--text-secondary, #64748b);
-          margin: 0;
-        }
-
-        .btn-remove-file {
-          background: var(--danger-color, #dc2626);
-          color: white;
-          border: none;
-          width: 25px;
-          height: 25px;
-          border-radius: 50%;
+        .file-card button {
+          width: 32px;
+          height: 32px;
+          border: 0;
+          border-radius: 8px;
+          color: #991b1b;
+          background: #fee2e2;
           cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          transition: all var(--transition-fast);
         }
-
-        .btn-remove-file:hover {
-          transform: scale(1.1);
-        }
-
-        .review-section {
-          display: flex;
-          flex-direction: column;
-          gap: 2rem;
-        }
-
-        .review-card {
-          background: var(--gray-50, #f8fafc);
-          border-radius: var(--radius-xl, 1rem);
-          padding: 1.5rem;
-        }
-
-        .review-card h3 {
-          color: var(--text-primary, #1e293b);
-          margin-bottom: 1rem;
-        }
-
-        .review-grid {
+        .review-layout {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-          gap: 1rem;
+          gap: 16px;
         }
-
-        .review-item {
-          display: flex;
-          justify-content: space-between;
-          padding: 0.5rem 0;
-          border-bottom: 1px solid var(--border-color, #e2e8f0);
+        .review-card {
+          padding: 16px;
+          border: 1px solid #e5e7eb;
+          border-radius: 8px;
+          background: #f8fafc;
         }
-
-        .review-item label {
-          font-weight: 500;
-          color: var(--text-secondary, #64748b);
+        .review-card h3 {
+          margin: 0 0 12px;
         }
-
-        .review-item span {
-          color: var(--text-primary, #1e293b);
-          font-weight: 500;
+        .review-card p {
+          margin: 0 0 8px;
         }
-
-        .product-review {
-          margin-bottom: 1.5rem;
-          padding: 1rem;
-          background: white;
-          border-radius: var(--radius-lg, 0.75rem);
+        .review-product {
+          padding: 12px;
+          border-radius: 8px;
+          background: #ffffff;
+          margin-bottom: 12px;
         }
-
-        .product-review h4 {
-          color: var(--primary-color, #2f4a67);
-          margin-bottom: 0.5rem;
+        .review-product h4 {
+          margin: 0 0 8px;
+          color: #2f4a67;
         }
-
-        .product-details p {
-          margin-bottom: 0.5rem;
-        }
-
         .form-navigation {
           display: flex;
           justify-content: space-between;
-          align-items: center;
-          gap: 1rem;
+          gap: 12px;
+          margin-top: 18px;
         }
-
-        .btn-primary,
-        .btn-secondary {
-          padding: 0.75rem 2rem;
-          border: none;
-          border-radius: var(--radius-lg, 0.75rem);
-          font-weight: 600;
-          cursor: pointer;
-          transition: all var(--transition-fast);
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
+        .form-navigation .btn-primary {
+          margin-left: auto;
         }
-
-        .btn-primary {
-          background: var(--gradient-primary, linear-gradient(135deg, #2f4a67, #23394f));
-          color: white;
-        }
-
-        .btn-primary:hover:not(:disabled) {
-          transform: translateY(-2px);
-          box-shadow: var(--shadow-md, 0 4px 6px -1px rgb(0 0 0 / 0.1));
-        }
-
-        .btn-primary:disabled {
-          opacity: 0.6;
-          cursor: not-allowed;
-        }
-
-        .btn-secondary {
-          background: var(--gray-200, #e2e8f0);
-          color: var(--text-primary, #1e293b);
-        }
-
-        .btn-secondary:hover {
-          background: var(--gray-300, #cbd5e1);
-        }
-
-        .success-message {
-          background: var(--success-color, #16a34a);
-          color: white;
-          padding: 1.5rem;
-          border-radius: var(--radius-xl, 1rem);
-          text-align: center;
-          margin-top: 2rem;
-        }
-
-        .success-message i {
-          font-size: 2rem;
-          margin-bottom: 0.5rem;
-        }
-
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
+        @media (max-width: 820px) {
+          .bulk-order-header,
+          .bulk-section-title,
+          .product-card-header {
+            align-items: stretch;
+            flex-direction: column;
           }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        .animate-fadeIn {
-          animation: fadeIn 0.5s ease-out;
-        }
-
-        @media (max-width: 768px) {
           .progress-steps {
-            gap: 1rem;
+            grid-template-columns: repeat(2, 1fr);
           }
-          
-          .step-label {
-            font-size: 0.75rem;
-          }
-          
-          .form-grid {
+          .bulk-grid {
             grid-template-columns: 1fr;
           }
-          
           .size-grid {
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(4, minmax(0, 1fr));
           }
-          
-          .file-grid {
-            grid-template-columns: 1fr;
+          .bulk-panel {
+            padding: 16px;
           }
-          
+          .bulk-success-screen {
+            margin-top: 24px;
+            padding: 34px 22px;
+          }
+          .bulk-success-screen h1 {
+            font-size: 30px;
+          }
+          .bulk-success-message {
+            font-size: 16px;
+          }
+          .btn-add-product,
+          .btn-remove-product,
+          .btn-primary,
+          .btn-secondary {
+            width: 100%;
+          }
           .form-navigation {
             flex-direction: column;
           }
-          
-          .form-navigation button {
+        }
+        @media (max-width: 420px) {
+          .bulk-container {
+            width: min(100% - 20px, 1180px);
+          }
+          .bulk-order-header h1 {
+            font-size: 26px;
+          }
+          .bulk-success-screen {
+            padding: 28px 16px;
+          }
+          .bulk-success-icon {
+            width: 64px;
+            height: 64px;
+            font-size: 28px;
+          }
+          .bulk-request-id {
             width: 100%;
-            justify-content: center;
+            font-size: 14px;
+          }
+          .bulk-success-actions {
+            width: 100%;
+          }
+          .bulk-success-action {
+            min-width: 0;
+            width: 100%;
+          }
+          .progress-steps {
+            grid-template-columns: 1fr;
+          }
+          .size-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+          }
+          .file-grid {
+            grid-template-columns: 1fr;
           }
         }
       `}</style>

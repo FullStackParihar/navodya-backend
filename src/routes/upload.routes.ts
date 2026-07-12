@@ -7,7 +7,14 @@ import path from 'path';
 
 const router = Router();
 
-router.post('/upload', authenticate, requireAdmin, upload.single('image'), asyncHandler(async (req, res) => {
+router.post('/upload', authenticate, requireAdmin, (req, res, next) => {
+    upload.single('image')(req, res, (err) => {
+        if (err) {
+            return res.status(400).json(new ApiResponse(400, null, err.message || 'File upload error'));
+        }
+        next();
+    });
+}, asyncHandler(async (req, res) => {
     if (!req.file) {
         return res.status(400).json(new ApiResponse(400, null, 'No file uploaded'));
     }

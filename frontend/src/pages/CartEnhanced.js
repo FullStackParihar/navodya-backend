@@ -198,9 +198,10 @@ const Cart = () => {
                     
                     <div className="item-details-enhanced">
                       <h3>
-                        <Link to={`/product/${item.id}`}>{item.name}</Link>
+                        <Link to={`/product/${item.productSlug || item.id}`}>{item.name}</Link>
                       </h3>
                       <p>{item.description}</p>
+                      {item.fabricName && <p className="cart-fabric-quality">Fabric: <strong>{item.fabricName}</strong></p>}
                       <div className="item-price-enhanced">
                         <span className="current-price">₹{item.price}</span>
                         {item.originalPrice && (

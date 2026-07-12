@@ -7,6 +7,9 @@ import { User } from '../models/user.model.js';
 import { Order } from '../models/order.model.js';
 import { Product } from '../models/product.model.js';
 
+const VALID_STATUSES = ['PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED', 'RETURNED'] as const;
+type OrderStatus = typeof VALID_STATUSES[number];
+
 export const getAdminStats = asyncHandler(async (req: AuthRequest, res: Response) => {
     const totalUsers = await User.countDocuments();
     const activeUsers = await User.countDocuments({ is_active: true });
@@ -32,8 +35,26 @@ export const getAdminStats = asyncHandler(async (req: AuthRequest, res: Response
 });
 
 export const getAllOrders = asyncHandler(async (req: AuthRequest, res: Response) => {
-    const orders = await Order.find().sort({ created_at: -1 });
+    // Populate user_id so admin can see customer name, email, phone
+    const orders = await Order.find()
+        .populate('user_id', 'name email phone')
+        .sort({ created_at: -1 });
     res.status(200).json(new ApiResponse(200, orders, 'All orders retrieved successfully'));
+});
+
+// Get single order by ID with full user details — used by the admin detail modal
+export const getAdminOrderById = asyncHandler(async (req: AuthRequest, res: Response) => {
+    const { orderId } = req.params;
+
+    const order = await Order.findById(orderId)
+        .populate('user_id', 'name email phone address city state pincode')
+        .populate('coupon_applied', 'code type value');
+
+    if (!order) {
+        throw new ApiError(404, 'Order not found');
+    }
+
+    res.status(200).json(new ApiResponse(200, order, 'Order retrieved successfully'));
 });
 
 export const getAllUsers = asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -43,19 +64,62 @@ export const getAllUsers = asyncHandler(async (req: AuthRequest, res: Response) 
 
 export const updateOrderStatus = asyncHandler(async (req: AuthRequest, res: Response) => {
     const { orderId } = req.params;
-    const { status } = req.body;
+    const { status, note } = req.body;
 
-    const order = await Order.findByIdAndUpdate(
-        orderId,
-        { status },
-        { new: true }
-    );
+    // Validate the incoming status value
+    if (!VALID_STATUSES.includes(status as OrderStatus)) {
+        throw new ApiError(400, `Invalid status. Allowed values: ${VALID_STATUSES.join(', ')}`);
+    }
 
+    const order = await Order.findById(orderId);
     if (!order) {
         throw new ApiError(404, 'Order not found');
     }
 
-    res.status(200).json(new ApiResponse(200, order, 'Order status updated successfully'));
+    const previousStatus = order.status;
+
+    // Append to status history audit trail
+    order.status_history.push({
+        status: status as OrderStatus,
+        changed_at: new Date(),
+        note: note || undefined,
+        changed_by: (req.user as any)?.name || (req.user as any)?.email || 'admin'
+    });
+
+    order.status = status as OrderStatus;
+    await order.save();
+
+    // Re-populate user info before responding so frontend gets consistent data
+    await order.populate('user_id', 'name email phone');
+
+    res.status(200).json(new ApiResponse(200, order, `Order status updated from ${previousStatus} to ${status}`));
+});
+
+// Update or set tracking information for an order
+export const updateOrderTracking = asyncHandler(async (req: AuthRequest, res: Response) => {
+    const { orderId } = req.params;
+    const { carrier, tracking_number, url } = req.body;
+
+    if (!carrier && !tracking_number && !url) {
+        throw new ApiError(400, 'At least one tracking field (carrier, tracking_number, url) is required');
+    }
+
+    const order = await Order.findById(orderId);
+    if (!order) {
+        throw new ApiError(404, 'Order not found');
+    }
+
+    // Merge provided tracking fields (don't wipe existing fields if not provided)
+    order.tracking = {
+        carrier: carrier ?? order.tracking?.carrier,
+        tracking_number: tracking_number ?? order.tracking?.tracking_number,
+        url: url ?? order.tracking?.url
+    };
+
+    await order.save();
+    await order.populate('user_id', 'name email phone');
+
+    res.status(200).json(new ApiResponse(200, order, 'Tracking information updated successfully'));
 });
 
 export const deleteUser = asyncHandler(async (req: AuthRequest, res: Response) => {

@@ -8,12 +8,35 @@ export interface IOrderItem {
     quantity: number;
     size?: string;
     color?: string;
+    fabric_variant_id?: mongoose.Types.ObjectId;
+    fabric_name?: string;
+    fabric_price?: number;
+}
+
+export interface IOrderStatusHistory {
+    status: string;
+    changed_at: Date;
+    note?: string;
+    changed_by?: string; // admin user id or name
+}
+
+export interface IOrderTracking {
+    carrier?: string;
+    tracking_number?: string;
+    url?: string;
 }
 
 export interface IOrder extends Document {
     user_id: mongoose.Types.ObjectId;
     items: IOrderItem[];
     shipping_address: {
+        street: string;
+        city: string;
+        state: string;
+        zip_code: string;
+        country: string;
+    };
+    billing_address?: {
         street: string;
         city: string;
         state: string;
@@ -33,10 +56,19 @@ export interface IOrder extends Document {
         total: number;
     };
     coupon_applied?: mongoose.Types.ObjectId;
-    status: 'PENDING' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
+    status: 'PENDING' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED' | 'RETURNED';
+    status_history: IOrderStatusHistory[];
+    tracking?: IOrderTracking;
     created_at: Date;
     updated_at: Date;
 }
+
+const orderStatusHistorySchema = new mongoose.Schema({
+    status: { type: String, required: true },
+    changed_at: { type: Date, default: Date.now },
+    note: { type: String },
+    changed_by: { type: String }
+}, { _id: false });
 
 const orderSchema = new mongoose.Schema({
     user_id: {
@@ -52,6 +84,9 @@ const orderSchema = new mongoose.Schema({
         quantity: { type: Number, required: true },
         size: String,
         color: String
+        ,fabric_variant_id: mongoose.Schema.Types.ObjectId
+        ,fabric_name: String
+        ,fabric_price: { type: Number, min: 0 }
     }],
     shipping_address: {
         street: { type: String, required: true },
@@ -59,6 +94,13 @@ const orderSchema = new mongoose.Schema({
         state: { type: String, required: true },
         zip_code: { type: String, required: true },
         country: { type: String, required: true }
+    },
+    billing_address: {
+        street: { type: String },
+        city: { type: String },
+        state: { type: String },
+        zip_code: { type: String },
+        country: { type: String }
     },
     payment_info: {
         id: { type: String },
@@ -82,8 +124,19 @@ const orderSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED'],
+        enum: ['PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED', 'RETURNED'],
         default: 'PENDING'
+    },
+    // Immutable audit trail of every status change
+    status_history: {
+        type: [orderStatusHistorySchema],
+        default: []
+    },
+    // Optional shipment tracking details
+    tracking: {
+        carrier: { type: String },
+        tracking_number: { type: String },
+        url: { type: String }
     }
 }, {
     timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }

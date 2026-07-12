@@ -12,7 +12,12 @@ export interface AuthRequest extends Request {
 
 export const authenticate = asyncHandler(
   async (req: AuthRequest, res: Response, next: NextFunction) => {
-    const token = req.headers.authorization?.replace('Bearer ', '');
+    let token = req.headers.authorization?.replace('Bearer ', '');
+    
+    // Fallback for direct browser downloads
+    if (!token && req.query.token && typeof req.query.token === 'string') {
+      token = req.query.token;
+    }
 
     if (!token) {
       throw new ApiError(401, 'Authentication token required');

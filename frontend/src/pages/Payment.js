@@ -99,6 +99,13 @@ const Payment = () => {
     return totalAmount;
   };
 
+  const calculateMRPSavings = () => {
+    return cartItems.reduce((total, item) => {
+      const originalPrice = item.originalPrice || item.price;
+      return total + ((originalPrice - item.price) * item.quantity);
+    }, 0);
+  };
+
   const calculateShipping = () => {
     return calculateSubtotal() > 999 || calculateSubtotal() === 0 ? 0 : 99;
   };
@@ -485,7 +492,7 @@ const Payment = () => {
                             <img src={item.image} alt={item.name} />
                             <div className="item-details">
                               <h4>{item.name}</h4>
-                              <p>Size: {item.size} | Color: {item.color}</p>
+                              <p>Size: {item.size} | Color: {item.color}{item.fabricName ? ` | Fabric: ${item.fabricName}` : ''}</p>
                               <p>Qty: {item.quantity}</p>
                             </div>
                             <div className="item-price">
@@ -531,7 +538,7 @@ const Payment = () => {
                     <img src={item.image} alt={item.name} />
                     <div className="summary-item-details">
                       <h4>{item.name}</h4>
-                      <p>Qty: {item.quantity} | Size: {item.size}</p>
+                      <p>Qty: {item.quantity} | Size: {item.size}{item.fabricName ? ` | Fabric: ${item.fabricName}` : ''}</p>
                     </div>
                     <div className="summary-item-price">
                       ₹{item.price * item.quantity}
@@ -545,6 +552,12 @@ const Payment = () => {
                   <span>Subtotal</span>
                   <span>₹{calculateSubtotal()}</span>
                 </div>
+                {calculateMRPSavings() > 0 && (
+                  <div className="price-row discount">
+                    <span>Product Savings (MRP)</span>
+                    <span style={{ color: '#22c55e', fontWeight: '600' }}>-₹{calculateMRPSavings()}</span>
+                  </div>
+                )}
                 <div className="price-row">
                   <span>Shipping</span>
                   <span>{calculateShipping() === 0 ? 'FREE' : `₹${calculateShipping()}`}</span>

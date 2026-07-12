@@ -9,6 +9,18 @@ import SkeletonLoader from '../components/SkeletonLoader';
 import './ProductDetailEnhanced.css';
 
 const fallbackImage = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="800" viewBox="0 0 600 800"><rect width="600" height="800" fill="%23f1f5f9"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="24" fill="%2394a3b8">Navodaya Trendz</text></svg>`;
+const objectIdPattern = /^[a-f\d]{24}$/i;
+const getFabricPrice = (fabric) => fabric ? (fabric.salePrice ?? fabric.price) : null;
+
+const getCategoryLink = (slug) => {
+  const categoryLinks = {
+    'alumni-kit': '/alumni-kits',
+    tshirts: '/tshirts',
+    hoodies: '/hoodies',
+    accessories: '/accessories'
+  };
+  return categoryLinks[slug] || '/';
+};
 
 const ProductDetailEnhanced = () => {
   const { id } = useParams();
@@ -22,6 +34,7 @@ const ProductDetailEnhanced = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedSize, setSelectedSize] = useState('');
   const [selectedColor, setSelectedColor] = useState('');
+  const [selectedFabric, setSelectedFabric] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
@@ -34,26 +47,25 @@ const ProductDetailEnhanced = () => {
     const fetchProductAndRelated = async () => {
       try {
         setIsLoading(true);
-        const result = await api.get(`/products/id/${id}`);
+        const endpoint = objectIdPattern.test(id) ? `/products/id/${id}` : `/products/${id}`;
+        const result = await api.get(endpoint);
         
         if (result.success) {
           const p = result.data;
           
-          // Get all sizes from database, even if stock is 0
-          let productSizes = [];
-          if (p.sizes && p.sizes.length > 0) {
-            productSizes = p.sizes.map(s => s.size);
-          } else {
-            productSizes = ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
-          }
+          // Show only sizes that are actually configured in the backend.
+          const backendSizes = Array.isArray(p.sizes) ? p.sizes.filter(s => s?.size) : [];
+          const productSizes = backendSizes.map(s => s.size);
+          const hasSizeVariants = backendSizes.length > 0;
+          const stockCount = backendSizes.reduce((total, s) => total + (Number(s.stock) || 0), 0);
           
           const mappedProduct = {
             id: p.slug,
             dbId: p._id,
             name: p.name,
             description: p.description,
-            price: p.price,
-            originalPrice: null,
+            price: p.sale_price || p.price,
+            originalPrice: p.sale_price ? p.price : null,
             image: resolveImageUrl(p.images[0] || 'https://via.placeholder.com/600x800?text=No+Image'),
             badge: p.rating > 4.5 ? 'Bestseller' : '',
             reviews: p.review_count || 0,
@@ -61,11 +73,13 @@ const ProductDetailEnhanced = () => {
             category: p.category_id?.name || 'T-Shirts',
             categorySlug: p.category_id?.slug,
             sizes: productSizes,
-            sizeStocks: p.sizes && p.sizes.length > 0 ? p.sizes.reduce((acc, s) => ({ ...acc, [s.size]: s.stock }), {}) : {},
-            colors: p.colors.map(c => c.name),
-            colorMap: p.colors.reduce((acc, c) => ({ ...acc, [c.name]: c.hex }), {}),
-            inStock: p.is_active && p.sizes.some(s => s.stock > 0),
-            stockCount: p.sizes.reduce((total, s) => total + s.stock, 0),
+            sizeStocks: backendSizes.reduce((acc, s) => ({ ...acc, [s.size]: s.stock }), {}),
+            colors: Array.isArray(p.colors) ? p.colors.map(c => c.name) : [],
+            colorMap: Array.isArray(p.colors) ? p.colors.reduce((acc, c) => ({ ...acc, [c.name]: c.hex }), {}) : {},
+            colorImages: Array.isArray(p.colors) ? p.colors.reduce((acc, c) => ({ ...acc, [c.name]: c.images?.length > 0 ? c.images.map(img => resolveImageUrl(img)) : null }), {}) : {},
+            fabricVariants: Array.isArray(p.fabric_variants) ? p.fabric_variants.filter(v => v.is_active).map(v => ({ ...v, salePrice: v.sale_price })) : [],
+            inStock: p.is_active && (!hasSizeVariants || stockCount > 0),
+            stockCount: hasSizeVariants ? stockCount : null,
             features: p.features && p.features.length > 0 ? p.features : [
               '100% Premium Quality', 'Official Alumni Merchandise', 'Durable and Comfortable', 'Easy Care Fabric'
             ],
@@ -73,16 +87,19 @@ const ProductDetailEnhanced = () => {
             images: p.images.length > 0 ? p.images.map(img => resolveImageUrl(img)) : [resolveImageUrl('https://via.placeholder.com/600x800?text=No+Image')]
           };
           setProduct(mappedProduct);
+          setSelectedFabric(mappedProduct.fabricVariants.find(v => v.name?.toLowerCase() === 'cotton') || mappedProduct.fabricVariants[0] || null);
           
           // Select first available (in stock) size, or fallback to first option
           const firstInStockSize = productSizes.find(size => {
-            const stock = p.sizes?.find(s => s.size === size)?.stock;
+            const stock = backendSizes.find(s => s.size === size)?.stock;
             return stock !== undefined ? stock > 0 : true;
           });
           if (firstInStockSize) {
             setSelectedSize(firstInStockSize);
           } else if (mappedProduct.sizes.length > 0) {
             setSelectedSize(mappedProduct.sizes[0]);
+          } else {
+            setSelectedSize('');
           }
 
           if (mappedProduct.colors.length > 0) setSelectedColor(mappedProduct.colors[0]);
@@ -91,7 +108,7 @@ const ProductDetailEnhanced = () => {
             const relResult = await api.get(`/products?category=${mappedProduct.categorySlug}&limit=4`);
             if (relResult.success) {
               const mappedRelated = relResult.data.products
-                .filter(item => item._id !== id)
+                .filter(item => item._id !== mappedProduct.dbId)
                 .map(item => ({
                   id: item.slug,
                   dbId: item._id,
@@ -103,9 +120,12 @@ const ProductDetailEnhanced = () => {
               setRelatedProducts(mappedRelated);
             }
           }
+        } else {
+          setProduct(null);
         }
       } catch (err) {
         console.error('Error fetching product:', err);
+        setProduct(null);
       } finally {
         setIsLoading(false);
       }
@@ -157,14 +177,18 @@ const ProductDetailEnhanced = () => {
   };
 
   const handleAddToCart = async () => {
-    if (!selectedSize) {
+    if (product.sizes.length > 0 && !selectedSize) {
       error('Please select a size');
+      return;
+    }
+    if (product.fabricVariants.length > 0 && !selectedFabric) {
+      error('Please select a fabric quality');
       return;
     }
     setIsAddingToCart(true);
     try {
       await new Promise(resolve => setTimeout(resolve, 500));
-      await addToCart({ ...product, selectedSize, selectedColor, quantity });
+      await addToCart({ ...product, price: getFabricPrice(selectedFabric) ?? product.price, originalPrice: selectedFabric?.salePrice !== undefined ? selectedFabric.price : product.originalPrice, selectedSize, selectedColor, selectedFabric, quantity });
       success(`${product.name} added to cart!`);
     } catch (err) {
       error(err.message || 'Failed to add to cart');
@@ -178,18 +202,22 @@ const ProductDetailEnhanced = () => {
       removeFromWishlist(product.id);
       error(`${product.name} removed from wishlist`);
     } else {
-      addToWishlist(product);
+      addToWishlist({ ...product, price: getFabricPrice(selectedFabric) ?? product.price, originalPrice: selectedFabric?.salePrice !== undefined ? selectedFabric.price : product.originalPrice, selectedFabric });
       success(`${product.name} added to wishlist!`);
     }
   };
 
   const handleBuyNow = async () => {
-    if (!selectedSize) {
+    if (product.sizes.length > 0 && !selectedSize) {
       error('Please select a size');
       return;
     }
+    if (product.fabricVariants.length > 0 && !selectedFabric) {
+      error('Please select a fabric quality');
+      return;
+    }
     try {
-      await addToCart({ ...product, selectedSize, selectedColor, quantity });
+      await addToCart({ ...product, price: getFabricPrice(selectedFabric) ?? product.price, originalPrice: selectedFabric?.salePrice !== undefined ? selectedFabric.price : product.originalPrice, selectedSize, selectedColor, selectedFabric, quantity });
       navigate('/cart');
     } catch (err) {
       error(err.message || 'Failed to add to cart');
@@ -207,7 +235,20 @@ const ProductDetailEnhanced = () => {
   };
 
   if (isLoading) return <div className="product-detail-page"><div className="container"><SkeletonLoader type="product" count={1} /></div></div>;
-  if (!product) return <div className="product-detail-page"><div className="container"><h2>Product Not Found</h2><Link to="/" className="btn btn-primary mt-3">Back Home</Link></div></div>;
+  if (!product) {
+    return (
+      <div className="product-detail-page">
+        <div className="container">
+          <div className="product-empty-state">
+            <i className="fas fa-box-open"></i>
+            <h2>Product Not Found</h2>
+            <p>This item may be unavailable or has been removed.</p>
+            <Link to="/alumni-kits" className="back-to-kits-btn">Back to Alumni Kits</Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="product-detail-page">
@@ -216,7 +257,7 @@ const ProductDetailEnhanced = () => {
         <nav className="breadcrumb">
           <Link to="/">Home</Link>
           <span className="separator">/</span>
-          <Link to={`/products?category=${product.categorySlug || 'all'}`}>{product.category}</Link>
+          <Link to={getCategoryLink(product.categorySlug)}>{product.category}</Link>
           <span className="separator">/</span>
           <span className="current">{product.name}</span>
         </nav>
@@ -228,7 +269,7 @@ const ProductDetailEnhanced = () => {
             <div className="main-image-wrapper">
               <div className="main-image-container">
                 <img 
-                  src={product.images[selectedImage]} 
+                  src={(product.colorImages?.[selectedColor] || product.images)[selectedImage]} 
                   alt={product.name} 
                   className="main-image" 
                   onError={(e) => {
@@ -240,7 +281,7 @@ const ProductDetailEnhanced = () => {
 
             </div>
             <div className="thumbnail-container">
-              {product.images.map((img, idx) => (
+              {(product.colorImages?.[selectedColor] || product.images).map((img, idx) => (
                 <button 
                   key={idx} 
                   className={`thumbnail ${selectedImage === idx ? 'active' : ''}`} 
@@ -272,41 +313,73 @@ const ProductDetailEnhanced = () => {
             </div>
 
             <div className="price-section">
-              <span className="current-price">₹{product.price}</span>
+              <span className="current-price">₹{getFabricPrice(selectedFabric) ?? product.price}</span>
+              {(selectedFabric?.salePrice !== undefined || (!selectedFabric && product.originalPrice)) && (
+                <>
+                  <span className="original-price" style={{ textDecoration: 'line-through', color: '#94a3b8', marginLeft: '12px', fontSize: '1.2rem' }}>₹{selectedFabric?.price ?? product.originalPrice}</span>
+                  <span className="discount-badge" style={{ backgroundColor: '#fee2e2', color: '#ef4444', padding: '4px 8px', borderRadius: '4px', marginLeft: '12px', fontSize: '14px', fontWeight: 'bold' }}>
+                    {Math.round((1 - (getFabricPrice(selectedFabric) ?? product.price) / (selectedFabric?.price ?? product.originalPrice)) * 100)}% OFF
+                  </span>
+                </>
+              )}
             </div>
 
             <div className="stock-status">
-              <span className={`stock-indicator ${product.inStock ? 'in-stock' : 'out-of-stock'}`}>
-                <i className={`fas ${product.inStock ? 'fa-check-circle' : 'fa-times-circle'}`}></i>
-                {product.inStock ? 'In Stock' : 'Out of Stock'}
+              <span className={`stock-indicator ${product.inStock && (selectedFabric?.stock === undefined || selectedFabric.stock > 0) ? 'in-stock' : 'out-of-stock'}`}>
+                <i className={`fas ${product.inStock && (selectedFabric?.stock === undefined || selectedFabric.stock > 0) ? 'fa-check-circle' : 'fa-times-circle'}`}></i>
+                {product.inStock && (selectedFabric?.stock === undefined || selectedFabric.stock > 0) ? 'In Stock' : 'Out of Stock'}
               </span>
+              {selectedFabric?.stock !== undefined && <span className="fabric-meta">{selectedFabric.stock} available</span>}
+              {selectedFabric?.sku && <span className="fabric-meta">SKU: {selectedFabric.sku}</span>}
             </div>
 
             <div className="product-options">
+              {product.fabricVariants.length > 0 && (
+                <div className="fabric-quality-selection">
+                  <h3 className="option-title">Fabric Quality</h3>
+                  <div className="fabric-quality-grid" role="radiogroup" aria-label="Fabric Quality">
+                    {product.fabricVariants.map(variant => {
+                      const unavailable = variant.stock !== undefined && variant.stock <= 0;
+                      return (
+                        <button type="button" role="radio" aria-checked={selectedFabric?._id === variant._id}
+                          key={variant._id} disabled={unavailable}
+                          className={`fabric-quality-option ${selectedFabric?._id === variant._id ? 'active' : ''}`}
+                          onClick={() => setSelectedFabric(variant)}>
+                          <span>{variant.name}</span><strong>₹{variant.salePrice ?? variant.price}</strong>
+                          {variant.salePrice !== undefined && <small><s>₹{variant.price}</s> · {Math.round((1 - variant.salePrice / variant.price) * 100)}% off</small>}
+                          {unavailable && <small>Out of stock</small>}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
               {/* Size Selection */}
-              <div className="size-selection">
-                <div className="option-header">
-                  <h3 className="option-title">Select Size</h3>
-                  <button className="size-guide-btn">Size Guide</button>
+              {product.sizes.length > 0 && (
+                <div className="size-selection">
+                  <div className="option-header">
+                    <h3 className="option-title">Select Size</h3>
+                    <button className="size-guide-btn">Size Guide</button>
+                  </div>
+                  <div className="size-options-grid">
+                    {product.sizes.map(size => {
+                      const stock = product.sizeStocks?.[size] !== undefined ? product.sizeStocks[size] : 0;
+                      const isOutOfStock = stock <= 0;
+                      return (
+                        <button
+                          key={size}
+                          className={`size-option ${selectedSize === size ? 'active' : ''}`}
+                          disabled={isOutOfStock}
+                          onClick={() => setSelectedSize(size)}
+                          title={isOutOfStock ? `${size} (Out of Stock)` : ''}
+                        >
+                          {size}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-                <div className="size-options-grid">
-                  {product.sizes.map(size => {
-                    const stock = product.sizeStocks?.[size] !== undefined ? product.sizeStocks[size] : 10;
-                    const isOutOfStock = stock <= 0;
-                    return (
-                      <button
-                        key={size}
-                        className={`size-option ${selectedSize === size ? 'active' : ''}`}
-                        disabled={isOutOfStock}
-                        onClick={() => setSelectedSize(size)}
-                        title={isOutOfStock ? `${size} (Out of Stock)` : ''}
-                      >
-                        {size}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
+              )}
 
               {/* Color Selection */}
               {product.colors.length > 0 && (
@@ -317,7 +390,10 @@ const ProductDetailEnhanced = () => {
                       <button
                         key={color}
                         className={`color-option ${selectedColor === color ? 'active' : ''}`}
-                        onClick={() => setSelectedColor(color)}
+                        onClick={() => {
+                          setSelectedColor(color);
+                          setSelectedImage(0);
+                        }}
                         style={{ backgroundColor: product.colorMap[color] || '#000' }}
                         title={color}
                       >
@@ -363,7 +439,7 @@ const ProductDetailEnhanced = () => {
               <button 
                 className="add-to-cart-btn"
                 onClick={handleAddToCart}
-                disabled={!product.inStock || isAddingToCart}
+                disabled={!product.inStock || isAddingToCart || (product.fabricVariants.length > 0 && !selectedFabric) || (selectedFabric?.stock !== undefined && selectedFabric.stock <= 0)}
               >
                 <i className="fas fa-shopping-bag"></i>
                 {isAddingToCart ? 'Adding...' : 'Add to Cart'}
@@ -371,7 +447,7 @@ const ProductDetailEnhanced = () => {
               <button 
                 className="buy-now-btn"
                 onClick={handleBuyNow}
-                disabled={!product.inStock}
+                disabled={!product.inStock || (product.fabricVariants.length > 0 && !selectedFabric) || (selectedFabric?.stock !== undefined && selectedFabric.stock <= 0)}
               >
                 <i className="fas fa-bolt"></i>
                 Buy Now

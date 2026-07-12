@@ -43,8 +43,15 @@ const normalizeCartProduct = (product) => {
   const sizeVal = getOptionName(selectedSizeOption, 'size') || product.selectedSize || getFirstAvailableSize(product.sizes) || 'Free Size';
   const colorVal = getOptionName(selectedColorOption, 'name') || product.selectedColor || getOptionName(product.colors?.[0], 'name') || 'N/A';
 
+  const fabricId = product.selectedFabric?._id || product.fabricVariantId || '';
+  const baseId = product.productSlug || product.id;
   return {
     ...product,
+    id: [baseId, sizeVal, colorVal, fabricId].join('::'),
+    productSlug: baseId,
+    selectedFabric: product.selectedFabric || null,
+    fabricVariantId: fabricId || null,
+    fabricName: product.selectedFabric?.name || product.fabricName || null,
     selectedSize: sizeVal,
     selectedColor: colorVal,
     size: sizeVal,
@@ -147,17 +154,24 @@ export const CartProvider = ({ children }) => {
         const result = await api.get('/cart');
         if (result.success) {
           const mappedItems = result.data.items.map(item => ({
-            id: item.products?.slug || item.product_id?.slug || item.id,
+            id: [item.products?.slug || item.product_id?.slug || item.id, item.size, item.color, item.fabric_variant_id || ''].join('::'),
+            productSlug: item.products?.slug || item.product_id?.slug || item.id,
             dbId: item.products?._id || item.product_id?._id || item.product_id,
             cartItemId: item._id,
             name: item.products?.name || item.product_id?.name,
-            price: item.products?.sale_price || item.products?.price || item.product_id?.sale_price || item.product_id?.price || 0,
+            price: item.fabric_price ?? item.products?.sale_price ?? item.products?.price ?? item.product_id?.sale_price ?? item.product_id?.price ?? 0,
+            originalPrice: item.fabric_sale_price !== undefined
+              ? item.fabric_regular_price
+              : ((item.products?.sale_price || item.product_id?.sale_price) ? (item.products?.price || item.product_id?.price) : null),
             image: item.products?.images?.[0] || item.product_id?.images?.[0],
             quantity: item.quantity,
             selectedSize: item.size,
             selectedColor: item.color,
             size: item.size,
             color: item.color
+            ,fabricVariantId: item.fabric_variant_id || null
+            ,fabricName: item.fabric_name || null
+            ,selectedFabric: item.fabric_variant_id ? { _id: item.fabric_variant_id, name: item.fabric_name, price: item.fabric_regular_price ?? item.fabric_price, salePrice: item.fabric_sale_price } : null
           }));
           dispatch({ type: SET_CART, payload: mappedItems });
         }
@@ -200,7 +214,8 @@ export const CartProvider = ({ children }) => {
           productId: cartProduct.dbId,
           quantity: cartProduct.quantity || 1,
           size: cartProduct.selectedSize,
-          color: cartProduct.selectedColor
+          color: cartProduct.selectedColor,
+          fabricVariantId: cartProduct.fabricVariantId || undefined
         });
         if (!result.success) {
           throw new Error(result.message || 'Failed to add item to cart');

@@ -89,6 +89,12 @@ const ProductCard = ({ product }) => {
           <div className="product-badge">{product.badge}</div>
         )}
         
+        {product.originalPrice && product.price < product.originalPrice && (
+          <div className="discount-tag" style={{ position: 'absolute', top: '10px', right: '10px', background: '#ef4444', color: 'white', padding: '4px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold', zIndex: 10 }}>
+            {Math.round((1 - product.price / product.originalPrice) * 100)}% OFF
+          </div>
+        )}
+        
 
       </div>
       
@@ -113,6 +119,11 @@ const ProductCard = ({ product }) => {
         
         <div className="product-price">
           <span className="current-price">₹{product.price}</span>
+          {product.originalPrice && product.price < product.originalPrice && (
+            <span className="original-price" style={{ textDecoration: 'line-through', color: '#94a3b8', marginLeft: '8px', fontSize: '0.85em' }}>
+              ₹{product.originalPrice}
+            </span>
+          )}
         </div>
         
         <button 

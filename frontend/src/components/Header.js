@@ -42,6 +42,11 @@ const Header = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  useEffect(() => {
+    document.body.classList.toggle('mobile-drawer-open', isMobileMenuOpen);
+    return () => document.body.classList.remove('mobile-drawer-open');
+  }, [isMobileMenuOpen]);
+
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
@@ -208,26 +213,84 @@ const Header = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/hoodies">Hoodies</Link>
+                <Link
+                  to="/hoodies"
+                  className={location.pathname === '/hoodies' ? 'active' : ''}
+                >
+                  Hoodies
+                </Link>
               </li>
               <li>
-                <Link to="/accessories">Accessories</Link>
-              </li>
-
-              <li>
-                <Link to="/events">Events</Link>
-              </li>
-              <li>
-                <Link to="/bulk-order">Bulk Order</Link>
+                <Link
+                  to="/accessories"
+                  className={location.pathname === '/accessories' ? 'active' : ''}
+                >
+                  Accessories
+                </Link>
               </li>
               <li>
-                <Link to="/about-us">About Us</Link>
+                <Link
+                  to="/alumni-kits"
+                  className={location.pathname === '/alumni-kits' ? 'active' : ''}
+                >
+                  Alumni Kits
+                </Link>
               </li>
               <li>
-                <Link to="/today-deals">Today's Deals</Link>
+                <Link 
+                  to="/contests"
+                  className={location.pathname === '/contests' ? 'active' : ''}
+                >
+                  Giveaway
+                </Link>
               </li>
               <li>
-                <Link to="/new-arrivals">New Arrivals</Link>
+                <Link
+                  to="/events"
+                  className={location.pathname === '/events' ? 'active' : ''}
+                >
+                  Events
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  to="/winners"
+                  className={location.pathname === '/winners' ? 'active' : ''}
+                >
+                  Winners
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/bulk-order"
+                  className={location.pathname === '/bulk-order' ? 'active' : ''}
+                >
+                  Bulk Order
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/about-us"
+                  className={location.pathname === '/about-us' ? 'active' : ''}
+                >
+                  About Us
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/today-deals"
+                  className={location.pathname === '/today-deals' ? 'active' : ''}
+                >
+                  Today's Deals
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/new-arrivals"
+                  className={location.pathname === '/new-arrivals' ? 'active' : ''}
+                >
+                  New Arrivals
+                </Link>
               </li>
               {isAdmin && (
                 <li>
@@ -251,7 +314,10 @@ const Header = () => {
         <Link to="/tshirts" onClick={closeMobileMenu}>T-Shirts</Link>
         <Link to="/hoodies" onClick={closeMobileMenu}>Hoodies</Link>
         <Link to="/accessories" onClick={closeMobileMenu}>Accessories</Link>
+        <Link to="/alumni-kits" onClick={closeMobileMenu}>Alumni Kits</Link>
+        <Link to="/contests" onClick={closeMobileMenu}>Giveaway</Link>
         <Link to="/events" onClick={closeMobileMenu}>Events</Link>
+        <Link to="/winners" onClick={closeMobileMenu}>Winners</Link>
         <Link to="/today-deals" onClick={closeMobileMenu}>Today's Deals</Link>
         <Link to="/new-arrivals" onClick={closeMobileMenu}>New Arrivals</Link>
       </div>
@@ -277,7 +343,16 @@ const Header = () => {
               <Link to="/accessories" onClick={closeMobileMenu}>Accessories</Link>
             </li>
             <li>
+              <Link to="/alumni-kits" onClick={closeMobileMenu}>Alumni Kits</Link>
+            </li>
+            <li>
+              <Link to="/contests" onClick={closeMobileMenu}>Giveaway</Link>
+            </li>
+            <li>
               <Link to="/events" onClick={closeMobileMenu}>Events</Link>
+            </li>
+            <li>
+              <Link to="/winners" onClick={closeMobileMenu}>Winners</Link>
             </li>
             <li>
               <Link to="/bulk-order" onClick={closeMobileMenu}>Bulk Order</Link>

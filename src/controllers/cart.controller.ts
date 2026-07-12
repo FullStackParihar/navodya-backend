@@ -6,6 +6,14 @@ import { AuthRequest } from '../middlewares/auth.middleware.js';
 import { CartItem } from '../models/cartItem.model.js';
 import { Product, IProduct } from '../models/product.model.js';
 
+const getCartItemPrice = (item: any, product: IProduct) => {
+  if (item.fabric_variant_id) {
+    const variant = product.fabric_variants?.find(v => String(v._id) === String(item.fabric_variant_id));
+    if (variant) return variant.sale_price ?? variant.price;
+  }
+  return product.sale_price || product.price;
+};
+
 export const getCart = asyncHandler(async (req: AuthRequest, res: Response) => {
   console.log('getCart called for User:', req.userId);
   const cartItems = await CartItem.find({ user_id: req.userId })
@@ -23,7 +31,7 @@ export const getCart = asyncHandler(async (req: AuthRequest, res: Response) => {
     // Check if product exists just in case, though filter above handles it
     if (!product) return total;
 
-    const price = product.sale_price || product.price;
+    const price = getCartItemPrice(item, product);
     return total + price * item.quantity;
   }, 0);
 
@@ -32,6 +40,13 @@ export const getCart = asyncHandler(async (req: AuthRequest, res: Response) => {
     const itemObj = item.toObject();
     return {
       ...itemObj,
+      fabric_price: getCartItemPrice(item, product),
+      fabric_regular_price: item.fabric_variant_id
+        ? product.fabric_variants?.find(v => String(v._id) === String(item.fabric_variant_id))?.price
+        : undefined,
+      fabric_sale_price: item.fabric_variant_id
+        ? product.fabric_variants?.find(v => String(v._id) === String(item.fabric_variant_id))?.sale_price
+        : undefined,
       products: product, // Map populated field to 'products' to match frontend expectation
       product_id: product?._id || item.product_id
     };
@@ -54,7 +69,7 @@ export const getCart = asyncHandler(async (req: AuthRequest, res: Response) => {
 });
 
 export const addToCart = asyncHandler(async (req: AuthRequest, res: Response) => {
-  const { productId, quantity, size, color } = req.body;
+  const { productId, quantity, size, color, fabricVariantId } = req.body;
   console.log(`addToCart: User ${req.userId} adding ${productId}, size=${size}, color=${color}`);
 
   const product = await Product.findOne({ _id: productId, is_active: true });
@@ -66,6 +81,19 @@ export const addToCart = asyncHandler(async (req: AuthRequest, res: Response) =>
 
   const requestedSize = String(size || '').trim();
   const requestedColor = String(color || '').trim();
+
+  const activeFabricVariants = product.fabric_variants?.filter(v => v.is_active) || [];
+  let fabricVariant: any;
+  if (activeFabricVariants.length > 0) {
+    if (!fabricVariantId) throw new ApiError(400, 'Please select a fabric quality');
+    fabricVariant = activeFabricVariants.find(v => String(v._id) === String(fabricVariantId));
+    if (!fabricVariant) throw new ApiError(400, 'Selected fabric quality is not available');
+    if (fabricVariant.stock !== undefined && fabricVariant.stock < quantity) {
+      throw new ApiError(400, 'Selected fabric quality has insufficient stock');
+    }
+  } else if (fabricVariantId) {
+    throw new ApiError(400, 'This product does not have fabric variants');
+  }
 
   const sizeData = product.sizes.find((s) => s.size.toLowerCase() === requestedSize.toLowerCase());
   if (!sizeData || sizeData.stock < quantity) {
@@ -86,6 +114,7 @@ export const addToCart = asyncHandler(async (req: AuthRequest, res: Response) =>
     product_id: productId,
     size: sizeData.size,
     color: normalizedColor,
+    fabric_variant_id: fabricVariant?._id,
   });
 
   if (cartItem) {
@@ -93,6 +122,9 @@ export const addToCart = asyncHandler(async (req: AuthRequest, res: Response) =>
 
     if (newQuantity > sizeData.stock) {
       throw new ApiError(400, 'Cannot add more items than available stock');
+    }
+    if (fabricVariant?.stock !== undefined && newQuantity > fabricVariant.stock) {
+      throw new ApiError(400, 'Cannot add more items than the selected fabric stock');
     }
 
     cartItem.quantity = newQuantity;
@@ -104,6 +136,9 @@ export const addToCart = asyncHandler(async (req: AuthRequest, res: Response) =>
       quantity,
       size: sizeData.size,
       color: normalizedColor,
+      fabric_variant_id: fabricVariant?._id,
+      fabric_name: fabricVariant?.name,
+      fabric_price: fabricVariant ? (fabricVariant.sale_price ?? fabricVariant.price) : undefined,
     });
   }
 
@@ -136,6 +171,16 @@ export const updateCartItem = asyncHandler(async (req: AuthRequest, res: Respons
 
   if (!sizeData || quantity > sizeData.stock) {
     throw new ApiError(400, 'Requested quantity exceeds available stock');
+  }
+
+  if (cartItem.fabric_variant_id) {
+    const variant = product.fabric_variants?.find(v => String(v._id) === String(cartItem.fabric_variant_id));
+    if (!variant?.is_active) throw new ApiError(400, 'Selected fabric quality is no longer available');
+    if (variant.stock !== undefined && quantity > variant.stock) {
+      throw new ApiError(400, 'Requested quantity exceeds selected fabric stock');
+    }
+    cartItem.fabric_name = variant.name;
+    cartItem.fabric_price = variant.sale_price ?? variant.price;
   }
 
   cartItem.quantity = quantity;

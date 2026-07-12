@@ -15,6 +15,10 @@ const isCloudinaryConfigured =
 
 let storage: multer.StorageEngine;
 let upload: multer.Multer;
+const imageFileFilter: multer.Options['fileFilter'] = (_req, file, cb) => {
+  if (['image/jpeg', 'image/png', 'image/webp'].includes(file.mimetype)) cb(null, true);
+  else cb(new Error('Only JPG, PNG, and WebP images are allowed'));
+};
 
 if (isCloudinaryConfigured) {
   console.log('Cloudinary configured successfully.');
@@ -38,7 +42,8 @@ if (isCloudinaryConfigured) {
 
   upload = multer({
     storage: storage,
-    limits: { fileSize: 20 * 1024 * 1024 },
+    limits: { fileSize: 9 * 1024 * 1024 }, // 9MB limit to avoid Cloudinary free tier 10MB crash
+    fileFilter: imageFileFilter,
   });
 } else {
   console.warn('Cloudinary not configured. Using local file storage for development.');
@@ -60,7 +65,8 @@ if (isCloudinaryConfigured) {
 
   upload = multer({
     storage: storage,
-    limits: { fileSize: 20 * 1024 * 1024 },
+    limits: { fileSize: 9 * 1024 * 1024 },
+    fileFilter: imageFileFilter,
   });
 }
 

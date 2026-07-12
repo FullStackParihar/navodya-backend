@@ -1,5 +1,15 @@
 import { z } from 'zod';
 
+const fabricVariantSchema = z.object({
+  _id: z.string().regex(/^[0-9a-fA-F]{24}$/).optional(),
+  name: z.string().trim().min(1, 'Fabric name is required'),
+  price: z.number().nonnegative('Fabric price cannot be negative'),
+  salePrice: z.number().nonnegative('Fabric sale price cannot be negative').optional(),
+  stock: z.number().int().nonnegative().optional(),
+  sku: z.string().trim().optional(),
+  is_active: z.boolean().default(true),
+});
+
 export const createProductSchema = z.object({
   body: z.object({
     name: z.string().min(1, 'Product name is required'),
@@ -24,6 +34,8 @@ export const createProductSchema = z.object({
       })
     ),
     tags: z.array(z.string()).optional(),
+    specifications: z.record(z.string(), z.string()).optional(),
+    fabricVariants: z.array(fabricVariantSchema).optional(),
   }),
 });
 
@@ -50,6 +62,8 @@ export const updateProductSchema = z.object({
       })
     ).optional(),
     tags: z.array(z.string()).optional(),
+    specifications: z.record(z.string(), z.string()).optional(),
+    fabricVariants: z.array(fabricVariantSchema).optional(),
     isActive: z.boolean().optional(),
   }),
 });

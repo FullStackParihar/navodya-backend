@@ -1,89 +1,101 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import './Events.css'; // reuse the same CSS for consistency
+import api from '../utils/api';
+import './AlumniKits.css';
 
 const AlumniKits = () => {
-  const kits = [
-    {
-      id: 'basic',
-      title: 'Basic Alumni Kit',
-      price: '₹499',
-      description: 'T-shirt + Cap + Keychain',
-      image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&h=400&fit=crop'
-    },
-    {
-      id: 'premium',
-      title: 'Premium Alumni Kit',
-      price: '₹999',
-      description: 'T-shirt + Hoodie + Cap + Keychain + Sticker Pack',
-      image: 'https://images.unsplash.com/photo-1556821840-3a5f3d5fb6c7?w=600&h=400&fit=crop'
-    },
-    {
-      id: 'deluxe',
-      title: 'Deluxe Alumni Kit',
-      price: '₹1499',
-      description: 'Premium T-shirt + Premium Hoodie + Cap + Keychain + Sticker Pack + Mug',
-      image: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=600&h=400&fit=crop'
-    }
-  ];
+  const [kits, setKits] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchKits = async () => {
+      try {
+        const result = await api.get('/products');
+        if (result.success) {
+          const fetchedKits = result.data.products
+            .filter(p => p.category_id && (p.category_id.name === 'Alumni Kit' || p.category_id.slug === 'alumni-kit'))
+            .map(p => ({
+              id: p._id,
+              slug: p.slug,
+              title: p.name,
+              price: `₹${p.sale_price || p.price}`,
+              description: p.description || 'Premium Alumni Kit',
+              image: (p.images && p.images[0]) ? p.images[0] : 'https://via.placeholder.com/600x400?text=No+Image'
+            }));
+          setKits(fetchedKits);
+        }
+      } catch (err) {
+        console.error('Error loading kits', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchKits();
+  }, []);
 
   return (
-    <div className="events-page">
-      {/* Hero Section */}
-      <section className="events-hero">
-        <div className="container">
-          <div className="events-hero-content">
-            <span className="events-badge">Alumni Kits</span>
-            <h1 className="events-title">Complete Your <span className="highlight">Navodaya Collection</span></h1>
-            <p className="events-subtitle">Premium quality kits for Navodaya alumni to show your pride!</p>
+    <div className="alumni-kits-page">
+      <div className="alumni-kits-hero">
+        <h1>Alumni Kits</h1>
+        <p>Premium quality kits for Navodaya alumni to show your pride.</p>
+      </div>
+
+      <div className="alumni-kits-container">
+        <div className="alumni-kits-header">
+          <div>
+            <span className="alumni-kits-eyebrow">Collection</span>
+            <h2>Available Kits</h2>
           </div>
         </div>
-      </section>
 
-      <div className="container">
-        <div className="events-layout">
-          <div className="events-list-section">
-            <h2 className="section-heading">
-              <i className="fas fa-box"></i>
-              Available Kits
-            </h2>
-            <div className="events-list">
-              {kits.map((kit, index) => (
-                <div key={kit.id} className="event-card animate-fade-up" style={{ animationDelay: `${index * 0.1}s` }}>
-                  <div className="event-card-image">
-                    <img src={kit.image} alt={kit.title} />
-                    <div className="event-price-tag">{kit.price}</div>
-                  </div>
-                  <div className="event-card-content">
-                    <span className="event-category">Kit</span>
-                    <h3 className="event-card-title">{kit.title}</h3>
-                    <p className="event-card-desc">{kit.description}</p>
-                    <Link to="/" className="btn btn-primary btn-small">
-                      <i className="fas fa-shopping-cart"></i>
-                      Shop Now
-                    </Link>
-                  </div>
-                </div>
-              ))}
-            </div>
+        {loading ? (
+          <div className="kits-loader">
+            <div className="spinner"></div>
+            <p>Loading kits...</p>
           </div>
-
-          <div className="registration-section">
-            <div className="registration-card">
-              <div className="registration-header">
-                <div className="registration-icon">
-                  <i className="fas fa-gift"></i>
+        ) : kits.length === 0 ? (
+          <div className="no-kits-state">
+            <i className="fas fa-box-open"></i>
+            <h2>No Alumni Kits Yet</h2>
+            <p>Check back later for new arrivals.</p>
+          </div>
+        ) : (
+          <div className="alumni-kits-grid">
+            {kits.map((kit, index) => (
+              <div key={kit.id} className="kit-card animate-fadeInUp" style={{ animationDelay: `${index * 0.08}s` }}>
+                <div className="kit-banner">
+                  <img src={kit.image} alt={kit.title} />
+                  <div className="kit-badge"><i className="fas fa-box"></i> Kit</div>
                 </div>
-                <h2>Custom Kit</h2>
-                <p>Can't find what you want? Create your own custom kit!</p>
+
+                <div className="kit-content">
+                  <div className="kit-profile">
+                    <div className="kit-avatar">
+                      <i className="fas fa-graduation-cap"></i>
+                    </div>
+                    <div className="kit-info">
+                      <h3 className="kit-name">{kit.title}</h3>
+                      <span className="kit-type">Navodaya Alumni Kit</span>
+                    </div>
+                  </div>
+
+                  <div className="kit-details">
+                    <div className="kit-detail-row price-row">
+                      <span className="kit-detail-label"><i className="fas fa-tag"></i> Price:</span>
+                      <span className="kit-detail-value highlight">{kit.price}</span>
+                    </div>
+                    <div className="kit-description">{kit.description}</div>
+                  </div>
+
+                  <Link to={`/product/${kit.id}`} className="kit-action">
+                    <i className="fas fa-shopping-cart"></i>
+                    View Details
+                  </Link>
+                </div>
               </div>
-              <Link to="/customize" className="btn btn-primary btn-full">
-                <i className="fas fa-palette"></i>
-                Customize Now
-              </Link>
-            </div>
+            ))}
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

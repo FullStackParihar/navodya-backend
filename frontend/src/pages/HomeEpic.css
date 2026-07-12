@@ -110,6 +110,7 @@
 }
 
 /* Hero Section */
+.dynamic-banner{position:relative;width:100%;height:clamp(480px,42vw,650px);overflow:hidden;background:#111827;color:#fff;contain:layout paint}.dynamic-banner-track{height:100%;display:flex;transition:transform .72s cubic-bezier(.22,.61,.36,1);will-change:transform}.dynamic-banner-slide{position:relative;flex:0 0 100%;width:100%;height:100%;overflow:hidden}.dynamic-banner-slide>img{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:cover;object-position:center}.dynamic-banner-shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(5,12,28,.9) 0%,rgba(5,12,28,.68) 43%,rgba(5,12,28,.18) 78%),linear-gradient(0deg,rgba(5,12,28,.38),transparent 50%)}.dynamic-banner-content{position:relative;z-index:2;width:min(1180px,calc(100% - 128px));height:100%;margin:0 auto;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;box-sizing:border-box;font-family:inherit}.dynamic-banner-offer{min-height:20px;color:#fbbf24;font-family:inherit;font-size:14px;font-weight:800;line-height:1.4;letter-spacing:.11em;text-transform:uppercase}.dynamic-banner-content h1{max-width:720px;margin:12px 0 14px;color:#fff;font-family:inherit;font-size:clamp(40px,5vw,70px);font-weight:800;line-height:1.08;text-wrap:balance;text-shadow:0 2px 16px rgba(0,0,0,.38)}.dynamic-banner-content p{max-width:620px;margin:0 0 27px;color:#f1f5f9;font-family:inherit;font-size:clamp(16px,1.45vw,20px);font-weight:400;line-height:1.55}.dynamic-banner-cta{display:inline-flex;min-height:48px;box-sizing:border-box;align-items:center;justify-content:center;gap:10px;padding:12px 22px;border:0;border-radius:8px;background:linear-gradient(135deg,#f59e0b,#fbbf24);box-shadow:0 8px 22px rgba(245,158,11,.3);color:#111827!important;font-family:inherit;font-size:15px;font-weight:800;line-height:1.2;text-decoration:none;transition:transform .2s,box-shadow .2s}.dynamic-banner-cta:hover{transform:translateY(-2px);box-shadow:0 11px 25px rgba(245,158,11,.42)}.dynamic-banner-control{position:absolute;z-index:3;top:50%;width:46px;height:46px;padding:0;transform:translateY(-50%);border:1px solid rgba(255,255,255,.58);border-radius:50%;background:rgba(8,15,30,.55);color:#fff;cursor:pointer;backdrop-filter:blur(6px)}.dynamic-banner-control:hover,.dynamic-banner-control:focus-visible{background:#f59e0b;color:#111827;outline:3px solid rgba(255,255,255,.8);outline-offset:2px}.dynamic-banner-control.prev{left:20px}.dynamic-banner-control.next{right:20px}.dynamic-banner-dots{position:absolute;z-index:3;left:50%;bottom:22px;display:flex;gap:9px;transform:translateX(-50%)}.dynamic-banner-dots button{width:10px;height:10px;padding:0;border:1px solid #fff;border-radius:99px;background:rgba(255,255,255,.38);cursor:pointer;transition:width .25s,background .25s}.dynamic-banner-dots button.active{width:30px;background:#fbbf24;border-color:#fbbf24}.dynamic-banner-dots button:focus-visible{outline:2px solid #fff;outline-offset:3px}@media(max-width:1024px){.dynamic-banner{height:540px}.dynamic-banner-content{width:calc(100% - 112px)}.dynamic-banner-content h1{font-size:clamp(40px,6vw,60px)}}@media(max-width:768px){.dynamic-banner{height:clamp(460px,72vh,560px);min-height:460px}.dynamic-banner-content{width:calc(100% - 48px);padding:20px 0 56px}.dynamic-banner-shade{background:linear-gradient(90deg,rgba(5,12,28,.88),rgba(5,12,28,.43)),linear-gradient(0deg,rgba(5,12,28,.76),transparent 60%)}.dynamic-banner-offer{font-size:12px}.dynamic-banner-content h1{max-width:92%;margin:10px 0 12px;font-size:clamp(32px,10vw,47px);line-height:1.1}.dynamic-banner-content p{max-width:92%;margin-bottom:22px;font-size:16px;line-height:1.5}.dynamic-banner-cta{min-height:44px;padding:11px 18px;font-size:14px}.dynamic-banner-control{top:auto;bottom:14px;width:38px;height:38px;transform:none}.dynamic-banner-control.prev{left:15px}.dynamic-banner-control.next{right:15px}.dynamic-banner-dots{bottom:28px}}@media(max-width:420px){.dynamic-banner{height:500px}.dynamic-banner-content{width:calc(100% - 36px)}.dynamic-banner-content h1,.dynamic-banner-content p{max-width:100%}}@media(prefers-reduced-motion:reduce){.dynamic-banner-track{transition-duration:.01ms}.dynamic-banner-cta{transition:none}}
 .hero-epic {
   position: relative;
   min-height: calc(100vh - 80px);
@@ -502,13 +503,28 @@
 }
 
 .categories-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  display: flex;
+  flex-wrap: nowrap;
   gap: 24px;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  padding-bottom: 10px;
+}
+
+.categories-grid::-webkit-scrollbar {
+  display: none;
 }
 
 .category-card {
   position: relative;
+  flex: 0 0 230px;
+  width: 230px;
+  min-width: 230px;
   background: white;
   border-radius: 24px;
   overflow: hidden;
@@ -1572,11 +1588,23 @@
 /* Giveaways Section */
 .giveaways-grid,
 .live-events-grid,
-.events-grid,
-.categories-grid {
+.events-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 24px;
+}
+
+.categories-grid {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 24px;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
 }
 
 .giveaway-card,
@@ -1684,4 +1712,58 @@
 .live-meta i,
 .event-meta i {
   color: #000;
+}
+
+/* Shop by Category: keep every category in one horizontal row on all screens. */
+.categories-section {
+  overflow: hidden;
+}
+
+.categories-section .categories-grid {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  grid-template-columns: none !important;
+  gap: 24px !important;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto !important;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  padding: 0 4px 14px !important;
+}
+
+.categories-section .categories-grid::-webkit-scrollbar {
+  display: none;
+}
+
+.categories-section .category-card {
+  flex: 0 0 230px !important;
+  width: 230px !important;
+  min-width: 230px !important;
+  scroll-snap-align: start;
+}
+
+@media (max-width: 1023px) {
+  .categories-section .category-card {
+    flex-basis: 210px !important;
+    width: 210px !important;
+    min-width: 210px !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .categories-section .categories-grid {
+    gap: 14px !important;
+    padding-inline: 16px !important;
+  }
+
+  .categories-section .category-card {
+    flex-basis: 170px !important;
+    width: 170px !important;
+    min-width: 170px !important;
+  }
 }

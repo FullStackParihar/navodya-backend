@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
 import { Link } from 'react-router-dom';
+import HomepageBanner from '../components/HomepageBanner';
 import './HomeEpic.css';
 
 const galleryImages = [
@@ -34,6 +35,13 @@ const categories = [
     image: '/a.png',
     link: '/accessories',
     icon: 'fa-hat-cowboy'
+  },
+  {
+    name: 'Alumni Kits',
+    description: 'Complete Packages',
+    image: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=600&h=400&fit=crop',
+    link: '/alumni-kits',
+    icon: 'fa-graduation-cap'
   },
   {
     name: "Today's Deals",
@@ -249,89 +257,7 @@ const HomeEpic = () => {
   return (
     <div className="home-epic">
       {/* Hero Section */}
-      <section className="hero-epic">
-        <div className="hero-bg">
-          <div className="hero-gradient"></div>
-          <div className="hero-shapes">
-            <div className="shape shape-1"></div>
-            <div className="shape shape-2"></div>
-            <div className="shape shape-3"></div>
-          </div>
-        </div>
-        
-        <div className="container">
-          <div className="hero-content">
-            <div className="hero-left">
-              <div className="hero-badge">
-                <i className="fas fa-star"></i>
-                #1 JNV Merchandise
-              </div>
-              <h1 className="hero-title">
-                Wear Your
-                <span className="title-line">
-                  <span className="title-word" style={{ '--delay': '0s' }}>Navodaya</span>
-                  <span className="title-word" style={{ '--delay': '0.2s' }}>Pride</span>
-                </span>
-              </h1>
-              <p className="hero-description">
-                Premium quality apparel and accessories for JNV students and alumni. Show your Navodaya spirit with style!
-              </p>
-              <div className="hero-actions">
-                <Link to="/tshirts" className="btn btn-primary">
-                  <i className="fas fa-bolt"></i>
-                  Shop Collection
-                </Link>
-                <Link to="/events" className="btn btn-secondary">
-                  <i className="fas fa-calendar-alt"></i>
-                  Events
-                </Link>
-              </div>
-              <div className="hero-stats">
-                <div className="stat">
-                  <div className="stat-icon">
-                    <i className="fas fa-users"></i>
-                  </div>
-                  <div className="stat-text">
-                    <span className="stat-number">15K+</span>
-                    <span className="stat-label">Happy Alumni</span>
-                  </div>
-                </div>
-                <div className="stat">
-                  <div className="stat-icon">
-                    <i className="fas fa-tshirt"></i>
-                  </div>
-                  <div className="stat-text">
-                    <span className="stat-number">100+</span>
-                    <span className="stat-label">Products</span>
-                  </div>
-                </div>
-                <div className="stat">
-                  <div className="stat-icon">
-                    <i className="fas fa-star"></i>
-                  </div>
-                  <div className="stat-text">
-                    <span className="stat-number">4.9</span>
-                    <span className="stat-label">Rating</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div className="hero-right">
-              <div className="hero-products">
-                <div className="product-float product-1">
-                  <img src="/h2o.jpeg" alt="Product" />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <div className="scroll-hint">
-          <span>Scroll to explore</span>
-          <i className="fas fa-chevron-down"></i>
-        </div>
-      </section>
+      <HomepageBanner />
 
       {/* Categories Section */}
       <section className="categories-section">
@@ -373,11 +299,15 @@ const HomeEpic = () => {
           <div className="strip-divider">•</div>
           <div className="strip-item">ACCESSORIES</div>
           <div className="strip-divider">•</div>
+          <div className="strip-item">ALUMNI KITS</div>
+          <div className="strip-divider">•</div>
           <div className="strip-item">T-SHIRTS</div>
           <div className="strip-divider">•</div>
           <div className="strip-item">HOODIES</div>
           <div className="strip-divider">•</div>
           <div className="strip-item">ACCESSORIES</div>
+          <div className="strip-divider">•</div>
+          <div className="strip-item">ALUMNI KITS</div>
         </div>
       </section>
 
