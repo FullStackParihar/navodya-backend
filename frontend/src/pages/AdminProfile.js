@@ -1307,7 +1307,7 @@ const AdminProfile = () => {
         <table className="admin-table">
           <thead>
             <tr>
-              <th>Image</th>
+              {/* <th>Image</th> */}
               <th>Name</th>
               <th>Slug</th>
               <th>Description</th>
@@ -1317,7 +1317,7 @@ const AdminProfile = () => {
           <tbody>
             {categories.map(cat => (
               <tr key={cat._id}>
-                <td><img src={cat.image} alt={cat.name} className="table-img" /></td>
+                {/* <td><img src={cat.image} alt={cat.name} className="table-img" /></td> */}
                 <td>{cat.name}</td>
                 <td>{cat.slug}</td>
                 <td>{cat.description?.substring(0, 50)}...</td>
