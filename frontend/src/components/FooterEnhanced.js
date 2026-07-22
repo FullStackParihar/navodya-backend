@@ -1645,6 +1645,48 @@ const FooterEnhanced = () => {
             white-space: normal;
           }
         }
+
+        /* Mobile footer logo: use the same cropped treatment instead of
+           shrinking the entire square source image. */
+        @media (max-width: 820px) {
+          .footer-brand-mark {
+            width: 100%;
+            height: 45px;
+            overflow: hidden;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 8px;
+          }
+
+          .footer-brand-mark img {
+            width: 145px;
+            height: 145px;
+            max-width: none;
+            flex: 0 0 145px;
+            align-self: flex-start;
+            transform: translateY(-52px);
+          }
+
+          .footer-brand-mark h3 {
+            min-width: 0;
+            font-size: 16px !important;
+            line-height: 1.1;
+            white-space: normal;
+          }
+        }
+
+        @media (max-width: 420px) {
+          .footer-brand-mark {
+            height: 42px;
+          }
+
+          .footer-brand-mark img {
+            width: 130px;
+            height: 130px;
+            flex-basis: 130px;
+            transform: translateY(-46px);
+          }
+        }
       `}</style>
     </>
   );
