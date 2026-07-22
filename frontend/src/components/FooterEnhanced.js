@@ -1617,6 +1617,34 @@ const FooterEnhanced = () => {
             gap: 12px;
           }
         }
+
+        /* Crop the empty area in the square logo asset so the footer mark is
+           clearly visible at laptop sizes without increasing footer height. */
+        @media (min-width: 821px) {
+          .footer-brand-mark {
+            overflow: hidden;
+            width: 100%;
+            height: 45px;
+            align-items: center;
+            gap: 8px;
+          }
+
+          .footer-brand-mark img {
+            width: 145px;
+            height: 145px;
+            max-width: none;
+            flex: 0 0 145px;
+            align-self: flex-start;
+            transform: translateY(-52px);
+          }
+
+          .footer-brand-mark h3 {
+            min-width: 0;
+            font-size: 16px !important;
+            line-height: 1.1;
+            white-space: normal;
+          }
+        }
       `}</style>
     </>
   );
