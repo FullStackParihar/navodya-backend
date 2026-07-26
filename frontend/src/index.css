@@ -2551,3 +2551,54 @@ body.mobile-drawer-open {
         z-index: 2;
     }
 }
+
+/* Keep the artwork inside the square source file large and legible on laptops. */
+@media (min-width: 901px) {
+    .public-app .desktop-logo {
+        width: 145px;
+        height: 45px;
+        overflow: hidden;
+        flex: 0 0 145px;
+        align-items: flex-start;
+    }
+
+    .public-app .desktop-logo img {
+        width: 145px !important;
+        height: 145px !important;
+        max-width: none;
+        flex: 0 0 auto;
+        transform: translateY(-52px);
+    }
+}
+
+/* Mobile logo: show the complete artwork without allowing the action icons to hide it. */
+@media (max-width: 900px) {
+    .public-app .top-nav-row-1 .logo {
+        width: 145px;
+        height: 45px;
+        flex: 0 0 145px;
+        overflow: hidden;
+        align-items: flex-start;
+    }
+
+    .public-app .top-nav-row-1 .logo img {
+        width: 145px !important;
+        height: 145px !important;
+        max-width: none;
+        transform: translateY(-52px);
+    }
+}
+
+@media (max-width: 420px) {
+    .public-app .top-nav-row-1 .logo {
+        width: 120px;
+        height: 38px;
+        flex-basis: 120px;
+    }
+
+    .public-app .top-nav-row-1 .logo img {
+        width: 120px !important;
+        height: 120px !important;
+        transform: translateY(-43px);
+    }
+}
