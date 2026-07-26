@@ -3,36 +3,84 @@ import React, { useMemo, useState } from 'react';
 const FAQ = () => {
   const faqs = useMemo(() => ([
     {
-      q: 'How do I place an order?',
-      a: 'Browse products, add items to cart, then go to Payment to complete your order.'
+      q: '1. What is Navodaya Trendz?',
+      a: 'Navodaya Trendz (NTz) is an exclusive merchandise brand for Jawahar Navodaya Vidyalaya (JNV) alumni, students, schools, and Navodayans worldwide. We specialize in customized T-shirts, hoodies, alumni meet kits, banners, trophies, and corporate gifts.'
     },
     {
-      q: 'What payment methods are supported?',
-      a: 'We support UPI, Debit/Credit Cards, Net Banking, Wallets, and Cash on Delivery (where available).'
+      q: '2. Do you have merchandise for all JNV schools?',
+      a: 'Yes! We provide designs for all 650+ JNVs across India. You can also request custom school/batch designs anytime.'
     },
     {
-      q: 'How can I track my order?',
-      a: 'Go to Account → My Orders and click Track, or open the Order Tracking page with your order ID.'
+      q: '3. Can I order customized products with school name or batch year?',
+      a: 'Yes. You can customize: T-shirts, hoodies, sweatshirts, mugs, badges, banners, and alumni meet kits. Customization options will be shown on the product page or handled through WhatsApp after checkout.'
     },
     {
-      q: 'How long does delivery take?',
-      a: 'Delivery time depends on your location. Typical delivery is 3–7 business days after shipping.'
+      q: '4. Do you provide special packages for alumni meets?',
+      a: 'Yes. We offer: Alumni Meet Starter Kit, Premium Reunion Kit, and Custom Meet Package. We also offer a free banner on bulk orders (limited period). Bulk discounts are available for 30–500+ pieces.'
     },
     {
-      q: 'Can I change my delivery address after placing an order?',
-      a: 'If the order is not shipped yet, you can request an address change by contacting support.'
+      q: '5. What is the minimum order quantity for customization?',
+      a: 'Single piece customization is available for selected products. For alumni meets or group orders, a minimum of 30–50 pieces is recommended for best pricing.'
     },
     {
-      q: 'How do I return or exchange a product?',
-      a: 'For returns/exchanges, contact support with your order ID. We will guide you through the process.'
+      q: '6. What is the delivery time?',
+      a: 'Customized Orders: 3–7 days for production + 5–9 days for delivery. Non-Customized Orders: 3–6 days delivery. Bulk/Alumni Meet Orders: 7–12 days depending on quantity (We recommend ordering 10–15 days before the event).'
     },
     {
-      q: 'Do you offer bulk orders for alumni meets?',
-      a: 'Yes. Use the Bulk Order page to submit quantity and customization requirements.'
+      q: '7. Do you ship internationally?',
+      a: 'Yes, we ship internationally for selected products. Shipping charges vary based on weight and location.'
     },
     {
-      q: 'How do I contact support?',
-      a: 'You can call, email, or WhatsApp from the Support section in Account or Order Tracking pages.'
+      q: '8. What are the shipping charges?',
+      a: 'Shipping charges depend on your location, order size, and ongoing offers. Occasionally we offer free shipping promotions.'
+    },
+    {
+      q: '9. How do I track my order?',
+      a: 'After dispatch, you will receive a tracking link and courier partner details. You can also track your order from the “Track Order” page on our website.'
+    },
+    {
+      q: '10. What payment methods do you accept?',
+      a: 'We accept UPI, Debit/Credit Cards, Net Banking, and Wallets.'
+    },
+    {
+      q: '11. What is your return or refund policy?',
+      a: 'Customized products: No return or refund (unless defective/wrong item delivered). Replacement is available with proof (photos + unboxing video). Non-customized products: 7-day return window. Refund after quality check.'
+    },
+    {
+      q: '12. Can I cancel my order?',
+      a: 'Non-customized orders: within 2 hours of placing the order. Customized/bulk orders: Cannot be cancelled after design approval.'
+    },
+    {
+      q: '13. How do I get support or ask questions?',
+      a: 'You can contact us via Phone (+91-8947900884), Email (navodayatrendz@gmail.com), WhatsApp (available on website), or our social media (Instagram, Facebook, LinkedIn).'
+    },
+    {
+      q: '14. Do you work with JNV schools for official events?',
+      a: 'Yes. We supply trophies, certificates, event banners, and uniform T-shirts. We also support GeM Orders for principals and purchase officers.'
+    },
+    {
+      q: '15. Do you take corporate or office orders?',
+      a: 'Yes! We provide customized merchandise for Navodayan professionals working in corporates, startups, alumni associations, and NGOs. Bulk corporate pricing is available.'
+    },
+    {
+      q: '16. Can I get help in designing my merchandise?',
+      a: 'Absolutely! Our design team will create school logo designs, batch crests, alumni meet artwork, and custom branding. Design previews are shared before printing.'
+    },
+    {
+      q: '17. How do I place a bulk order for an alumni meet?',
+      a: 'You can place a bulk order by: Filling the Alumni Meet Form on the website, contacting us on WhatsApp, or calling directly for quick assistance. Our team will guide you through design, pricing, and delivery.'
+    },
+    {
+      q: '18. Is there a discount for large orders?',
+      a: 'Yes. We offer attractive discounts for alumni meets, corporate orders, school orders, and 100+ quantity bookings. The discount depends on the item type and quantity.'
+    },
+    {
+      q: '19. Is this an official JNV/NVS store?',
+      a: 'Navodaya Trendz is founded by Navodayans for the Navodaya community. We are not officially affiliated with NVS, but we serve all Navodayans and alumni groups worldwide.'
+    },
+    {
+      q: '20. Do you keep customer data secure?',
+      a: 'Yes. We follow strict security protocols to protect your personal information (details in our Privacy Policy page).'
     }
   ]), []);
 
@@ -89,13 +137,13 @@ const FAQ = () => {
                 <h3>Still need help?</h3>
                 <p>Reach out and we’ll help you quickly.</p>
                 <div className="side-actions">
-                  <a className="btn-secondary" href="tel:+9118001234567">
+                  <a className="btn-secondary" href="tel:+918947900884">
                     <i className="fas fa-phone"></i> Call
                   </a>
-                  <a className="btn-secondary" href="mailto:support@navodayatrendz.com?subject=FAQ%20Help">
+                  <a className="btn-secondary" href="mailto:navodayatrendz@gmail.com?subject=FAQ%20Help">
                     <i className="fas fa-envelope"></i> Email
                   </a>
-                  <a className="btn-primary" href="https://wa.me/919284490206?text=Hi%2C%20I%20need%20help%20with%20my%20order">
+                  <a className="btn-primary" href="https://wa.me/918947900884?text=Hi%2C%20I%20need%20help%20with%20my%20order">
                     <i className="fab fa-whatsapp"></i> WhatsApp
                   </a>
                 </div>

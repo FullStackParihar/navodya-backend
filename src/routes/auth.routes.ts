@@ -6,6 +6,8 @@ import {
   getProfile,
   updateProfile,
   logout,
+  googleLogin,
+  sendOtp,
 } from '../controllers/auth.controller.js';
 import { authenticate } from '../middlewares/auth.middleware.js';
 import { validate } from '../middlewares/validate.middleware.js';
@@ -13,6 +15,7 @@ import {
   registerSchema,
   loginSchema,
   updateProfileSchema,
+  sendOtpSchema,
 } from '../validations/auth.validation.js';
 
 const router = Router();
@@ -30,6 +33,8 @@ const profileUpload = multer({
 
 router.post('/register', validate(registerSchema), register);
 router.post('/login', validate(loginSchema), login);
+router.post('/google-login', googleLogin);
+router.post('/send-otp', validate(sendOtpSchema), sendOtp);
 router.post('/logout', authenticate, logout);
 router.get('/profile', authenticate, getProfile);
 router.patch('/profile', authenticate, profileUpload.single('avatar'), validate(updateProfileSchema), updateProfile);

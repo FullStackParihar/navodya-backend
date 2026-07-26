@@ -72,61 +72,83 @@ const FooterEnhanced = () => {
               </div>
               <p>Made by Navodayans, for Navodayans. Your trusted partner for JNV alumni merchandise.</p>
               <div className="footer-social">
-                <a href="https://facebook.com" className="social-link" aria-label="Facebook" target="_blank" rel="noopener noreferrer">
-                  <i className="fab fa-facebook-f"></i>
-                </a>
                 <a href="https://instagram.com" className="social-link" aria-label="Instagram" target="_blank" rel="noopener noreferrer">
                   <i className="fab fa-instagram"></i>
                 </a>
-                <a href="https://twitter.com" className="social-link" aria-label="Twitter" target="_blank" rel="noopener noreferrer">
-                  <i className="fab fa-twitter"></i>
+                <a href="https://facebook.com" className="social-link" aria-label="Facebook" target="_blank" rel="noopener noreferrer">
+                  <i className="fab fa-facebook-f"></i>
                 </a>
                 <a href="https://linkedin.com" className="social-link" aria-label="LinkedIn" target="_blank" rel="noopener noreferrer">
                   <i className="fab fa-linkedin-in"></i>
                 </a>
-                <a href="https://whatsapp.com" className="social-link" aria-label="WhatsApp" target="_blank" rel="noopener noreferrer">
+                <a href="https://youtube.com" className="social-link" aria-label="YouTube" target="_blank" rel="noopener noreferrer">
+                  <i className="fab fa-youtube"></i>
+                </a>
+                <a href="https://wa.me/918947900884" className="social-link" aria-label="WhatsApp Community" target="_blank" rel="noopener noreferrer">
                   <i className="fab fa-whatsapp"></i>
                 </a>
               </div>
             </div>
 
-            {/* Shop Section */}
+            {/* Company Section */}
             <div className="footer-section footer-animate footer-animate-delay-1">
-              <h4>Shop</h4>
+              <h4>Company</h4>
               <ul className="footer-links">
-                <li><Link to="/tshirts"><i className="fas fa-chevron-right"></i> T-Shirts</Link></li>
-                <li><Link to="/hoodies"><i className="fas fa-chevron-right"></i> Hoodies</Link></li>
-                <li><Link to="/accessories"><i className="fas fa-chevron-right"></i> Accessories</Link></li>
-
                 <li><Link to="/about-us"><i className="fas fa-chevron-right"></i> About Us</Link></li>
-                <li><Link to="/today-deals"><i className="fas fa-chevron-right"></i> Today's Deals</Link></li>
-                <li><Link to="/new-arrivals"><i className="fas fa-chevron-right"></i> New Arrivals</Link></li>
+                <li><Link to="/feedback"><i className="fas fa-chevron-right"></i> Contact Us</Link></li>
+                <li><Link to="/about-us"><i className="fas fa-chevron-right"></i> Our Story</Link></li>
+                <li><a href="#"><i className="fas fa-chevron-right"></i> Careers</a></li>
+                <li><Link to="/about-us"><i className="fas fa-chevron-right"></i> NTz Partner</Link></li>
               </ul>
             </div>
 
-            {/* Help Section */}
+            {/* Useful Links Section */}
             <div className="footer-section footer-animate footer-animate-delay-2">
-              <h4>Help</h4>
-              <ul className="footer-links">
-                <li><Link to="/contact"><i className="fas fa-chevron-right"></i> Contact Us</Link></li>
-                <li><Link to="/shipping"><i className="fas fa-chevron-right"></i> Shipping Info</Link></li>
-                <li><Link to="/returns"><i className="fas fa-chevron-right"></i> Returns & Exchanges</Link></li>
-                <li><Link to="/size-guide"><i className="fas fa-chevron-right"></i> Size Guide</Link></li>
-                <li><Link to="/track-order"><i className="fas fa-chevron-right"></i> Track Order</Link></li>
-                <li><Link to="/faq"><i className="fas fa-chevron-right"></i> FAQ</Link></li>
-              </ul>
-            </div>
-
-            {/* Policies Section */}
-            <div className="footer-section footer-animate footer-animate-delay-3">
-              <h4>Policies</h4>
+              <h4>Useful Links</h4>
               <ul className="footer-links">
                 <li><Link to="/privacy-policy"><i className="fas fa-chevron-right"></i> Privacy Policy</Link></li>
                 <li><Link to="/terms-conditions"><i className="fas fa-chevron-right"></i> Terms & Conditions</Link></li>
                 <li><Link to="/refund-policy"><i className="fas fa-chevron-right"></i> Refund Policy</Link></li>
-                <li><Link to="/disclaimer"><i className="fas fa-chevron-right"></i> Disclaimer</Link></li>
-                <li><Link to="/cookie-policy"><i className="fas fa-chevron-right"></i> Cookie Policy</Link></li>
                 <li><Link to="/shipping-policy"><i className="fas fa-chevron-right"></i> Shipping Policy</Link></li>
+                <li><Link to="/disclaimer"><i className="fas fa-chevron-right"></i> Disclaimer</Link></li>
+                <li><Link to="/track-order"><i className="fas fa-chevron-right"></i> Track Order</Link></li>
+                <li><Link to="/faq"><i className="fas fa-chevron-right"></i> FAQs</Link></li>
+              </ul>
+            </div>
+
+            {/* Shop Section */}
+            <div className="footer-section footer-animate footer-animate-delay-3">
+              <h4>Shop</h4>
+              <ul className="footer-links">
+                <li><Link to="/tshirts"><i className="fas fa-chevron-right"></i> T-Shirts</Link></li>
+                <li><Link to="/hoodies"><i className="fas fa-chevron-right"></i> Hoodies</Link></li>
+                <li><Link to="/alumni-kits"><i className="fas fa-chevron-right"></i> Alumni Meet Kits</Link></li>
+                <li><Link to="/accessories"><i className="fas fa-chevron-right"></i> Corporate Gifts</Link></li>
+                <li><Link to="/bulk-order"><i className="fas fa-chevron-right"></i> Custom Merchandise</Link></li>
+                <li><Link to="/tshirts"><i className="fas fa-chevron-right"></i> JNV School Merch</Link></li>
+              </ul>
+            </div>
+
+            {/* Contact Section */}
+            <div className="footer-section footer-animate footer-animate-delay-4">
+              <h4>Contact</h4>
+              <ul className="footer-links contact-info-list">
+                <li>
+                  <i className="fas fa-map-marker-alt"></i>
+                  <span>Navodaya Trendz (NTz)<br />India</span>
+                </li>
+                <li>
+                  <i className="fas fa-phone"></i>
+                  <a href="tel:+918947900884">+91-8947900884</a>
+                </li>
+                <li>
+                  <i className="fas fa-envelope"></i>
+                  <a href="mailto:navodayatrendz@gmail.com">navodayatrendz@gmail.com</a>
+                </li>
+                <li>
+                  <i className="fas fa-globe"></i>
+                  <a href="https://www.navodayatrendz.com" target="_blank" rel="noopener noreferrer">www.navodayatrendz.com</a>
+                </li>
               </ul>
             </div>
           </div>
@@ -209,7 +231,7 @@ const FooterEnhanced = () => {
         {/* Footer Bottom */}
         <div className="footer-bottom">
           <div className="footer-bottom-content">
-            <p className="copyright">&copy; 2025 Navodaya Trendz. All Rights Reserved. | Made with <span aria-hidden="true">&#10084;</span> by Navodayans</p>
+            <p className="copyright">&copy; 2025 Navodaya Trendz – Made by Navodayans, for Navodayans. All Rights Reserved.</p>
             <div className="bottom-links">
               <a href="#">Sitemap</a>
               <a href="#">Careers</a>
@@ -274,14 +296,50 @@ const FooterEnhanced = () => {
           border-bottom: 1px solid var(--footer-border);
         }
 
-        .footer-top-content {
-          max-width: 1200px;
-          margin: 0 auto;
-          padding: 0 20px;
-          display: grid;
-          grid-template-columns: 2fr 1fr 1fr 1fr;
-          gap: 40px;
-        }
+         .footer-top-content {
+           max-width: 1200px;
+           margin: 0 auto;
+           padding: 0 20px;
+           display: grid;
+           grid-template-columns: 1.5fr 1fr 1fr 1fr 1.25fr;
+           gap: 40px;
+         }
+
+         .contact-info-list {
+           list-style: none !important;
+           padding: 0 !important;
+           margin: 0 !important;
+         }
+         .contact-info-list li {
+           display: flex !important;
+           align-items: flex-start !important;
+           gap: 10px !important;
+           font-size: 14px !important;
+           color: var(--footer-text-light) !important;
+           line-height: 1.4 !important;
+           margin-bottom: 12px !important;
+         }
+         .contact-info-list li i {
+           color: var(--footer-accent) !important;
+           margin-top: 3px !important;
+           font-size: 14px !important;
+           width: 16px !important;
+           text-align: center !important;
+           opacity: 1 !important;
+         }
+         .contact-info-list li span {
+           color: var(--footer-text-light);
+         }
+         .contact-info-list li a {
+           color: var(--footer-text-light) !important;
+           text-decoration: none !important;
+           transition: var(--transition-footer) !important;
+           padding: 0 !important;
+           display: inline-block !important;
+         }
+         .contact-info-list li a:hover {
+           color: var(--footer-accent) !important;
+         }
 
         /* Brand Section */
         .footer-brand {

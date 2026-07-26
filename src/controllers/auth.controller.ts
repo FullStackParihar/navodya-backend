@@ -7,6 +7,8 @@ import { ApiResponse } from '../utils/ApiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { AuthRequest } from '../middlewares/auth.middleware.js';
 import { User } from '../models/user.model.js';
+import { Otp } from '../models/otp.model.js';
+import { sendOtpEmail } from '../utils/email.js';
 import cloudinary, { isCloudinaryConfigured } from '../config/cloudinary.js';
 
 const clean = (value: unknown) => String(value ?? '').trim();
@@ -40,13 +42,26 @@ const uploadProfileAvatar = (file: Express.Multer.File, userId: string) => {
 };
 
 export const register = asyncHandler(async (req: AuthRequest, res: Response) => {
-  const { name, email, password, phone } = req.body;
+  const { name, email, password, phone, otp } = req.body;
+
+  if (!otp) {
+    throw new ApiError(400, 'OTP is required');
+  }
+
+  // Find the OTP in the database
+  const otpRecord = await Otp.findOne({ email });
+  if (!otpRecord || otpRecord.otp !== otp) {
+    throw new ApiError(400, 'Invalid or expired OTP');
+  }
 
   const existingUser = await User.findOne({ email });
 
   if (existingUser) {
     throw new ApiError(400, 'Email already registered');
   }
+
+  // OTP verified, delete it so it can't be reused
+  await Otp.deleteOne({ _id: otpRecord._id });
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -70,6 +85,31 @@ export const register = asyncHandler(async (req: AuthRequest, res: Response) => 
   res.status(201).json(
     new ApiResponse(201, { user: userResponse, token }, 'User registered successfully')
   );
+});
+
+export const sendOtp = asyncHandler(async (req: AuthRequest, res: Response) => {
+  const { email } = req.body;
+
+  // Check if email already registered
+  const existingUser = await User.findOne({ email });
+  if (existingUser) {
+    throw new ApiError(400, 'Email already registered');
+  }
+
+  // Generate 6-digit OTP
+  const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+  // Save OTP in database (upsert: delete old ones or overwrite)
+  await Otp.findOneAndUpdate(
+    { email },
+    { otp: otpCode, created_at: new Date() },
+    { upsert: true, new: true, setDefaultsOnInsert: true }
+  );
+
+  // Send the OTP email
+  await sendOtpEmail(email, otpCode);
+
+  res.status(200).json(new ApiResponse(200, null, 'OTP sent successfully'));
 });
 
 export const login = asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -186,4 +226,77 @@ export const updateProfile = asyncHandler(async (req: AuthRequest, res: Response
 
 export const logout = asyncHandler(async (req: AuthRequest, res: Response) => {
   res.status(200).json(new ApiResponse(200, null, 'Logout successful'));
+});
+
+export const googleLogin = asyncHandler(async (req: AuthRequest, res: Response) => {
+  const { token } = req.body;
+  if (!token) {
+    throw new ApiError(400, 'Google token is required');
+  }
+
+  const googleVerifyUrl = `https://oauth2.googleapis.com/tokeninfo?id_token=${token}`;
+  
+  let payload;
+  try {
+    const response = await (global as any).fetch(googleVerifyUrl);
+    if (!response.ok) {
+      const errText = await response.text();
+      console.error('Google token verification failed:', errText);
+      throw new ApiError(400, 'Invalid Google token');
+    }
+    payload = await response.json();
+  } catch (err: any) {
+    console.error('Error contacting Google API:', err);
+    throw new ApiError(400, err.message || 'Failed to verify Google token');
+  }
+
+  const { email, name, picture, email_verified, aud } = payload;
+
+  if (!email_verified || email_verified === 'false' || email_verified === false) {
+    throw new ApiError(400, 'Google email is not verified');
+  }
+
+  // If a GOOGLE_CLIENT_ID is configured, verify that the audience matches
+  if (config.google && config.google.clientId && aud !== config.google.clientId) {
+    console.warn(`Token audience mismatch. Expected: ${config.google.clientId}, Got: ${aud}`);
+    throw new ApiError(400, 'Invalid token audience');
+  }
+
+  // Check if user exists in database
+  let user = await User.findOne({ email });
+
+  if (!user) {
+    // Register new user since they signed in with Google for the first time
+    // Generate a random password hash because password_hash is required
+    const randomPassword = Math.random().toString(36).slice(-10) + Math.random().toString(36).slice(-10);
+    const hashedPassword = await bcrypt.hash(randomPassword, 10);
+
+    user = await User.create({
+      name: name || 'Google User',
+      email,
+      password_hash: hashedPassword,
+      avatar: picture || null,
+      role: 'user',
+    });
+  } else {
+    // Optional: Update user's avatar if they don't have one
+    if (!user.avatar && picture) {
+      user.avatar = picture;
+      await user.save();
+    }
+  }
+
+  // Generate JWT token for the user
+  const sessionToken = jwt.sign(
+    { userId: user.id },
+    config.jwt.secret,
+    { expiresIn: config.jwt.expiresIn } as SignOptions
+  );
+
+  const userResponse = user.toObject();
+  delete (userResponse as any).password_hash;
+
+  res.status(200).json(
+    new ApiResponse(200, { user: userResponse, token: sessionToken }, 'Google sign-in successful')
+  );
 });

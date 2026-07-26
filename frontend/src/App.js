@@ -21,6 +21,10 @@ import CheckoutDashboard from './components/CheckoutDashboard';
 import UserPanel from './pages/UserPanel';
 import FAQ from './pages/FAQ';
 import Feedback from './pages/Feedback';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import RefundPolicy from './pages/RefundPolicy';
+import ShippingPolicy from './pages/ShippingPolicy';
+import Disclaimer from './pages/Disclaimer';
 import Cart from './pages/Cart';
 import Wishlist from './pages/Wishlist';
 import UserProfile from './pages/UserProfile';
@@ -78,8 +82,12 @@ const AppShell = ({ toasts, removeToast }) => {
           <Route path="/admin-profile" element={<PrivateRoute><AdminProfile /></PrivateRoute>} />
           <Route path="/login" element={<Login />} />
           <Route path="/account" element={<PrivateRoute><UserPanel /></PrivateRoute>} />
-          <Route path="/faq" element={<FAQ />} />
+           <Route path="/faq" element={<FAQ />} />
           <Route path="/feedback" element={<Feedback />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/refund-policy" element={<RefundPolicy />} />
+          <Route path="/shipping-policy" element={<ShippingPolicy />} />
+          <Route path="/disclaimer" element={<Disclaimer />} />
           <Route path="/search" element={<SearchPage />} />
           </Routes>
         </main>

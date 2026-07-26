@@ -6,6 +6,13 @@ export const registerSchema = z.object({
     email: z.string().email('Invalid email address'),
     password: z.string().min(6, 'Password must be at least 6 characters'),
     phone: z.string().optional(),
+    otp: z.string().length(6, 'OTP must be exactly 6 digits'),
+  }),
+});
+
+export const sendOtpSchema = z.object({
+  body: z.object({
+    email: z.string().email('Invalid email address'),
   }),
 });
 

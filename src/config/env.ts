@@ -20,4 +20,7 @@ export const config = {
     apiKey: process.env.CLOUDINARY_API_KEY || 'demo-api-key',
     apiSecret: process.env.CLOUDINARY_API_SECRET || 'demo-api-secret',
   },
+  google: {
+    clientId: process.env.GOOGLE_CLIENT_ID || '',
+  },
 };

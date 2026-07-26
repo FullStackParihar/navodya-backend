@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
+import { useToast } from '../context/ToastContext';
 import './Login.css';
 
 const Login = () => {
+  const { success: toastSuccess, error: toastError } = useToast();
   // Add Font Awesome for Google icon
   useEffect(() => {
     const link = document.createElement('link');
@@ -20,6 +22,7 @@ const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState('');
+  const [showOtpModal, setShowOtpModal] = useState(false);
   
   const navigate = useNavigate();
 
@@ -31,25 +34,88 @@ const Login = () => {
     }));
   };
 
-  const handleGoogleLogin = () => {
-    // Google OAuth integration - placeholder
-    window.open('https://accounts.google.com/oauth/authorize?client_id=YOUR_CLIENT_ID&redirect_uri=YOUR_REDIRECT_URI&response_type=code&scope=email%20profile', '_blank');
+  const handleGoogleCredentialResponse = async (response) => {
+    setError('');
+    setIsLoading(true);
+    try {
+      const result = await api.post('/auth/google-login', { token: response.credential });
+
+      if (result.success) {
+        localStorage.setItem('isAuthenticated', 'true');
+        localStorage.setItem('token', result.data.token);
+        localStorage.setItem('user', JSON.stringify(result.data.user));
+        localStorage.setItem('userEmail', result.data.user.email);
+        localStorage.setItem('userRole', result.data.user.role || 'user');
+        toastSuccess('Logged in successfully!');
+        navigate('/account');
+      } else {
+        setError(result.message || 'Google authentication failed');
+      }
+    } catch (err) {
+      setError('Google login failed');
+      console.error('Google Auth error:', err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
+  useEffect(() => {
+    const initializeGoogleSignIn = () => {
+      if (window.google) {
+        window.google.accounts.id.initialize({
+          client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID || '825946890374-placeholder.apps.googleusercontent.com',
+          callback: handleGoogleCredentialResponse
+        });
+        const buttonDiv = document.getElementById('google-signin-button');
+        if (buttonDiv) {
+          window.google.accounts.id.renderButton(
+            buttonDiv,
+            { 
+              theme: 'outline', 
+              size: 'large', 
+              width: buttonDiv.offsetWidth || '320', 
+              text: 'continue_with'
+            }
+          );
+        }
+      }
+    };
+
+    if (window.google) {
+      initializeGoogleSignIn();
+    } else {
+      const interval = setInterval(() => {
+        if (window.google) {
+          initializeGoogleSignIn();
+          clearInterval(interval);
+        }
+      }, 500);
+      return () => clearInterval(interval);
+    }
+  }, [isLogin]);
+
   const handleSendOTP = async () => {
-    if (!formData.email) {
-      setError('Please enter your email address');
+    if (!formData.name || !formData.email || !formData.password) {
+      setError('Please fill in Name, Email, and Password first.');
       return;
     }
     
+    setError('');
     setIsLoading(true);
     try {
-      // Simulate OTP sending - in production, integrate with SMS service
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      setOtpSent(true);
-      setError('OTP sent to your email');
+      const result = await api.post('/auth/send-otp', { email: formData.email });
+      if (result.success) {
+        setOtpSent(true);
+        setShowOtpModal(true);
+        toastSuccess('OTP sent to your email successfully!');
+      } else {
+        setError(result.message || 'Failed to send OTP');
+        toastError(result.message || 'Failed to send OTP');
+      }
     } catch (err) {
       setError('Failed to send OTP');
+      toastError('Failed to send OTP');
+      console.error('Send OTP error:', err);
     } finally {
       setIsLoading(false);
     }
@@ -63,7 +129,7 @@ const Login = () => {
     try {
       const result = isLogin 
         ? await api.post('/auth/login', { email: formData.email, password: formData.password })
-        : await api.post('/auth/register', { name: formData.name, email: formData.email, password: formData.password });
+        : await api.post('/auth/register', { name: formData.name, email: formData.email, password: formData.password, otp: otp });
 
       if (result.success) {
         localStorage.setItem('isAuthenticated', 'true');
@@ -71,12 +137,17 @@ const Login = () => {
         localStorage.setItem('user', JSON.stringify(result.data.user));
         localStorage.setItem('userEmail', result.data.user.email);
         localStorage.setItem('userRole', result.data.user.role || 'user');
+        setShowOtpModal(false);
+        toastSuccess(isLogin ? 'Logged in successfully!' : 'Account created successfully!');
         navigate('/account');
       } else {
         setError(result.message || 'Authentication failed');
+        toastError(result.message || 'Authentication failed');
       }
     } catch (err) {
-      setError(isLogin ? 'Login failed' : 'Signup failed');
+      const errMsg = isLogin ? 'Login failed' : 'Signup failed';
+      setError(errMsg);
+      toastError(errMsg);
       console.error('Auth error:', err);
     } finally {
       setIsLoading(false);
@@ -100,30 +171,41 @@ const Login = () => {
           <button 
             type="button" 
             className={`tab-btn ${isLogin ? 'active' : ''}`}
-            onClick={() => setIsLogin(true)}
+            onClick={() => {
+              setIsLogin(true);
+              setOtpSent(false);
+              setOtp('');
+              setError('');
+              setShowOtpModal(false);
+            }}
           >
             Login
           </button>
           <button 
             type="button" 
             className={`tab-btn ${!isLogin ? 'active' : ''}`}
-            onClick={() => setIsLogin(false)}
+            onClick={() => {
+              setIsLogin(false);
+              setOtpSent(false);
+              setOtp('');
+              setError('');
+              setShowOtpModal(false);
+            }}
           >
             Sign Up
           </button>
         </div>
 
         {/* Google Login Button */}
-        <button type="button" className="google-btn" onClick={handleGoogleLogin}>
-          <i className="fab fa-google"></i>
-          Continue with Google
-        </button>
+        <div className="google-btn-container">
+          <div id="google-signin-button"></div>
+        </div>
 
         <div className="divider">
           <span>OR</span>
         </div>
 
-        <form onSubmit={handleSubmit} className="login-form">
+        <form onSubmit={isLogin ? handleSubmit : undefined} className="login-form">
           {!isLogin && (
             <div className="form-group">
               <label htmlFor="name">Full Name</label>
@@ -163,21 +245,73 @@ const Login = () => {
             />
           </div>
 
-
-          
-          <button type="submit" disabled={isLoading} className="login-button">
-            {isLoading ? (isLogin ? 'Logging in...' : 'Creating account...') : (isLogin ? 'Login' : 'Sign Up')}
-          </button>
+          {isLogin ? (
+            <button type="submit" disabled={isLoading} className="login-button">
+              {isLoading ? 'Logging in...' : 'Login'}
+            </button>
+          ) : otpSent ? (
+            <button type="button" onClick={() => setShowOtpModal(true)} disabled={isLoading} className="login-button">
+              Verify Email (Enter OTP)
+            </button>
+          ) : (
+            <button type="button" onClick={handleSendOTP} disabled={isLoading} className="login-button">
+              {isLoading ? 'Sending OTP...' : 'Send Verification OTP'}
+            </button>
+          )}
         </form>
-
-        {/* Demo Credentials Info */}
-        {/* <div className="demo-info">
-          <p><strong>Demo Credentials:</strong></p>
-          <p>Email: admin@navodaya.com</p>
-          <p>Password: admin123!@#</p>
-          {isLogin && <p>OTP for testing: 123456</p>}
-        </div> */}
       </div>
+
+      {/* OTP Verification Modal Popup */}
+      {showOtpModal && (
+        <div className="otp-modal-overlay">
+          <div className="otp-modal-card">
+            <button 
+              type="button" 
+              className="otp-modal-close" 
+              onClick={() => setShowOtpModal(false)}
+              aria-label="Close modal"
+            >
+              &times;
+            </button>
+            <div className="otp-modal-icon">
+              <i className="fas fa-envelope-open-text"></i>
+            </div>
+            <h3>Verify Your Email</h3>
+            <p>
+              We've sent a 6-digit verification code to <strong className="otp-email-highlight">{formData.email}</strong>. Please enter it to complete your registration.
+            </p>
+            <form onSubmit={handleSubmit} className="otp-modal-form">
+              <div className="form-group">
+                <input
+                  type="text"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                  required
+                  maxLength={6}
+                  placeholder="Enter 6-Digit OTP"
+                  className="otp-modal-input"
+                  autoFocus
+                />
+              </div>
+              {error && <div className="error-message" style={{ margin: '10px 0 0' }}>{error}</div>}
+              <button type="submit" disabled={isLoading} className="otp-verify-button">
+                {isLoading ? 'Verifying...' : 'Verify & Sign Up'}
+              </button>
+            </form>
+            <div className="otp-modal-footer">
+              <p>Didn't receive the code?</p>
+              <button 
+                type="button" 
+                onClick={handleSendOTP} 
+                disabled={isLoading}
+                className="otp-resend-btn"
+              >
+                Resend OTP
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
