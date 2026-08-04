@@ -278,7 +278,11 @@ export const createCashfreeOrder = asyncHandler(async (req: AuthRequest, res: Re
             }, 'Cashfree order created (Mock Mode)'));
         }
 
-        let returnUrl = req.body.returnUrl || `${process.env.CLIENT_URL || 'http://localhost:3000'}/checkout?order_id={order_id}`;
+        let returnUrl = req.body.returnUrl || `${process.env.CLIENT_URL || 'http://localhost:3000'}/checkout`;
+        if (!returnUrl.includes('{order_id}')) {
+            const separator = returnUrl.includes('?') ? '&' : '?';
+            returnUrl = `${returnUrl}${separator}order_id={order_id}`;
+        }
         let notifyUrl: string | undefined = undefined;
 
         if (config.cashfree.secretKey) {
