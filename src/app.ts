@@ -12,7 +12,11 @@ app.use(cors({
   credentials: true,
 }));
 
-app.use(express.json());
+app.use(express.json({
+  verify: (req: any, res: any, buf: Buffer) => {
+    req.rawBody = buf.toString();
+  }
+}));
 app.use(express.urlencoded({ extended: true }));
 
 

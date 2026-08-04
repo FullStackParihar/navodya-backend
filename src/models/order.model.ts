@@ -44,9 +44,12 @@ export interface IOrder extends Document {
         country: string;
     };
     payment_info: {
-        id: string; // Stripe PaymentIntent ID
+        id: string; // Stripe PaymentIntent ID or Cashfree order_id
+        payment_session_id?: string;
+        cf_order_id?: string;
         status: 'PENDING' | 'PAID' | 'FAILED';
         method: string;
+        transaction_details?: any;
     };
     pricing: {
         subtotal: number;
@@ -104,12 +107,15 @@ const orderSchema = new mongoose.Schema({
     },
     payment_info: {
         id: { type: String },
+        payment_session_id: { type: String },
+        cf_order_id: { type: String },
         status: {
             type: String,
             enum: ['PENDING', 'PAID', 'FAILED'],
             default: 'PENDING'
         },
-        method: { type: String, default: 'card' }
+        method: { type: String, default: 'card' },
+        transaction_details: { type: mongoose.Schema.Types.Mixed }
     },
     pricing: {
         subtotal: { type: Number, required: true },

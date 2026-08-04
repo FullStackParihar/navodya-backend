@@ -192,42 +192,60 @@ const Payment = () => {
     setIsProcessing(true);
 
     try {
-      let paymentIntentId = '';
-      
       if (paymentMethod === 'cod') {
-        // For COD, we don't create a Stripe payment intent
-        paymentIntentId = `cod_${Date.now()}`;
-      } else {
-        // 1. Create Payment Intent
-        const intentResult = await api.post('/orders/create-payment-intent', {
-          couponCode,
+        // For COD, we still use the existing backend order creation route
+        const paymentIntentId = `cod_${Date.now()}`;
+        const orderResult = await api.post('/orders/create', {
+          paymentIntentId,
           shippingAddress: selectedAddress,
-          paymentMethod // Added to let backend know
+          paymentMethod,
+          couponCode: appliedCoupon || couponCode
         });
 
-        if (!intentResult.success) {
-          throw new Error(intentResult.message || 'Failed to create payment intent');
+        if (orderResult.success) {
+          setOrderPlaced(true);
+          clearCart();
+          showToastSuccess('Order placed successfully!');
+        } else {
+          throw new Error(orderResult.message || 'Failed to place order');
+        }
+      } else {
+        // Cashfree checkout flow for online payments
+        const returnUrl = `${window.location.origin}/checkout-dashboard`;
+        const orderResult = await api.post('/payments/create-order', {
+          couponCode,
+          shippingAddress: selectedAddress,
+          returnUrl
+        });
+
+        if (!orderResult.success) {
+          throw new Error(orderResult.message || 'Failed to initialize payment session');
         }
 
-        paymentIntentId = intentResult.data.paymentIntentId;
+        const { paymentSessionId, orderId } = orderResult.data;
 
-        // 2. Simulate Payment Confirmation (since it's mock or test mode)
-        await new Promise(resolve => setTimeout(resolve, 2000));
-      }
+        if (paymentSessionId.startsWith('mock_cf_session_')) {
+          window.location.href = `${returnUrl}?order_id=${orderId || orderResult.data.cfOrderId}`;
+          return;
+        }
 
-      const orderResult = await api.post('/orders/create', {
-        paymentIntentId,
-        shippingAddress: selectedAddress,
-        paymentMethod,
-        couponCode: appliedCoupon || couponCode
-      });
-
-      if (orderResult.success) {
-        setOrderPlaced(true);
-        clearCart();
-        showToastSuccess('Order placed successfully!');
-      } else {
-        throw new Error(orderResult.message || 'Failed to place order');
+        const mode = process.env.REACT_APP_CASHFREE_MODE || 'sandbox';
+        
+        if (window.Cashfree) {
+          const cashfree = window.Cashfree({
+            mode: mode.toLowerCase() === 'production' ? 'production' : 'sandbox'
+          });
+          cashfree.checkout({
+            paymentSessionId,
+            redirectTarget: '_self'
+          });
+        } else {
+          // Fallback to manual redirect if Cashfree SDK script is not loaded
+          const baseUrl = mode.toLowerCase() === 'production'
+            ? 'https://payments.cashfree.com/pg/view/checkout'
+            : 'https://sandbox.cashfree.com/pg/view/checkout';
+          window.location.href = `${baseUrl}?session_id=${paymentSessionId}`;
+        }
       }
     } catch (err) {
       console.error('Checkout error:', err);

@@ -23,4 +23,10 @@ export const config = {
   google: {
     clientId: process.env.GOOGLE_CLIENT_ID || '',
   },
+  cashfree: {
+    appId: process.env.CASHFREE_APP_ID || '',
+    secretKey: process.env.CASHFREE_SECRET_KEY || '',
+    env: process.env.CASHFREE_ENV || 'SANDBOX',
+    webhookSecret: process.env.CASHFREE_WEBHOOK_SECRET || '',
+  },
 };

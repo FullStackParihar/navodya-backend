@@ -5,9 +5,11 @@ import { useCart } from '../context/CartContext';
 
 const CheckoutDashboard = () => {
   const navigate = useNavigate();
-  const { items } = useCart();
+  const { items, clearCart } = useCart();
   const [orders, setOrders] = useState([]);
   const [isLoadingOrders, setIsLoadingOrders] = useState(true);
+  const [verificationStatus, setVerificationStatus] = useState(null); // 'verifying' | 'success' | 'failed'
+  const [verifiedOrder, setVerifiedOrder] = useState(null);
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -29,7 +31,36 @@ const CheckoutDashboard = () => {
         setIsLoadingOrders(false);
       }
     };
-    fetchOrders();
+
+    const queryParams = new URLSearchParams(window.location.search);
+    const orderId = queryParams.get('order_id');
+
+    if (orderId) {
+      const verifyPayment = async () => {
+        setVerificationStatus('verifying');
+        try {
+          const response = await api.post('/payments/verify', { orderId });
+          if (response.success && response.data.payment_info.status === 'PAID') {
+            setVerificationStatus('success');
+            setVerifiedOrder(response.data);
+            clearCart();
+            // Fetch updated orders list
+            fetchOrders();
+          } else {
+            setVerificationStatus('failed');
+          }
+        } catch (err) {
+          console.error('Payment verification error:', err);
+          setVerificationStatus('failed');
+        } finally {
+          // Clean up query parameters from the browser URL address bar
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
+      };
+      verifyPayment();
+    } else {
+      fetchOrders();
+    }
   }, []);
 
   const handleViewCart = () => navigate('/cart');
@@ -48,6 +79,57 @@ const CheckoutDashboard = () => {
       </div>
 
       <div className="dashboard-content">
+        {/* Payment Verification Status */}
+        {verificationStatus && (
+          <div className={`section payment-status-card ${verificationStatus}`} style={{ gridColumn: '1 / -1' }}>
+            <div className="status-content" style={{ display: 'flex', gap: '1.5rem', alignItems: 'flex-start' }}>
+              {verificationStatus === 'verifying' && (
+                <>
+                  <i className="fas fa-spinner fa-spin status-icon loading-icon" style={{ fontSize: '2.5rem', color: '#ffc107' }}></i>
+                  <div className="status-info">
+                    <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1.5rem' }}>Verifying Payment</h3>
+                    <p style={{ margin: 0, color: '#666' }}>We are checking the payment status with Cashfree. Please do not close or refresh this page.</p>
+                  </div>
+                </>
+              )}
+              {verificationStatus === 'success' && (
+                <>
+                  <i className="fas fa-check-circle status-icon success-icon" style={{ fontSize: '2.5rem', color: '#28a745' }}></i>
+                  <div className="status-info" style={{ width: '100%' }}>
+                    <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1.5rem', color: '#28a745' }}>Payment Successful!</h3>
+                    <p style={{ margin: 0, color: '#666' }}>Your order has been placed successfully. Thank you for your purchase!</p>
+                    {verifiedOrder && (
+                      <div className="order-summary-mini" style={{ margin: '1rem 0', padding: '1rem', background: '#f9f9f9', borderRadius: '0.75rem', border: '1px solid #ddd', maxWidth: '400px' }}>
+                        <div style={{ marginBottom: '0.25rem' }}><strong>Order ID:</strong> #{verifiedOrder._id.slice(-8).toUpperCase()}</div>
+                        <div><strong>Total Amount:</strong> ₹{verifiedOrder.pricing?.total}</div>
+                      </div>
+                    )}
+                    <button className="btn btn-primary" onClick={() => handleTrackOrder(verifiedOrder?._id || '')}>
+                      <i className="fas fa-shipping-fast" style={{ marginRight: '8px' }}></i> Track Order
+                    </button>
+                  </div>
+                </>
+              )}
+              {verificationStatus === 'failed' && (
+                <>
+                  <i className="fas fa-exclamation-circle status-icon failed-icon" style={{ fontSize: '2.5rem', color: '#dc3545' }}></i>
+                  <div className="status-info">
+                    <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1.5rem', color: '#dc3545' }}>Payment Verification Failed</h3>
+                    <p style={{ margin: 0, color: '#666' }}>We could not verify your payment. If money was debited from your account, it will be refunded. You can try to pay again from your Account Dashboard.</p>
+                    <div style={{ marginTop: '1rem', display: 'flex', gap: '0.5rem' }}>
+                      <button className="btn btn-secondary" onClick={() => setVerificationStatus(null)}>
+                        Dismiss
+                      </button>
+                      <button className="btn btn-primary" onClick={handleViewOrders}>
+                        Go to My Orders
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        )}
         {/* Cart Summary */}
         <div className="section cart-summary">
           <h2 className="section-title">Your Cart</h2>
@@ -389,6 +471,29 @@ const CheckoutDashboard = () => {
         .support-link.whatsapp:hover {
           background: #25D366;
           border-color: #25D366;
+        }
+
+        .payment-status-card {
+          border-width: 2px;
+          transition: all 0.3s ease;
+        }
+        .payment-status-card.verifying {
+          border-color: #ffc107;
+          background: #fffdf5;
+        }
+        .payment-status-card.success {
+          border-color: #28a745;
+          background: #f4faf6;
+        }
+        .payment-status-card.failed {
+          border-color: #dc3545;
+          background: #fdf5f6;
+        }
+        .status-icon {
+          flex-shrink: 0;
+        }
+        .status-info {
+          flex-grow: 1;
         }
 
         .loading, .no-orders {

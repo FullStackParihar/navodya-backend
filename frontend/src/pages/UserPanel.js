@@ -102,7 +102,9 @@ const UserPanel = () => {
             status: order.status.toLowerCase(),
             total: order.pricing.total,
             items: order.items.length,
-            etaDays: order.status === 'PROCESSING' ? 7 : 0
+            etaDays: order.status === 'PROCESSING' ? 7 : 0,
+            paymentStatus: order.payment_info?.status?.toLowerCase() || 'pending',
+            paymentMethod: order.payment_info?.method?.toLowerCase() || ''
           }));
           setOrders(mappedOrders);
         }
@@ -257,6 +259,41 @@ const UserPanel = () => {
     // Show toast and redirect to login
     success('Logged out successfully');
     navigate('/login');
+  };
+
+  const handleRetryPayment = async (orderId) => {
+    try {
+      const result = await api.post('/payments/create-order', { orderId });
+      if (result.success && result.data.paymentSessionId) {
+        if (result.data.paymentSessionId.startsWith('mock_cf_session_')) {
+          window.location.href = `${window.location.origin}/checkout-dashboard?order_id=${result.data.orderId || result.data.cfOrderId}`;
+          return;
+        }
+
+        const mode = process.env.REACT_APP_CASHFREE_MODE || 'sandbox';
+        
+        if (window.Cashfree) {
+          const cashfree = window.Cashfree({
+            mode: mode.toLowerCase() === 'production' ? 'production' : 'sandbox'
+          });
+          cashfree.checkout({
+            paymentSessionId: result.data.paymentSessionId,
+            redirectTarget: '_self'
+          });
+        } else {
+          // Fallback to manual redirect if Cashfree SDK script is not loaded
+          const baseUrl = mode.toLowerCase() === 'production'
+            ? 'https://payments.cashfree.com/pg/view/checkout'
+            : 'https://sandbox.cashfree.com/pg/view/checkout';
+          window.location.href = `${baseUrl}?session_id=${result.data.paymentSessionId}`;
+        }
+      } else {
+        showError(result.message || 'Failed to initiate retry payment');
+      }
+    } catch (err) {
+      console.error('Retry payment error:', err);
+      showError('Failed to initiate payment. Please try again.');
+    }
   };
 
   return (
@@ -562,10 +599,19 @@ const UserPanel = () => {
                                 <span className="muted">ETA</span>
                                 <span className="strong">{o.etaDays} days</span>
                               </div>
-                              <div className="order-cta">
+                               <div className="order-cta">
                                 <button className="btn-primary" onClick={() => navigate(`/order/${o.id}`)}>
                                   <i className="fas fa-map-marker-alt"></i> Track
                                 </button>
+                                {o.paymentStatus !== 'paid' && o.paymentMethod !== 'cod' && (
+                                  <button 
+                                    className="btn-primary" 
+                                    onClick={() => handleRetryPayment(o.id)}
+                                    style={{ marginLeft: '10px', backgroundColor: '#e28743', borderColor: '#e28743' }}
+                                  >
+                                    <i className="fas fa-credit-card"></i> Pay Now
+                                  </button>
+                                )}
                                 <button 
                                   className="btn-secondary" 
                                   onClick={() => window.open(`http://localhost:3001/api/orders/${o.id}/invoice?token=${localStorage.getItem('token')}`, '_blank')}

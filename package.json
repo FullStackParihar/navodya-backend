@@ -17,6 +17,7 @@
     "@types/jsonwebtoken": "^9.0.5",
     "@types/node": "^20.12.12",
     "bcryptjs": "^2.4.3",
+    "cashfree-pg": "^6.0.4",
     "cloudinary": "^1.41.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
