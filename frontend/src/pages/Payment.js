@@ -211,7 +211,7 @@ const Payment = () => {
         }
       } else {
         // Cashfree checkout flow for online payments
-        const returnUrl = `${window.location.origin}/checkout-dashboard`;
+        const returnUrl = `${window.location.origin}/checkout`;
         const orderResult = await api.post('/payments/create-order', {
           couponCode,
           shippingAddress: selectedAddress,
