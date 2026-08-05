@@ -61,6 +61,7 @@ const AppShell = ({ toasts, removeToast }) => {
           <Route path="/accessories" element={<Accessories />} />
           <Route path="/alumni-kits" element={<AlumniKits />} />
           <Route path="/contests" element={<Contests />} />
+          <Route path="/contests/:id" element={<Contests />} />
           <Route path="/winners" element={<Winners />} />
 
           <Route path="/today-deals" element={<TodayDealsEnhanced />} />

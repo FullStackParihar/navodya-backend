@@ -1,18 +1,70 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import api from '../utils/api';
 import { useToast } from '../context/ToastContext';
 import './Contests.css';
 
+const ContestCountdown = ({ endDate }) => {
+  const [timeLeft, setTimeLeft] = useState('');
+
+  useEffect(() => {
+    const calculateTimeLeft = () => {
+      const difference = +new Date(endDate) - +new Date();
+      if (difference <= 0) {
+        setTimeLeft('Contest Ended');
+        return;
+      }
+
+      const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((difference / 1000 / 60) % 60);
+      const seconds = Math.floor((difference / 1000) % 60);
+
+      const parts = [];
+      if (days > 0) parts.push(`${days}d`);
+      parts.push(`${hours}h`);
+      parts.push(`${minutes}m`);
+      parts.push(`${seconds}s`);
+      setTimeLeft(parts.join(' '));
+    };
+
+    calculateTimeLeft();
+    const interval = setInterval(calculateTimeLeft, 1000);
+    return () => clearInterval(interval);
+  }, [endDate]);
+
+  return (
+    <div className="contest-countdown">
+      <i className="fas fa-hourglass-half"></i> Time Left: <strong>{timeLeft}</strong>
+    </div>
+  );
+};
+
 const Contests = () => {
   const [contests, setContests] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedContest, setSelectedContest] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { success, error } = useToast();
   const navigate = useNavigate();
+  const { id } = useParams();
 
   useEffect(() => {
     fetchContests();
   }, []);
+
+  useEffect(() => {
+    if (id && contests.length > 0) {
+      const found = contests.find(c => String(c._id) === String(id));
+      if (found) {
+        setSelectedContest(found);
+      } else {
+        setSelectedContest(null);
+      }
+    } else {
+      setSelectedContest(null);
+    }
+  }, [id, contests]);
 
   const fetchContests = async () => {
     try {
@@ -30,6 +82,14 @@ const Contests = () => {
     }
   };
 
+  const handleOpenContest = (contest) => {
+    navigate(`/contests/${contest._id}`);
+  };
+
+  const handleCloseContest = () => {
+    navigate('/contests');
+  };
+
   const handleParticipate = async (contestId) => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -38,6 +98,7 @@ const Contests = () => {
       return;
     }
 
+    setIsSubmitting(true);
     try {
       const result = await api.post(`/contests/${contestId}/participate`);
       if (result.success) {
@@ -48,6 +109,8 @@ const Contests = () => {
     } catch (err) {
       console.error('Error participating:', err);
       error('An error occurred. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -78,7 +141,7 @@ const Contests = () => {
           <div className="contests-grid">
             {contests.map((contest) => (
               <div key={contest._id} className="contest-card animate-fadeInUp">
-                <div className="contest-image-wrapper">
+                <div className="contest-image-wrapper" onClick={() => handleOpenContest(contest)}>
                   {contest.bannerImage ? (
                     <img src={contest.bannerImage} alt={contest.title} className="contest-image" />
                   ) : (
@@ -90,13 +153,10 @@ const Contests = () => {
                 </div>
                 
                 <div className="contest-content">
-                  <h3 className="contest-title">{contest.title}</h3>
+                  <h3 className="contest-title" onClick={() => handleOpenContest(contest)} style={{ cursor: 'pointer' }}>
+                    {contest.title}
+                  </h3>
                   <p className="contest-description">{contest.description}</p>
-                  
-                  <div className="contest-rules">
-                    <strong><i className="fas fa-info-circle"></i> Rules:</strong>
-                    <p>{contest.rules}</p>
-                  </div>
                   
                   <div className="contest-dates">
                     <div className="date-item">
@@ -107,9 +167,9 @@ const Contests = () => {
 
                   <button 
                     className="btn-participate"
-                    onClick={() => handleParticipate(contest._id)}
+                    onClick={() => handleOpenContest(contest)}
                   >
-                    Participate Now <i className="fas fa-arrow-right"></i>
+                    View Details & Enter <i className="fas fa-arrow-right"></i>
                   </button>
                 </div>
               </div>
@@ -117,6 +177,77 @@ const Contests = () => {
           </div>
         )}
       </div>
+
+      {/* Dedicated Detail Modal Popup */}
+      {selectedContest && (
+        <div className="contest-modal-overlay" onClick={handleCloseContest}>
+          <div className="contest-modal-content animate-scaleIn" onClick={(e) => e.stopPropagation()}>
+            <button className="contest-modal-close" onClick={handleCloseContest} aria-label="Close modal">
+              <i className="fas fa-times"></i>
+            </button>
+            
+            <div className="contest-modal-header">
+              {selectedContest.bannerImage ? (
+                <img src={selectedContest.bannerImage} alt={selectedContest.title} className="contest-modal-image" />
+              ) : (
+                <div className="contest-modal-image-placeholder">
+                  <i className="fas fa-gift"></i>
+                </div>
+              )}
+              <div className="contest-modal-badge">Exclusive Giveaway</div>
+            </div>
+
+            <div className="contest-modal-body">
+              <h2 className="contest-modal-title">{selectedContest.title}</h2>
+              
+              <div className="contest-modal-meta">
+                <div className="meta-item dates">
+                  <i className="fas fa-calendar-alt"></i>
+                  <span>Ends: {new Date(selectedContest.endDate).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                </div>
+                <ContestCountdown endDate={selectedContest.endDate} />
+              </div>
+
+              <div className="contest-modal-section">
+                <h3><i className="fas fa-align-left"></i> About the Giveaway</h3>
+                <p className="contest-modal-description">{selectedContest.description}</p>
+              </div>
+
+              {selectedContest.rules && (
+                <div className="contest-modal-section">
+                  <h3><i className="fas fa-clipboard-list"></i> Participation Rules & Guidelines</h3>
+                  <div className="contest-modal-rules">
+                    {selectedContest.rules.split('\n').filter(r => r.trim()).map((rule, idx) => (
+                      <div key={idx} className="rule-bullet">
+                        <i className="fas fa-check-circle"></i>
+                        <span>{rule.trim()}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="contest-modal-footer">
+                <button 
+                  className="btn-modal-participate"
+                  onClick={() => handleParticipate(selectedContest._id)}
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <i className="fas fa-spinner fa-spin"></i> Submitting Entry...
+                    </>
+                  ) : (
+                    <>
+                      Participate Now & Win <i className="fas fa-trophy"></i>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
