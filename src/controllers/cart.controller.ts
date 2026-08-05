@@ -95,7 +95,15 @@ export const addToCart = asyncHandler(async (req: AuthRequest, res: Response) =>
     throw new ApiError(400, 'This product does not have fabric variants');
   }
 
-  const sizeData = product.sizes.find((s) => s.size.toLowerCase() === requestedSize.toLowerCase());
+  let sizeData = product.sizes.find((s) => s.size.toLowerCase() === requestedSize.toLowerCase());
+  if (!sizeData) {
+    if (!product.sizes || product.sizes.length === 0) {
+      sizeData = { size: 'Free Size', stock: 9999 };
+    } else if (product.sizes.length === 1 && !requestedSize) {
+      sizeData = product.sizes[0];
+    }
+  }
+
   if (!sizeData || sizeData.stock < quantity) {
     console.log(`addToCart: Invalid size/stock. Available: ${JSON.stringify(product.sizes)}`);
     throw new ApiError(400, 'Selected size not available or insufficient stock');
@@ -167,7 +175,10 @@ export const updateCartItem = asyncHandler(async (req: AuthRequest, res: Respons
     throw new ApiError(404, 'Product associated with cart item not found');
   }
 
-  const sizeData = product.sizes.find((s) => s.size === cartItem.size);
+  let sizeData = product.sizes.find((s) => s.size === cartItem.size);
+  if (!sizeData && (!product.sizes || product.sizes.length === 0)) {
+    sizeData = { size: 'Free Size', stock: 9999 };
+  }
 
   if (!sizeData || quantity > sizeData.stock) {
     throw new ApiError(400, 'Requested quantity exceeds available stock');

@@ -16,11 +16,11 @@ const CartSummary = ({
 
   const calculateShipping = () => {
     const subtotal = calculateSubtotal();
-    return subtotal > 999 ? 0 : 99;
+    return subtotal > 700 ? 0 : 79;
   };
 
   const calculateTax = () => {
-    return Math.round(calculateSubtotal() * 0.18);
+    return 0;
   };
 
   const calculateTotal = () => {
@@ -73,10 +73,12 @@ const CartSummary = ({
           <span>Shipping</span>
           <span>{shipping === 0 ? 'FREE' : `₹${shipping}`}</span>
         </div>
-        <div className="price-row">
-          <span>Tax (18%)</span>
-          <span>₹{tax}</span>
-        </div>
+        {tax > 0 && (
+          <div className="price-row">
+            <span>Tax (18%)</span>
+            <span>₹{tax}</span>
+          </div>
+        )}
         {discount > 0 && (
           <div className="price-row discount">
             <span>Discount Applied</span>
@@ -89,10 +91,10 @@ const CartSummary = ({
         </div>
       </div>
 
-      {subtotal < 1000 && (
+      {subtotal < 700 && (
         <div className="free-shipping-notice">
           <i className="fas fa-truck"></i>
-          <span>Add ₹{1000 - subtotal} more for FREE shipping!</span>
+          <span>Add ₹{700 - subtotal} more for FREE shipping!</span>
         </div>
       )}
 

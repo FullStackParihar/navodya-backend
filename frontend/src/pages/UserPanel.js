@@ -263,10 +263,11 @@ const UserPanel = () => {
 
   const handleRetryPayment = async (orderId) => {
     try {
-      const result = await api.post('/payments/create-order', { orderId });
+      const returnUrl = `${window.location.origin}/checkout`;
+      const result = await api.post('/payments/create-order', { orderId, returnUrl });
       if (result.success && result.data.paymentSessionId) {
         if (result.data.paymentSessionId.startsWith('mock_cf_session_')) {
-          window.location.href = `${window.location.origin}/checkout-dashboard?order_id=${result.data.orderId || result.data.cfOrderId}`;
+          window.location.href = `${window.location.origin}/checkout?order_id=${result.data.orderId || result.data.cfOrderId}`;
           return;
         }
 

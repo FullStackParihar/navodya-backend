@@ -87,12 +87,9 @@ const QuickViewModal = ({ product, isOpen, onClose }) => {
               )}
             </div>
             
-            <div className="quickview-actions">
-              <button className="add-to-cart-btn" onClick={handleAddToCart}>
-                <i className="fas fa-shopping-cart"></i> Add to Cart
-              </button>
-              <Link to={`/product/${product.dbId || product.id}`} className="view-details-btn">
-                View Full Details
+            <div className="quickview-actions" style={{ display: 'flex', gap: '12px' }}>
+              <Link to={`/product/${product.dbId || product.id}`} className="view-details-btn" style={{ flex: 1, textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                <i className="fas fa-eye"></i> View Full Details
               </Link>
             </div>
           </div>

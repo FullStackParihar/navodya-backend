@@ -217,7 +217,9 @@ export const createCashfreeOrder = asyncHandler(async (req: AuthRequest, res: Re
             }
         }
 
-        total = subtotal - discount;
+        const shippingFee = subtotal > 700 ? 0 : 79;
+        const tax = 0;
+        total = Math.max(0, subtotal - discount + shippingFee + tax);
         cfOrderId = ''; // Will generate based on mongo _id
 
         // Map Shipping Address
@@ -242,8 +244,8 @@ export const createCashfreeOrder = asyncHandler(async (req: AuthRequest, res: Re
             pricing: {
                 subtotal,
                 discount,
-                shipping_fee: 0,
-                tax: 0,
+                shipping_fee: shippingFee,
+                tax,
                 total
             },
             coupon_applied: couponId,
@@ -279,6 +281,9 @@ export const createCashfreeOrder = asyncHandler(async (req: AuthRequest, res: Re
         }
 
         let returnUrl = req.body.returnUrl || `${process.env.CLIENT_URL || 'http://localhost:3000'}/checkout`;
+        if (returnUrl.includes('/checkout-dashboard')) {
+            returnUrl = returnUrl.replace('/checkout-dashboard', '/checkout');
+        }
         if (!returnUrl.includes('{order_id}')) {
             const separator = returnUrl.includes('?') ? '&' : '?';
             returnUrl = `${returnUrl}${separator}order_id={order_id}`;

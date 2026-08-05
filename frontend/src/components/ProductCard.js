@@ -126,28 +126,14 @@ const ProductCard = ({ product }) => {
           )}
         </div>
         
-        <button 
-          className={`add-to-cart ${isAdding ? 'loading' : ''} ${isHovered ? 'animate-pulse' : ''}`}
-          onClick={handleAddToCart}
-          disabled={isInCart(product.id) || isAdding}
+        <Link 
+          to={`/product/${product.dbId || product.id}`}
+          className={`add-to-cart ${isHovered ? 'animate-pulse' : ''}`}
+          style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
         >
-          {isAdding ? (
-            <>
-              <i className="fas fa-spinner fa-spin"></i> 
-              Adding...
-            </>
-          ) : isInCart(product.id) ? (
-            <>
-              <i className="fas fa-check"></i> 
-              In Cart
-            </>
-          ) : (
-            <>
-              <i className="fas fa-shopping-cart"></i> 
-              Add to Cart
-            </>
-          )}
-        </button>
+          <i className="fas fa-eye"></i> 
+          View Product
+        </Link>
       </div>
       
       <QuickViewModal 

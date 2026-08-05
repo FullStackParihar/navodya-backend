@@ -107,11 +107,11 @@ const Payment = () => {
   };
 
   const calculateShipping = () => {
-    return calculateSubtotal() > 999 || calculateSubtotal() === 0 ? 0 : 99;
+    return calculateSubtotal() > 700 || calculateSubtotal() === 0 ? 0 : 79;
   };
 
   const calculateTax = () => {
-    return Math.round(calculateSubtotal() * 0.18);
+    return 0;
   };
 
   const calculateTotal = () => {
@@ -580,10 +580,12 @@ const Payment = () => {
                   <span>Shipping</span>
                   <span>{calculateShipping() === 0 ? 'FREE' : `₹${calculateShipping()}`}</span>
                 </div>
-                <div className="price-row">
-                  <span>Tax (18%)</span>
-                  <span>₹{calculateTax()}</span>
-                </div>
+                {calculateTax() > 0 && (
+                  <div className="price-row">
+                    <span>Tax (18%)</span>
+                    <span>₹{calculateTax()}</span>
+                  </div>
+                )}
                 {discountAmount > 0 && (
                   <div className="price-row discount">
                     <span>Discount</span>
@@ -1257,6 +1259,105 @@ const Payment = () => {
           }
 
           .step-navigation button {
+            width: 100%;
+            justify-content: center;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .payment-page {
+            padding: 1rem 0;
+          }
+
+          .payment-header {
+            margin-bottom: 1.5rem;
+          }
+
+          .payment-header h1 {
+            font-size: 1.75rem;
+          }
+
+          .progress-indicator {
+            gap: 0.5rem;
+          }
+
+          .step-number {
+            width: 32px;
+            height: 32px;
+            font-size: 0.875rem;
+          }
+
+          .step-label {
+            font-size: 0.7rem;
+          }
+
+          .payment-main {
+            padding: 1rem;
+            border-radius: 1rem;
+          }
+
+          .order-summary-sidebar {
+            padding: 1rem;
+            border-radius: 1rem;
+          }
+
+          .address-card {
+            padding: 1rem;
+            border-radius: 0.75rem;
+          }
+
+          .address-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+          }
+
+          .add-address-form {
+            padding: 1rem;
+            margin-top: 1rem;
+          }
+
+          .form-grid {
+            gap: 1rem;
+          }
+
+          .form-actions {
+            flex-direction: column-reverse;
+          }
+
+          .form-actions button {
+            width: 100%;
+            justify-content: center;
+          }
+
+          .payment-method-card {
+            padding: 1rem;
+            border-radius: 0.75rem;
+          }
+
+          .payment-method-icon {
+            width: 40px;
+            height: 40px;
+            font-size: 1rem;
+          }
+
+          .payment-method-info h3 {
+            font-size: 1rem;
+          }
+
+          .payment-method-info p {
+            font-size: 0.75rem;
+          }
+
+          .coupon-section {
+            padding: 1rem;
+          }
+
+          .coupon-input-wrapper {
+            flex-direction: column;
+          }
+
+          .coupon-input-wrapper button {
             width: 100%;
             justify-content: center;
           }

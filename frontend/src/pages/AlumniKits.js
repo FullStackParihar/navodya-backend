@@ -88,7 +88,7 @@ const AlumniKits = () => {
                   </div>
 
                   <Link to={`/product/${kit.id}`} className="kit-action">
-                    <i className="fas fa-shopping-cart"></i>
+                    <i className="fas fa-eye"></i>
                     View Details
                   </Link>
                 </div>

@@ -53,8 +53,8 @@ const QuickCheckoutModal = ({
 
   const calculateTotal = () => {
     const subtotal = calculateSubtotal();
-    const shipping = subtotal > 999 ? 0 : 99;
-    const tax = Math.round(subtotal * 0.18);
+    const shipping = subtotal > 700 ? 0 : 79;
+    const tax = 0;
     return subtotal + shipping + tax;
   };
 

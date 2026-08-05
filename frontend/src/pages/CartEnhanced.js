@@ -51,7 +51,7 @@ const Cart = () => {
   const { items, totalAmount, updateQuantity, removeFromCart } = useCart();
   const { success, error } = useToast();
   const [promoCode, setPromoCode] = useState('');
-  const [discount, setDiscount] = useState(199);
+  const [discount, setDiscount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [recommendedLoading, setRecommendedLoading] = useState(true);
 
@@ -96,7 +96,7 @@ const Cart = () => {
         success('20% discount applied!');
       } else {
         error('Invalid promo code');
-        setDiscount(199);
+        setDiscount(0);
       }
       setIsLoading(false);
     }, 1000);

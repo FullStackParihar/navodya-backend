@@ -90,9 +90,9 @@ export const createPaymentIntent = asyncHandler(async (req: AuthRequest, res: Re
         }
     }
 
-    const shippingFee = 0; // Free shipping for now, or logic based on total
-    const tax = 0; // Simplified
-    const total = subtotal - discount + shippingFee + tax;
+    const shippingFee = subtotal > 700 ? 0 : 79;
+    const tax = 0;
+    const total = Math.max(0, subtotal - discount + shippingFee + tax);
 
     // 4. Create Stripe Intent (with fallback for testing)
     let paymentIntent;
@@ -247,7 +247,9 @@ export const createOrder = asyncHandler(async (req: AuthRequest, res: Response) 
         }
     }
 
-    const total = subtotal - discount; // Tax/Shipping assumed same
+    const shippingFee = subtotal > 700 ? 0 : 79;
+    const tax = 0;
+    const total = Math.max(0, subtotal - discount + shippingFee + tax);
 
     const order = await Order.create({
         user_id: req.userId,
@@ -261,8 +263,8 @@ export const createOrder = asyncHandler(async (req: AuthRequest, res: Response) 
         pricing: {
             subtotal,
             discount,
-            shipping_fee: 0,
-            tax: 0,
+            shipping_fee: shippingFee,
+            tax,
             total
         },
         coupon_applied: couponId,
