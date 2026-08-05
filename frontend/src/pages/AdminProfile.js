@@ -302,7 +302,7 @@ const AdminProfile = () => {
         });
       } else if (type === 'contest') {
         setFormData({
-          title: '', description: '', rules: '', startDate: new Date().toISOString().split('T')[0], endDate: new Date(Date.now() + 7*24*60*60*1000).toISOString().split('T')[0], bannerImage: '', isActive: true
+          title: '', description: '', rules: '', startDate: new Date().toISOString().split('T')[0], endDate: new Date(Date.now() + 7*24*60*60*1000).toISOString().split('T')[0], bannerImage: '', googleFormLink: '', isActive: true
         });
       } else if (type === 'winner') {
         setFormData({
@@ -2362,6 +2362,15 @@ const AdminProfile = () => {
                             <button type="button" onClick={() => setFormData({...formData, bannerImage: ''})}>&times;</button>
                           </div>
                         )}
+                      </div>
+                      <div className="form-group">
+                        <label>Google Form / Submission Link (Optional)</label>
+                        <input 
+                          type="url" 
+                          value={formData.googleFormLink || ''} 
+                          onChange={e => setFormData({...formData, googleFormLink: e.target.value})} 
+                          placeholder="https://forms.gle/... or any submission link" 
+                        />
                       </div>
                       <div className="form-group" style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <input type="checkbox" checked={formData.isActive} onChange={e => setFormData({...formData, isActive: e.target.checked})} id="is-active-checkbox" style={{ width: 'auto', marginRight: '10px' }} />

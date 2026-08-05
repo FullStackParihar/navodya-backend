@@ -45,6 +45,7 @@ const Contests = () => {
   const [loading, setLoading] = useState(true);
   const [selectedContest, setSelectedContest] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [lightboxImage, setLightboxImage] = useState(null);
   const { success, error } = useToast();
   const navigate = useNavigate();
   const { id } = useParams();
@@ -188,7 +189,14 @@ const Contests = () => {
             
             <div className="contest-modal-header">
               {selectedContest.bannerImage ? (
-                <img src={selectedContest.bannerImage} alt={selectedContest.title} className="contest-modal-image" />
+                <img 
+                  src={selectedContest.bannerImage} 
+                  alt={selectedContest.title} 
+                  className="contest-modal-image" 
+                  onClick={() => setLightboxImage(selectedContest.bannerImage)}
+                  title="Click to zoom banner details"
+                  style={{ cursor: 'pointer' }}
+                />
               ) : (
                 <div className="contest-modal-image-placeholder">
                   <i className="fas fa-gift"></i>
@@ -227,6 +235,21 @@ const Contests = () => {
                 </div>
               )}
 
+              {selectedContest.googleFormLink && (
+                <div className="contest-modal-section submission-form-section">
+                  <h3><i className="fas fa-file-alt"></i> Submit Your Entry / Design</h3>
+                  <p className="submission-helper-text">To submit your design or other contest submissions, please fill out the official form below:</p>
+                  <a 
+                    href={selectedContest.googleFormLink} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="btn-contest-submission"
+                  >
+                    Open Submission Form <i className="fas fa-external-link-alt"></i>
+                  </a>
+                </div>
+              )}
+
               <div className="contest-modal-footer">
                 <button 
                   className="btn-modal-participate"
@@ -245,6 +268,18 @@ const Contests = () => {
                 </button>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Lightbox Modal for banner viewing */}
+      {lightboxImage && (
+        <div className="contest-lightbox-overlay" onClick={() => setLightboxImage(null)}>
+          <div className="contest-lightbox-content animate-scaleIn" onClick={(e) => e.stopPropagation()}>
+            <button className="contest-lightbox-close" onClick={() => setLightboxImage(null)} aria-label="Close image preview">
+              <i className="fas fa-times"></i>
+            </button>
+            <img src={lightboxImage} alt="Contest Banner Detail" className="contest-lightbox-image" />
           </div>
         </div>
       )}

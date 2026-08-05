@@ -517,3 +517,150 @@
     gap: 10px;
   }
 }
+
+/* Interactive Contest Modal Image */
+.contest-modal-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  cursor: pointer;
+  transition: filter 0.3s ease, transform 0.3s ease;
+}
+
+.contest-modal-image:hover {
+  filter: brightness(0.9);
+  transform: scale(1.02);
+}
+
+.contest-modal-header::after {
+  content: '\f00e'; /* FontAwesome search-plus icon */
+  font-family: 'Font Awesome 5 Free';
+  font-weight: 900;
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.contest-modal-header:hover::after {
+  opacity: 1;
+}
+
+/* Lightbox Overlay */
+.contest-lightbox-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.95);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 3000;
+  backdrop-filter: blur(10px);
+  padding: 20px;
+  cursor: zoom-out;
+}
+
+/* Lightbox Content */
+.contest-lightbox-content {
+  position: relative;
+  max-width: 90vw;
+  max-height: 90vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: default;
+}
+
+.contest-lightbox-image {
+  max-width: 100%;
+  max-height: 85vh;
+  border-radius: 12px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  object-fit: contain;
+}
+
+/* Lightbox Close Button */
+.contest-lightbox-close {
+  position: absolute;
+  top: -45px;
+  right: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #fff;
+  font-size: 1.2rem;
+  transition: all 0.2s ease;
+}
+
+.contest-lightbox-close:hover {
+  background: #ef4444;
+  color: white;
+  transform: scale(1.1);
+}
+
+/* Google Form / Submission Link styling */
+.submission-form-section {
+  background: #f0fdf4;
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid #bbf7d0;
+  margin-top: 10px;
+  margin-bottom: 25px;
+}
+
+.submission-form-section h3 i {
+  color: #16a34a !important;
+}
+
+.submission-helper-text {
+  color: #166534;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin-bottom: 15px;
+}
+
+.btn-contest-submission {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background-color: #16a34a;
+  color: white !important;
+  text-decoration: none;
+  font-weight: 700;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 6px -1px rgba(22, 163, 74, 0.2);
+}
+
+.btn-contest-submission:hover {
+  background-color: #15803d;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 15px -3px rgba(22, 163, 74, 0.3);
+}
+
+.btn-contest-submission i {
+  font-size: 0.9rem;
+}
