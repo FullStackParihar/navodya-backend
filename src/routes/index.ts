@@ -13,6 +13,7 @@ import winnerRoutes from './winner.routes.js';
 import bulkOrderRoutes from './bulkOrder.routes.js';
 import bannerRoutes from './banner.routes.js';
 import paymentRoutes from './payment.routes.js';
+import shipwayRoutes from './shipway.routes.js';
 
 const router = Router();
 
@@ -30,6 +31,7 @@ router.use('/admin', adminRoutes);
 router.use('/contests', contestRoutes);
 router.use('/winners', winnerRoutes);
 router.use('/payments', paymentRoutes);
+router.use('/shipway', shipwayRoutes);
 
 router.get('/health', (req, res) => {
   res.status(200).json({

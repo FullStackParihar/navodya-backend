@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import api from '../utils/api';
+import api, { API_URL } from '../utils/api';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { useToast } from '../context/ToastContext';
@@ -615,7 +615,7 @@ const UserPanel = () => {
                                 )}
                                 <button 
                                   className="btn-secondary" 
-                                  onClick={() => window.open(`http://localhost:3001/api/orders/${o.id}/invoice?token=${localStorage.getItem('token')}`, '_blank')}
+                                  onClick={() => window.open(`${API_URL}/orders/${o.id}/invoice?token=${localStorage.getItem('token')}`, '_blank')}
                                   style={{ marginLeft: '10px' }}
                                 >
                                   <i className="fas fa-file-invoice"></i> Invoice

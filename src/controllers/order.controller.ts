@@ -11,6 +11,7 @@ import { Product, IProduct } from '../models/product.model.js';
 import { User } from '../models/user.model.js';
 import { config } from '../config/env.js';
 import PDFDocument from 'pdfkit';
+import { pushOrderToShipway } from '../utils/shipway.js';
 
 const stripe = new Stripe(config.stripe.secretKey, {
     apiVersion: 'latest' as any,
@@ -273,6 +274,11 @@ export const createOrder = asyncHandler(async (req: AuthRequest, res: Response) 
 
     // Clear Cart
     await CartItem.deleteMany({ user_id: req.userId });
+
+    // Push to Shipway asynchronously so we don't block response
+    pushOrderToShipway(order._id.toString()).catch(err => {
+        console.error(`[Shipway] Deferred push error for order ${order._id}:`, err);
+    });
 
     res.status(201).json(new ApiResponse(201, order, 'Order placed successfully'));
 });

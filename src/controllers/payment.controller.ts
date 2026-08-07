@@ -11,6 +11,7 @@ import { Coupon } from '../models/coupon.model.js';
 import { Product, IProduct } from '../models/product.model.js';
 import { User } from '../models/user.model.js';
 import { config } from '../config/env.js';
+import { pushOrderToShipway } from '../utils/shipway.js';
 
 // Initialize Cashfree SDK
 const pgEnv = config.cashfree.env.toUpperCase() === 'PRODUCTION'
@@ -114,6 +115,11 @@ export const completeOrder = async (order: any, cashfreeOrderDetails: any, payme
 
     // 3. Clear user's cart
     await CartItem.deleteMany({ user_id: updatedOrder.user_id });
+
+    // Push to Shipway asynchronously so we don't block response/verification
+    pushOrderToShipway(updatedOrder._id.toString()).catch(err => {
+        console.error(`[Shipway] Deferred push error for order ${updatedOrder._id}:`, err);
+    });
 
     return updatedOrder;
 };

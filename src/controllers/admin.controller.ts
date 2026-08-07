@@ -6,6 +6,7 @@ import { AuthRequest } from '../middlewares/auth.middleware.js';
 import { User } from '../models/user.model.js';
 import { Order } from '../models/order.model.js';
 import { Product } from '../models/product.model.js';
+import { cancelOrderInShipway } from '../utils/shipway.js';
 
 const VALID_STATUSES = ['PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED', 'RETURNED'] as const;
 type OrderStatus = typeof VALID_STATUSES[number];
@@ -88,6 +89,12 @@ export const updateOrderStatus = asyncHandler(async (req: AuthRequest, res: Resp
 
     order.status = status as OrderStatus;
     await order.save();
+
+    if (status === 'CANCELLED') {
+        cancelOrderInShipway(order._id.toString()).catch(err => {
+            console.error(`[Shipway] Deferred cancel error for order ${order._id}:`, err);
+        });
+    }
 
     // Re-populate user info before responding so frontend gets consistent data
     await order.populate('user_id', 'name email phone');

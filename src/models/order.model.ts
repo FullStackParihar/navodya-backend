@@ -30,6 +30,8 @@ export interface IOrder extends Document {
     user_id: mongoose.Types.ObjectId;
     items: IOrderItem[];
     shipping_address: {
+        firstname: any;
+        lastname: any;
         street: string;
         city: string;
         state: string;

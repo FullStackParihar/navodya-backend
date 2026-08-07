@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api, { resolveImageUrl } from '../utils/api';
+import api, { resolveImageUrl, API_URL } from '../utils/api';
 import PrivateRoute from '../components/PrivateRoute';
 import { useToast } from '../context/ToastContext';
 import './AdminProfile.css';
@@ -58,6 +58,8 @@ const AdminProfile = () => {
   const [orderStatusUpdating, setOrderStatusUpdating] = useState(false);
   const [trackingForm, setTrackingForm] = useState({ carrier: '', tracking_number: '', url: '' });
   const [trackingUpdating, setTrackingUpdating] = useState(false);
+  const [liveTrackingInfo, setLiveTrackingInfo] = useState(null);
+  const [fetchingLiveTracking, setFetchingLiveTracking] = useState(false);
 
 
   const getSafeImage = (value) => {
@@ -657,12 +659,45 @@ const AdminProfile = () => {
     }
   };
 
+  // Fetch live tracking from Shipway API
+  const handleFetchLiveTracking = async (orderId) => {
+    setFetchingLiveTracking(true);
+    setLiveTrackingInfo(null);
+    try {
+      const result = await api.get(`/shipway/tracking/${orderId}`);
+      if (result.success && result.data) {
+        const trackingPayload = result.data.tracking;
+        const trackingData = Array.isArray(trackingPayload) ? trackingPayload[0] : trackingPayload;
+        setLiveTrackingInfo(trackingData);
+
+        // Update selected order details (sync status)
+        if (result.data.order) {
+          setSelectedOrder(result.data.order);
+          fetchData('orders'); // Refresh orders list in background
+        }
+
+        if (trackingData && trackingData.awb) {
+          success('Live tracking data retrieved from Shipway');
+        }
+      } else {
+        error(result.message || 'Failed to fetch live tracking info');
+      }
+    } catch (err) {
+      console.error(err);
+      error('Failed to connect to tracking service');
+    } finally {
+      setFetchingLiveTracking(false);
+    }
+  };
+
   // Open order detail modal
   const handleViewOrder = async (orderId) => {
     setIsOrderDetailOpen(true);
     setOrderDetailLoading(true);
     setSelectedOrder(null);
     setOrderStatusNote('');
+    setLiveTrackingInfo(null);
+    setFetchingLiveTracking(false);
     try {
       const result = await api.get(`/admin/orders/${orderId}`);
       if (result.success) {
@@ -672,6 +707,8 @@ const AdminProfile = () => {
           tracking_number: result.data.tracking?.tracking_number || '',
           url: result.data.tracking?.url || ''
         });
+        // Auto-fetch live status
+        handleFetchLiveTracking(orderId);
       } else {
         error(result.message || 'Failed to load order details');
         setIsOrderDetailOpen(false);
@@ -688,6 +725,8 @@ const AdminProfile = () => {
     setIsOrderDetailOpen(false);
     setSelectedOrder(null);
     setOrderStatusNote('');
+    setLiveTrackingInfo(null);
+    setFetchingLiveTracking(false);
   };
 
   // Status update from within the detail modal
@@ -1048,9 +1087,83 @@ const AdminProfile = () => {
                             </a>
                           </div>
                         )}
+                        <button
+                          className="save-btn"
+                          style={{ 
+                            marginTop: '10px', 
+                            background: '#2563eb', 
+                            color: '#fff', 
+                            border: 'none', 
+                            padding: '6px 12px', 
+                            borderRadius: '4px', 
+                            cursor: fetchingLiveTracking ? 'not-allowed' : 'pointer', 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            justifyContent: 'center',
+                            gap: '6px',
+                            fontSize: '12px',
+                            fontWeight: '600',
+                            width: '100%'
+                          }}
+                          disabled={fetchingLiveTracking}
+                          onClick={() => handleFetchLiveTracking(o._id)}
+                        >
+                          <i className={`fas ${fetchingLiveTracking ? 'fa-spinner fa-spin' : 'fa-sync-alt'}`} />
+                          {fetchingLiveTracking ? 'Fetching Live Status...' : 'Fetch Live Status from Shipway'}
+                        </button>
                       </div>
                     ) : (
-                      <p style={{ fontSize: '13px', color: '#9ca3af', marginBottom: '12px' }}>No tracking info added yet.</p>
+                      <div style={{ marginBottom: '12px' }}>
+                        <p style={{ fontSize: '13px', color: '#9ca3af', marginBottom: '6px' }}>No tracking info added yet.</p>
+                        <button
+                          className="save-btn"
+                          style={{ 
+                            background: '#2563eb', 
+                            color: '#fff', 
+                            border: 'none', 
+                            padding: '6px 12px', 
+                            borderRadius: '4px', 
+                            cursor: fetchingLiveTracking ? 'not-allowed' : 'pointer', 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            justifyContent: 'center',
+                            gap: '6px',
+                            fontSize: '12px',
+                            fontWeight: '600',
+                            width: '100%'
+                          }}
+                          disabled={fetchingLiveTracking}
+                          onClick={() => handleFetchLiveTracking(o._id)}
+                        >
+                          <i className={`fas ${fetchingLiveTracking ? 'fa-spinner fa-spin' : 'fa-sync-alt'}`} />
+                          {fetchingLiveTracking ? 'Fetching Live Status...' : 'Check Shipway Status'}
+                        </button>
+                      </div>
+                    )}
+
+                    {liveTrackingInfo && (
+                      <div style={{ marginTop: '12px', padding: '10px', background: '#f8fafc', borderRadius: '6px', border: '1px solid #e2e8f0', borderLeft: '3px solid #2563eb', textAlign: 'left' }}>
+                        <div style={{ fontSize: '13px', fontWeight: 'bold', color: '#1e293b', marginBottom: '8px' }}>
+                          Shipway Live Status: <span style={{ color: '#2563eb' }}>{liveTrackingInfo.tracking_details?.shipment_details?.[0]?.current_status || liveTrackingInfo.tracking_details?.shipment_status || 'Unknown'}</span>
+                        </div>
+                        
+                        {/* Scans Timeline */}
+                        {liveTrackingInfo.tracking_details?.scans && liveTrackingInfo.tracking_details.scans.length > 0 ? (
+                          <div style={{ maxHeight: '180px', overflowY: 'auto', marginTop: '6px', paddingRight: '4px' }}>
+                            {liveTrackingInfo.tracking_details.scans.map((scan, sIdx) => (
+                              <div key={sIdx} style={{ fontSize: '11px', padding: '6px 0', borderBottom: '1px solid #f1f5f9' }}>
+                                <div style={{ color: '#334155', fontWeight: '600' }}>{scan.activity}</div>
+                                <div style={{ color: '#64748b', display: 'flex', justifyContent: 'space-between', marginTop: '2px' }}>
+                                  <span>{scan.location || 'In Transit'}</span>
+                                  <span>{scan.date} {scan.time || ''}</span>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <div style={{ fontSize: '11px', color: '#64748b' }}>No scan history recorded yet in Shipway.</div>
+                        )}
+                      </div>
                     )}
                     <div className="tracking-form">
                       <input
@@ -1413,7 +1526,7 @@ const AdminProfile = () => {
                       className="action-icon"
                       style={{ background: '#fef3c7', color: '#d97706' }}
                       title="Download Invoice"
-                      onClick={() => window.open(`http://localhost:3001/api/orders/${order._id}/invoice?token=${localStorage.getItem('token')}`, '_blank')}
+                      onClick={() => window.open(`${API_URL}/orders/${order._id}/invoice?token=${localStorage.getItem('token')}`, '_blank')}
                     >
                       <i className="fas fa-file-invoice" />
                     </button>

@@ -29,4 +29,8 @@ export const config = {
     env: process.env.CASHFREE_ENV || 'SANDBOX',
     webhookSecret: process.env.CASHFREE_WEBHOOK_SECRET || '',
   },
+  shipway: {
+    email: process.env.SHIPWAY_EMAIL || '',
+    licenseKey: process.env.SHIPWAY_LICENSE_KEY || '',
+  },
 };
