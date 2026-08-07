@@ -230,6 +230,9 @@ export const createCashfreeOrder = asyncHandler(async (req: AuthRequest, res: Re
 
         // Map Shipping Address
         const mappedAddress = {
+            firstname: shippingAddress?.fullName ? shippingAddress.fullName.split(' ')[0] : 'Customer',
+            lastname: shippingAddress?.fullName ? shippingAddress.fullName.split(' ').slice(1).join(' ') : '',
+            phone: shippingAddress?.phone || '',
             street: shippingAddress?.addressLine || shippingAddress?.address || 'N/A',
             city: shippingAddress?.city || 'N/A',
             state: shippingAddress?.state || 'N/A',

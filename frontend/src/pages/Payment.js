@@ -161,7 +161,7 @@ const Payment = () => {
     return /^\d{6}$/.test(pincode);
   };
 
-  const handleAddAddress = () => {
+  const handleAddAddress = async () => {
     if (!validatePincode(newAddress.pincode)) {
       showToastError('Please enter a valid 6-digit pincode');
       return;
@@ -176,6 +176,19 @@ const Payment = () => {
     setSelectedAddress(address);
     setShowAddAddress(false);
     showToastSuccess('Address added successfully');
+
+    try {
+      await api.patch('/auth/profile', {
+        phone: newAddress.phone,
+        address: newAddress.address,
+        city: newAddress.city,
+        state: newAddress.state,
+        pincode: newAddress.pincode
+      });
+      showToastSuccess('Address details saved to your profile!');
+    } catch (err) {
+      console.error('Failed to auto-save address to user profile:', err);
+    }
   };
 
   const handlePayment = async () => {

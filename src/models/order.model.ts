@@ -30,8 +30,9 @@ export interface IOrder extends Document {
     user_id: mongoose.Types.ObjectId;
     items: IOrderItem[];
     shipping_address: {
-        firstname: any;
-        lastname: any;
+        firstname?: string;
+        lastname?: string;
+        phone?: string;
         street: string;
         city: string;
         state: string;
@@ -39,6 +40,9 @@ export interface IOrder extends Document {
         country: string;
     };
     billing_address?: {
+        firstname?: string;
+        lastname?: string;
+        phone?: string;
         street: string;
         city: string;
         state: string;
@@ -94,6 +98,9 @@ const orderSchema = new mongoose.Schema({
         ,fabric_price: { type: Number, min: 0 }
     }],
     shipping_address: {
+        firstname: { type: String },
+        lastname: { type: String },
+        phone: { type: String },
         street: { type: String, required: true },
         city: { type: String, required: true },
         state: { type: String, required: true },
@@ -101,6 +108,9 @@ const orderSchema = new mongoose.Schema({
         country: { type: String, required: true }
     },
     billing_address: {
+        firstname: { type: String },
+        lastname: { type: String },
+        phone: { type: String },
         street: { type: String },
         city: { type: String },
         state: { type: String },

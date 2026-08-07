@@ -30,13 +30,11 @@ export const pushOrderToShipway = async (orderId: string) => {
         }
 
         const user = order.user_id as any;
-        const userName = user?.name || 'Customer';
-        const nameParts = userName.trim().split(/\s+/);
-        const firstname = nameParts[0] || 'Customer';
-        const lastname = nameParts.slice(1).join(' ') || '';
+        const firstname = order.shipping_address?.firstname || user?.name?.trim().split(/\s+/)[0] || 'Customer';
+        const lastname = order.shipping_address?.lastname || user?.name?.trim().split(/\s+/).slice(1).join(' ') || '';
 
         // Normalize phone number (exactly 10 digits)
-        let phone = user?.phone || '9999999999';
+        let phone = order.shipping_address?.phone || user?.phone || '9999999999';
         phone = phone.replace(/\D/g, '');
         if (phone.length === 12 && phone.startsWith('91')) {
             phone = phone.substring(2);
