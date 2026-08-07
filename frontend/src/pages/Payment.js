@@ -21,7 +21,7 @@ const Payment = () => {
   const [newAddress, setNewAddress] = useState({
     name: 'Home',
     fullName: '',
-    phone: '',
+    phone: '+91 ',
     address: '',
     landmark: '',
     city: '',
@@ -32,6 +32,7 @@ const Payment = () => {
   });
 
   const [showAddAddress, setShowAddAddress] = useState(false);
+  const [editingAddressId, setEditingAddressId] = useState(null);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -61,7 +62,7 @@ const Payment = () => {
           setNewAddress(prev => ({
             ...prev,
             fullName: user.name,
-            phone: user.phone || ''
+            phone: user.phone || '+91 '
           }));
         }
       } catch (err) {
@@ -161,25 +162,76 @@ const Payment = () => {
     return /^\d{6}$/.test(pincode);
   };
 
+  const handleCancel = () => {
+    setShowAddAddress(false);
+    setEditingAddressId(null);
+    setNewAddress({
+      name: 'Home',
+      fullName: '',
+      phone: '+91 ',
+      address: '',
+      landmark: '',
+      city: '',
+      state: '',
+      pincode: '',
+      type: 'home',
+      isDefault: false
+    });
+  };
+
   const handleAddAddress = async () => {
     if (!validatePincode(newAddress.pincode)) {
       showToastError('Please enter a valid 6-digit pincode');
       return;
     }
 
+    let phoneVal = newAddress.phone.trim();
+    // If it's a 10-digit local number, prepend +91
+    if (/^\d{10}$/.test(phoneVal)) {
+      phoneVal = `+91 ${phoneVal}`;
+    }
+
+    // Now validate the length of local part (without +91 prefix)
+    const cleanPhone = phoneVal.replace(/\D/g, '');
+    let cleanLocal = cleanPhone;
+    if (cleanPhone.startsWith('91')) {
+      cleanLocal = cleanPhone.substring(2);
+    }
+    if (cleanLocal.length < 10) {
+      showToastError('Please enter a valid 10-digit phone number');
+      return;
+    }
+
     const address = {
       ...newAddress,
-      id: Date.now()
+      phone: phoneVal,
+      id: editingAddressId || Date.now()
     };
 
-    setAddresses([...addresses, address]);
-    setSelectedAddress(address);
-    setShowAddAddress(false);
-    showToastSuccess('Address added successfully');
+    if (editingAddressId) {
+      const updatedAddresses = addresses.map(addr => {
+        if (addr.id === editingAddressId) {
+          return address;
+        }
+        return addr;
+      });
+      setAddresses(updatedAddresses);
+      if (selectedAddress?.id === editingAddressId) {
+        setSelectedAddress(address);
+      }
+      setEditingAddressId(null);
+      setShowAddAddress(false);
+      showToastSuccess('Address updated successfully');
+    } else {
+      setAddresses([...addresses, address]);
+      setSelectedAddress(address);
+      setShowAddAddress(false);
+      showToastSuccess('Address added successfully');
+    }
 
     try {
       await api.patch('/auth/profile', {
-        phone: newAddress.phone,
+        phone: phoneVal,
         address: newAddress.address,
         city: newAddress.city,
         state: newAddress.state,
@@ -304,12 +356,48 @@ const Payment = () => {
                         className={`address-card ${selectedAddress?.id === address.id ? 'selected' : ''}`}
                         onClick={() => setSelectedAddress(address)}
                       >
-                        <div className="address-header">
+                        <div className="address-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                           <div className="address-type">
                             <i className={`fas fa-${address.type === 'home' ? 'home' : 'briefcase'}`}></i>
                             <span>{address.name}</span>
                             {address.isDefault && <span className="default-badge">Default</span>}
                           </div>
+                          <button 
+                            className="btn-edit-address"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setEditingAddressId(address.id);
+                              setNewAddress({
+                                name: address.name || 'Home',
+                                fullName: address.fullName,
+                                phone: address.phone,
+                                address: address.address,
+                                landmark: address.landmark || '',
+                                city: address.city,
+                                state: address.state,
+                                pincode: address.pincode,
+                                type: address.type || 'home',
+                                isDefault: address.isDefault || false
+                              });
+                              setShowAddAddress(true);
+                            }}
+                            style={{
+                              background: 'none',
+                              border: 'none',
+                              color: '#2f4a67',
+                              cursor: 'pointer',
+                              fontSize: '0.875rem',
+                              fontWeight: '600',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '0.25rem',
+                              padding: '0.25rem 0.5rem',
+                              borderRadius: '0.375rem',
+                              transition: 'all 0.2s'
+                            }}
+                          >
+                            <i className="fas fa-edit"></i> Edit
+                          </button>
                         </div>
                         
                         <div className="address-details">
@@ -333,7 +421,7 @@ const Payment = () => {
 
                   {showAddAddress && (
                     <div className="add-address-form">
-                      <h3>Add New Address</h3>
+                      <h3>{editingAddressId ? 'Edit Address' : 'Add New Address'}</h3>
                       <div className="form-grid">
                         <div className="form-group">
                           <label>Full Name *</label>
@@ -416,12 +504,12 @@ const Payment = () => {
                       <div className="form-actions">
                         <button 
                           className="btn-secondary"
-                          onClick={() => setShowAddAddress(false)}
+                          onClick={handleCancel}
                         >
                           Cancel
                         </button>
                         <button className="btn-primary" onClick={handleAddAddress}>
-                          Add Address
+                          {editingAddressId ? 'Save Changes' : 'Add Address'}
                         </button>
                       </div>
                     </div>
