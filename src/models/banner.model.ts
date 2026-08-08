@@ -19,7 +19,7 @@ export interface IBanner extends Document {
 const bannerSchema = new Schema<IBanner>({
   imageUrl: { type: String, required: true, trim: true },
   imagePublicId: { type: String, required: true, trim: true, select: false },
-  title: { type: String, required: true, trim: true, maxlength: 120 },
+  title: { type: String, trim: true, maxlength: 120, default: '' },
   subtitle: { type: String, trim: true, maxlength: 300, default: '' },
   offerText: { type: String, trim: true, maxlength: 100, default: '' },
   buttonText: { type: String, trim: true, maxlength: 50, default: '' },

@@ -117,7 +117,7 @@ export default function BannerManagement() {
       <form onSubmit={save}><div className="banner-form-grid">
         <label className="wide">Banner image *<input type="file" accept="image/jpeg,image/png,image/webp" onChange={uploadImage} disabled={uploading} /><small>JPG, PNG or WebP, maximum 9 MB. Recommended 1600 × 650.</small></label>
         {form.imageUrl && <img className="banner-form-image wide" src={resolveImageUrl(form.imageUrl)} alt="Banner preview" />}
-        <label>Title *<input required maxLength="120" value={form.title} onChange={e => setForm({...form, title:e.target.value})} /></label>
+        <label>Title<input maxLength="120" value={form.title} onChange={e => setForm({...form, title:e.target.value})} /></label>
         <label>Offer text<input maxLength="100" value={form.offerText} onChange={e => setForm({...form, offerText:e.target.value})} /></label>
         <label className="wide">Subtitle / description<textarea maxLength="300" value={form.subtitle} onChange={e => setForm({...form, subtitle:e.target.value})} /></label>
         <label>Button text<input maxLength="50" value={form.buttonText} onChange={e => setForm({...form, buttonText:e.target.value})} /></label>

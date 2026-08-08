@@ -1,6 +1,7 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import HomepageBanner from '../components/HomepageBanner';
+import api from '../utils/api';
 import './HomeEpic.css';
 
 const galleryImages = [
@@ -59,37 +60,6 @@ const categories = [
   }
 ];
 
-const giveaways = [
-  {
-    name: 'Proud to be Navodayan',
-    description: 'Upload your favorite JNV memories',
-    prize: 'Free Alumni Kit',
-    image: 'https://images.unsplash.com/photo-1523580494863-6f3031224c94?w=600&h=400&fit=crop',
-    icon: 'fa-camera'
-  },
-  {
-    name: 'Best Batch Logo Contest',
-    description: 'Show off your batch\'s creativity',
-    prize: 'Custom T-shirts for entire batch',
-    image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=600&h=400&fit=crop',
-    icon: 'fa-palette'
-  },
-  {
-    name: 'Hostel Story Challenge',
-    description: 'Share your most memorable hostel moment',
-    prize: 'Exclusive Merchandise Bundle',
-    image: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=600&h=400&fit=crop',
-    icon: 'fa-book-open'
-  },
-  {
-    name: 'Alumni Photo Contest',
-    description: 'Share your best JNV reunion photos',
-    prize: 'Premium Hoodie',
-    image: 'https://images.unsplash.com/photo-1511765224389-37f0e77cf0eb?w=600&h=400&fit=crop',
-    icon: 'fa-camera-retro'
-  }
-];
-
 const alumniMeets = [
   {
     name: 'Annual Alumni Meet 2024',
@@ -126,45 +96,6 @@ const alumniMeets = [
     attendees: 350,
     image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&h=400&fit=crop',
     icon: 'fa-anchor'
-  }
-];
-
-const liveEvents = [
-  {
-    name: 'Career Counseling Session',
-    type: 'UPSC Guidance',
-    date: '2025-06-10',
-    time: '6:00 PM',
-    platform: 'Zoom',
-    image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=600&h=400&fit=crop',
-    icon: 'fa-chalkboard-teacher'
-  },
-  {
-    name: 'Alumni Success Stories',
-    type: 'Startup Founder Talks',
-    date: '2025-06-18',
-    time: '7:00 PM',
-    platform: 'Google Meet',
-    image: 'https://images.unsplash.com/photo-1543269865-cbf427effbad?w=600&h=400&fit=crop',
-    icon: 'fa-star'
-  },
-  {
-    name: 'Technical Workshop',
-    type: 'Web Development',
-    date: '2025-06-25',
-    time: '5:00 PM',
-    platform: 'YouTube Live',
-    image: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600&h=400&fit=crop',
-    icon: 'fa-laptop-code'
-  },
-  {
-    name: 'Mentorship Program',
-    type: 'Career Guidance',
-    date: '2025-07-02',
-    time: '6:30 PM',
-    platform: 'Zoom',
-    image: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=600&h=400&fit=crop',
-    icon: 'fa-handshake'
   }
 ];
 
@@ -233,6 +164,32 @@ const regionsData = [
 const HomeEpic = () => {
   const galleryRef = useRef(null);
   const regionsRef = useRef(null);
+  const [giveaways, setGiveaways] = useState([]);
+  const [giveawaysLoading, setGiveawaysLoading] = useState(true);
+  const [giveawaysError, setGiveawaysError] = useState(false);
+
+  useEffect(() => {
+    const fetchGiveaways = async () => {
+      try {
+        const result = await api.get('/contests');
+        if (result.success && Array.isArray(result.data)) {
+          setGiveaways(result.data);
+          setGiveawaysError(false);
+        } else {
+          setGiveaways([]);
+          setGiveawaysError(true);
+        }
+      } catch (err) {
+        console.error('Error fetching giveaways:', err);
+        setGiveaways([]);
+        setGiveawaysError(true);
+      } finally {
+        setGiveawaysLoading(false);
+      }
+    };
+
+    fetchGiveaways();
+  }, []);
 
   const scrollGallery = (direction) => {
     if (galleryRef.current) {
@@ -319,28 +276,51 @@ const HomeEpic = () => {
             <h2 className="section-title">Giveaways & <span className="highlight">Contests</span></h2>
           </div>
           
-          <div className="giveaways-grid">
-            {giveaways.map((giveaway, index) => (
-              <div key={index} className="giveaway-card" style={{ '--delay': `${index * 0.12}s` }}>
-                <div className="giveaway-image-container">
-                  <img src={giveaway.image} alt={giveaway.name} />
-                  <div className="giveaway-icon-badge">
-                    <i className={`fas ${giveaway.icon}`}></i>
+          {giveawaysLoading ? (
+            <div className="giveaways-state" aria-live="polite">
+              <div className="spinner"></div>
+              <h3>Loading Giveaways...</h3>
+              <p>Fresh contests are being prepared for you.</p>
+            </div>
+          ) : giveaways.length === 0 ? (
+            <div className="giveaways-state" aria-live="polite">
+              <i className="fas fa-gift"></i>
+              <h3>Coming Soon</h3>
+              <p>{giveawaysError ? 'We could not load active contests right now. Please check back soon.' : 'New giveaways and contests will appear here soon.'}</p>
+            </div>
+          ) : (
+            <div className="giveaways-grid">
+              {giveaways.map((giveaway, index) => (
+                <div key={giveaway._id} className="giveaway-card" style={{ '--delay': `${index * 0.12}s` }}>
+                  <div className="giveaway-image-container">
+                    {giveaway.bannerImage ? (
+                      <img src={giveaway.bannerImage} alt={giveaway.title} />
+                    ) : (
+                      <div className="giveaway-image-placeholder">
+                        <i className="fas fa-gift"></i>
+                      </div>
+                    )}
+                    <div className="giveaway-icon-badge">
+                      <i className="fas fa-trophy"></i>
+                    </div>
+                  </div>
+                  <div className="giveaway-details">
+                    <h3>{giveaway.title}</h3>
+                    <p>{giveaway.description}</p>
+                    <div className="giveaway-meta">
+                      <span>
+                        <i className="fas fa-calendar-alt"></i>
+                        Ends: {new Date(giveaway.endDate).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
+                      </span>
+                    </div>
+                    <Link to={`/contests/${giveaway._id}`} className="btn btn-primary btn-small">
+                      Join Now
+                    </Link>
                   </div>
                 </div>
-                <div className="giveaway-details">
-                  <h3>{giveaway.name}</h3>
-                  <p>{giveaway.description}</p>
-                  <div className="giveaway-meta">
-                    <span><i className="fas fa-gift"></i> {giveaway.prize}</span>
-                  </div>
-                  <Link to="/events" className="btn btn-primary btn-small">
-                    Join Now
-                  </Link>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -382,41 +362,6 @@ const HomeEpic = () => {
               View All Meets
               <i className="fas fa-arrow-right"></i>
             </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Live Online Events Section */}
-      <section className="live-events-section">
-        <div className="container">
-          <div className="section-header">
-            <span className="section-tag">Live</span>
-            <h2 className="section-title">Live Online <span className="highlight">Events</span></h2>
-          </div>
-          
-          <div className="live-events-grid">
-            {liveEvents.map((event, index) => (
-              <div key={index} className="live-event-card" style={{ '--delay': `${index * 0.12}s` }}>
-                <div className="live-image-container">
-                  <img src={event.image} alt={event.name} />
-                  <div className="live-icon-badge">
-                    <i className={`fas ${event.icon}`}></i>
-                  </div>
-                </div>
-                <div className="live-details">
-                  <h3>{event.name}</h3>
-                  <div className="live-meta">
-                    <span><i className="fas fa-tag"></i> {event.type}</span>
-                    <span><i className="fas fa-calendar"></i> {event.date}</span>
-                    <span><i className="fas fa-clock"></i> {event.time}</span>
-                    <span><i className="fas fa-video"></i> {event.platform}</span>
-                  </div>
-                  <Link to="/events" className="btn btn-primary btn-small">
-                    Join
-                  </Link>
-                </div>
-              </div>
-            ))}
           </div>
         </div>
       </section>
@@ -470,15 +415,23 @@ const HomeEpic = () => {
             <h2 className="section-title">Past Event <span className="highlight">Gallery</span></h2>
           </div>
           
-          <div className="gallery-float-wrapper">
-            <div className="gallery-float-track">
-              {/* Duplicate for seamless loop */}
-              {[...galleryImages, ...galleryImages].map((image, index) => (
-                <div key={index} className="gallery-float-item">
-                  <img src={image} alt={`Gallery ${(index % galleryImages.length) + 1}`} />
-                </div>
-              ))}
+          <div className="gallery-nav-wrapper">
+            <button className="scroll-btn gallery-scroll-btn gallery-scroll-left" onClick={() => scrollGallery('left')} aria-label="Previous gallery images">
+              <i className="fas fa-chevron-left"></i>
+            </button>
+            <div className="gallery-float-wrapper" ref={galleryRef}>
+              <div className="gallery-float-track">
+                {/* Duplicate for seamless loop */}
+                {[...galleryImages, ...galleryImages].map((image, index) => (
+                  <div key={index} className="gallery-float-item">
+                    <img src={image} alt={`Gallery ${(index % galleryImages.length) + 1}`} />
+                  </div>
+                ))}
+              </div>
             </div>
+            <button className="scroll-btn gallery-scroll-btn gallery-scroll-right" onClick={() => scrollGallery('right')} aria-label="Next gallery images">
+              <i className="fas fa-chevron-right"></i>
+            </button>
           </div>
         </div>
       </section>

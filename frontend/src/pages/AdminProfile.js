@@ -304,7 +304,7 @@ const AdminProfile = () => {
         });
       } else if (type === 'contest') {
         setFormData({
-          title: '', description: '', rules: '', startDate: new Date().toISOString().split('T')[0], endDate: new Date(Date.now() + 7*24*60*60*1000).toISOString().split('T')[0], bannerImage: '', googleFormLink: '', isActive: true
+          title: '', description: '', rules: '', startDate: new Date().toISOString().split('T')[0], endDate: new Date(Date.now() + 7*24*60*60*1000).toISOString().split('T')[0], bannerImage: '', googleFormLink: '', isActive: true, isEnabled: true
         });
       } else if (type === 'winner') {
         setFormData({
@@ -606,6 +606,24 @@ const AdminProfile = () => {
     } finally {
       setIsUploading(false);
       e.target.value = null; // Reset input so same file can be selected again
+    }
+  };
+
+  const toggleContestEnabled = async (contest) => {
+    try {
+      const result = await api.patch(`/contests/${contest._id}`, {
+        isEnabled: contest.isEnabled === false
+      });
+
+      if (result.success) {
+        setContests(prev => prev.map(item => item._id === contest._id ? result.data : item));
+        success(result.data.isEnabled === false ? 'Contest disabled' : 'Contest enabled');
+      } else {
+        error(result.message || 'Failed to update contest');
+      }
+    } catch (err) {
+      console.error('Contest enable toggle error:', err);
+      error('An error occurred while updating contest');
     }
   };
 
@@ -1968,6 +1986,7 @@ const AdminProfile = () => {
                         <tr>
                           <th>Title</th>
                           <th>Status</th>
+                          <th>Visibility</th>
                           <th>Start Date</th>
                           <th>End Date</th>
                           <th>Actions</th>
@@ -1978,9 +1997,13 @@ const AdminProfile = () => {
                           <tr key={contest._id}>
                             <td><strong>{contest.title}</strong></td>
                             <td>{contest.isActive ? <span className="status-badge success">Active</span> : <span className="status-badge pending">Inactive</span>}</td>
+                            <td>{contest.isEnabled === false ? <span className="status-badge pending">Disabled</span> : <span className="status-badge success">Enabled</span>}</td>
                             <td>{new Date(contest.startDate).toLocaleDateString()}</td>
                             <td>{new Date(contest.endDate).toLocaleDateString()}</td>
                             <td>
+                              <button className="action-icon info" onClick={() => toggleContestEnabled(contest)} title={contest.isEnabled === false ? 'Enable Contest' : 'Disable Contest'}>
+                                <i className={`fas ${contest.isEnabled === false ? 'fa-toggle-off' : 'fa-toggle-on'}`}></i>
+                              </button>
                               <button className="action-icon edit" onClick={() => handleOpenModal('contest', contest)}>
                                 <i className="fas fa-edit"></i>
                               </button>

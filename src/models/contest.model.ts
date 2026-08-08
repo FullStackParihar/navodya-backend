@@ -9,6 +9,7 @@ export interface IContest extends Document {
   bannerImage: string;
   googleFormLink?: string;
   isActive: boolean;
+  isEnabled: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -44,6 +45,10 @@ const contestSchema = new Schema({
     default: ''
   },
   isActive: {
+    type: Boolean,
+    default: true
+  },
+  isEnabled: {
     type: Boolean,
     default: true
   }

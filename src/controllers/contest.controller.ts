@@ -8,7 +8,7 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 // Get all contests (Admin sees all, Public sees active only)
 export const getContests = asyncHandler(async (req: Request, res: Response) => {
     const { isAdmin } = req.query;
-    const filter = isAdmin === 'true' ? {} : { isActive: true };
+    const filter = isAdmin === 'true' ? {} : { isActive: true, isEnabled: { $ne: false } };
     const contests = await Contest.find(filter).sort({ createdAt: -1 });
     res.status(200).json(new ApiResponse(200, contests, 'Contests fetched successfully'));
 });
@@ -53,7 +53,7 @@ export const participateInContest = asyncHandler(async (req: Request, res: Respo
     const userId = (req as any).user._id;
 
     const contest = await Contest.findById(contestId);
-    if (!contest || !contest.isActive) {
+    if (!contest || !contest.isActive || contest.isEnabled === false) {
         return res.status(400).json(new ApiResponse(400, null, 'Contest is not active or does not exist'));
     }
 

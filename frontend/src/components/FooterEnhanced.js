@@ -67,8 +67,7 @@ const FooterEnhanced = () => {
             {/* Brand Section */}
             <div className="footer-brand footer-animate">
               <div className="footer-brand-mark">
-                <img src="/logo2.png" alt="Navodaya Trendz" />
-                <h3>Navodaya<span>Trendz</span></h3>
+                <img src="/logo.png" alt="Navodaya Trendz" />
               </div>
               <p>Made by Navodayans, for Navodayans. Your trusted partner for JNV alumni merchandise.</p>
               <div className="footer-social">
@@ -1055,7 +1054,7 @@ const FooterEnhanced = () => {
 
         .footer-brand-mark h3 span {
           display: block;
-          color: #cbd5e1;
+          color: #ffffff;
         }
 
         .footer-brand p {
