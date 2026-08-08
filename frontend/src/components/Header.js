@@ -245,14 +245,6 @@ const Header = () => {
                 </Link>
               </li>
               <li>
-                <Link
-                  to="/events"
-                  className={location.pathname === '/events' ? 'active' : ''}
-                >
-                  Events
-                </Link>
-              </li>
-              <li>
                 <Link 
                   to="/winners"
                   className={location.pathname === '/winners' ? 'active' : ''}
@@ -316,7 +308,6 @@ const Header = () => {
         <Link to="/accessories" onClick={closeMobileMenu}>Accessories</Link>
         <Link to="/alumni-kits" onClick={closeMobileMenu}>Alumni Kits</Link>
         <Link to="/contests" onClick={closeMobileMenu}>Giveaway</Link>
-        <Link to="/events" onClick={closeMobileMenu}>Events</Link>
         <Link to="/winners" onClick={closeMobileMenu}>Winners</Link>
         <Link to="/today-deals" onClick={closeMobileMenu}>Today's Deals</Link>
         <Link to="/new-arrivals" onClick={closeMobileMenu}>New Arrivals</Link>
@@ -347,9 +338,6 @@ const Header = () => {
             </li>
             <li>
               <Link to="/contests" onClick={closeMobileMenu}>Giveaway</Link>
-            </li>
-            <li>
-              <Link to="/events" onClick={closeMobileMenu}>Events</Link>
             </li>
             <li>
               <Link to="/winners" onClick={closeMobileMenu}>Winners</Link>

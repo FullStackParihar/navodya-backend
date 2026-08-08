@@ -2602,3 +2602,286 @@ body.mobile-drawer-open {
         transform: translateY(-43px);
     }
 }
+
+/* =====================================================
+   Shared Responsive Hardening
+   UI-only safeguards for mobile/tablet overflow and scaling.
+   ===================================================== */
+
+html,
+body,
+#root {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+img,
+video,
+canvas,
+svg {
+    max-width: 100%;
+}
+
+input,
+select,
+textarea,
+button {
+    max-width: 100%;
+}
+
+.public-app,
+.public-main,
+.public-app section,
+.public-app .container {
+    max-width: 100%;
+}
+
+.public-app .container {
+    width: min(100%, 1280px);
+}
+
+.admin-table-container,
+.table-container,
+.orders-table-container,
+.transactions-table-container {
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.admin-table,
+table {
+    max-width: 100%;
+}
+
+@media (max-width: 1024px) {
+    .public-app .container,
+    .header .container {
+        padding-left: 18px;
+        padding-right: 18px;
+    }
+
+    .public-app [class*="grid"] {
+        min-width: 0;
+    }
+
+    .public-app .products-grid,
+    .public-app .product-grid,
+    .public-app .wishlist-items-enhanced,
+    .public-app .recently-grid,
+    .public-app .winners-grid,
+    .public-app .contests-grid,
+    .public-app .events-grid,
+    .public-app .live-events-grid,
+    .public-app .kits-grid,
+    .public-app .accessories-grid {
+        grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr)) !important;
+    }
+
+    .public-app .product-card,
+    .public-app .wishlist-item-enhanced,
+    .public-app .winner-card,
+    .public-app .contest-card,
+    .public-app .event-card,
+    .public-app .live-event-card,
+    .public-app .kit-card,
+    .public-app .accessory-card {
+        min-width: 0;
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .public-main {
+        min-width: 0;
+    }
+
+    .public-app .container,
+    .header .container {
+        padding-left: 14px;
+        padding-right: 14px;
+    }
+
+    .public-app section {
+        overflow-x: hidden;
+    }
+
+    .public-app .page-header,
+    .public-app .section-header,
+    .public-app .products-header-enhanced,
+    .public-app .wishlist-header-enhanced,
+    .public-app .cart-header,
+    .public-app .recently-header,
+    .public-app .orders-header,
+    .public-app .addresses-header,
+    .public-app .notifications-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+        text-align: left;
+    }
+
+    .public-app .section-header {
+        margin-bottom: 30px;
+    }
+
+    .public-app .page-header h1,
+    .public-app .hero-title,
+    .public-app .section-title,
+    .public-app h1 {
+        overflow-wrap: anywhere;
+        text-wrap: balance;
+    }
+
+    .public-app .page-header p,
+    .public-app .hero-description,
+    .public-app p {
+        overflow-wrap: anywhere;
+    }
+
+    .public-app .products-grid,
+    .public-app .product-grid,
+    .public-app .wishlist-items-enhanced,
+    .public-app .recently-grid,
+    .public-app .winners-grid,
+    .public-app .contests-grid,
+    .public-app .events-grid,
+    .public-app .live-events-grid,
+    .public-app .kits-grid,
+    .public-app .accessories-grid {
+        grid-template-columns: repeat(auto-fit, minmax(min(190px, 100%), 1fr)) !important;
+        gap: 16px !important;
+    }
+
+    .public-app .filters-layout,
+    .public-app .products-layout,
+    .public-app .profile-layout,
+    .public-app .cart-layout-enhanced,
+    .public-app .checkout-layout,
+    .public-app .product-detail-layout,
+    .public-app .product-detail-content,
+    .public-app .customize-layout,
+    .public-app .bulk-order-layout {
+        grid-template-columns: 1fr !important;
+    }
+
+    .public-app .filters-sidebar,
+    .public-app .sidebar,
+    .public-app .profile-sidebar,
+    .public-app .order-summary-enhanced {
+        position: static !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    .public-app .btn,
+    .public-app .btn-primary,
+    .public-app .btn-secondary,
+    .public-app .add-to-cart,
+    .public-app .add-to-cart-btn-enhanced,
+    .public-app .checkout-btn,
+    .public-app .save-btn,
+    .public-app .submit-btn {
+        white-space: normal;
+        text-align: center;
+    }
+
+    .public-app form,
+    .public-app .form-grid,
+    .public-app .address-form,
+    .public-app .checkout-form,
+    .public-app .banner-form-grid {
+        max-width: 100%;
+    }
+
+    .public-app .form-grid,
+    .public-app .address-form,
+    .public-app .checkout-form {
+        grid-template-columns: 1fr !important;
+    }
+
+    .public-app input,
+    .public-app select,
+    .public-app textarea {
+        min-width: 0;
+        width: 100%;
+    }
+
+    .modal-content,
+    .quickview-modal,
+    .contest-modal-content,
+    .admin-modal,
+    .avatar-modal,
+    .quick-checkout-modal {
+        width: min(94vw, 720px) !important;
+        max-width: 94vw !important;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .public-app .container,
+    .header .container {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    .public-app .products-grid,
+    .public-app .product-grid,
+    .public-app .wishlist-items-enhanced,
+    .public-app .recently-grid,
+    .public-app .winners-grid,
+    .public-app .contests-grid,
+    .public-app .kits-grid,
+    .public-app .accessories-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .public-app .product-image,
+    .public-app .item-image-enhanced,
+    .public-app .contest-image-wrapper,
+    .public-app .winner-contest-banner {
+        max-width: 100%;
+    }
+
+    .public-app .empty-cart-actions,
+    .public-app .empty-wishlist-actions,
+    .public-app .hero-actions,
+    .public-app .modal-actions,
+    .public-app .banner-modal-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .public-app .empty-cart-actions > *,
+    .public-app .empty-wishlist-actions > *,
+    .public-app .hero-actions > *,
+    .public-app .modal-actions > *,
+    .public-app .banner-modal-actions > * {
+        width: 100%;
+    }
+}
+
+@media (max-width: 360px) {
+    .public-app .container,
+    .header .container {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .public-app .btn,
+    .public-app .btn-primary,
+    .public-app .btn-secondary {
+        padding-left: 14px;
+        padding-right: 14px;
+    }
+
+    .public-app .product-info,
+    .public-app .item-details-enhanced,
+    .public-app .cart-summary {
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+    }
+}

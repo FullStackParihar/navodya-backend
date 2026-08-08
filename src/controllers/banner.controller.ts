@@ -30,7 +30,7 @@ const bannerInput = (body: Record<string, unknown>, creating = false) => {
   const data: Record<string, unknown> = {};
   const imageUrl = text(body.imageUrl, 1000, 'Image URL', creating);
   const imagePublicId = text(body.imagePublicId, 500, 'Image public ID', creating);
-  const title = text(body.title, 120, 'Title', creating);
+  const title = text(body.title, 120, 'Title');
   const subtitle = text(body.subtitle, 300, 'Subtitle');
   const offerText = text(body.offerText, 100, 'Offer text');
   const buttonText = text(body.buttonText, 50, 'Button text');
