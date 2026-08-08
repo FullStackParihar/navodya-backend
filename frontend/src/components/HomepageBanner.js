@@ -13,13 +13,14 @@ export default function HomepageBanner() {
   const [transitionEnabled, setTransitionEnabled] = useState(true);
   const [transitioning, setTransitioning] = useState(false);
   const [timerReset, setTimerReset] = useState(0);
+  const [failedImages, setFailedImages] = useState({});
   const touchStart = useRef(null);
   const resetFrame = useRef(null);
 
   useEffect(() => {
     let active = true;
     api.get('/banners/active').then(result => {
-      if (active && result.success && Array.isArray(result.data)) setBanners(result.data);
+      if (active && result.success && Array.isArray(result.data)) setBanners(result.data.filter(banner => banner.imageUrl));
     }).catch(() => {});
     return () => {
       active = false;
@@ -27,20 +28,36 @@ export default function HomepageBanner() {
     };
   }, []);
 
-  const activeIndex = banners.length ? (position - 1 + banners.length) % banners.length : 0;
+  const visibleBanners = banners.filter(banner => !failedImages[banner._id]);
+  const activeIndex = visibleBanners.length ? (position - 1 + visibleBanners.length) % visibleBanners.length : 0;
 
   useEffect(() => {
-    if (banners.length < 2) return undefined;
+    if (visibleBanners.length < 2) return undefined;
     const timer = window.setTimeout(() => {
       setTransitionEnabled(true);
       setTransitioning(true);
       setPosition(current => current + 1);
     }, 5000);
     return () => window.clearTimeout(timer);
-  }, [banners.length, activeIndex, timerReset]);
+  }, [visibleBanners.length, activeIndex, timerReset]);
+
+  useEffect(() => {
+    setTransitionEnabled(false);
+    setTransitioning(false);
+    setPosition(visibleBanners.length > 1 ? 1 : 0);
+    resetFrame.current = window.requestAnimationFrame(() => {
+      resetFrame.current = window.requestAnimationFrame(() => setTransitionEnabled(true));
+    });
+  }, [visibleBanners.length]);
+
+  useEffect(() => {
+    if (!transitioning) return undefined;
+    const fallback = window.setTimeout(() => finishTransition(), 900);
+    return () => window.clearTimeout(fallback);
+  });
 
   const move = direction => {
-    if (banners.length < 2 || transitioning) return;
+    if (visibleBanners.length < 2 || transitioning) return;
     setTransitionEnabled(true);
     setTransitioning(true);
     setPosition(current => current + direction);
@@ -49,9 +66,9 @@ export default function HomepageBanner() {
 
   const finishTransition = () => {
     setTransitioning(false);
-    if (position !== 0 && position !== banners.length + 1) return;
+    if (position !== 0 && position !== visibleBanners.length + 1) return;
     setTransitionEnabled(false);
-    setPosition(position === 0 ? banners.length : 1);
+    setPosition(position === 0 ? visibleBanners.length : 1);
     resetFrame.current = window.requestAnimationFrame(() => {
       resetFrame.current = window.requestAnimationFrame(() => setTransitionEnabled(true));
     });
@@ -65,13 +82,13 @@ export default function HomepageBanner() {
     setTimerReset(current => current + 1);
   };
   const swipeEnd = event => {
-    if (touchStart.current === null || banners.length < 2) return;
+    if (touchStart.current === null || visibleBanners.length < 2) return;
     const distance = event.changedTouches[0].clientX - touchStart.current;
     if (Math.abs(distance) > 45) move(distance > 0 ? -1 : 1);
     touchStart.current = null;
   };
 
-  if (!banners.length) return <section className="hero-epic">
+  if (!visibleBanners.length) return <section className="hero-epic">
     <div className="hero-bg"><div className="hero-gradient" /><div className="hero-shapes"><div className="shape shape-1" /><div className="shape shape-2" /><div className="shape shape-3" /></div></div>
     <div className="container"><div className="hero-content"><div className="hero-left">
       <div className="hero-badge"><i className="fas fa-star" /> #1 JNV Merchandise</div>
@@ -83,12 +100,12 @@ export default function HomepageBanner() {
     <div className="scroll-hint"><span>Scroll to explore</span><i className="fas fa-chevron-down" /></div>
   </section>;
 
-  const slides = banners.length > 1 ? [banners[banners.length - 1], ...banners, banners[0]] : banners;
+  const slides = visibleBanners.length > 1 ? [visibleBanners[visibleBanners.length - 1], ...visibleBanners, visibleBanners[0]] : visibleBanners;
 
   return <section className="dynamic-banner" aria-roledescription="carousel" aria-label="Homepage offers" onTouchStart={e => { touchStart.current = e.touches[0].clientX; }} onTouchEnd={swipeEnd}>
-    <div className="dynamic-banner-track" onTransitionEnd={finishTransition} style={{transform:`translate3d(-${(banners.length > 1 ? position : 0) * 100}%, 0, 0)`, transition: transitionEnabled ? undefined : 'none'}}>
-      {slides.map((banner, itemIndex) => <article className="dynamic-banner-slide" key={`${banner._id}-${itemIndex}`} aria-hidden={banners.length > 1 ? itemIndex !== position : false}>
-        <img src={resolveImageUrl(banner.imageUrl)} alt={banner.title || 'Homepage offer'} width="1600" height="650" />
+    <div className="dynamic-banner-track" onTransitionEnd={finishTransition} style={{transform:`translate3d(-${(visibleBanners.length > 1 ? position : 0) * 100}%, 0, 0)`, transition: transitionEnabled ? undefined : 'none'}}>
+      {slides.map((banner, itemIndex) => <article className="dynamic-banner-slide" key={`${banner._id}-${itemIndex}`} aria-hidden={visibleBanners.length > 1 ? itemIndex !== position : false}>
+        <img src={resolveImageUrl(banner.imageUrl)} alt={banner.title || 'Homepage offer'} width="1600" height="650" onError={() => setFailedImages(current => ({ ...current, [banner._id]: true }))} />
         <div className="dynamic-banner-shade" /><div className="dynamic-banner-content">
           {banner.offerText && <span className="dynamic-banner-offer">{banner.offerText}</span>}
           <h1>{banner.title}</h1>{banner.subtitle && <p>{banner.subtitle}</p>}
@@ -96,6 +113,6 @@ export default function HomepageBanner() {
         </div>
       </article>)}
     </div>
-    {banners.length > 1 && <><button className="dynamic-banner-control prev" onClick={() => move(-1)} aria-label="Previous banner"><i className="fas fa-chevron-left" /></button><button className="dynamic-banner-control next" onClick={() => move(1)} aria-label="Next banner"><i className="fas fa-chevron-right" /></button><div className="dynamic-banner-dots" role="tablist" aria-label="Choose banner">{banners.map((banner, dot) => <button key={banner._id} className={dot === activeIndex ? 'active' : ''} onClick={() => selectBanner(dot)} aria-label={`Show banner ${dot + 1}`} aria-current={dot === activeIndex ? 'true' : undefined} />)}</div></>}
+    {visibleBanners.length > 1 && <><button className="dynamic-banner-control prev" onClick={() => move(-1)} aria-label="Previous banner"><i className="fas fa-chevron-left" /></button><button className="dynamic-banner-control next" onClick={() => move(1)} aria-label="Next banner"><i className="fas fa-chevron-right" /></button><div className="dynamic-banner-dots" role="tablist" aria-label="Choose banner">{visibleBanners.map((banner, dot) => <button key={banner._id} className={dot === activeIndex ? 'active' : ''} onClick={() => selectBanner(dot)} aria-label={`Show banner ${dot + 1}`} aria-current={dot === activeIndex ? 'true' : undefined} />)}</div></>}
   </section>;
 }
