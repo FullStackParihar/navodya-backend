@@ -15,6 +15,9 @@ import bannerRoutes from './banner.routes.js';
 import paymentRoutes from './payment.routes.js';
 import shipwayRoutes from './shipway.routes.js';
 
+import eventRoutes from './event.routes.js';
+import alumniMeetRoutes from './alumniMeet.routes.js';
+
 const router = Router();
 
 router.use('/auth', authRoutes);
@@ -32,6 +35,8 @@ router.use('/contests', contestRoutes);
 router.use('/winners', winnerRoutes);
 router.use('/payments', paymentRoutes);
 router.use('/shipway', shipwayRoutes);
+router.use('/events', eventRoutes);
+router.use('/alumni-meets', alumniMeetRoutes);
 
 router.get('/health', (req, res) => {
   res.status(200).json({

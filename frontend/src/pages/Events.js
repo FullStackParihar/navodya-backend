@@ -1,154 +1,8 @@
-import React, { useRef } from 'react';
+import React, { useState, useEffect } from 'react';
+import api from '../utils/api';
 import './Events.css';
 
-const categories = [
-  {
-    name: 'T-Shirts',
-    description: 'Premium Cotton',
-    image: '/t.png',
-    link: '/tshirts',
-    icon: 'fa-shirt-long-sleeve'
-  },
-  {
-    name: 'Hoodies',
-    description: 'Cozy & Warm',
-    image: '/ho.png',
-    link: '/hoodies',
-    icon: 'fa-shirt'
-  },
-  {
-    name: 'Accessories',
-    description: 'Complete Style',
-    image: '/a.png',
-    link: '/accessories',
-    icon: 'fa-hat-cowboy'
-  },
-  {
-    name: "Today's Deals",
-    description: 'Limited Offers',
-    image: 'https://img.magnific.com/free-vector/comic-style-deals-background-purple-yellow-color_1017-63309.jpg?semt=ais_hybrid&w=740&q=80',
-    link: '/today-deals',
-    icon: 'fa-percent'
-  }
-];
 
-const giveaways = [
-  {
-    name: 'Proud to be Navodayan',
-    description: 'Upload your favorite JNV memories',
-    prize: 'Free Alumni Kit',
-    image: 'https://images.unsplash.com/photo-1523580494863-6f3031224c94?w=600&h=400&fit=crop',
-    icon: 'fa-camera'
-  },
-  {
-    name: 'Best Batch Logo Contest',
-    description: 'Show off your batch\'s creativity',
-    prize: 'Custom T-shirts for entire batch',
-    image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=600&h=400&fit=crop',
-    icon: 'fa-palette'
-  },
-  {
-    name: 'Hostel Story Challenge',
-    description: 'Share your most memorable hostel moment',
-    prize: 'Exclusive Merchandise Bundle',
-    image: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=600&h=400&fit=crop',
-    icon: 'fa-book-open'
-  }
-];
-
-const alumniMeets = [
-  {
-    name: 'Annual Alumni Meet 2024',
-    jnv: 'JNV Main Campus',
-    batch: '2000-2024',
-    location: 'JNV Campus',
-    attendees: 450,
-    image: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=600&h=400&fit=crop',
-    icon: 'fa-graduation-cap'
-  },
-  {
-    name: 'Silver Jubilee Reunion',
-    jnv: 'JNV Delhi',
-    batch: '2000 Batch',
-    location: 'Hotel Grand Palace',
-    attendees: 320,
-    image: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600&h=400&fit=crop',
-    icon: 'fa-users'
-  },
-  {
-    name: 'JNV Bangalore Reunion',
-    jnv: 'JNV Bangalore',
-    batch: '2010-2014',
-    location: 'IT Park Bangalore',
-    attendees: 280,
-    image: 'https://www.cvent.com/sites/default/files/image/2023-10/Event_Experience-Cvent_CONNECT_2023.jpg',
-    icon: 'fa-building'
-  },
-  {
-    name: 'Mumbai Alumni Meet',
-    jnv: 'JNV Mumbai',
-    batch: '2005-2009',
-    location: 'Marine Drive',
-    attendees: 350,
-    image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&h=400&fit=crop',
-    icon: 'fa-anchor'
-  }
-];
-
-const liveEvents = [
-  {
-    name: 'Career Guidance Session',
-    type: 'Career Counseling',
-    date: '2025-06-10',
-    time: '6:00 PM IST',
-    platform: 'Zoom',
-    image: 'https://images.unsplash.com/photo-1556761175-b413da4baf72?w=600&h=400&fit=crop',
-    icon: 'fa-chalkboard-teacher'
-  },
-  {
-    name: 'UPSC Preparation Workshop',
-    type: 'Exam Guidance',
-    date: '2025-06-18',
-    time: '5:00 PM IST',
-    platform: 'Google Meet',
-    image: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=600&h=400&fit=crop',
-    icon: 'fa-graduation-cap'
-  },
-  {
-    name: 'Alumni Success Stories',
-    type: 'Inspiration Talk',
-    date: '2025-06-25',
-    time: '7:00 PM IST',
-    platform: 'YouTube Live',
-    image: 'https://images.unsplash.com/photo-1553028826-f4804a6dba3b?w=600&h=400&fit=crop',
-    icon: 'fa-star'
-  }
-];
-
-
-
-const pastEvents = [
-  {
-    name: 'Grand Alumni Meet 2024',
-    image: 'https://images.unsplash.com/photo-1511765224389-37f0e77cf0eb?w=600&h=400&fit=crop',
-    icon: 'fa-glass-cheers'
-  },
-  {
-    name: 'JNV Foundation Day',
-    image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&h=400&fit=crop',
-    icon: 'fa-flag'
-  },
-  {
-    name: 'Summer Sports Fest',
-    image: 'https://images.unsplash.com/photo-1528605248640-18d5526e4802?w=600&h=400&fit=crop',
-    icon: 'fa-futbol'
-  },
-  {
-    name: 'Cultural Night 2024',
-    image: 'https://images.unsplash.com/photo-1553028826-f4804a6dba3b?w=600&h=400&fit=crop',
-    icon: 'fa-music'
-  }
-];
 
 const galleryImages = [
   '/g1.jpeg',
@@ -167,22 +21,50 @@ const galleryImages = [
   '/g14.jpeg',
   '/g15.jpeg',
   '/g16.jpeg'
-  
-
 ];
 
 const Events = () => {
-  const galleryRef = useRef(null);
+  const [giveaways, setGiveaways] = useState([]);
+  const [alumniMeetsList, setAlumniMeetsList] = useState([]);
+  const [liveEventsList, setLiveEventsList] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const scrollGallery = (direction) => {
-    if (galleryRef.current) {
-      const scrollAmount = 300;
-      galleryRef.current.scrollBy({
-        left: direction === 'left' ? -scrollAmount : scrollAmount,
-        behavior: 'smooth'
-      });
-    }
-  };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const [contestsRes, meetsRes, eventsRes] = await Promise.all([
+          api.get('/contests'),
+          api.get('/alumni-meets'),
+          api.get('/events')
+        ]);
+
+        if (contestsRes.success) {
+          setGiveaways(contestsRes.data);
+        }
+        if (meetsRes.success) {
+          setAlumniMeetsList(meetsRes.data);
+        }
+        if (eventsRes.success) {
+          setLiveEventsList(eventsRes.data);
+        }
+      } catch (err) {
+        console.error('Error fetching events data:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="contests-loader" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '400px' }}>
+        <div className="spinner" style={{ width: '40px', height: '40px', border: '4px solid #f3f3f3', borderTop: '4px solid #3498db', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+        <p style={{ marginTop: '15px', color: '#666' }}>Loading Events & Meets...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="events-page">
@@ -193,33 +75,40 @@ const Events = () => {
             <span className="section-tag">Win</span>
             <h2 className="section-title">Giveaways & <span className="highlight">Contests</span></h2>
           </div>
-          <div className="events-giveaways-grid">
-            {giveaways.map((item, index) => (
-              <div key={index} className="event-giveaway-card" style={{ '--delay': `${index * 0.12}s` }}>
-                <div className="giveaway-image-container">
-                  <img src={item.image} alt={item.name} />
-                  <div className="giveaway-icon-badge">
-                    <i className={`fas ${item.icon}`}></i>
+          {giveaways.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '40px', color: '#888' }}>
+              <i className="fas fa-gift" style={{ fontSize: '32px', marginBottom: '10px' }}></i>
+              <p>No active giveaways or contests at the moment. Check back soon!</p>
+            </div>
+          ) : (
+            <div className="events-giveaways-grid">
+              {giveaways.map((item, index) => (
+                <div key={item._id || index} className="event-giveaway-card" style={{ '--delay': `${index * 0.12}s` }}>
+                  <div className="giveaway-image-container">
+                    <img src={item.bannerImage || 'https://images.unsplash.com/photo-1523580494863-6f3031224c94?w=600&h=400&fit=crop'} alt={item.title} />
+                    <div className="giveaway-icon-badge">
+                      <i className="fas fa-gift"></i>
+                    </div>
+                  </div>
+                  <div className="giveaway-details">
+                    <h3>{item.title}</h3>
+                    <p>{item.description}</p>
+                    <div className="giveaway-meta">
+                      <span><i className="fas fa-calendar-alt"></i> Ends: {new Date(item.endDate).toLocaleDateString()}</span>
+                    </div>
+                    <a 
+                      href={item.googleFormLink || "https://docs.google.com/forms/d/e/1FAIpQLSev2_RPJq8HJYznckGKKEWbzj1K0rNzNN8SIFk2dYZ8WFK3KQ/viewform?usp=publish-editor"} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="btn btn-primary btn-small"
+                    >
+                      Join Now
+                    </a>
                   </div>
                 </div>
-                <div className="giveaway-details">
-                  <h3>{item.name}</h3>
-                  <p>{item.description}</p>
-                  <div className="giveaway-meta">
-                    <span><i className="fas fa-gift"></i> {item.prize}</span>
-                  </div>
-                  <a 
-                    href="https://docs.google.com/forms/d/e/1FAIpQLSev2_RPJq8HJYznckGKKEWbzj1K0rNzNN8SIFk2dYZ8WFK3KQ/viewform?usp=publish-editor" 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className="btn btn-primary btn-small"
-                  >
-                    Join Now
-                  </a>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -230,35 +119,42 @@ const Events = () => {
             <span className="section-tag">Reunite</span>
             <h2 className="section-title">Upcoming Alumni <span className="highlight">Meets</span></h2>
           </div>
-          <div className="events-meets-grid">
-            {alumniMeets.map((meet, index) => (
-              <div key={index} className="event-meet-card" style={{ '--delay': `${index * 0.12}s` }}>
-                <div className="meet-image-container">
-                  <img src={meet.image} alt={meet.name} />
-                  <div className="meet-icon-badge">
-                    <i className={`fas ${meet.icon}`}></i>
+          {alumniMeetsList.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '40px', color: '#888' }}>
+              <i className="fas fa-graduation-cap" style={{ fontSize: '32px', marginBottom: '10px' }}></i>
+              <p>No upcoming Alumni Meets scheduled. Stay tuned!</p>
+            </div>
+          ) : (
+            <div className="events-meets-grid">
+              {alumniMeetsList.map((meet, index) => (
+                <div key={meet._id || index} className="event-meet-card" style={{ '--delay': `${index * 0.12}s` }}>
+                  <div className="meet-image-container">
+                    <img src={meet.image || 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=600&h=400&fit=crop'} alt={meet.name} />
+                    <div className="meet-icon-badge">
+                      <i className="fas fa-handshake"></i>
+                    </div>
+                  </div>
+                  <div className="meet-details">
+                    <h3>{meet.name}</h3>
+                    <div className="meet-meta">
+                      <span><i className="fas fa-school"></i> {meet.jnv}</span>
+                      <span><i className="fas fa-graduation-cap"></i> {meet.batch}</span>
+                      <span><i className="fas fa-map-marker-alt"></i> {meet.location}</span>
+                      <span><i className="fas fa-users"></i> {meet.attendees} Attendees</span>
+                    </div>
+                    <a 
+                      href={meet.registrationLink || "https://docs.google.com/forms/d/e/1FAIpQLSev2_RPJq8HJYznckGKKEWbzj1K0rNzNN8SIFk2dYZ8WFK3KQ/viewform?usp=publish-editor"} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="btn btn-primary btn-small"
+                    >
+                      Register Now
+                    </a>
                   </div>
                 </div>
-                <div className="meet-details">
-                  <h3>{meet.name}</h3>
-                  <div className="meet-meta">
-                    <span><i className="fas fa-school"></i> {meet.jnv}</span>
-                    <span><i className="fas fa-graduation-cap"></i> {meet.batch}</span>
-                    <span><i className="fas fa-map-marker-alt"></i> {meet.location}</span>
-                    <span><i className="fas fa-users"></i> {meet.attendees} Attendees</span>
-                  </div>
-                  <a 
-                    href="https://docs.google.com/forms/d/e/1FAIpQLSev2_RPJq8HJYznckGKKEWbzj1K0rNzNN8SIFk2dYZ8WFK3KQ/viewform?usp=publish-editor" 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className="btn btn-primary btn-small"
-                  >
-                    Register Now
-                  </a>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -269,35 +165,42 @@ const Events = () => {
             <span className="section-tag">Live</span>
             <h2 className="section-title">Live Online <span className="highlight">Events</span></h2>
           </div>
-          <div className="events-live-grid">
-            {liveEvents.map((event, index) => (
-              <div key={index} className="event-live-card" style={{ '--delay': `${index * 0.12}s` }}>
-                <div className="live-image-container">
-                  <img src={event.image} alt={event.name} />
-                  <div className="live-icon-badge">
-                    <i className={`fas ${event.icon}`}></i>
+          {liveEventsList.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '40px', color: '#888' }}>
+              <i className="fas fa-video" style={{ fontSize: '32px', marginBottom: '10px' }}></i>
+              <p>No live online events scheduled at the moment.</p>
+            </div>
+          ) : (
+            <div className="events-live-grid">
+              {liveEventsList.map((event, index) => (
+                <div key={event._id || index} className="event-live-card" style={{ '--delay': `${index * 0.12}s` }}>
+                  <div className="live-image-container">
+                    <img src={event.image || 'https://images.unsplash.com/photo-1556761175-b413da4baf72?w=600&h=400&fit=crop'} alt={event.name} />
+                    <div className="live-icon-badge">
+                      <i className="fas fa-calendar-alt"></i>
+                    </div>
+                  </div>
+                  <div className="live-details">
+                    <h3>{event.name}</h3>
+                    <div className="live-meta">
+                      <span><i className="fas fa-tag"></i> {event.type}</span>
+                      <span><i className="fas fa-calendar"></i> {new Date(event.date).toLocaleDateString()}</span>
+                      <span><i className="fas fa-clock"></i> {event.time}</span>
+                      <span><i className="fas fa-video"></i> {event.platform}</span>
+                    </div>
+                    <a 
+                      href={event.registrationLink || "https://docs.google.com/forms/d/e/1FAIpQLSev2_RPJq8HJYznckGKKEWbzj1K0rNzNN8SIFk2dYZ8WFK3KQ/viewform?usp=publish-editor"} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="btn btn-primary btn-small"
+                    >
+                      Join
+                    </a>
                   </div>
                 </div>
-                <div className="live-details">
-                  <h3>{event.name}</h3>
-                  <div className="live-meta">
-                    <span><i className="fas fa-tag"></i> {event.type}</span>
-                    <span><i className="fas fa-calendar"></i> {event.date}</span>
-                    <span><i className="fas fa-clock"></i> {event.time}</span>
-                    <span><i className="fas fa-video"></i> {event.platform}</span>
-                  </div>
-                  <a 
-                    href="https://docs.google.com/forms/d/e/1FAIpQLSev2_RPJq8HJYznckGKKEWbzj1K0rNzNN8SIFk2dYZ8WFK3KQ/viewform?usp=publish-editor" 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className="btn btn-primary btn-small"
-                  >
-                    Join
-                  </a>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -323,8 +226,6 @@ const Events = () => {
           </div>
         </div>
       </section>
-
-
 
       {/* Past Events */}
       <section className="events-past">

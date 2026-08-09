@@ -955,6 +955,25 @@
   font-weight: 600;
 }
 
+/* Featured Merchandise Section */
+.featured-merch-section {
+  padding: 84px 0;
+  background: #f9fafb;
+}
+
+.merch-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+.merch-card-wrapper {
+  animation: slideUp 0.8s ease-out forwards;
+  animation-delay: var(--delay);
+  opacity: 0;
+  height: 100%;
+}
+
 /* Past Events Gallery Section */
 .past-events-section {
   padding: 84px 0;
@@ -1223,7 +1242,8 @@
     .categories-grid,
     .events-grid,
     .giveaways-grid,
-    .live-events-grid {
+    .live-events-grid,
+    .merch-grid {
         display: flex !important;
         overflow-x: auto !important;
         gap: 12px !important;
@@ -1234,10 +1254,21 @@
     .categories-grid > *,
     .events-grid > *,
     .giveaways-grid > *,
-    .live-events-grid > * {
+    .live-events-grid > *,
+    .merch-grid > * {
         scroll-snap-align: start !important;
         flex-shrink: 0 !important;
+    }
+
+    .categories-grid > *,
+    .events-grid > *,
+    .giveaways-grid > *,
+    .live-events-grid > * {
         min-width: 160px !important;
+    }
+
+    .merch-grid > * {
+        min-width: 260px !important;
     }
 
     .category-card,
@@ -1245,6 +1276,10 @@
     .giveaway-card,
     .live-event-card {
         width: 160px !important;
+    }
+
+    .merch-card-wrapper {
+        width: 260px !important;
     }
 
     .category-image {

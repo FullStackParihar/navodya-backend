@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import HomepageBanner from '../components/HomepageBanner';
+import ProductCard from '../components/ProductCard';
 import api from '../utils/api';
 import './HomeEpic.css';
 
@@ -60,64 +61,6 @@ const categories = [
   }
 ];
 
-const alumniMeets = [
-  {
-    name: 'Annual Alumni Meet 2024',
-    jnv: 'JNV Main Campus',
-    batch: '2000-2024',
-    location: 'JNV Campus',
-    attendees: 450,
-    image: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=600&h=400&fit=crop',
-    icon: 'fa-graduation-cap'
-  },
-  {
-    name: 'Silver Jubilee Reunion',
-    jnv: 'JNV Delhi',
-    batch: '2000 Batch',
-    location: 'Hotel Grand Palace',
-    attendees: 320,
-    image: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600&h=400&fit=crop',
-    icon: 'fa-users'
-  },
-  {
-    name: 'JNV Bangalore Reunion',
-    jnv: 'JNV Bangalore',
-    batch: '2010-2014',
-    location: 'IT Park Bangalore',
-    attendees: 280,
-    image: 'https://images.unsplash.com/photo-1528605248640-18d5526e4802?w=600&h=400&fit=crop',
-    icon: 'fa-building'
-  },
-  {
-    name: 'Mumbai Alumni Meet',
-    jnv: 'JNV Mumbai',
-    batch: '2005-2009',
-    location: 'Marine Drive',
-    attendees: 350,
-    image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&h=400&fit=crop',
-    icon: 'fa-anchor'
-  }
-];
-
-const pastEvents = [
-  {
-    title: '2023 Annual Meet',
-    image: 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=400&h=300&fit=crop'
-  },
-  {
-    title: 'Cultural Night 2023',
-    image: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=400&h=300&fit=crop'
-  },
-  {
-    title: 'Sports Day 2024',
-    image: 'https://images.unsplash.com/photo-1461896836934-ffe607ba821?w=400&h=300&fit=crop'
-  },
-  {
-    title: 'Batch Reunion 2024',
-    image: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=400&h=300&fit=crop'
-  }
-];
-
 const regionsData = [
   {
     name: 'Navodaya Region Bhopal',
@@ -167,6 +110,12 @@ const HomeEpic = () => {
   const [giveaways, setGiveaways] = useState([]);
   const [giveawaysLoading, setGiveawaysLoading] = useState(true);
   const [giveawaysError, setGiveawaysError] = useState(false);
+  const [alumniMeetsList, setAlumniMeetsList] = useState([]);
+  const [alumniMeetsLoading, setAlumniMeetsLoading] = useState(true);
+  const [liveEventsList, setLiveEventsList] = useState([]);
+  const [liveEventsLoading, setLiveEventsLoading] = useState(true);
+  const [productsList, setProductsList] = useState([]);
+  const [productsLoading, setProductsLoading] = useState(true);
 
   useEffect(() => {
     const fetchGiveaways = async () => {
@@ -188,7 +137,67 @@ const HomeEpic = () => {
       }
     };
 
+    const fetchAlumniMeets = async () => {
+      try {
+        setAlumniMeetsLoading(true);
+        const result = await api.get('/alumni-meets');
+        if (result.success && Array.isArray(result.data)) {
+          setAlumniMeetsList(result.data);
+        }
+      } catch (err) {
+        console.error('Error fetching alumni meets:', err);
+      } finally {
+        setAlumniMeetsLoading(false);
+      }
+    };
+
+    const fetchLiveEvents = async () => {
+      try {
+        setLiveEventsLoading(true);
+        const result = await api.get('/events');
+        if (result.success && Array.isArray(result.data)) {
+          setLiveEventsList(result.data);
+        }
+      } catch (err) {
+        console.error('Error fetching live events:', err);
+      } finally {
+        setLiveEventsLoading(false);
+      }
+    };
+
+    const fetchProducts = async () => {
+      try {
+        setProductsLoading(true);
+        const result = await api.get('/products');
+        if (result.success && result.data) {
+          const productsData = result.data.products || (Array.isArray(result.data) ? result.data : []);
+          const mappedProducts = productsData.map(p => ({
+            id: p.slug,
+            dbId: p._id,
+            name: p.name,
+            description: p.description,
+            price: p.sale_price || p.price,
+            originalPrice: p.sale_price ? p.price : null,
+            image: p.images && p.images[0] ? p.images[0] : 'https://via.placeholder.com/300x400?text=No+Image',
+            badge: p.sale_price ? 'Sale' : (p.rating > 4.5 ? 'Bestseller' : ''),
+            reviews: p.review_count,
+            rating: p.rating,
+            sizes: p.sizes,
+            colors: p.colors
+          }));
+          setProductsList(mappedProducts.slice(0, 4));
+        }
+      } catch (err) {
+        console.error('Error fetching products:', err);
+      } finally {
+        setProductsLoading(false);
+      }
+    };
+
     fetchGiveaways();
+    fetchAlumniMeets();
+    fetchLiveEvents();
+    fetchProducts();
   }, []);
 
   const scrollGallery = (direction) => {
@@ -333,33 +342,138 @@ const HomeEpic = () => {
           </div>
           
           <div className="events-grid">
-            {alumniMeets.map((event, index) => (
-              <div key={index} className="event-card" style={{ '--delay': `${index * 0.12}s` }}>
-                <div className="event-image-container">
-                  <img src={event.image} alt={event.name} />
-                  <div className="event-icon-badge">
-                    <i className={`fas ${event.icon}`}></i>
-                  </div>
-                </div>
-                <div className="event-details">
-                  <h3>{event.name}</h3>
-                  <div className="event-meta">
-                    <span><i className="fas fa-school"></i> {event.jnv}</span>
-                    <span><i className="fas fa-graduation-cap"></i> {event.batch}</span>
-                    <span><i className="fas fa-map-marker-alt"></i> {event.location}</span>
-                    <span><i className="fas fa-users"></i> {event.attendees} Attendees</span>
-                  </div>
-                  <Link to="/events" className="btn btn-primary btn-small">
-                    Register
-                  </Link>
-                </div>
+            {alumniMeetsLoading ? (
+              <div style={{ textAlign: 'center', padding: '20px', color: '#888', gridColumn: '1 / -1' }}>
+                <p>Loading Alumni Meets...</p>
               </div>
-            ))}
+            ) : alumniMeetsList.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '40px', color: '#888', gridColumn: '1 / -1' }}>
+                <i className="fas fa-handshake" style={{ fontSize: '32px', marginBottom: '10px' }}></i>
+                <p>No upcoming Alumni Meets scheduled at the moment.</p>
+              </div>
+            ) : (
+              alumniMeetsList.map((event, index) => (
+                <div key={event._id || index} className="event-card" style={{ '--delay': `${index * 0.12}s` }}>
+                  <div className="event-image-container">
+                    <img src={event.image || 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=600&h=400&fit=crop'} alt={event.name} />
+                    <div className="event-icon-badge">
+                      <i className="fas fa-handshake"></i>
+                    </div>
+                  </div>
+                  <div className="event-details">
+                    <h3>{event.name}</h3>
+                    <div className="event-meta">
+                      <span><i className="fas fa-school"></i> {event.jnv}</span>
+                      <span><i className="fas fa-graduation-cap"></i> {event.batch}</span>
+                      <span><i className="fas fa-map-marker-alt"></i> {event.location}</span>
+                      <span><i className="fas fa-users"></i> {event.attendees} Attendees</span>
+                    </div>
+                    <Link to="/events" className="btn btn-primary btn-small">
+                      Register
+                    </Link>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
           
           <div className="view-all-wrapper">
             <Link to="/events" className="btn btn-primary">
               View All Meets
+              <i className="fas fa-arrow-right"></i>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Featured Merchandise Section */}
+      <section className="featured-merch-section">
+        <div className="container">
+          <div className="section-header">
+            <span className="section-tag">Store</span>
+            <h2 className="section-title">Popular JNV <span className="highlight">Merchandise</span></h2>
+          </div>
+
+          <div className="merch-grid">
+            {productsLoading ? (
+              <div style={{ textAlign: 'center', padding: '20px', color: '#888', gridColumn: '1 / -1' }}>
+                <p>Loading Merchandise...</p>
+              </div>
+            ) : productsList.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '40px', color: '#888', gridColumn: '1 / -1' }}>
+                <i className="fas fa-shopping-bag" style={{ fontSize: '32px', marginBottom: '10px' }}></i>
+                <p>No products available at the moment.</p>
+              </div>
+            ) : (
+              productsList.map((product, index) => (
+                <div key={product.dbId || index} className="merch-card-wrapper" style={{ '--delay': `${index * 0.12}s` }}>
+                  <ProductCard product={product} />
+                </div>
+              ))
+            )}
+          </div>
+
+          <div className="view-all-wrapper">
+            <Link to="/tshirts" className="btn btn-primary">
+              Visit Alumni Store
+              <i className="fas fa-arrow-right"></i>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Live Online Events Section */}
+      <section className="live-events-section">
+        <div className="container">
+          <div className="section-header">
+            <span className="section-tag">Live</span>
+            <h2 className="section-title">Live Online <span className="highlight">Events</span></h2>
+          </div>
+          
+          <div className="live-events-grid">
+            {liveEventsLoading ? (
+              <div style={{ textAlign: 'center', padding: '20px', color: '#888', gridColumn: '1 / -1' }}>
+                <p>Loading Live Events...</p>
+              </div>
+            ) : liveEventsList.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '40px', color: '#888', gridColumn: '1 / -1' }}>
+                <i className="fas fa-video" style={{ fontSize: '32px', marginBottom: '10px' }}></i>
+                <p>No live online events scheduled at the moment.</p>
+              </div>
+            ) : (
+              liveEventsList.map((event, index) => (
+                <div key={event._id || index} className="live-event-card" style={{ '--delay': `${index * 0.12}s` }}>
+                  <div className="live-event-image">
+                    <img src={event.image || 'https://images.unsplash.com/photo-1556761175-b413da4baf72?w=600&h=400&fit=crop'} alt={event.name} />
+                    <span className="live-badge">
+                      <i className="fas fa-circle"></i> Live
+                    </span>
+                  </div>
+                  <div className="live-event-content">
+                    <span className="live-event-type">{event.type}</span>
+                    <h3>{event.name}</h3>
+                    <div className="live-event-meta">
+                      <span><i className="fas fa-calendar"></i> {new Date(event.date).toLocaleDateString()}</span>
+                      <span><i className="fas fa-clock"></i> {event.time}</span>
+                      <span><i className="fas fa-video"></i> {event.platform}</span>
+                    </div>
+                    <a 
+                      href={event.registrationLink || "https://docs.google.com/forms/d/e/1FAIpQLSev2_RPJq8HJYznckGKKEWbzj1K0rNzNN8SIFk2dYZ8WFK3KQ/viewform?usp=publish-editor"}
+                      target="_blank"
+                      rel="noopener noreferrer" 
+                      className="btn btn-primary btn-small"
+                    >
+                      Join Event
+                    </a>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+          
+          <div className="view-all-wrapper">
+            <Link to="/events" className="btn btn-primary">
+              View All Events
               <i className="fas fa-arrow-right"></i>
             </Link>
           </div>

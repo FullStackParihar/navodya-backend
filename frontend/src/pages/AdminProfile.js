@@ -25,6 +25,8 @@ const AdminProfile = () => {
   const [users, setUsers] = useState([]);
   const [coupons, setCoupons] = useState([]);
   const [contests, setContests] = useState([]);
+  const [events, setEvents] = useState([]);
+  const [alumniMeets, setAlumniMeets] = useState([]);
   const [winners, setWinners] = useState([]);
   const [bulkOrders, setBulkOrders] = useState([]);
   const [bulkOrderPagination, setBulkOrderPagination] = useState({ page: 1, totalPages: 1, total: 0 });
@@ -188,6 +190,14 @@ const AdminProfile = () => {
           result = await api.get('/contests?isAdmin=true');
           if (result.success) setContests(result.data);
           break;
+        case 'events':
+          result = await api.get('/events?isAdmin=true');
+          if (result.success) setEvents(result.data);
+          break;
+        case 'alumni-meets':
+          result = await api.get('/alumni-meets?isAdmin=true');
+          if (result.success) setAlumniMeets(result.data);
+          break;
         case 'winners':
           result = await api.get('/winners/admin');
           if (result.success) setWinners(result.data);
@@ -270,6 +280,10 @@ const AdminProfile = () => {
         if (mappedItem.endDate) mappedItem.endDate = mappedItem.endDate.split('T')[0];
       }
       
+      if (type === 'event') {
+        if (mappedItem.date) mappedItem.date = mappedItem.date.split('T')[0];
+      }
+      
       if (type === 'winner') {
         if (mappedItem.contest_id) mappedItem.contest_id = mappedItem.contest_id._id;
         if (mappedItem.user_id) mappedItem.user_id = mappedItem.user_id._id;
@@ -305,6 +319,14 @@ const AdminProfile = () => {
       } else if (type === 'contest') {
         setFormData({
           title: '', description: '', rules: '', startDate: new Date().toISOString().split('T')[0], endDate: new Date(Date.now() + 7*24*60*60*1000).toISOString().split('T')[0], bannerImage: '', googleFormLink: '', isActive: true, isEnabled: true
+        });
+      } else if (type === 'event') {
+        setFormData({
+          name: '', type: 'Career Counseling', date: new Date().toISOString().split('T')[0], time: '6:00 PM IST', platform: 'Zoom', registrationLink: '', image: '', isActive: true, isEnabled: true
+        });
+      } else if (type === 'alumni-meet') {
+        setFormData({
+          name: '', jnv: '', batch: '', location: '', attendees: 0, image: '', registrationLink: '', isActive: true, isEnabled: true
         });
       } else if (type === 'winner') {
         setFormData({
@@ -386,6 +408,32 @@ const AdminProfile = () => {
       }
       if (new Date(formData.startDate) > new Date(formData.endDate)) {
         error('Start date must be before or equal to End date.');
+        return false;
+      }
+    } else if (modalType === 'event') {
+      if (!formData.name || formData.name.trim().length < 3) {
+        error('Event name must be at least 3 characters long.');
+        return false;
+      }
+      if (!formData.type) {
+        error('Event type is required.');
+        return false;
+      }
+      if (!formData.date) {
+        error('Event date is required.');
+        return false;
+      }
+    } else if (modalType === 'alumni-meet') {
+      if (!formData.name || formData.name.trim().length < 3) {
+        error('Alumni Meet name must be at least 3 characters long.');
+        return false;
+      }
+      if (!formData.jnv) {
+        error('JNV branch is required.');
+        return false;
+      }
+      if (!formData.location) {
+        error('Location is required.');
         return false;
       }
     } else if (modalType === 'winner') {
@@ -487,6 +535,18 @@ const AdminProfile = () => {
           result = await api.patch(`/contests/${formData._id}`, formData);
         } else {
           result = await api.post('/contests', formData);
+        }
+      } else if (modalType === 'event') {
+        if (formData._id) {
+          result = await api.patch(`/events/${formData._id}`, formData);
+        } else {
+          result = await api.post('/events', formData);
+        }
+      } else if (modalType === 'alumni-meet') {
+        if (formData._id) {
+          result = await api.patch(`/alumni-meets/${formData._id}`, formData);
+        } else {
+          result = await api.post('/alumni-meets', formData);
         }
       } else if (modalType === 'winner') {
         if (formData._id) {
@@ -627,6 +687,42 @@ const AdminProfile = () => {
     }
   };
 
+  const toggleEventEnabled = async (event) => {
+    try {
+      const result = await api.patch(`/events/${event._id}`, {
+        isEnabled: event.isEnabled === false
+      });
+
+      if (result.success) {
+        setEvents(prev => prev.map(item => item._id === event._id ? result.data : item));
+        success(result.data.isEnabled === false ? 'Event disabled' : 'Event enabled');
+      } else {
+        error(result.message || 'Failed to update event');
+      }
+    } catch (err) {
+      console.error('Event enable toggle error:', err);
+      error('An error occurred while updating event');
+    }
+  };
+
+  const toggleAlumniMeetEnabled = async (meet) => {
+    try {
+      const result = await api.patch(`/alumni-meets/${meet._id}`, {
+        isEnabled: meet.isEnabled === false
+      });
+
+      if (result.success) {
+        setAlumniMeets(prev => prev.map(item => item._id === meet._id ? result.data : item));
+        success(result.data.isEnabled === false ? 'Alumni Meet disabled' : 'Alumni Meet enabled');
+      } else {
+        error(result.message || 'Failed to update alumni meet');
+      }
+    } catch (err) {
+      console.error('Alumni Meet enable toggle error:', err);
+      error('An error occurred while updating alumni meet');
+    }
+  };
+
   const deleteItem = async (type, id) => {
     if (window.confirm(`Are you sure you want to delete this ${type}?`)) {
       try {
@@ -636,6 +732,8 @@ const AdminProfile = () => {
         else if (type === 'user') endpoint = `/admin/users/${id}`;
         else if (type === 'coupon') endpoint = `/coupons/${id}`;
         else if (type === 'contest') endpoint = `/contests/${id}`;
+        else if (type === 'event') endpoint = `/events/${id}`;
+        else if (type === 'alumni-meet') endpoint = `/alumni-meets/${id}`;
         else if (type === 'winner') endpoint = `/winners/${id}`;
         
         const result = await api.delete(endpoint);
@@ -1868,6 +1966,12 @@ const AdminProfile = () => {
             <button className={activeTab === 'contests' ? 'active' : ''} onClick={() => handleTabChange('contests')}>
               <i className="fas fa-trophy"></i> Contests
             </button>
+            <button className={activeTab === 'events' ? 'active' : ''} onClick={() => handleTabChange('events')}>
+              <i className="fas fa-calendar-alt"></i> Events
+            </button>
+            <button className={activeTab === 'alumni-meets' ? 'active' : ''} onClick={() => handleTabChange('alumni-meets')}>
+              <i className="fas fa-graduation-cap"></i> Alumni Meets
+            </button>
             <button className={activeTab === 'winners' ? 'active' : ''} onClick={() => handleTabChange('winners')}>
               <i className="fas fa-medal"></i> Winners
             </button>
@@ -2026,6 +2130,104 @@ const AdminProfile = () => {
                 </div>
               )}
 
+              {activeTab === 'events' && (
+                <div className="admin-section">
+                  <div className="section-header">
+                    <h2>Event Management</h2>
+                    <button className="add-btn" onClick={() => handleOpenModal('event')}>
+                      <i className="fas fa-plus"></i> Add Event
+                    </button>
+                  </div>
+                  <div className="admin-table-container">
+                    <table className="admin-table">
+                      <thead>
+                        <tr>
+                          <th>Name</th>
+                          <th>Type</th>
+                          <th>Platform</th>
+                          <th>Date</th>
+                          <th>Time</th>
+                          <th>Visibility</th>
+                          <th>Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {events.map(event => (
+                          <tr key={event._id}>
+                            <td><strong>{event.name}</strong></td>
+                            <td>{event.type}</td>
+                            <td>{event.platform}</td>
+                            <td>{new Date(event.date).toLocaleDateString()}</td>
+                            <td>{event.time}</td>
+                            <td>{event.isEnabled === false ? <span className="status-badge pending">Disabled</span> : <span className="status-badge success">Enabled</span>}</td>
+                            <td>
+                              <button className="action-icon info" onClick={() => toggleEventEnabled(event)} title={event.isEnabled === false ? 'Enable Event' : 'Disable Event'}>
+                                <i className={`fas ${event.isEnabled === false ? 'fa-toggle-off' : 'fa-toggle-on'}`}></i>
+                              </button>
+                              <button className="action-icon edit" onClick={() => handleOpenModal('event', event)}>
+                                <i className="fas fa-edit"></i>
+                              </button>
+                              <button className="action-icon delete" onClick={() => deleteItem('event', event._id)}>
+                                <i className="fas fa-trash"></i>
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'alumni-meets' && (
+                <div className="admin-section">
+                  <div className="section-header">
+                    <h2>Alumni Meet Management</h2>
+                    <button className="add-btn" onClick={() => handleOpenModal('alumni-meet')}>
+                      <i className="fas fa-plus"></i> Add Alumni Meet
+                    </button>
+                  </div>
+                  <div className="admin-table-container">
+                    <table className="admin-table">
+                      <thead>
+                        <tr>
+                          <th>Name</th>
+                          <th>JNV</th>
+                          <th>Batch</th>
+                          <th>Location</th>
+                          <th>Attendees</th>
+                          <th>Visibility</th>
+                          <th>Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {alumniMeets.map(meet => (
+                          <tr key={meet._id}>
+                            <td><strong>{meet.name}</strong></td>
+                            <td>{meet.jnv}</td>
+                            <td>{meet.batch}</td>
+                            <td>{meet.location}</td>
+                            <td>{meet.attendees}</td>
+                            <td>{meet.isEnabled === false ? <span className="status-badge pending">Disabled</span> : <span className="status-badge success">Enabled</span>}</td>
+                            <td>
+                              <button className="action-icon info" onClick={() => toggleAlumniMeetEnabled(meet)} title={meet.isEnabled === false ? 'Enable Alumni Meet' : 'Disable Alumni Meet'}>
+                                <i className={`fas ${meet.isEnabled === false ? 'fa-toggle-off' : 'fa-toggle-on'}`}></i>
+                              </button>
+                              <button className="action-icon edit" onClick={() => handleOpenModal('alumni-meet', meet)}>
+                                <i className="fas fa-edit"></i>
+                              </button>
+                              <button className="action-icon delete" onClick={() => deleteItem('alumni-meet', meet._id)}>
+                                <i className="fas fa-trash"></i>
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
               {activeTab === 'winners' && (
                 <div className="admin-section">
                   <div className="section-header">
@@ -2078,7 +2280,7 @@ const AdminProfile = () => {
           <div className="admin-modal-overlay">
             <div className="admin-modal">
               <div className="modal-header">
-                <h3>{formData._id ? 'Edit' : 'Add'} {(modalType === 'product' || modalType === 'alumni-kit') ? (modalType === 'alumni-kit' ? 'Alumni Kit' : 'Product') : modalType === 'category' ? 'Category' : modalType === 'coupon' ? 'Coupon' : modalType === 'contest' ? 'Contest' : 'Winner'}</h3>
+                <h3>{formData._id ? 'Edit' : 'Add'} {(modalType === 'product' || modalType === 'alumni-kit') ? (modalType === 'alumni-kit' ? 'Alumni Kit' : 'Product') : modalType === 'category' ? 'Category' : modalType === 'coupon' ? 'Coupon' : modalType === 'contest' ? 'Contest' : modalType === 'event' ? 'Event' : modalType === 'alumni-meet' ? 'Alumni Meet' : 'Winner'}</h3>
                 <button className="close-modal" onClick={() => setIsModalOpen(false)}>&times;</button>
               </div>
               <form onSubmit={handleSave}>
@@ -2511,6 +2713,114 @@ const AdminProfile = () => {
                       <div className="form-group" style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <input type="checkbox" checked={formData.isActive} onChange={e => setFormData({...formData, isActive: e.target.checked})} id="is-active-checkbox" style={{ width: 'auto', marginRight: '10px' }} />
                         <label htmlFor="is-active-checkbox" style={{ margin: 0 }}>Enable Contest</label>
+                      </div>
+                    </>
+                  ) : modalType === 'event' ? (
+                    <>
+                      <div className="form-group">
+                        <label>Event Name</label>
+                        <input type="text" value={formData.name || ''} onChange={e => setFormData({...formData, name: e.target.value})} required />
+                      </div>
+                      <div className="form-group">
+                        <label>Event Type</label>
+                        <input type="text" value={formData.type || ''} onChange={e => setFormData({...formData, type: e.target.value})} placeholder="e.g. Career Counseling, Exam Guidance, Inspiration Talk" required />
+                      </div>
+                      <div className="form-group">
+                        <label>Platform</label>
+                        <input type="text" value={formData.platform || ''} onChange={e => setFormData({...formData, platform: e.target.value})} placeholder="e.g. Zoom, Google Meet, YouTube Live" required />
+                      </div>
+                      <div className="form-group">
+                        <label>Date</label>
+                        <input type="date" value={formData.date || ''} onChange={e => setFormData({...formData, date: e.target.value})} required />
+                      </div>
+                      <div className="form-group">
+                        <label>Time</label>
+                        <input type="text" value={formData.time || ''} onChange={e => setFormData({...formData, time: e.target.value})} placeholder="e.g. 6:00 PM IST" required />
+                      </div>
+                      <div className="form-group">
+                        <label>Event Image</label>
+                        <div className="image-upload-wrapper">
+                          <input 
+                            type="file" 
+                            accept="image/*" 
+                            onChange={e => handleImageUpload(e, 'image')} 
+                            disabled={isUploading}
+                          />
+                          {isUploading && <span className="upload-spinner"><i className="fas fa-spinner fa-spin"></i> Uploading...</span>}
+                        </div>
+                        {formData.image && (
+                          <div className="preview-item single">
+                            <img src={formData.image} alt="Preview" />
+                            <button type="button" onClick={() => setFormData({...formData, image: ''})}>&times;</button>
+                          </div>
+                        )}
+                      </div>
+                      <div className="form-group">
+                        <label>Registration Link (Optional)</label>
+                        <input 
+                          type="url" 
+                          value={formData.registrationLink || ''} 
+                          onChange={e => setFormData({...formData, registrationLink: e.target.value})} 
+                          placeholder="https://forms.gle/... or Google Form link" 
+                        />
+                      </div>
+                      <div className="form-group" style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <input type="checkbox" checked={formData.isActive !== false} onChange={e => setFormData({...formData, isActive: e.target.checked})} id="is-active-checkbox" style={{ width: 'auto', marginRight: '10px' }} />
+                        <label htmlFor="is-active-checkbox" style={{ margin: 0 }}>Active</label>
+                      </div>
+                    </>
+                  ) : modalType === 'alumni-meet' ? (
+                    <>
+                      <div className="form-group">
+                        <label>Alumni Meet Title/Name</label>
+                        <input type="text" value={formData.name || ''} onChange={e => setFormData({...formData, name: e.target.value})} required />
+                      </div>
+                      <div className="form-group">
+                        <label>JNV Branch</label>
+                        <input type="text" value={formData.jnv || ''} onChange={e => setFormData({...formData, jnv: e.target.value})} placeholder="e.g. JNV Main Campus, JNV Delhi" required />
+                      </div>
+                      <div className="form-group">
+                        <label>Batch</label>
+                        <input type="text" value={formData.batch || ''} onChange={e => setFormData({...formData, batch: e.target.value})} placeholder="e.g. 2000-2024, 2005 Batch" required />
+                      </div>
+                      <div className="form-group">
+                        <label>Location</label>
+                        <input type="text" value={formData.location || ''} onChange={e => setFormData({...formData, location: e.target.value})} placeholder="e.g. JNV Campus, Hotel Grand Palace" required />
+                      </div>
+                      <div className="form-group">
+                        <label>Attendees Count</label>
+                        <input type="number" value={formData.attendees || 0} onChange={e => setFormData({...formData, attendees: Number(e.target.value)})} />
+                      </div>
+                      <div className="form-group">
+                        <label>Image</label>
+                        <div className="image-upload-wrapper">
+                          <input 
+                            type="file" 
+                            accept="image/*" 
+                            onChange={e => handleImageUpload(e, 'image')} 
+                            disabled={isUploading}
+                          />
+                          {isUploading && <span className="upload-spinner"><i className="fas fa-spinner fa-spin"></i> Uploading...</span>}
+                        </div>
+                        {formData.image && (
+                          <div className="preview-item single">
+                            <img src={formData.image} alt="Preview" />
+                            <button type="button" onClick={() => setFormData({...formData, image: ''})}>&times;</button>
+                          </div>
+                        )}
+                      </div>
+                      <div className="form-group">
+                        <label>Registration Link (Optional)</label>
+                        <input 
+                          type="url" 
+                          value={formData.registrationLink || ''} 
+                          onChange={e => setFormData({...formData, registrationLink: e.target.value})} 
+                          placeholder="https://forms.gle/... or Google Form link" 
+                        />
+                      </div>
+                      <div className="form-group" style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <input type="checkbox" checked={formData.isActive !== false} onChange={e => setFormData({...formData, isActive: e.target.checked})} id="is-active-checkbox" style={{ width: 'auto', marginRight: '10px' }} />
+                        <label htmlFor="is-active-checkbox" style={{ margin: 0 }}>Active</label>
                       </div>
                     </>
                   ) : modalType === 'winner' ? (
