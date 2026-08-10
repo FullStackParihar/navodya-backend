@@ -17,7 +17,7 @@ export const createProductSchema = z.object({
     description: z.string().min(10, 'Description must be at least 10 characters'),
     price: z.number().positive('Price must be positive'),
     salePrice: z.number().positive().optional(),
-    images: z.array(z.string().url()).min(1, 'At least one image is required'),
+    images: z.array(z.string()).min(1, 'At least one image is required'),
     categoryId: z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid category ID'),
     subcategory: z.string().optional(),
     sizes: z.array(
@@ -30,12 +30,14 @@ export const createProductSchema = z.object({
       z.object({
         name: z.string(),
         hex: z.string(),
-        images: z.array(z.string().url()),
+        images: z.array(z.string()),
       })
     ),
     tags: z.array(z.string()).optional(),
     specifications: z.record(z.string(), z.string()).optional(),
     fabricVariants: z.array(fabricVariantSchema).optional(),
+    displayOrder: z.number().int().optional(),
+    display_order: z.number().int().optional(),
   }),
 });
 
@@ -45,7 +47,7 @@ export const updateProductSchema = z.object({
     description: z.string().min(10).optional(),
     price: z.number().positive().optional(),
     salePrice: z.number().positive().optional(),
-    images: z.array(z.string().url()).optional(),
+    images: z.array(z.string()).optional(),
     categoryId: z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid category ID').optional(),
     subcategory: z.string().optional(),
     sizes: z.array(
@@ -58,12 +60,14 @@ export const updateProductSchema = z.object({
       z.object({
         name: z.string(),
         hex: z.string(),
-        images: z.array(z.string().url()),
+        images: z.array(z.string()),
       })
     ).optional(),
     tags: z.array(z.string()).optional(),
     specifications: z.record(z.string(), z.string()).optional(),
     fabricVariants: z.array(fabricVariantSchema).optional(),
     isActive: z.boolean().optional(),
+    displayOrder: z.number().int().optional(),
+    display_order: z.number().int().optional(),
   }),
 });

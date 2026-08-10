@@ -4,6 +4,8 @@ import {
   getProductBySlug,
   createProduct,
   updateProduct,
+  updateDisplayOrder,
+  updateSectionPriorities,
   deleteProduct,
 } from '../controllers/product.controller.js';
 import {
@@ -44,6 +46,8 @@ router.get('/products/id/:id', optionalAuth, asyncHandler(async (req, res) => {
 
 router.get('/products/:slug', optionalAuth, getProductBySlug);
 router.post('/products', authenticate, requireAdmin, createProduct);
+router.patch('/products/reorder', authenticate, requireAdmin, updateDisplayOrder);
+router.patch('/products/section-priorities', authenticate, requireAdmin, updateSectionPriorities);
 router.patch('/products/:id', authenticate, requireAdmin, updateProduct);
 router.delete('/products/:id', authenticate, requireAdmin, deleteProduct);
 

@@ -7,49 +7,8 @@ import ProductCard from '../components/ProductCard';
 import CartSummary from '../components/CartSummary';
 import CheckoutProgress from '../components/CheckoutProgress';
 import SkeletonLoader from '../components/SkeletonLoader';
+import api from '../utils/api';
 import './CartEnhanced.css';
-
-// Sample recommended products
-const recommendedProducts = [
-  {
-    id: 13,
-    name: 'JNV Baseball Cap',
-    description: 'Adjustable | Embroidered Logo',
-    price: 299,
-    originalPrice: 399,
-    image: 'https://images.unsplash.com/photo-1513519245088-0e7839c3c889?w=300&h=400&fit=crop',
-    badge: 'Hot',
-    reviews: 156
-  },
-  {
-    id: 14,
-    name: 'JNV Backpack',
-    description: 'Waterproof | Laptop Compartment',
-    price: 899,
-    originalPrice: 1299,
-    image: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=300&h=400&fit=crop',
-    reviews: 98
-  },
-  {
-    id: 15,
-    name: 'JNV Water Bottle',
-    description: 'Stainless Steel | Insulated',
-    price: 199,
-    originalPrice: 299,
-    image: 'https://images.unsplash.com/photo-1602143403490-42c665fd7239?w=300&h=400&fit=crop',
-    badge: 'New',
-    reviews: 78
-  },
-  {
-    id: 16,
-    name: 'JNV Phone Case',
-    description: 'Protective | Custom Design',
-    price: 149,
-    originalPrice: 199,
-    image: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=300&h=400&fit=crop',
-    reviews: 134
-  }
-];
 
 const Cart = () => {
   const { items, totalAmount, updateQuantity, removeFromCart } = useCart();
@@ -59,13 +18,37 @@ const Cart = () => {
   const [discount, setDiscount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [recommendedLoading, setRecommendedLoading] = useState(true);
+  const [recommendedProducts, setRecommendedProducts] = useState([]);
 
   useEffect(() => {
-    // Simulate loading for recommended products
-    const timer = setTimeout(() => {
-      setRecommendedLoading(false);
-    }, 1000);
-    return () => clearTimeout(timer);
+    const fetchRecommended = async () => {
+      try {
+        setRecommendedLoading(true);
+        const result = await api.get('/products?limit=4');
+        if (result.success && result.data && result.data.products) {
+          const mappedProducts = result.data.products.slice(0, 4).map(p => ({
+            id: p.slug,
+            dbId: p._id,
+            name: p.name,
+            description: p.description,
+            price: p.sale_price || p.price,
+            originalPrice: p.sale_price ? p.price : null,
+            image: p.images && p.images[0] ? p.images[0] : 'https://via.placeholder.com/300x400?text=No+Image',
+            badge: p.sale_price ? 'Sale' : (p.rating > 4.5 ? 'Bestseller' : ''),
+            reviews: p.review_count,
+            rating: p.rating,
+            sizes: p.sizes,
+            colors: p.colors
+          }));
+          setRecommendedProducts(mappedProducts);
+        }
+      } catch (err) {
+        console.error('Error fetching recommended products:', err);
+      } finally {
+        setRecommendedLoading(false);
+      }
+    };
+    fetchRecommended();
   }, []);
 
   const handleSaveForLater = (item) => {

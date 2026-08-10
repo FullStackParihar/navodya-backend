@@ -4,6 +4,7 @@ export interface IWinner extends Document {
   contest_id: mongoose.Types.ObjectId;
   user_id: mongoose.Types.ObjectId;
   prize: string;
+  images?: string[];
   isPublished: boolean;
   showUserDetails: boolean;
   createdAt: Date;
@@ -26,6 +27,7 @@ const winnerSchema = new Schema({
     required: true,
     trim: true
   },
+  images: [String],
   isPublished: {
     type: Boolean,
     default: false

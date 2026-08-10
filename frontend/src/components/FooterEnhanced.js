@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import './FooterEnhanced.css';
 
 const FooterEnhanced = () => {
   const [email, setEmail] = useState('');
@@ -64,31 +65,6 @@ const FooterEnhanced = () => {
         {/* Footer Top Section */}
         <div className="footer-top">
           <div className="footer-top-content">
-            {/* Brand Section */}
-            <div className="footer-brand footer-animate">
-              <div className="footer-brand-mark">
-                <img src="/logo.png" alt="Navodaya Trendz" />
-              </div>
-              <p>Made by Navodayans, for Navodayans. Your trusted partner for JNV alumni merchandise.</p>
-              <div className="footer-social">
-                <a href="https://instagram.com" className="social-link" aria-label="Instagram" target="_blank" rel="noopener noreferrer">
-                  <i className="fab fa-instagram"></i>
-                </a>
-                <a href="https://facebook.com" className="social-link" aria-label="Facebook" target="_blank" rel="noopener noreferrer">
-                  <i className="fab fa-facebook-f"></i>
-                </a>
-                <a href="https://linkedin.com" className="social-link" aria-label="LinkedIn" target="_blank" rel="noopener noreferrer">
-                  <i className="fab fa-linkedin-in"></i>
-                </a>
-                <a href="https://youtube.com" className="social-link" aria-label="YouTube" target="_blank" rel="noopener noreferrer">
-                  <i className="fab fa-youtube"></i>
-                </a>
-                <a href="https://wa.me/918947900884" className="social-link" aria-label="WhatsApp Community" target="_blank" rel="noopener noreferrer">
-                  <i className="fab fa-whatsapp"></i>
-                </a>
-              </div>
-            </div>
-
             {/* Company Section */}
             <div className="footer-section footer-animate footer-animate-delay-1">
               <h4>Company</h4>
@@ -156,6 +132,30 @@ const FooterEnhanced = () => {
         {/* Footer Middle Section */}
         <div className="footer-middle">
           <div className="footer-middle-content">
+            {/* Brand Section */}
+            <div className="footer-brand footer-animate">
+              <div className="footer-brand-mark">
+                <img src="/logo.png" alt="Navodaya Trendz" />
+              </div>
+              <p>Made by Navodayans, for Navodayans. Your trusted partner for JNV alumni merchandise.</p>
+              <div className="footer-social">
+                <a href="https://instagram.com" className="social-link" aria-label="Instagram" target="_blank" rel="noopener noreferrer">
+                  <i className="fab fa-instagram"></i>
+                </a>
+                <a href="https://facebook.com" className="social-link" aria-label="Facebook" target="_blank" rel="noopener noreferrer">
+                  <i className="fab fa-facebook-f"></i>
+                </a>
+                <a href="https://linkedin.com" className="social-link" aria-label="LinkedIn" target="_blank" rel="noopener noreferrer">
+                  <i className="fab fa-linkedin-in"></i>
+                </a>
+                <a href="https://youtube.com" className="social-link" aria-label="YouTube" target="_blank" rel="noopener noreferrer">
+                  <i className="fab fa-youtube"></i>
+                </a>
+                <a href="https://wa.me/918947900884" className="social-link" aria-label="WhatsApp Community" target="_blank" rel="noopener noreferrer">
+                  <i className="fab fa-whatsapp"></i>
+                </a>
+              </div>
+            </div>
             {/* Payment Methods */}
             <div className="payment-section">
               <h5>Payment Methods</h5>
@@ -300,7 +300,7 @@ const FooterEnhanced = () => {
            margin: 0 auto;
            padding: 0 20px;
            display: grid;
-           grid-template-columns: 1.5fr 1fr 1fr 1fr 1.25fr;
+           grid-template-columns: repeat(4, 1fr);
            gap: 40px;
          }
 
@@ -481,7 +481,7 @@ const FooterEnhanced = () => {
           margin: 0 auto;
           padding: 0 20px;
           display: grid;
-          grid-template-columns: 1fr 1fr 1fr;
+          grid-template-columns: minmax(240px, 1.2fr) repeat(3, 1fr);
           gap: 40px;
           align-items: center;
         }
@@ -1026,8 +1026,8 @@ const FooterEnhanced = () => {
         .footer-top-content {
           max-width: 1280px;
           padding: 0 24px;
-          grid-template-columns: minmax(260px, 1.5fr) repeat(3, minmax(160px, 1fr));
-          gap: clamp(28px, 4vw, 56px);
+          grid-template-columns: repeat(4, 1fr);
+          gap: clamp(20px, 3vw, 40px);
           align-items: start;
         }
 
@@ -1149,7 +1149,7 @@ const FooterEnhanced = () => {
         .footer-middle-content {
           max-width: 1280px;
           padding: 0 24px;
-          grid-template-columns: 1.2fr 1.2fr 0.9fr;
+          grid-template-columns: minmax(240px, 1.2fr) repeat(3, 1fr);
           gap: 28px;
           align-items: start;
         }
@@ -1495,8 +1495,8 @@ const FooterEnhanced = () => {
           width: 100%;
           max-width: 1280px;
           display: grid;
-          grid-template-columns: minmax(280px, 1.35fr) repeat(3, minmax(150px, 1fr));
-          gap: clamp(26px, 3.5vw, 52px);
+          grid-template-columns: repeat(4, 1fr);
+          gap: clamp(20px, 3vw, 40px);
         }
 
         .footer-brand,
@@ -1548,7 +1548,7 @@ const FooterEnhanced = () => {
           width: 100%;
           max-width: 1280px;
           display: grid;
-          grid-template-columns: minmax(260px, 1.1fr) minmax(300px, 1.15fr) minmax(220px, 0.8fr);
+          grid-template-columns: minmax(240px, 1.2fr) repeat(3, 1fr);
           gap: clamp(22px, 3vw, 40px);
         }
 
@@ -1613,12 +1613,12 @@ const FooterEnhanced = () => {
 
         @media (max-width: 1100px) {
           .footer-top-content {
-            grid-template-columns: minmax(260px, 1.2fr) repeat(3, minmax(130px, 1fr));
-            gap: 26px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
           }
 
           .footer-middle-content {
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: minmax(200px, 1.1fr) repeat(3, 1fr);
           }
 
           .app-section {

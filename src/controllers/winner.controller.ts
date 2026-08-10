@@ -39,7 +39,7 @@ export const drawRandomWinner = async (req: Request, res: Response) => {
 // Create winner (Save manually or random)
 export const createWinner = async (req: Request, res: Response) => {
   try {
-    const { contest_id, user_id, prize, isPublished, showUserDetails } = req.body;
+    const { contest_id, user_id, prize, images, isPublished, showUserDetails } = req.body;
 
     // Check if already a winner for this contest
     const existing = await Winner.findOne({ contest_id, user_id });
@@ -51,6 +51,7 @@ export const createWinner = async (req: Request, res: Response) => {
       contest_id,
       user_id,
       prize,
+      images: Array.isArray(images) ? images : [],
       isPublished: isPublished || false,
       showUserDetails: showUserDetails || false
     });

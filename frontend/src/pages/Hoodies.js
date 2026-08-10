@@ -4,70 +4,6 @@ import ProductCard from '../components/ProductCard';
 import SkeletonLoader from '../components/SkeletonLoader';
 import './TShirtsBeautiful.css';
 
-// Fallback products for hoodies
-const fallbackProducts = [
-  {
-    id: 'classic-navodaya-hoodie',
-    dbId: '5',
-    name: 'Classic Navodaya Hoodie',
-    description: 'Cozy fleece hoodie with JNV logo',
-    price: 999,
-    originalPrice: null,
-    image: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=400&h=500&fit=crop',
-    badge: 'Bestseller',
-    reviews: 456,
-    rating: 4.9,
-    category: 'Hoodies',
-    sizes: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
-    colors: ['Black', 'White']
-  },
-  {
-    id: 'alumni-hoodie',
-    dbId: '6',
-    name: 'Alumni Special Hoodie',
-    description: 'Premium quality hoodie for alumni',
-    price: 1199,
-    originalPrice: null,
-    image: 'https://images.unsplash.com/photo-1626596738752-e34943c79b53?w=400&h=500&fit=crop',
-    badge: 'New',
-    reviews: 234,
-    rating: 4.8,
-    category: 'Hoodies',
-    sizes: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
-    colors: ['Black', 'White']
-  },
-  {
-    id: 'campus-zip-hoodie',
-    dbId: '7',
-    name: 'Campus Zip Hoodie',
-    description: 'Zip-up style with campus print',
-    price: 1099,
-    originalPrice: null,
-    image: 'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=400&h=500&fit=crop',
-    badge: 'Hot',
-    reviews: 312,
-    rating: 4.7,
-    category: 'Hoodies',
-    sizes: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
-    colors: ['Black', 'White']
-  },
-  {
-    id: 'winter-warm-hoodie',
-    dbId: '8',
-    name: 'Winter Warm Hoodie',
-    description: 'Extra warm for winter season',
-    price: 1299,
-    originalPrice: null,
-    image: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=400&h=500&fit=crop',
-    badge: '',
-    reviews: 189,
-    rating: 4.6,
-    category: 'Hoodies',
-    sizes: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
-    colors: ['Black', 'White']
-  }
-];
-
 const Hoodies = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [products, setProducts] = useState([]);
@@ -76,8 +12,8 @@ const Hoodies = () => {
     const fetchProducts = async () => {
       setIsLoading(true);
       try {
-        const result = await api.get('/products?category=hoodies');
-        if (result.success && result.data.products.length > 0) {
+        const result = await api.get('/products?category=hoodies&section=hoodies');
+        if (result.success && result.data.products?.length > 0) {
           const mapped = result.data.products.map(p => ({
             id: p.slug,
             dbId: p._id,
@@ -95,11 +31,11 @@ const Hoodies = () => {
           }));
           setProducts(mapped);
         } else {
-          setProducts(fallbackProducts);
+          setProducts([]);
         }
       } catch (err) {
         console.error('Error fetching hoodies:', err);
-        setProducts(fallbackProducts);
+        setProducts([]);
       } finally {
         setIsLoading(false);
       }

@@ -9,13 +9,13 @@
 }
 
 .login-card {
-  background: #ffffff;
+  background: var(--bg-primary);
   padding: 40px;
   border-radius: 12px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-lg);
   width: 100%;
   max-width: 450px;
-  border: 2px solid #000000;
+  border: 1px solid var(--border-color);
 }
 
 .login-header {
@@ -24,7 +24,7 @@
 }
 
 .login-header h2 {
-  color: #000000;
+  color: var(--text-primary);
   font-size: 28px;
   font-weight: 600;
   margin-bottom: 8px;
@@ -37,11 +37,11 @@
 }
 
 .error-message {
-  background: #000000;
-  border: 2px solid #000000;
-  color: #ffffff;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid var(--danger-color);
+  color: var(--danger-color);
   padding: 12px;
-  border-radius: 6px;
+  border-radius: 8px;
   margin-bottom: 20px;
   text-align: center;
   font-size: 14px;
@@ -50,10 +50,10 @@
 .auth-tabs {
   display: flex;
   margin-bottom: 25px;
-  background: #f0f0f0;
-  border-radius: 8px;
+  background: var(--bg-secondary);
+  border-radius: 10px;
   padding: 4px;
-  border: 1px solid #000000;
+  border: 1px solid var(--border-color);
 }
 
 .tab-btn {
@@ -61,16 +61,16 @@
   padding: 12px;
   border: none;
   background: transparent;
-  color: #666666;
+  color: var(--text-secondary);
   font-weight: 500;
   cursor: pointer;
-  border-radius: 6px;
+  border-radius: 8px;
   transition: all 0.3s ease;
 }
 
 .tab-btn.active {
-  background: #000000;
-  color: white;
+  background: var(--text-primary);
+  color: var(--bg-primary);
 }
 
 .google-btn-container {
@@ -109,18 +109,18 @@
 .otp-section {
   margin-bottom: 20px;
   padding: 15px;
-  background: #f0f0f0;
-  border-radius: 8px;
-  border: 1px solid #000000;
+  background: var(--bg-secondary);
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
 }
 
 .otp-btn {
   width: 100%;
-  padding: 10px;
-  background: #000000;
-  color: white;
+  padding: 12px;
+  background: var(--text-primary);
+  color: var(--bg-primary);
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
@@ -129,7 +129,7 @@
 }
 
 .otp-btn:hover:not(:disabled) {
-  background: #333333;
+  background: var(--primary-hover);
 }
 
 .otp-btn:disabled {
@@ -140,9 +140,9 @@
 .demo-info {
   margin-top: 25px;
   padding: 15px;
-  background: #f0f0f0;
-  border-radius: 8px;
-  border: 1px solid #000000;
+  background: var(--bg-secondary);
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
   font-size: 12px;
 }
 
@@ -168,33 +168,33 @@
 }
 
 .form-group label {
-  color: #000000;
+  color: var(--text-primary);
   font-weight: 500;
   font-size: 14px;
 }
 
 .form-group input {
   padding: 12px 16px;
-  border: 2px solid #000000;
-  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
   font-size: 16px;
   transition: all 0.3s ease;
-  background: #ffffff;
-  color: #000000;
+  background: var(--bg-primary);
+  color: var(--text-primary);
 }
 
 .form-group input:focus {
   outline: none;
-  border-color: #333333;
-  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+  border-color: var(--text-primary);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
 }
 
 .login-button {
-  background: #000000;
-  color: white;
+  background: var(--text-primary);
+  color: var(--bg-primary);
   border: none;
   padding: 14px 24px;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
@@ -202,13 +202,13 @@
 }
 
 .login-button:hover:not(:disabled) {
-  background: #333333;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
 }
 
 .login-button:disabled {
-  opacity: 0.7;
+  opacity: 0.6;
   cursor: not-allowed;
   transform: none;
 }
@@ -249,15 +249,15 @@
 
 /* OTP Modal Card */
 .otp-modal-card {
-  background: #ffffff;
+  background: var(--bg-primary);
   padding: 40px;
   border-radius: 12px;
-  border: 2px solid #000000;
+  border: 1px solid var(--border-color);
   width: 100%;
   max-width: 420px;
   position: relative;
   text-align: center;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  box-shadow: var(--shadow-lg);
   animation: modalFadeIn 0.3s ease-out;
 }
 
@@ -286,12 +286,12 @@
 
 .otp-modal-icon {
   font-size: 48px;
-  color: #000000;
+  color: var(--text-primary);
   margin-bottom: 20px;
 }
 
 .otp-modal-card h3 {
-  color: #000000;
+  color: var(--text-primary);
   font-size: 22px;
   font-weight: 600;
   margin-bottom: 12px;
@@ -317,21 +317,21 @@
 
 .otp-modal-input {
   padding: 14px;
-  border: 2px solid #000000;
-  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
   font-size: 20px;
   letter-spacing: 6px;
   text-align: center;
   font-weight: 700;
   width: 100%;
   outline: none;
-  background: #ffffff;
-  color: #000000;
+  background: var(--bg-primary);
+  color: var(--text-primary);
 }
 
 .otp-modal-input:focus {
-  border-color: #333333;
-  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+  border-color: var(--text-primary);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
 }
 
 .otp-verify-button {

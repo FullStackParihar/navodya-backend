@@ -12,28 +12,8 @@ const ProductCard = ({ product }) => {
   const { addToCart, isInCart } = useCart();
   const { isInWishlist, toggleWishlist } = useWishlist();
   const { success, error } = useToast();
-  const [isAdding, setIsAdding] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
-
-  const handleAddToCart = async () => {
-    if (isInCart(product.id)) {
-      error('Product is already in cart!');
-      return;
-    }
-
-    setIsAdding(true);
-    try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 500));
-      await addToCart(product);
-      success(`${product.name} added to cart!`);
-    } catch (err) {
-      error(err.message || 'Failed to add to cart');
-    } finally {
-      setIsAdding(false);
-    }
-  };
 
   const handleWishlistToggle = (e) => {
     e.preventDefault();
@@ -90,7 +70,7 @@ const ProductCard = ({ product }) => {
         )}
         
         {product.originalPrice && product.price < product.originalPrice && (
-          <div className="discount-tag" style={{ position: 'absolute', top: '10px', right: '10px', background: '#ef4444', color: 'white', padding: '4px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold', zIndex: 10 }}>
+          <div className="discount-tag" style={{ position: 'absolute', top: '10px', right: '10px', background: 'var(--text-primary)', color: 'var(--bg-primary)', padding: '4px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold', zIndex: 10 }}>
             {Math.round((1 - product.price / product.originalPrice) * 100)}% OFF
           </div>
         )}
@@ -109,10 +89,10 @@ const ProductCard = ({ product }) => {
               <i 
                 key={i} 
                 className={`fas fa-star ${i < 4 ? 'active' : ''}`}
-                style={{ color: i < 4 ? 'var(--amazon-orange)' : '#ddd' }}
+                style={{ color: i < 4 ? 'var(--text-primary)' : 'var(--border-color)' }}
               ></i>
             ))}
-            <i className="fas fa-star-half-alt" style={{ color: 'var(--amazon-orange)' }}></i>
+            <i className="fas fa-star-half-alt" style={{ color: 'var(--text-primary)' }}></i>
           </div>
           <span className="rating-count">({product.reviews || 245})</span>
         </div>

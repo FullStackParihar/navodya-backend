@@ -25,14 +25,50 @@
   border-bottom: 1px solid var(--footer-border);
 }
 
-.footer-top-content {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr;
-  gap: 40px;
-}
+ .footer-top-content {
+   max-width: 1200px;
+   margin: 0 auto;
+   padding: 0 20px;
+   display: grid;
+   grid-template-columns: repeat(4, 1fr);
+   gap: 40px;
+ }
+
+ .contact-info-list {
+   list-style: none !important;
+   padding: 0 !important;
+   margin: 0 !important;
+ }
+ .contact-info-list li {
+   display: flex !important;
+   align-items: flex-start !important;
+   gap: 10px !important;
+   font-size: 14px !important;
+   color: var(--footer-text-light) !important;
+   line-height: 1.4 !important;
+   margin-bottom: 12px !important;
+ }
+ .contact-info-list li i {
+   color: var(--footer-accent) !important;
+   margin-top: 3px !important;
+   font-size: 14px !important;
+   width: 16px !important;
+   text-align: center !important;
+   opacity: 1 !important;
+ }
+ .contact-info-list li span {
+   color: var(--footer-text-light);
+ }
+ .contact-info-list li a {
+   color: var(--footer-text-light) !important;
+   text-decoration: none !important;
+   transition: var(--transition-footer) !important;
+   padding: 0 !important;
+   display: inline-block !important;
+ }
+ .contact-info-list li a:hover {
+   color: var(--footer-accent) !important;
+ }
 
 /* Brand Section */
 .footer-brand {
@@ -40,6 +76,8 @@
   flex-direction: column;
   gap: 20px;
 }
+
+
 
 .footer-brand h3 {
   font-size: 28px;
@@ -82,11 +120,17 @@
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
+.social-link:nth-child(1) { color: #fff; background: rgba(255, 255, 255, 0.1); }
+.social-link:nth-child(2) { color: #fff; background: rgba(255, 255, 255, 0.1); }
+.social-link:nth-child(3) { color: #fff; background: rgba(255, 255, 255, 0.1); }
+.social-link:nth-child(4) { color: #fff; background: rgba(255, 255, 255, 0.1); }
+.social-link:nth-child(5) { color: #fff; background: rgba(255, 255, 255, 0.1); }
+
 .social-link:hover {
-  background: var(--footer-accent);
+  transform: translateY(-3px) scale(1.1);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  background: #ffffff;
   color: #000000;
-  transform: translateY(-3px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
 }
 
 .social-link i {
@@ -167,7 +211,7 @@
   margin: 0 auto;
   padding: 0 20px;
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: minmax(240px, 1.2fr) repeat(3, 1fr);
   gap: 40px;
   align-items: center;
 }
@@ -203,10 +247,20 @@
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
+.payment-icon:nth-child(1) { color: #fff; background: rgba(255, 255, 255, 0.1); }
+.payment-icon:nth-child(2) { color: #fff; background: rgba(255, 255, 255, 0.1); }
+.payment-icon:nth-child(3) { color: #fff; background: rgba(255, 255, 255, 0.1); }
+.payment-icon:nth-child(4) { color: #fff; background: rgba(255, 255, 255, 0.1); }
+.payment-icon:nth-child(5) { color: #fff; background: rgba(255, 255, 255, 0.1); }
+.payment-icon:nth-child(6) { color: #fff; background: rgba(255, 255, 255, 0.1); }
+.payment-icon:nth-child(7) { color: #fff; background: rgba(255, 255, 255, 0.1); }
+.payment-icon:nth-child(8) { color: #fff; background: rgba(255, 255, 255, 0.1); }
+
 .payment-icon:hover {
-  background: var(--footer-accent);
+  transform: translateY(-3px) scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  background: #ffffff;
   color: #000000;
-  transform: translateY(-2px);
 }
 
 .trust-badges {
@@ -308,20 +362,24 @@
 .newsletter-input {
   flex: 1;
   padding: 12px 20px;
-  border: 2px solid #000000;
-  border-radius: 6px;
+  border: 1px solid var(--border-color); /* Updated */
+  border-radius: 8px; /* Updated */
   font-size: 14px;
   outline: none;
   background: #ffffff;
   color: #000000;
+  transition: border-color 0.3s;
+}
+.newsletter-input:focus {
+  border-color: #333333;
 }
 
 .newsletter-button {
   padding: 12px 25px;
-  background: #000000;
+  background: #111111; /* Updated */
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px; /* Updated */
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -383,7 +441,7 @@
   right: 30px;
   width: 50px;
   height: 50px;
-  background: #000000;
+  background: #111111; /* Updated */
   color: white;
   border: none;
   border-radius: 50%;
@@ -476,21 +534,12 @@
     text-align: center;
   }
   
-  .footer-brand {
-    align-items: center;
-  }
-  
   .footer-brand p {
-    max-width: 100%;
-    text-align: center;
+    margin: 0 auto;
   }
   
   .footer-social {
     justify-content: center;
-  }
-  
-  .footer-section {
-    align-items: center;
   }
   
   .footer-section h4::after {
@@ -498,21 +547,12 @@
     transform: translateX(-50%);
   }
   
-  .footer-links {
-    align-items: center;
-  }
-  
-  .footer-middle {
-    padding: 25px 0;
-  }
-  
-  .payment-icons {
+  .footer-links a {
     justify-content: center;
   }
   
-  .newsletter-form {
-    flex-direction: column;
-    max-width: 300px;
+  .contact-info-list li {
+    justify-content: center;
   }
   
   .footer-bottom-content {
@@ -522,85 +562,15 @@
   }
   
   .bottom-links {
-    justify-content: center;
     flex-wrap: wrap;
-  }
-}
-
-@media (max-width: 480px) {
-  .universal-footer {
-    margin-top: 60px;
-  }
-  
-  .footer-top {
-    padding: 25px 0;
-  }
-  
-  .footer-brand h3 {
-    font-size: 24px;
-  }
-  
-  .footer-brand p {
-    font-size: 15px;
-  }
-  
-  .footer-section h4 {
-    font-size: 16px;
-  }
-  
-  .footer-links a {
-    font-size: 14px;
-  }
-  
-  .newsletter-content h3 {
-    font-size: 24px;
-  }
-  
-  .newsletter-content p {
-    font-size: 15px;
-  }
-  
-  .trust-badges {
-    grid-template-columns: 1fr;
-    gap: 8px;
-  }
-  
-  .trust-badge {
-    padding: 6px 10px;
-  }
-  
-  .trust-badge span {
-    font-size: 11px;
-  }
-  
-  .app-buttons {
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .app-button {
-    width: 200px;
     justify-content: center;
-  }
-  
-  .payment-icons {
-    gap: 8px;
-  }
-  
-  .payment-icon {
-    width: 35px;
-    height: 22px;
-    font-size: 14px;
+    gap: 15px;
   }
   
   .back-to-top {
-    width: 45px;
-    height: 45px;
     bottom: 20px;
     right: 20px;
-  }
-  
-  .back-to-top i {
-    font-size: 18px;
+    width: 40px;
+    height: 40px;
   }
 }

@@ -41,6 +41,12 @@ const AdminProfile = () => {
   const [totalProductPages, setTotalProductPages] = useState(1);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
+  // Section priority states
+  const [selectedSectionKey, setSelectedSectionKey] = useState('home_featured');
+  const [isSavingPriorities, setIsSavingPriorities] = useState(false);
+  const [sectionProductList, setSectionProductList] = useState([]);
+  const [filterSectionByCategory, setFilterSectionByCategory] = useState(true);
+
   // Modal states
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState(null); // 'product', 'category'
@@ -63,6 +69,10 @@ const AdminProfile = () => {
   const [liveTrackingInfo, setLiveTrackingInfo] = useState(null);
   const [fetchingLiveTracking, setFetchingLiveTracking] = useState(false);
 
+  const [selectedCategoryFilter, setSelectedCategoryFilter] = useState('ALL');
+
+
+
 
   const getSafeImage = (value) => {
     if (typeof value !== 'string' || !value.trim()) {
@@ -72,18 +82,32 @@ const AdminProfile = () => {
   };
 
   const getProductCategoryLabel = (product) => {
-    if (product?.subcategory) return product.subcategory;
-
-    if (product?.category_id && typeof product.category_id === 'object') {
-      return product.category_id.name || product.category_id.slug || '—';
+    if (product?.category_id && typeof product.category_id === 'object' && product.category_id.name) {
+      return product.category_id.name;
     }
 
-    if (product?.category_id) {
-      const category = categories.find((cat) => cat._id === product.category_id);
-      return category?.name || '—';
+    const rawCat = product?.category_id || product?.category;
+    if (rawCat) {
+      const catIdStr = typeof rawCat === 'object' ? String(rawCat._id || rawCat.name || rawCat.slug || '') : String(rawCat);
+      const category = categories.find((cat) => 
+        String(cat._id) === catIdStr || 
+        (cat.slug && cat.slug.toLowerCase() === catIdStr.toLowerCase()) || 
+        (cat.name && cat.name.toLowerCase() === catIdStr.toLowerCase())
+      );
+      if (category?.name) return category.name;
+      if (typeof rawCat === 'string' && rawCat.trim()) return rawCat.trim();
     }
 
-    return product?.category || '—';
+    if (product?.subcategory) {
+      const catBySub = categories.find((cat) => 
+        (cat.slug && cat.slug.toLowerCase() === String(product.subcategory).toLowerCase()) || 
+        (cat.name && cat.name.toLowerCase() === String(product.subcategory).toLowerCase())
+      );
+      if (catBySub?.name) return catBySub.name;
+      return product.subcategory;
+    }
+
+    return 'Uncategorized';
   };
 
   const selectedCategory = categories.find(cat => cat._id === formData.categoryId);
@@ -139,11 +163,12 @@ const AdminProfile = () => {
           break;
         case 'products':
         case 'alumni-kits':
+        case 'product-priorities':
           {
             const isAlumni = tab === 'alumni-kits';
             const page = productPageRef.current;
             const search = productSearchRef.current;
-            const url = `/products?page=${page}&limit=10&search=${encodeURIComponent(search)}${isAlumni ? '&category=alumni-kit' : '&excludeAlumniKits=true'}`;
+            const url = `/products?page=${page}&limit=1000&isAdmin=true&search=${encodeURIComponent(search)}${isAlumni ? '&category=alumni-kit' : ''}`;
             result = await api.get(url);
             if (result.success) {
               setProducts(result.data.products || result.data);
@@ -239,6 +264,66 @@ const AdminProfile = () => {
     }
   }, [isAdmin]);
 
+  useEffect(() => {
+    if (activeTab === 'product-priorities' && Array.isArray(products) && products.length > 0) {
+      let filtered = [...products];
+      if (filterSectionByCategory) {
+        if (selectedSectionKey === 'tshirts') {
+          filtered = filtered.filter(p => (getProductCategoryLabel(p) || '').toLowerCase().includes('t-shirt'));
+        } else if (selectedSectionKey === 'hoodies') {
+          filtered = filtered.filter(p => (getProductCategoryLabel(p) || '').toLowerCase().includes('hoodie'));
+        } else if (selectedSectionKey === 'accessories') {
+          filtered = filtered.filter(p => (getProductCategoryLabel(p) || '').toLowerCase().includes('accessori') || (getProductCategoryLabel(p) || '').toLowerCase().includes('mug'));
+        } else if (selectedSectionKey === 'alumni_kits') {
+          filtered = filtered.filter(p => (getProductCategoryLabel(p) || '').toLowerCase().includes('alumni'));
+        }
+      }
+
+      const list = filtered.map(p => {
+        if (!p) return null;
+        const placement = Array.isArray(p.placements) ? p.placements.find(pl => pl && pl.section_key === selectedSectionKey) : null;
+        return {
+          _id: p._id,
+          name: p.name || 'Unnamed Product',
+          images: p.images || [],
+          category: getProductCategoryLabel(p) || 'Uncategorized',
+          priority: placement ? (Number(placement.priority) || 0) : 0,
+          is_visible: placement ? placement.is_visible !== false : true
+        };
+      }).filter(Boolean);
+
+      list.sort((a, b) => b.priority - a.priority);
+      setSectionProductList(list);
+    }
+  }, [activeTab, products, selectedSectionKey, filterSectionByCategory]);
+
+  const handleSaveSectionPriorities = async () => {
+    setIsSavingPriorities(true);
+    try {
+      const items = sectionProductList.map(item => ({
+        product_id: item._id,
+        priority: Number(item.priority || 0),
+        is_visible: item.is_visible
+      }));
+
+      const res = await api.patch('/products/section-priorities', {
+        section_key: selectedSectionKey,
+        items
+      });
+
+      if (res.success) {
+        success(`Section priorities saved for ${selectedSectionKey}!`);
+        fetchData('product-priorities');
+      } else {
+        error(res.message || 'Failed to save section priorities');
+      }
+    } catch (err) {
+      error('Failed to save section priorities');
+    } finally {
+      setIsSavingPriorities(false);
+    }
+  };
+
   const handleLogout = () => {
     localStorage.removeItem('isAuthenticated');
     localStorage.removeItem('userEmail');
@@ -287,6 +372,7 @@ const AdminProfile = () => {
       if (type === 'winner') {
         if (mappedItem.contest_id) mappedItem.contest_id = mappedItem.contest_id._id;
         if (mappedItem.user_id) mappedItem.user_id = mappedItem.user_id._id;
+        if (!Array.isArray(mappedItem.images)) mappedItem.images = [];
       }
 
       setFormData(mappedItem);
@@ -306,7 +392,7 @@ const AdminProfile = () => {
           ? [{ name: 'Cotton', price: 0, salePrice: undefined, stock: '', is_active: true }]
           : [];
         setFormData({
-          name: '', slug: '', description: '', price: 0, categoryId: defaultCategoryId, subcategory: '', images: [], sizes: [{ size: 'M', stock: 10 }], colors: [{ name: 'Default' }], fabricVariants: defaultFabricVariants, tags: [], specificationsArray: []
+          name: '', slug: '', description: '', price: 0, categoryId: defaultCategoryId, subcategory: '', images: [], sizes: [{ size: 'M', stock: 10 }], colors: [{ name: 'Default' }], fabricVariants: defaultFabricVariants, tags: [], specificationsArray: [], displayOrder: 0, display_order: 0
         });
       } else if (type === 'category') {
         setFormData({
@@ -330,7 +416,7 @@ const AdminProfile = () => {
         });
       } else if (type === 'winner') {
         setFormData({
-          contest_id: '', user_id: '', prize: '', isPublished: false, showUserDetails: false
+          contest_id: '', user_id: '', prize: '', images: [], isPublished: false, showUserDetails: false
         });
       }
     }
@@ -624,48 +710,58 @@ const AdminProfile = () => {
   };
 
   const handleImageUpload = async (e, field = 'images', colorIndex = null) => {
-    let file = e.target.files[0];
-    if (!file) return;
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
 
     try {
       setIsUploading(true);
-      file = await compressImage(file);
-      
-      const uploadData = new FormData();
-      uploadData.append('image', file);
-      
-      const result = await api.post('/upload/upload', uploadData);
+      const uploadedUrls = [];
 
-      if (result.success) {
+      for (let rawFile of files) {
+        const compressedFile = await compressImage(rawFile);
+        const uploadData = new FormData();
+        uploadData.append('image', compressedFile);
+
+        const result = await api.post('/upload/upload', uploadData);
+        if (result.success && result?.data?.url) {
+          uploadedUrls.push(result.data.url);
+        }
+      }
+
+      if (uploadedUrls.length > 0) {
         if (field === 'images') {
-          const uploadedUrl = result?.data?.url;
-          if (!uploadedUrl) {
-            error('Upload succeeded but no image URL was returned.');
-            return;
-          }
           if (colorIndex !== null) {
             setFormData((prev) => {
-              const newColors = [...prev.colors];
-              if (!newColors[colorIndex].images) newColors[colorIndex].images = [];
-              newColors[colorIndex].images.push(uploadedUrl);
+              const newColors = [...(prev.colors || [])];
+              if (newColors[colorIndex]) {
+                const existing = newColors[colorIndex].images || [];
+                newColors[colorIndex].images = [...existing, ...uploadedUrls];
+              }
               return { ...prev, colors: newColors };
             });
           } else {
-            // Keep only one primary image for now (admin table uses first image)
-            setFormData((prev) => ({ ...prev, images: [uploadedUrl] }));
+            setFormData((prev) => ({
+              ...prev,
+              images: [...(prev.images || []), ...uploadedUrls]
+            }));
           }
+        } else if (field === 'winnerImages') {
+          setFormData((prev) => ({
+            ...prev,
+            images: [...(prev.images || []), ...uploadedUrls]
+          }));
         } else {
-          setFormData((prev) => ({ ...prev, [field]: result.data.url }));
+          setFormData((prev) => ({ ...prev, [field]: uploadedUrls[0] }));
         }
-        success('Image uploaded successfully');
+        success(`${uploadedUrls.length} image(s) uploaded successfully`);
       } else {
-        error(result.message || 'Upload failed');
+        error('Upload failed or no image URL returned');
       }
     } catch (err) {
       error('Error uploading image');
     } finally {
       setIsUploading(false);
-      e.target.value = null; // Reset input so same file can be selected again
+      e.target.value = null;
     }
   };
 
@@ -1370,6 +1466,8 @@ const AdminProfile = () => {
 
 
 
+
+
   const renderDashboard = () => (
     <div className="stats-dashboard">
       <div className="section-header">
@@ -1411,7 +1509,31 @@ const AdminProfile = () => {
     </div>
   );
 
+
+
+  const getGroupedProducts = (productList) => {
+    const groups = {};
+    categories.forEach(cat => {
+      if (cat?.name && cat.slug !== 'alumni-kit') {
+        groups[cat.name] = [];
+      }
+    });
+
+    productList.forEach(prod => {
+      const catLabel = getProductCategoryLabel(prod) || 'Uncategorized';
+      if (!groups[catLabel]) {
+        groups[catLabel] = [];
+      }
+      groups[catLabel].push(prod);
+    });
+
+    return groups;
+  };
+
   const renderProducts = (isAlumniKits = false) => {
+    const grouped = getGroupedProducts(products);
+    const categoryNames = Object.keys(grouped);
+
     return (
     <div className="admin-section">
       <div className="section-header product-section-header">
@@ -1447,56 +1569,134 @@ const AdminProfile = () => {
           </button>
         </div>
       </div>
-      
-      <div className="admin-table-container">
-        <table className="admin-table">
-          <thead>
-            <tr>
-              <th>Image</th>
-              <th>Name</th>
-              <th>Category</th>
-              <th>Price</th>
-              <th>Stock</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {products.length === 0 ? (
-              <tr>
-                <td colSpan={6} style={{ textAlign: 'center', padding: '40px', color: '#9ca3af' }}>
-                  No products found
-                </td>
-              </tr>
-            ) : products.map(product => (
-              <tr key={product._id}>
-                <td>
-                  <img
-                    src={getSafeImage(product.images?.[0])}
-                    alt={product.name}
-                    className="table-img"
-                    onError={(e) => {
-                      if (!e.currentTarget.src.includes('via.placeholder.com')) {
-                        e.currentTarget.src = 'https://via.placeholder.com/120x120?text=No+Image';
-                      }
-                    }}
-                  />
-                </td>
-                <td>{product.name}</td>
-                <td>{getProductCategoryLabel(product)}</td>
-                <td>
-                  <div style={{fontSize: '11px', color: '#6b7280', textDecoration: product.sale_price ? 'line-through' : 'none'}}>MRP: ₹{product.price}</div>
-                  {product.sale_price ? <div style={{fontSize: '12px', color: '#22c55e', fontWeight: 'bold'}}>Sale: ₹{product.sale_price} ({Math.round((1 - product.sale_price / product.price) * 100)}% OFF)</div> : null}
-                </td>
-                <td>{product.sizes?.reduce((acc, s) => acc + s.stock, 0)}</td>
-                <td>
-                  <button className="action-icon edit" onClick={() => handleOpenModal('product', product)}><i className="fas fa-edit"></i></button>
-                  <button className="action-icon delete" onClick={() => deleteItem('product', product._id)}><i className="fas fa-trash"></i></button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+
+      {/* Category Filter Pills */}
+      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', margin: '16px 0 24px 0' }}>
+        <button 
+          type="button"
+          style={{
+            background: selectedCategoryFilter === 'ALL' ? '#3b82f6' : '#f3f4f6',
+            color: selectedCategoryFilter === 'ALL' ? '#ffffff' : '#374151',
+            border: '1px solid #d1d5db',
+            borderRadius: '20px',
+            padding: '6px 16px',
+            fontSize: '13px',
+            fontWeight: '600',
+            cursor: 'pointer',
+            transition: 'all 0.2s ease'
+          }}
+          onClick={() => setSelectedCategoryFilter('ALL')}
+        >
+          All Categories ({products.length})
+        </button>
+
+        {categoryNames.map(catName => (
+          <button 
+            key={catName}
+            type="button"
+            style={{
+              background: selectedCategoryFilter === catName ? '#3b82f6' : '#f3f4f6',
+              color: selectedCategoryFilter === catName ? '#ffffff' : '#374151',
+              border: '1px solid #d1d5db',
+              borderRadius: '20px',
+              padding: '6px 16px',
+              fontSize: '13px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease'
+            }}
+            onClick={() => setSelectedCategoryFilter(catName)}
+          >
+            {catName} ({grouped[catName]?.length || 0})
+          </button>
+        ))}
       </div>
+      
+      {products.length === 0 ? (
+        <div className="admin-table-container" style={{ padding: '40px', textAlign: 'center', color: '#9ca3af' }}>
+          No products found
+        </div>
+      ) : (
+        categoryNames
+          .filter(catName => selectedCategoryFilter === 'ALL' || selectedCategoryFilter === catName)
+          .map(catName => {
+            const catProds = grouped[catName] || [];
+            if (selectedCategoryFilter === 'ALL' && catProds.length === 0) return null;
+            return (
+            <div key={catName} className="category-product-group" style={{ marginBottom: '32px' }}>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '12px 18px',
+                background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
+                color: '#ffffff',
+                borderRadius: '8px 8px 0 0',
+                fontWeight: 'bold',
+                fontSize: '15px'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <i className="fas fa-layer-group" style={{ color: '#f59e0b' }}></i>
+                  <span>Category: {catName}</span>
+                </div>
+                <span style={{ background: '#334155', color: '#cbd5e1', fontSize: '12px', padding: '2px 10px', borderRadius: '12px' }}>
+                  {grouped[catName].length} Products
+                </span>
+              </div>
+              
+              {grouped[catName].length === 0 ? (
+                <div style={{ padding: '20px', textAlign: 'center', color: '#9ca3af', background: '#ffffff', borderRadius: '0 0 8px 8px', border: '1px solid #e5e7eb', borderTop: 'none', fontSize: '13px' }}>
+                  No products added to "{catName}" yet.
+                </div>
+              ) : (
+                <div className="admin-table-container" style={{ borderRadius: '0 0 8px 8px', marginTop: 0 }}>
+                  <table className="admin-table">
+                    <thead>
+                      <tr>
+                        <th>Image</th>
+                        <th>Name</th>
+                        <th>Subcategory</th>
+                        <th>Price</th>
+                        <th>Stock</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {grouped[catName].map(product => (
+                        <tr key={product._id}>
+                          <td>
+                            <img
+                              src={getSafeImage(product.images?.[0])}
+                              alt={product.name}
+                              className="table-img"
+                              onError={(e) => {
+                                if (!e.currentTarget.src.includes('via.placeholder.com')) {
+                                  e.currentTarget.src = 'https://via.placeholder.com/120x120?text=No+Image';
+                                }
+                              }}
+                            />
+                          </td>
+                          <td><strong>{product.name}</strong></td>
+                          <td>{product.subcategory || '—'}</td>
+                          <td>
+                            <div style={{fontSize: '11px', color: '#6b7280', textDecoration: product.sale_price ? 'line-through' : 'none'}}>MRP: ₹{product.price}</div>
+                            {product.sale_price ? <div style={{fontSize: '12px', color: '#22c55e', fontWeight: 'bold'}}>Sale: ₹{product.sale_price} ({Math.round((1 - product.sale_price / product.price) * 100)}% OFF)</div> : null}
+                          </td>
+                          <td>{product.sizes?.reduce((acc, s) => acc + s.stock, 0)}</td>
+                          <td>
+                            <button className="action-icon edit" onClick={() => handleOpenModal('product', product)} title="Edit"><i className="fas fa-edit"></i></button>
+                            <button className="action-icon delete" onClick={() => deleteItem('product', product._id)} title="Delete"><i className="fas fa-trash"></i></button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          );
+        })
+      )}
       
       {/* Pagination Footer */}
       <div className="admin-pagination">
@@ -1521,6 +1721,195 @@ const AdminProfile = () => {
         </div>
       </div>
     </div>
+    );
+  };
+
+  const renderSectionPriorities = () => {
+    const moveItem = (index, direction) => {
+      const newList = [...sectionProductList];
+      const targetIndex = index + direction;
+      if (targetIndex < 0 || targetIndex >= newList.length) return;
+      
+      const temp = newList[index];
+      newList[index] = newList[targetIndex];
+      newList[targetIndex] = temp;
+
+      const total = newList.length;
+      newList.forEach((item, idx) => {
+        item.priority = total - idx;
+      });
+
+      setSectionProductList(newList);
+    };
+
+    const handlePriorityChange = (index, val) => {
+      const newList = [...sectionProductList];
+      newList[index].priority = parseInt(val, 10) || 0;
+      setSectionProductList(newList);
+    };
+
+    const handleVisibilityToggle = (index) => {
+      const newList = [...sectionProductList];
+      newList[index].is_visible = !newList[index].is_visible;
+      setSectionProductList(newList);
+    };
+
+    return (
+      <div className="admin-section">
+        <div className="section-header product-section-header">
+          <div className="admin-toolbar">
+            <h2>Product Placement &amp; Priority Management</h2>
+            <button
+              className="add-btn"
+              onClick={handleSaveSectionPriorities}
+              disabled={isSavingPriorities}
+              style={{ background: '#2563eb', gap: '8px' }}
+              type="button"
+            >
+              <i className={isSavingPriorities ? "fas fa-spinner fa-spin" : "fas fa-save"}></i>
+              {isSavingPriorities ? 'Saving...' : 'Save Section Order'}
+            </button>
+          </div>
+        </div>
+
+        <div style={{ margin: '16px 0 24px 0', display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+          <label style={{ fontWeight: 'bold', fontSize: '14px', color: '#1e293b' }}>
+            Select Target Section:
+          </label>
+          <select
+            value={selectedSectionKey}
+            onChange={(e) => setSelectedSectionKey(e.target.value)}
+            style={{
+              padding: '10px 16px',
+              borderRadius: '8px',
+              border: '1px solid #cbd5e1',
+              fontSize: '14px',
+              fontWeight: '600',
+              backgroundColor: '#ffffff',
+              cursor: 'pointer'
+            }}
+          >
+            <option value="home_featured">Home Screen (Common Products)</option>
+            <option value="tshirts">T-Shirts Section</option>
+            <option value="hoodies">Hoodies Section</option>
+            <option value="accessories">Accessories Section</option>
+            <option value="suggested">Suggested Products Section</option>
+            <option value="alumni_kits">Alumni Kits Section</option>
+          </select>
+          <span style={{ fontSize: '13px', color: '#64748b' }}>
+            ({sectionProductList.length} products total)
+          </span>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px', color: '#475569', marginLeft: 'auto' }}>
+            <input
+              type="checkbox"
+              checked={filterSectionByCategory}
+              onChange={(e) => setFilterSectionByCategory(e.target.checked)}
+            />
+            Show only products matching this section category
+          </label>
+        </div>
+
+        <div className="admin-table-container">
+          <table className="admin-table">
+            <thead>
+              <tr>
+                <th>Rank / Order</th>
+                <th>Image</th>
+                <th>Product Name</th>
+                <th>Category</th>
+                <th>Section Visibility</th>
+                <th>Priority Score</th>
+                <th>Reorder</th>
+              </tr>
+            </thead>
+            <tbody>
+              {sectionProductList.length === 0 ? (
+                <tr>
+                  <td colSpan={7} style={{ textAlign: 'center', padding: '40px', color: '#9ca3af' }}>
+                    No products loaded
+                  </td>
+                </tr>
+              ) : (
+                sectionProductList.map((prod, idx) => (
+                  <tr key={prod._id}>
+                    <td><strong>#{idx + 1}</strong></td>
+                    <td>
+                      <img
+                        src={getSafeImage(prod.images?.[0])}
+                        alt={prod.name}
+                        className="table-img"
+                        onError={(e) => {
+                          if (!e.currentTarget.src.includes('via.placeholder.com')) {
+                            e.currentTarget.src = 'https://via.placeholder.com/120x120?text=No+Image';
+                          }
+                        }}
+                      />
+                    </td>
+                    <td><strong>{prod.name}</strong></td>
+                    <td>{prod.category}</td>
+                    <td>
+                      <button
+                        type="button"
+                        onClick={() => handleVisibilityToggle(idx)}
+                        style={{
+                          background: prod.is_visible ? '#dcfce7' : '#fee2e2',
+                          color: prod.is_visible ? '#15803d' : '#b91c1c',
+                          border: `1px solid ${prod.is_visible ? '#86efac' : '#fca5a5'}`,
+                          padding: '6px 12px',
+                          borderRadius: '20px',
+                          fontWeight: 'bold',
+                          fontSize: '12px',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        <i className={`fas ${prod.is_visible ? 'fa-eye' : 'fa-eye-slash'}`}></i> {prod.is_visible ? 'Visible' : 'Hidden'}
+                      </button>
+                    </td>
+                    <td>
+                      <input
+                        type="number"
+                        value={prod.priority}
+                        onChange={(e) => handlePriorityChange(idx, e.target.value)}
+                        style={{
+                          width: '70px',
+                          padding: '6px 10px',
+                          borderRadius: '6px',
+                          border: '1px solid #cbd5e1',
+                          fontWeight: 'bold'
+                        }}
+                      />
+                    </td>
+                    <td>
+                      <div style={{ display: 'flex', gap: '6px' }}>
+                        <button
+                          type="button"
+                          className="action-icon"
+                          disabled={idx === 0}
+                          onClick={() => moveItem(idx, -1)}
+                          title="Move Up"
+                          style={{ opacity: idx === 0 ? 0.4 : 1 }}
+                        >
+                          <i className="fas fa-arrow-up"></i>
+                        </button>
+                        <button
+                          type="button"
+                          className="action-icon"
+                          disabled={idx === sectionProductList.length - 1}
+                          onClick={() => moveItem(idx, 1)}
+                          title="Move Down"
+                          style={{ opacity: idx === sectionProductList.length - 1 ? 0.4 : 1 }}
+                        >
+                          <i className="fas fa-arrow-down"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
     );
   };
 
@@ -1978,6 +2367,9 @@ const AdminProfile = () => {
             <button className={activeTab === 'products' ? 'active' : ''} onClick={() => handleTabChange('products')}>
               <i className="fas fa-box"></i> Products
             </button>
+            <button className={activeTab === 'product-priorities' ? 'active' : ''} onClick={() => handleTabChange('product-priorities')}>
+              <i className="fas fa-sort-amount-down"></i> Section Priorities
+            </button>
             <button className={activeTab === 'alumni-kits' ? 'active' : ''} onClick={() => handleTabChange('alumni-kits')}>
               <i className="fas fa-graduation-cap"></i> Alumni Kits
             </button>
@@ -2027,6 +2419,7 @@ const AdminProfile = () => {
             <>
               {activeTab === 'dashboard' && renderDashboard()}
               {activeTab === 'products' && renderProducts(false)}
+              {activeTab === 'product-priorities' && renderSectionPriorities()}
               {activeTab === 'alumni-kits' && renderProducts(true)}
               {activeTab === 'categories' && renderCategories()}
               {activeTab === 'orders' && renderOrders()}
@@ -2243,6 +2636,7 @@ const AdminProfile = () => {
                           <th>Contest</th>
                           <th>Winner (User)</th>
                           <th>Prize</th>
+                          <th>Winner Photos</th>
                           <th>Published</th>
                           <th>Show Details</th>
                           <th>Actions</th>
@@ -2254,6 +2648,18 @@ const AdminProfile = () => {
                             <td>{winner.contest_id?.title || 'Unknown Contest'}</td>
                             <td>{winner.user_id?.name || 'Unknown User'} ({winner.user_id?.email})</td>
                             <td>{winner.prize}</td>
+                            <td>
+                              {winner.images && winner.images.length > 0 ? (
+                                <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                                  {winner.images.slice(0, 3).map((img, i) => (
+                                    <img key={i} src={getSafeImage(img)} alt="Winner photo" style={{ width: '32px', height: '32px', borderRadius: '4px', objectFit: 'cover' }} />
+                                  ))}
+                                  {winner.images.length > 3 && <span style={{ fontSize: '11px', color: '#64748b', fontWeight: 600 }}>+{winner.images.length - 3}</span>}
+                                </div>
+                              ) : (
+                                <span style={{ color: '#94a3b8', fontSize: '12px' }}>No photos</span>
+                              )}
+                            </td>
                             <td>{winner.isPublished ? <span className="status-badge success">Yes</span> : <span className="status-badge pending">No</span>}</td>
                             <td>{winner.showUserDetails ? <span className="status-badge success">Yes</span> : <span className="status-badge pending">No</span>}</td>
                             <td>
@@ -2334,6 +2740,17 @@ const AdminProfile = () => {
                         </select>
                       </div>
                       <div className="form-group">
+                        <label>Display Position / Rank Number (1 = Top Position)</label>
+                        <input 
+                          type="number" 
+                          min="0"
+                          value={formData.displayOrder ?? formData.display_order ?? 0} 
+                          onChange={e => setFormData({...formData, displayOrder: parseInt(e.target.value, 10) || 0, display_order: parseInt(e.target.value, 10) || 0})} 
+                          placeholder="0 (e.g. 1 for top position)"
+                        />
+                        <small style={{ color: '#6b7280', fontSize: '11px', marginTop: '2px' }}>Lower position numbers (e.g. 1, 2, 3...) will be displayed first at the top of shop grids.</small>
+                      </div>
+                      <div className="form-group">
                         <label>Subcategory</label>
                         <input type="text" value={formData.subcategory} onChange={e => setFormData({...formData, subcategory: e.target.value})} />
                       </div>
@@ -2411,11 +2828,12 @@ const AdminProfile = () => {
                         </div>
                       )}
                       <div className="form-group">
-                        <label>Product Images</label>
+                        <label>Product Images (Upload Multiple)</label>
                         <div className="image-upload-wrapper">
                           <input 
                             type="file" 
                             accept="image/*" 
+                            multiple
                             onChange={e => handleImageUpload(e, 'images')} 
                             disabled={isUploading}
                           />
@@ -2537,10 +2955,11 @@ const AdminProfile = () => {
                               </div>
                               
                               <div className="image-upload-wrapper" style={{ marginTop: '10px' }}>
-                                <label style={{ fontSize: '12px', display: 'block', marginBottom: '5px' }}>Variant Images</label>
+                                <label style={{ fontSize: '12px', display: 'block', marginBottom: '5px' }}>Variant Images (Upload Multiple)</label>
                                 <input 
                                   type="file" 
                                   accept="image/*" 
+                                  multiple
                                   onChange={e => handleImageUpload(e, 'images', idx)} 
                                   disabled={isUploading}
                                 />
@@ -2877,6 +3296,37 @@ const AdminProfile = () => {
                       <div className="form-group">
                         <label>Prize</label>
                         <input type="text" value={formData.prize} onChange={e => setFormData({...formData, prize: e.target.value})} required />
+                      </div>
+                      <div className="form-group">
+                        <label>Winner Images / Proof (Upload Multiple)</label>
+                        <div className="image-upload-wrapper">
+                          <input 
+                            type="file" 
+                            accept="image/*" 
+                            multiple
+                            onChange={e => handleImageUpload(e, 'winnerImages')} 
+                            disabled={isUploading}
+                          />
+                          {isUploading && <span className="upload-spinner"><i className="fas fa-spinner fa-spin"></i> Uploading...</span>}
+                        </div>
+                        {formData.images?.length > 0 && (
+                          <div className="image-preview-grid" style={{ marginTop: '10px' }}>
+                            {formData.images.map((img, idx) => (
+                              <div key={idx} className="preview-item">
+                                <img
+                                  src={getSafeImage(img)}
+                                  alt="Winner Preview"
+                                  onError={(e) => {
+                                    if (!e.currentTarget.src.includes('placeholder')) {
+                                      e.currentTarget.src = 'https://via.placeholder.com/60';
+                                    }
+                                  }}
+                                />
+                                <button type="button" onClick={() => setFormData({...formData, images: formData.images.filter((_, i) => i !== idx)})}>&times;</button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
                       <div className="form-group" style={{ flexDirection: 'row', alignItems: 'center', marginBottom: '10px' }}>
                         <input type="checkbox" checked={formData.isPublished} onChange={e => setFormData({...formData, isPublished: e.target.checked})} id="is-published-checkbox" style={{ width: 'auto', marginRight: '10px' }} />

@@ -5,64 +5,42 @@ import { useCart } from '../context/CartContext';
 import { useToast } from '../context/ToastContext';
 import ProductCard from '../components/ProductCard';
 import SkeletonLoader from '../components/SkeletonLoader';
+import api, { resolveImageUrl } from '../utils/api';
 import './WishlistEnhanced.css';
-
-// Sample recently viewed products
-const recentlyViewedProducts = [
-  {
-    id: 17,
-    name: 'JNV Sports Jersey',
-    description: 'Performance Fabric | Breathable',
-    price: 549,
-    originalPrice: 799,
-    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=300&h=400&fit=crop',
-    badge: 'Limited',
-    reviews: 312
-  },
-  {
-    id: 18,
-    name: 'JNV Track Pants',
-    description: 'Comfort Fit | Quick Dry',
-    price: 449,
-    originalPrice: 649,
-    image: 'https://images.unsplash.com/photo-1586790170083-2f9ceadc732d?w=300&h=400&fit=crop',
-    reviews: 178
-  },
-  {
-    id: 19,
-    name: 'JNV ID Card Holder',
-    description: 'Premium Leather | Custom Engraving',
-    price: 99,
-    originalPrice: 149,
-    image: 'https://images.unsplash.com/photo-1602143403490-42c665fd7239?w=300&h=400&fit=crop',
-    badge: 'New',
-    reviews: 89
-  },
-  {
-    id: 20,
-    name: 'JNV Notebook Set',
-    description: 'Premium Paper | Custom Cover',
-    price: 249,
-    originalPrice: 349,
-    image: 'https://images.unsplash.com/photo-1563013544-b8e825b3e4c8?w=300&h=400&fit=crop',
-    reviews: 156
-  }
-];
 
 const Wishlist = () => {
   const { items, removeFromWishlist, clearWishlist } = useWishlist();
   const { addToCart } = useCart();
   const { success, error } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [recentlyViewed, setRecentlyViewed] = useState([]);
   const [recentlyLoading, setRecentlyLoading] = useState(true);
   const [sortBy, setSortBy] = useState('date');
 
   useEffect(() => {
-    // Simulate loading for recently viewed products
-    const timer = setTimeout(() => {
-      setRecentlyLoading(false);
-    }, 1000);
-    return () => clearTimeout(timer);
+    const fetchRecentProducts = async () => {
+      setRecentlyLoading(true);
+      try {
+        const result = await api.get('/products?limit=4');
+        if (result.success && result.data.products) {
+          const mapped = result.data.products.map(p => ({
+            id: p._id,
+            name: p.name,
+            description: p.description,
+            price: p.sale_price || p.price,
+            originalPrice: p.sale_price ? p.price : null,
+            image: resolveImageUrl(p.images?.[0] || 'https://via.placeholder.com/300x400?text=No+Image'),
+            reviews: p.review_count || 0
+          }));
+          setRecentlyViewed(mapped);
+        }
+      } catch (err) {
+        console.error('Error loading recent products:', err);
+      } finally {
+        setRecentlyLoading(false);
+      }
+    };
+    fetchRecentProducts();
   }, []);
 
   const handleAddToCart = async (product) => {
@@ -291,7 +269,7 @@ const Wishlist = () => {
               {recentlyLoading ? (
                 <SkeletonLoader type="product" count={4} />
               ) : (
-                recentlyViewedProducts.map((product, index) => (
+                recentlyViewed.map((product, index) => (
                   <div 
                     key={product.id} 
                     className="animate-fadeIn"

@@ -55,7 +55,8 @@ const CategoryEnhanced = ({ category = 'tshirts' }) => {
             colors: p.colors ? p.colors.map(c => c.name) : [],
             rating: p.rating,
             reviews: p.review_count,
-            badge: p.sale_price ? 'Sale' : (p.rating > 4.5 ? 'Bestseller' : '')
+            badge: p.sale_price ? 'Sale' : (p.rating > 4.5 ? 'Bestseller' : ''),
+            displayOrder: p.display_order ?? 0
           }));
           setProducts(mapped);
           setFilteredProducts(mapped);
@@ -70,7 +71,7 @@ const CategoryEnhanced = ({ category = 'tshirts' }) => {
   }, [category]);
 
   useEffect(() => {
-    let filtered = products;
+    let filtered = [...products];
 
     if (selectedSizes.length > 0) {
       filtered = filtered.filter(product => 
@@ -89,6 +90,7 @@ const CategoryEnhanced = ({ category = 'tshirts' }) => {
       case 'price-high':
         filtered.sort((a, b) => b.price - a.price);
         break;
+      case 'featured':
       default:
         break;
     }

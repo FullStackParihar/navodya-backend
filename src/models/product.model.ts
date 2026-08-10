@@ -10,6 +10,12 @@ export interface IFabricVariant {
     is_active: boolean;
 }
 
+export interface ISectionPlacement {
+    section_key: string;
+    priority: number;
+    is_visible: boolean;
+}
+
 export interface IProduct extends Document {
     name: string;
     slug: string;
@@ -22,11 +28,13 @@ export interface IProduct extends Document {
     sizes: { size: string; stock: number }[];
     colors: { name: string; hex?: string; images?: string[] }[];
     fabric_variants: IFabricVariant[];
+    placements?: ISectionPlacement[];
     tags: string[];
     features?: string[];
     specifications?: Record<string, string>;
     rating: number;
     review_count: number;
+    display_order: number;
     is_active: boolean;
     created_at: Date;
     updated_at: Date;
@@ -51,11 +59,17 @@ const productSchema = new mongoose.Schema({
         sku: { type: String, trim: true },
         is_active: { type: Boolean, default: true }
     }],
+    placements: [{
+        section_key: { type: String, required: true, index: true },
+        priority: { type: Number, default: 0, index: true },
+        is_visible: { type: Boolean, default: true }
+    }],
     tags: [String],
     features: [String],
     specifications: { type: Map, of: String },
     rating: { type: Number, default: 0 },
     review_count: { type: Number, default: 0 },
+    display_order: { type: Number, default: 0 },
     is_active: { type: Boolean, default: true }
 }, {
     timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },

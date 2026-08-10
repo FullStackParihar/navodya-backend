@@ -437,15 +437,15 @@ const ProductDetailEnhanced = () => {
             {/* Action Buttons */}
             <div className="action-buttons">
               <button 
-                className="add-to-cart-btn"
+                className="add-to-cart-btn btn-primary"
                 onClick={handleAddToCart}
                 disabled={!product.inStock || isAddingToCart || (product.fabricVariants.length > 0 && !selectedFabric) || (selectedFabric?.stock !== undefined && selectedFabric.stock <= 0)}
               >
-                <i className="fas fa-shopping-bag"></i>
+                {isAddingToCart ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-shopping-bag"></i>}
                 {isAddingToCart ? 'Adding...' : 'Add to Cart'}
               </button>
               <button 
-                className="buy-now-btn"
+                className="buy-now-btn btn-secondary"
                 onClick={handleBuyNow}
                 disabled={!product.inStock || (product.fabricVariants.length > 0 && !selectedFabric) || (selectedFabric?.stock !== undefined && selectedFabric.stock <= 0)}
               >

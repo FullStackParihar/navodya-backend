@@ -10,7 +10,7 @@ const AlumniKits = () => {
   useEffect(() => {
     const fetchKits = async () => {
       try {
-        const result = await api.get('/products');
+        const result = await api.get('/products?category=alumni-kit&section=alumni_kits');
         if (result.success) {
           const fetchedKits = result.data.products
             .filter(p => p.category_id && (p.category_id.name === 'Alumni Kit' || p.category_id.slug === 'alumni-kit'))

@@ -70,6 +70,7 @@ export const getProducts = asyncHandler(async (req: Request, res: Response) => {
   const {
     category,
     subcategory,
+    section,
     minPrice,
     maxPrice,
     size,
@@ -82,10 +83,18 @@ export const getProducts = asyncHandler(async (req: Request, res: Response) => {
     limit = '20',
   } = req.query;
 
-  const isAdmin = (req as any).user?.role === 'admin';
+  const { excludeAlumniKits, isAdmin: queryIsAdmin } = req.query;
+  const isAdmin = (req as any).user?.role === 'admin' || queryIsAdmin === 'true';
   const filter: any = isAdmin ? {} : { is_active: true };
 
-  const { excludeAlumniKits } = req.query;
+  if (section && !isAdmin) {
+    filter['placements'] = {
+      $not: {
+        $elemMatch: { section_key: section, is_visible: false }
+      }
+    };
+  }
+
   if (excludeAlumniKits === 'true') {
     const akCat = await Category.findOne({ slug: 'alumni-kit' });
     if (akCat) {
@@ -136,25 +145,39 @@ export const getProducts = asyncHandler(async (req: Request, res: Response) => {
     filter.colors = { $elemMatch: { name: { $regex: new RegExp(color as string, 'i') } } };
   }
 
+  const pageNum = parseInt(page as string) || 1;
+  const limitNum = parseInt(limit as string) || 100;
+  const skip = (pageNum - 1) * limitNum;
+
   const sortOption: any = {};
   if (sort === 'price_asc') {
     sortOption.price = 1;
   } else if (sort === 'price_desc') {
     sortOption.price = -1;
-  } else {
+  } else if (sort && sort !== 'featured' && sort !== 'display_order') {
     sortOption[sort as string] = order === 'asc' ? 1 : -1;
+  } else {
+    sortOption.created_at = -1;
   }
 
-  const pageNum = parseInt(page as string);
-  const limitNum = parseInt(limit as string);
-  const skip = (pageNum - 1) * limitNum;
-
   const total = await Product.countDocuments(filter);
-  const products = await Product.find(filter)
+  let products: any[] = await Product.find(filter)
     .populate('category_id', 'name slug')
     .sort(sortOption)
     .skip(skip)
-    .limit(limitNum);
+    .limit(limitNum)
+    .lean();
+
+  if (section) {
+    const secKey = String(section);
+    products.sort((a: any, b: any) => {
+      const itemA = a.placements?.find((p: any) => p.section_key === secKey);
+      const itemB = b.placements?.find((p: any) => p.section_key === secKey);
+      const pA = itemA ? Number(itemA.priority ?? 0) : 0;
+      const pB = itemB ? Number(itemB.priority ?? 0) : 0;
+      return pB - pA;
+    });
+  }
 
   res.status(200).json(
     new ApiResponse(
@@ -202,6 +225,8 @@ export const createProduct = asyncHandler(async (req: Request, res: Response) =>
     tags,
     specifications,
     fabricVariants,
+    displayOrder,
+    display_order,
   } = req.body;
 
   if (!mongoose.Types.ObjectId.isValid(categoryId)) {
@@ -219,6 +244,8 @@ export const createProduct = asyncHandler(async (req: Request, res: Response) =>
     throw new ApiError(400, 'Product with this slug already exists');
   }
 
+  const orderValue = displayOrder !== undefined ? Number(displayOrder) : (display_order !== undefined ? Number(display_order) : 0);
+
   const product = await Product.create({
     name,
     slug,
@@ -233,6 +260,7 @@ export const createProduct = asyncHandler(async (req: Request, res: Response) =>
     tags: tags || [],
     specifications,
     fabric_variants: normalizeFabricVariants(fabricVariants, category, price, salePrice),
+    display_order: orderValue,
   });
 
   res.status(201).json(new ApiResponse(201, product, 'Product created successfully'));
@@ -278,6 +306,10 @@ export const updateProduct = asyncHandler(async (req: Request, res: Response) =>
     updateData.is_active = updateData.isActive;
     delete updateData.isActive;
   }
+  if (updateData.displayOrder !== undefined) {
+    updateData.display_order = Number(updateData.displayOrder);
+    delete updateData.displayOrder;
+  }
 
   const product = await Product.findByIdAndUpdate(id, updateData, { new: true, runValidators: true });
 
@@ -286,6 +318,35 @@ export const updateProduct = asyncHandler(async (req: Request, res: Response) =>
   }
 
   res.status(200).json(new ApiResponse(200, product, 'Product updated successfully'));
+});
+
+export const updateDisplayOrder = asyncHandler(async (req: Request, res: Response) => {
+  const { items, orderedIds } = req.body;
+
+  if (Array.isArray(orderedIds)) {
+    const bulkOps = orderedIds.map((id: string, index: number) => ({
+      updateOne: {
+        filter: { _id: id },
+        update: { $set: { display_order: index + 1 } }
+      }
+    }));
+    await Product.bulkWrite(bulkOps);
+    return res.status(200).json(new ApiResponse(200, null, 'Product order sequence updated successfully'));
+  }
+
+  if (Array.isArray(items)) {
+    const bulkOps = items.map((item: any) => ({
+      updateOne: {
+        filter: { _id: item.id },
+        update: { $set: { display_order: Number(item.displayOrder || 0) } }
+      }
+    }));
+
+    await Product.bulkWrite(bulkOps);
+    return res.status(200).json(new ApiResponse(200, null, 'Product order updated successfully'));
+  }
+
+  throw new ApiError(400, 'Invalid request body. Expected orderedIds array or items array.');
 });
 
 export const deleteProduct = asyncHandler(async (req: Request, res: Response) => {
@@ -302,4 +363,41 @@ export const deleteProduct = asyncHandler(async (req: Request, res: Response) =>
   await Favorite.deleteMany({ product_id: id });
 
   res.status(200).json(new ApiResponse(200, null, 'Product deleted successfully'));
+});
+
+export const updateSectionPriorities = asyncHandler(async (req: Request, res: Response) => {
+  const { section_key, items } = req.body;
+  if (!section_key || !Array.isArray(items)) {
+    throw new ApiError(400, 'section_key and items array are required');
+  }
+
+  const productIds = items.map((item: any) => item.product_id).filter(Boolean);
+
+  if (productIds.length > 0) {
+    // Clean up previous placement entries for this section
+    await Product.updateMany(
+      { _id: { $in: productIds } },
+      { $pull: { placements: { section_key } } } as any
+    );
+
+    // Push updated placement entries
+    const pushOps = items.map((item: { product_id: string; priority: number; is_visible?: boolean }) => ({
+      updateOne: {
+        filter: { _id: item.product_id },
+        update: {
+          $push: {
+            placements: {
+              section_key,
+              priority: Number(item.priority ?? 0),
+              is_visible: item.is_visible !== undefined ? Boolean(item.is_visible) : true
+            }
+          }
+        }
+      }
+    }));
+
+    await Product.bulkWrite(pushOps);
+  }
+
+  res.status(200).json(new ApiResponse(200, null, 'Section priorities updated successfully'));
 });

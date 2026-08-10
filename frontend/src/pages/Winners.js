@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import api from '../utils/api';
+import api, { resolveImageUrl } from '../utils/api';
 import './Winners.css';
 
 const Winners = () => {
@@ -52,7 +52,7 @@ const Winners = () => {
               <div key={winner._id} className="winner-card animate-fadeInUp">
                 <div className="winner-contest-banner">
                   {winner.contest_id?.bannerImage ? (
-                    <img src={winner.contest_id.bannerImage} alt={winner.contest_id.title} />
+                    <img src={resolveImageUrl(winner.contest_id.bannerImage)} alt={winner.contest_id.title} />
                   ) : (
                     <div className="banner-placeholder">
                       <i className="fas fa-gift"></i>
@@ -90,6 +90,28 @@ const Winners = () => {
                       </span>
                     </div>
                   </div>
+
+                  {winner.images && winner.images.length > 0 && (
+                    <div className="winner-gallery-section">
+                      <div className="winner-gallery-title">
+                        <i className="fas fa-camera"></i> Celebration & Proof Photos
+                      </div>
+                      <div className="winner-gallery-grid">
+                        {winner.images.map((imgUrl, idx) => (
+                          <a 
+                            key={idx} 
+                            href={resolveImageUrl(imgUrl)} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="winner-gallery-thumb"
+                            title="Click to view full image"
+                          >
+                            <img src={resolveImageUrl(imgUrl)} alt={`Winner photo ${idx + 1}`} />
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
