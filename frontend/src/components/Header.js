@@ -31,7 +31,7 @@ const Header = () => {
     const role = localStorage.getItem('userRole');
     const email = localStorage.getItem('userEmail');
     setIsAuthenticated(auth);
-    setIsAdmin(auth && (role === 'admin' || email === 'admin@branderra.com'));
+    setIsAdmin(auth && (role === 'admin' || email === 'admin@navodaya.com'));
   }, [location.pathname]);
 
   useEffect(() => {
@@ -63,13 +63,13 @@ const Header = () => {
           <div className="top-nav-content">
             {/* Desktop Logo */}
             <Link to="/" className="logo animate-fadeIn desktop-logo">
-              <img src="/logo2.png" alt="Brand Era" style={{ height: '95px', width: 'auto' }} />
+              <img src="/logo2.png" alt="Navodaya Trendz" style={{ height: '95px', width: 'auto' }} />
             </Link>
 
             {/* Row 1: Logo + Actions + Hamburger (Mobile only) */}
             <div className="top-nav-row-1">
               <Link to="/" className="logo animate-fadeIn">
-                <img src="/logo2.png" alt="Brand Era" style={{ height: '65px', width: 'auto' }} />
+                <img src="/logo2.png" alt="Navodaya Trendz" style={{ height: '65px', width: 'auto' }} />
               </Link>
               
               <div className="mobile-actions-wrapper">
@@ -89,7 +89,7 @@ const Header = () => {
                   <div className="cart-icon-wrapper">
                     <i className="fas fa-heart"></i>
                     {wishlistCount > 0 && (
-                      <span className="cart-count" style={{ backgroundColor: '#E50000', border: '1px solid #ffffff' }}>{wishlistCount}</span>
+                      <span className="cart-count" style={{ backgroundColor: '#000000', border: '1px solid #ffffff' }}>{wishlistCount}</span>
                     )}
                   </div>
                 </Link>
@@ -119,10 +119,10 @@ const Header = () => {
 
             {/* Row 2: Delivery Info */}
             <div className="delivery-info animate-slideDown">
-              <i className="fas fa-truck-fast"></i>
+              <i className="fas fa-map-marker-alt"></i>
               <div>
                 <div>Deliver to</div>
-                <strong>Your Business</strong>
+                <strong>JNV Campus</strong>
               </div>
             </div>
 
@@ -159,7 +159,7 @@ const Header = () => {
                 <div className="cart-icon-wrapper">
                   <i className="fas fa-heart"></i>
                   {wishlistCount > 0 && (
-                    <span className="cart-count animate-bounce" style={{backgroundColor: '#E50000'}}>{wishlistCount}</span>
+                    <span className="cart-count animate-bounce" style={{backgroundColor: '#000000'}}>{wishlistCount}</span>
                   )}
                 </div>
                 <span>Wishlist</span>
@@ -233,7 +233,7 @@ const Header = () => {
                   to="/alumni-kits"
                   className={location.pathname === '/alumni-kits' ? 'active' : ''}
                 >
-                  Brand Kits
+                  Alumni Kits
                 </Link>
               </li>
               <li>
@@ -306,7 +306,7 @@ const Header = () => {
         <Link to="/tshirts" onClick={closeMobileMenu}>T-Shirts</Link>
         <Link to="/hoodies" onClick={closeMobileMenu}>Hoodies</Link>
         <Link to="/accessories" onClick={closeMobileMenu}>Accessories</Link>
-        <Link to="/alumni-kits" onClick={closeMobileMenu}>Brand Kits</Link>
+        <Link to="/alumni-kits" onClick={closeMobileMenu}>Alumni Kits</Link>
         <Link to="/contests" onClick={closeMobileMenu}>Giveaway</Link>
         <Link to="/winners" onClick={closeMobileMenu}>Winners</Link>
         <Link to="/today-deals" onClick={closeMobileMenu}>Today's Deals</Link>
@@ -334,7 +334,7 @@ const Header = () => {
               <Link to="/accessories" onClick={closeMobileMenu}>Accessories</Link>
             </li>
             <li>
-              <Link to="/alumni-kits" onClick={closeMobileMenu}>Brand Kits</Link>
+              <Link to="/alumni-kits" onClick={closeMobileMenu}>Alumni Kits</Link>
             </li>
             <li>
               <Link to="/contests" onClick={closeMobileMenu}>Giveaway</Link>

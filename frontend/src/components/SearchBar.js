@@ -14,14 +14,14 @@ const SearchBar = () => {
 
   // Sample product suggestions
   const allProducts = React.useMemo(() => [
-    { id: 1, name: 'Brand Era Classic Polo', category: 'T-Shirts' },
-    { id: 2, name: 'Corporate Brand Hoodie', category: 'Hoodies' },
-    { id: 3, name: 'Logo Baseball Cap', category: 'Accessories' },
-    { id: 4, name: 'Custom Brand Backpack', category: 'Accessories' },
-    { id: 5, name: 'Premium Cotton T-Shirt', category: 'T-Shirts' },
-    { id: 6, name: 'Sports Performance Tee', category: 'T-Shirts' },
-    { id: 7, name: 'Company Batch T-Shirt', category: 'T-Shirts' },
-    { id: 8, name: 'Alumni Brand Kit', category: 'Alumni Kits' },
+    { id: 1, name: 'JNV Classic T-Shirt', category: 'T-Shirts' },
+    { id: 2, name: 'JNV Alumni Hoodie', category: 'Hoodies' },
+    { id: 3, name: 'JNV Baseball Cap', category: 'Accessories' },
+    { id: 4, name: 'JNV Backpack', category: 'Accessories' },
+    { id: 5, name: 'JNV Polo T-Shirt', category: 'T-Shirts' },
+    { id: 6, name: 'JNV Sports T-Shirt', category: 'T-Shirts' },
+    { id: 7, name: 'JNV Batch T-Shirt', category: 'T-Shirts' },
+    { id: 8, name: 'JNV Alumni T-Shirt', category: 'T-Shirts' },
   ], []);
 
   useEffect(() => {

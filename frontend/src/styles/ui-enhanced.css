@@ -8,17 +8,17 @@
 }
 
 :root {
-    /* Brand Era: Black & Red Palette (must match theme.css) */
-    --primary-color: #E50000;
-    --primary-dark: #CC0000;
-    --primary-light: #FFE5E5;
-    --secondary-color: #000000;
-    --secondary-light: #111111;
-    --accent-color: #000000;
-    --success-color: #10b981;
-    --warning-color: #f59e0b;
-    --danger-color: #E50000;
-    --info-color: #3b82f6;
+    /* Modern Color Palette */
+    --primary-color: #2f4a67;
+    --primary-dark: #23394f;
+    --primary-light: #56718d;
+    --secondary-color: #111827;
+    --secondary-light: #1f2937;
+    --accent-color: #334155;
+    --success-color: #16a34a;
+    --warning-color: #d97706;
+    --danger-color: #dc2626;
+    --info-color: #2563eb;
     
     /* Neutral Colors */
     --white: #ffffff;
@@ -915,7 +915,7 @@ main {
 .public-app .wishlist-hero {
     position: relative;
     overflow: hidden;
-    background: linear-gradient(135deg, #000000 0%, #1a0000 55%, #E50000 100%) !important;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 62%, #2f4a67 100%) !important;
     padding: clamp(52px, 7vw, 78px) 0 clamp(44px, 6vw, 64px);
 }
 
@@ -1077,7 +1077,7 @@ main {
 }
 
 .public-app .item-details-enhanced h3 a:hover {
-    color: #E50000 !important;
+    color: #2f4a67 !important;
 }
 
 .public-app .item-details-enhanced p {
@@ -1137,7 +1137,7 @@ main {
 }
 
 .public-app .quantity-controls-enhanced .qty-btn:hover:not(:disabled) {
-    background: #E50000 !important;
+    background: #2f4a67 !important;
     color: #ffffff !important;
 }
 
@@ -1259,7 +1259,7 @@ main {
 }
 
 .public-app .quick-view-btn:hover {
-    background: #E50000;
+    background: #2f4a67;
     color: #ffffff;
 }
 
@@ -1268,7 +1268,7 @@ main {
 }
 
 .public-app .view-all-link {
-    color: #E50000;
+    color: #2f4a67;
     font-weight: 800;
 }
 
@@ -1291,7 +1291,7 @@ main {
     margin-bottom: 20px;
     border-radius: 24px;
     background: #eef5fb;
-    color: #E50000;
+    color: #2f4a67;
     font-size: 38px !important;
 }
 
@@ -1323,8 +1323,8 @@ main {
 
 .public-app .empty-cart-actions .btn-secondary:hover,
 .public-app .empty-wishlist-actions .btn-secondary:hover {
-    border-color: #E50000;
-    color: #E50000;
+    border-color: #2f4a67;
+    color: #2f4a67;
     transform: translateY(-1px);
     box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
 }
@@ -1385,7 +1385,7 @@ main {
 
 .public-app .free-shipping-notice {
     background: #eef5fb !important;
-    color: #E50000 !important;
+    color: #2f4a67 !important;
     border: 1px solid #dbeafe;
 }
 

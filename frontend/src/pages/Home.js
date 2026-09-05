@@ -89,9 +89,9 @@ const Home = () => {
       {/* Hero Banner */}
       <section className="hero-banner animate-fadeIn">
         <div className="hero-content">
-          <h1 className="animate-slideDown">Brand Era Store</h1>
+          <h1 className="animate-slideDown">Navodaya Alumni Store</h1>
           <p className="animate-slideUp" style={{ animationDelay: '0.2s' }}>
-            Premium Quality Merchandise for Schools, Colleges & Communities
+            Premium Quality Merchandise for JNV Students & Alumni
           </p>
           <button className="btn-primary animate-bounce" style={{ animationDelay: '0.4s' }}>
             Shop Now

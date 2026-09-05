@@ -7,7 +7,7 @@
 
 /* Header */
 .page-header {
-  background: linear-gradient(135deg, #E50000 0%, #1a2332 100%);
+  background: linear-gradient(135deg, #2f4a67 0%, #1a2332 100%);
   color: white;
   padding: 3rem 0;
   text-align: center;
@@ -64,7 +64,7 @@
 
 .filter-select:focus {
   outline: none;
-  border-color: #E50000;
+  border-color: #2f4a67;
   box-shadow: 0 0 0 3px rgba(47, 74, 103, 0.1);
 }
 
@@ -121,7 +121,7 @@
 .product-name {
   font-size: 1.3rem;
   font-weight: 600;
-  color: #E50000;
+  color: #2f4a67;
   margin-bottom: 0.5rem;
 }
 
@@ -154,7 +154,7 @@
 .current-price {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #E50000;
+  color: #2f4a67;
 }
 
 .product-features {
@@ -187,7 +187,7 @@
 }
 
 .add-to-cart-btn {
-  background: #E50000;
+  background: #2f4a67;
   color: white;
   border: none;
   padding: 0.75rem 1.5rem;
@@ -202,15 +202,15 @@
 }
 
 .add-to-cart-btn:hover {
-  background: #CC0000;
+  background: #23394f;
   transform: translateY(-2px);
   box-shadow: 0 8px 16px rgba(47, 74, 103, 0.3);
 }
 
 .quick-view-btn {
   background: transparent;
-  color: #E50000;
-  border: 2px solid #E50000;
+  color: #2f4a67;
+  border: 2px solid #2f4a67;
   padding: 0.75rem 1.5rem;
   border-radius: 6px;
   font-size: 0.9rem;
@@ -220,7 +220,7 @@
 }
 
 .quick-view-btn:hover {
-  background: #E50000;
+  background: #2f4a67;
   color: white;
   transform: translateY(-2px);
   box-shadow: 0 8px 16px rgba(47, 74, 103, 0.3);

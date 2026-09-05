@@ -10,13 +10,13 @@ const HomePage = () => {
         <div className="hero-content">
           <div className="hero-text">
             <h1 className="hero-title">
-              Welcome to <span className="brand">Brand</span> Era
+              Welcome to <span className="brand">Navodaya</span> Trendz
             </h1>
             <p className="hero-subtitle">
-              Premium Custom Apparel & Accessories for Schools & Colleges
+              Premium JNV Alumni Apparel & Accessories
             </p>
             <div className="hero-description">
-              Discover our exclusive collection of high-quality t-shirts, hoodies, and accessories designed specifically for students, alumni, and institutions. Express your identity with our premium products.
+              Discover our exclusive collection of high-quality t-shirts, hoodies, and accessories designed specifically for JNV students and alumni. Express your style with our premium products.
             </div>
             <div className="hero-actions">
               <Link to="/tshirts" className="btn btn-primary">
@@ -39,7 +39,7 @@ const HomePage = () => {
       {/* Features Section */}
       <section className="features">
         <div className="container">
-          <h2 className="section-title">Why Choose Brand Era?</h2>
+          <h2 className="section-title">Why Choose Navodaya Trendz?</h2>
           <div className="features-grid">
             <div className="feature-card">
               <div className="feature-icon">
@@ -53,7 +53,7 @@ const HomePage = () => {
                 <i className="fas fa-palette"></i>
               </div>
               <h3>Exclusive Designs</h3>
-              <p>Unique custom-branded designs created by talented artists exclusively for your institution or community.</p>
+              <p>Unique JNV-themed designs created by talented artists exclusively for our community.</p>
             </div>
             <div className="feature-card">
               <div className="feature-icon">
@@ -67,7 +67,7 @@ const HomePage = () => {
                 <i className="fas fa-tags"></i>
               </div>
               <h3>Affordable Prices</h3>
-              <p>Student-friendly pricing with special discounts for schools, colleges, and bulk orders.</p>
+              <p>Student-friendly pricing with special discounts for JNV students and bulk orders.</p>
             </div>
           </div>
         </div>
@@ -83,7 +83,7 @@ const HomePage = () => {
                 <i className="fas fa-tshirt"></i>
               </div>
               <h3>T-Shirts</h3>
-              <p>Premium cotton t-shirts with custom branding</p>
+              <p>Premium cotton t-shirts with JNV branding</p>
             </Link>
             <Link to="/hoodies" className="category-card">
               <div className="category-icon">
@@ -125,7 +125,7 @@ const HomePage = () => {
                   <i className="fas fa-star"></i>
                 </div>
                 <p className="testimonial-text">
-                  "Amazing quality t-shirts! The custom design is perfect and the fabric is so comfortable. Highly recommend!"
+                  "Amazing quality t-shirts! The JNV design is perfect and the fabric is so comfortable. Highly recommend!"
                 </p>
                 <div className="testimonial-author">
                   <strong>Rahul Kumar</strong>

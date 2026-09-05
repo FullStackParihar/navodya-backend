@@ -207,7 +207,7 @@ const CheckoutDashboard = () => {
               <i className="fas fa-phone"></i>
               <span>Call Support</span>
             </a>
-            <a href="mailto:support@branderra.com" className="support-link">
+            <a href="mailto:support@navodayatrendz.com" className="support-link">
               <i className="fas fa-envelope"></i>
               <span>Email Us</span>
             </a>

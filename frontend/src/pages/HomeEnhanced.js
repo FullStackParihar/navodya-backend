@@ -56,7 +56,7 @@ const features = [
   {
     icon: 'fas fa-palette',
     title: 'Exclusive Designs',
-    description: 'Unique custom-branded designs you won\'t find anywhere else',
+    description: 'Unique JNV-themed designs you won\'t find anywhere else',
     color: '#d97706'
   },
   {
@@ -126,16 +126,16 @@ const Home = () => {
             <div className="hero-text">
               <span className="hero-badge animate-fadeIn">
                 <i className="fas fa-star"></i>
-                Premium Branded Merchandise
+                Premium JNV Merchandise
               </span>
               <h1 className="hero-title animate-slideUp">
-                Brand <span className="brand-accent">Era</span>
+                Navodaya <span className="brand-accent">Trendz</span>
               </h1>
               <p className="hero-subtitle animate-slideUp" style={{ animationDelay: '0.1s' }}>
-                Premium Quality Merchandise for Schools, Colleges & Communities
+                Premium Quality Merchandise for JNV Students & Alumni
               </p>
               <p className="hero-description animate-slideUp" style={{ animationDelay: '0.2s' }}>
-                Discover our exclusive collection of high-quality t-shirts, hoodies, and accessories designed specifically for your unique brand or community.
+                Discover our exclusive collection of high-quality t-shirts, hoodies, and accessories designed specifically for the Navodaya community.
               </p>
               <div className="hero-actions animate-slideUp" style={{ animationDelay: '0.3s' }}>
                 <Link to="/tshirts" className="btn btn-primary">
@@ -312,7 +312,7 @@ const Home = () => {
                 Ready to <span className="text-accent">Upgrade</span> Your Style?
               </h2>
               <p className="cta-description">
-                Join thousands of happy students, institutions, and communities who trust Brand Era for their branding and merchandise needs.
+                Join thousands of happy JNV students and alumni who trust Navodaya Trendz for their merchandise needs.
               </p>
             </div>
             <div className="cta-actions">

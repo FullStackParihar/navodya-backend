@@ -18,12 +18,12 @@ const AccessoriesPage = () => {
   const products = [
     {
       id: 1,
-      name: 'Classic Brand Backpack',
+      name: 'JNV Backpack',
       category: 'bags',
       price: 999,
       originalPrice: 1299,
       image: 'https://via.placeholder.com/300x400?text=Backpack1',
-      description: 'Durable backpack with custom logo and multiple compartments',
+      description: 'Durable backpack with JNV logo and multiple compartments',
       colors: ['black', 'navy'],
       featured: true
     },
@@ -34,7 +34,7 @@ const AccessoriesPage = () => {
       price: 499,
       originalPrice: 699,
       image: 'https://via.placeholder.com/300x400?text=Cap1',
-      description: 'Breathable sports cap with embroidered custom emblem',
+      description: 'Breathable sports cap with embroidered JNV emblem',
       colors: ['black', 'navy', 'white', 'red'],
       featured: true
     },
@@ -45,18 +45,18 @@ const AccessoriesPage = () => {
       price: 1999,
       originalPrice: 2499,
       image: 'https://via.placeholder.com/300x400?text=Watch1',
-      description: 'Elegant watch with custom branding on the dial',
+      description: 'Elegant watch with JNV branding on the dial',
       colors: ['black', 'navy', 'brown'],
       featured: false
     },
     {
       id: 4,
-      name: 'Custom Brand Keychain',
+      name: 'JNV Keychain',
       category: 'other',
       price: 299,
       originalPrice: 399,
       image: 'https://via.placeholder.com/300x400?text=Keychain1',
-      description: 'Stylish keychain with custom logo charm',
+      description: 'Stylish keychain with JNV logo charm',
       colors: ['black', 'navy', 'silver'],
       featured: false
     },
@@ -67,7 +67,7 @@ const AccessoriesPage = () => {
       price: 199,
       originalPrice: 299,
       image: 'https://via.placeholder.com/300x400?text=Badge1',
-      description: 'Professional badge holder for institutional alumni identification',
+      description: 'Professional badge holder for JNV alumni identification',
       colors: ['black', 'navy', 'blue'],
       featured: false
     }
