@@ -6,7 +6,7 @@ const WishlistPage = () => {
   const [wishlistItems, setWishlistItems] = useState([
     {
       id: 1,
-      name: 'JNV Classic Tee',
+      name: 'Classic Classic Tee',
       price: 599,
       image: 'https://via.placeholder.com/300x400?text=T-Shirt1',
       inWishlist: true
@@ -20,7 +20,7 @@ const WishlistPage = () => {
     },
     {
       id: 3,
-      name: 'JNV Backpack',
+      name: 'Classic Backpack',
       price: 999,
       image: 'https://via.placeholder.com/300x400?text=Backpack1',
       inWishlist: false
@@ -45,7 +45,7 @@ const WishlistPage = () => {
       <div className="page-header">
         <div className="container">
           <h1>My Wishlist</h1>
-          <p>Save your favorite JNV items for later</p>
+          <p>Save your favorite branded items for later</p>
         </div>
       </div>
 
@@ -87,7 +87,7 @@ const WishlistPage = () => {
                           {item.inWishlist ? 'In Wishlist' : 'Not in Wishlist'}
                         </span>
                       </div>
-                      <p className="item-description">Premium JNV apparel with high-quality materials</p>
+                      <p className="item-description">Premium custom-branded apparel with high-quality materials</p>
                       <div className="item-actions">
                         <button 
                           onClick={() => toggleWishlist(item.id)}

@@ -7,8 +7,8 @@ const Footer = () => {
       <div className="container">
         <div className="footer-content">
           <div className="footer-section">
-            <h3>Navodaya Trendz</h3>
-            <p>Made by Navodayans, for Navodayans. Your trusted partner for JNV alumni merchandise.</p>
+            <h3>Brand Era</h3>
+            <p>Design. Print. Brand. Deliver. Your trusted partner for smart branding and custom solutions.</p>
             <div className="social-links">
               <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">
                 <i className="fab fa-facebook"></i>
@@ -64,7 +64,7 @@ const Footer = () => {
         </div>
         
         <div className="footer-bottom">
-          <p>&copy; 2025 Navodaya Trendz. All Rights Reserved. | Made with ❤️ by Navodayans</p>
+          <p>&copy; 2025 Brand Era. All Rights Reserved. | Design. Print. Brand. Deliver.</p>
         </div>
       </div>
     </footer>

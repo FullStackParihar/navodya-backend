@@ -10,7 +10,7 @@ import SkeletonLoader from '../components/SkeletonLoader';
 const recentlyViewedProducts = [
   {
     id: 17,
-    name: 'JNV Sports Jersey',
+    name: 'BE Sports Jersey',
     description: 'Performance Fabric | Breathable',
     price: 549,
     originalPrice: 799,
@@ -20,7 +20,7 @@ const recentlyViewedProducts = [
   },
   {
     id: 18,
-    name: 'JNV Track Pants',
+    name: 'BE Track Pants',
     description: 'Comfort Fit | Quick Dry',
     price: 449,
     originalPrice: 649,
@@ -29,7 +29,7 @@ const recentlyViewedProducts = [
   },
   {
     id: 19,
-    name: 'JNV ID Card Holder',
+    name: 'BE ID Card Holder',
     description: 'Premium Leather | Custom Engraving',
     price: 99,
     originalPrice: 149,
@@ -39,7 +39,7 @@ const recentlyViewedProducts = [
   },
   {
     id: 20,
-    name: 'JNV Notebook Set',
+    name: 'BE Notebook Set',
     description: 'Premium Paper | Custom Cover',
     price: 249,
     originalPrice: 349,
@@ -125,7 +125,7 @@ const Wishlist = () => {
             <div className="hero-content">
               <h1 className="animate-slideDown">My Wishlist</h1>
               <p className="animate-slideUp" style={{ animationDelay: '0.2s' }}>
-                Save your favorite JNV merchandise for later
+                Save your favorite branded merchandise for later
               </p>
             </div>
           </div>

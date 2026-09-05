@@ -183,7 +183,7 @@ export const CartProvider = ({ children }) => {
     if (token) {
       fetchBackendCart();
     } else {
-      const savedCart = localStorage.getItem('navodayaCart');
+      const savedCart = localStorage.getItem('brandEraCart') || localStorage.getItem('navodayaCart');
       if (savedCart) {
         try {
           const parsedCart = JSON.parse(savedCart);
@@ -197,11 +197,12 @@ export const CartProvider = ({ children }) => {
 
   // Save cart to localStorage whenever it changes
   useEffect(() => {
-    localStorage.setItem('navodayaCart', JSON.stringify({
+    localStorage.setItem('brandEraCart', JSON.stringify({
       items: state.items,
       totalItems: state.totalItems,
       totalAmount: state.totalAmount,
     }));
+    try { localStorage.removeItem('navodayaCart'); } catch (e) {}
   }, [state]);
 
   // Actions

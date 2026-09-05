@@ -6,7 +6,7 @@ const CartPage = () => {
   const [cartItems, setCartItems] = useState([
     {
       id: 1,
-      name: 'JNV Classic Tee',
+      name: 'Classic Classic Tee',
       price: 599,
       quantity: 2,
       size: 'L',
@@ -24,7 +24,7 @@ const CartPage = () => {
     },
     {
       id: 3,
-      name: 'JNV Backpack',
+      name: 'Classic Backpack',
       price: 999,
       quantity: 1,
       size: 'One Size',
@@ -95,7 +95,7 @@ const CartPage = () => {
                       <span className="item-size">Size: {item.size}</span>
                       <span className="item-color">Color: {item.color}</span>
                     </div>
-                    <p className="item-description">Premium JNV apparel with high-quality materials</p>
+                    <p className="item-description">Premium custom-branded apparel with high-quality materials</p>
                     <div className="item-actions">
                       <div className="quantity-controls">
                         <button 

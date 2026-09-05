@@ -96,7 +96,7 @@ export const WishlistProvider = ({ children }) => {
     if (token) {
       fetchBackendWishlist();
     } else {
-      const savedWishlist = localStorage.getItem('navodayaWishlist');
+      const savedWishlist = localStorage.getItem('brandEraWishlist') || localStorage.getItem('navodayaWishlist');
       if (savedWishlist) {
         try {
           const { items } = JSON.parse(savedWishlist);
@@ -110,10 +110,11 @@ export const WishlistProvider = ({ children }) => {
 
   // Save wishlist to localStorage whenever it changes (only for guest users or as fallback)
   useEffect(() => {
-    localStorage.setItem('navodayaWishlist', JSON.stringify({
+    localStorage.setItem('brandEraWishlist', JSON.stringify({
       items: state.items,
       totalItems: state.totalItems,
     }));
+    try { localStorage.removeItem('navodayaWishlist'); } catch (e) {}
   }, [state]);
 
   // Actions

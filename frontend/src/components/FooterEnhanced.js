@@ -28,7 +28,7 @@ const FooterEnhanced = () => {
 
   const handleNewsletterSubmit = (e) => {
     e.preventDefault();
-    alert('Thank you for subscribing to Navodaya Trendz newsletter!');
+    alert('Thank you for subscribing to Brand Era newsletter!');
     setEmail('');
   };
 
@@ -46,8 +46,8 @@ const FooterEnhanced = () => {
         {/* Newsletter Section */}
         <div className="newsletter-section">
           <div className="newsletter-content">
-            <h3><span className="newsletter-icon" aria-hidden="true">&#127891;</span> Stay Connected with Navodayans</h3>
-            <p>Get exclusive offers, new arrivals, and alumni meet updates delivered to your inbox</p>
+            <h3><span className="newsletter-icon" aria-hidden="true">&#128226;</span> Stay Connected with Brand Era</h3>
+            <p>Get exclusive offers, new branding solutions, and custom design updates delivered to your inbox</p>
             <form className="newsletter-form" onSubmit={handleNewsletterSubmit}>
               <input 
                 type="email" 
@@ -73,7 +73,7 @@ const FooterEnhanced = () => {
                 <li><Link to="/feedback"><i className="fas fa-chevron-right"></i> Contact Us</Link></li>
                 <li><Link to="/about-us"><i className="fas fa-chevron-right"></i> Our Story</Link></li>
                 <li><a href="#"><i className="fas fa-chevron-right"></i> Careers</a></li>
-                <li><Link to="/about-us"><i className="fas fa-chevron-right"></i> NTz Partner</Link></li>
+                <li><Link to="/about-us"><i className="fas fa-chevron-right"></i> Partner with Us</Link></li>
               </ul>
             </div>
 
@@ -97,10 +97,10 @@ const FooterEnhanced = () => {
               <ul className="footer-links">
                 <li><Link to="/tshirts"><i className="fas fa-chevron-right"></i> T-Shirts</Link></li>
                 <li><Link to="/hoodies"><i className="fas fa-chevron-right"></i> Hoodies</Link></li>
-                <li><Link to="/alumni-kits"><i className="fas fa-chevron-right"></i> Alumni Meet Kits</Link></li>
+                <li><Link to="/alumni-kits"><i className="fas fa-chevron-right"></i> Brand Kits</Link></li>
                 <li><Link to="/accessories"><i className="fas fa-chevron-right"></i> Corporate Gifts</Link></li>
                 <li><Link to="/bulk-order"><i className="fas fa-chevron-right"></i> Custom Merchandise</Link></li>
-                <li><Link to="/tshirts"><i className="fas fa-chevron-right"></i> JNV School Merch</Link></li>
+                <li><Link to="/tshirts"><i className="fas fa-chevron-right"></i> Schools & Colleges</Link></li>
               </ul>
             </div>
 
@@ -110,7 +110,7 @@ const FooterEnhanced = () => {
               <ul className="footer-links contact-info-list">
                 <li>
                   <i className="fas fa-map-marker-alt"></i>
-                  <span>Navodaya Trendz (NTz)<br />India</span>
+                  <span>Brand Era<br />India</span>
                 </li>
                 <li>
                   <i className="fas fa-phone"></i>
@@ -118,11 +118,11 @@ const FooterEnhanced = () => {
                 </li>
                 <li>
                   <i className="fas fa-envelope"></i>
-                  <a href="mailto:navodayatrendz@gmail.com">navodayatrendz@gmail.com</a>
+                  <a href="mailto:hello@branderra.com">hello@branderra.com</a>
                 </li>
                 <li>
                   <i className="fas fa-globe"></i>
-                  <a href="https://www.navodayatrendz.com" target="_blank" rel="noopener noreferrer">www.navodayatrendz.com</a>
+                  <a href="https://www.branderra.com" target="_blank" rel="noopener noreferrer">www.branderra.com</a>
                 </li>
               </ul>
             </div>
@@ -135,9 +135,9 @@ const FooterEnhanced = () => {
             {/* Brand Section */}
             <div className="footer-brand footer-animate">
               <div className="footer-brand-mark">
-                <img src="/logo.png" alt="Navodaya Trendz" />
+                <img src="/logo.png" alt="Brand Era" />
               </div>
-              <p>Made by Navodayans, for Navodayans. Your trusted partner for JNV alumni merchandise.</p>
+              <p>Design. Print. Brand. Deliver. Your trusted partner for smart branding and custom solutions.</p>
               <div className="footer-social">
                 <a href="https://instagram.com" className="social-link" aria-label="Instagram" target="_blank" rel="noopener noreferrer">
                   <i className="fab fa-instagram"></i>
@@ -151,7 +151,7 @@ const FooterEnhanced = () => {
                 <a href="https://youtube.com" className="social-link" aria-label="YouTube" target="_blank" rel="noopener noreferrer">
                   <i className="fab fa-youtube"></i>
                 </a>
-                <a href="https://wa.me/918947900884" className="social-link" aria-label="WhatsApp Community" target="_blank" rel="noopener noreferrer">
+                <a href="https://wa.me/918947900884" className="social-link" aria-label="WhatsApp" target="_blank" rel="noopener noreferrer">
                   <i className="fab fa-whatsapp"></i>
                 </a>
               </div>
@@ -230,7 +230,7 @@ const FooterEnhanced = () => {
         {/* Footer Bottom */}
         <div className="footer-bottom">
           <div className="footer-bottom-content">
-            <p className="copyright">&copy; 2025 Navodaya Trendz – Made by Navodayans, for Navodayans. All Rights Reserved.</p>
+            <p className="copyright">&copy; 2025 Brand Era – Design. Print. Brand. Deliver. All Rights Reserved.</p>
             <div className="bottom-links">
               <a href="#">Sitemap</a>
               <a href="#">Careers</a>
@@ -268,14 +268,14 @@ const FooterEnhanced = () => {
 
       {/* Enhanced Footer Styles */}
       <style>{`
-        /* Black & White Footer Variables */
+        /* Brand Era Footer Variables - Black & Red */
         :root {
           --footer-primary: #000000;
-          --footer-secondary: #111111;
-          --footer-accent: #ffffff;
+          --footer-secondary: #0a0a0a;
+          --footer-accent: #E50000;
           --footer-text: #ffffff;
           --footer-text-light: #999999;
-          --footer-border: #333333;
+          --footer-border: #1a1a1a;
           --transition-footer: all 0.3s ease;
         }
 
@@ -1003,11 +1003,11 @@ const FooterEnhanced = () => {
           }
         }
 
-        /* Production footer layout overrides */
+        /* Production footer layout overrides - Brand Era */
         .universal-footer {
           margin-top: 72px;
-          background: #0f172a;
-          color: #f8fafc;
+          background: #000000;
+          color: #ffffff;
           border-top: 0;
           overflow: hidden;
         }
@@ -1082,7 +1082,7 @@ const FooterEnhanced = () => {
           width: 34px;
           height: 2px;
           border-radius: 999px;
-          background: #94a3b8;
+          background: #E50000;
         }
 
         .footer-links {
@@ -1106,12 +1106,12 @@ const FooterEnhanced = () => {
         }
 
         .footer-links a:hover {
-          color: #ffffff;
+          color: #E50000;
           transform: translateX(3px);
         }
 
         .footer-links a:hover i {
-          color: #ffffff;
+          color: #E50000;
           transform: translateX(2px);
         }
 
@@ -1196,7 +1196,7 @@ const FooterEnhanced = () => {
         }
 
         .trust-badge i {
-          color: #ffffff;
+          color: #E50000;
         }
 
         .trust-badge span {
@@ -1263,19 +1263,19 @@ const FooterEnhanced = () => {
         }
 
         .newsletter-input:focus {
-          box-shadow: 0 0 0 3px rgba(47, 74, 103, 0.12);
+          box-shadow: 0 0 0 3px rgba(229, 0, 0, 0.12);
         }
 
         .newsletter-button {
           min-height: 52px;
           border-radius: 12px;
           padding: 0 24px;
-          background: #2f4a67;
+          background: #E50000;
           font-size: 16px;
         }
 
         .newsletter-button:hover {
-          background: #23394f;
+          background: #CC0000;
           transform: none;
         }
 
@@ -1308,7 +1308,7 @@ const FooterEnhanced = () => {
 
         .bottom-links a:hover,
         .theme-toggle-link:hover {
-          color: #ffffff;
+          color: #E50000;
         }
 
         .back-to-top {
@@ -1316,12 +1316,12 @@ const FooterEnhanced = () => {
           height: 44px;
           right: 22px;
           bottom: 22px;
-          background: #2f4a67;
-          box-shadow: 0 10px 22px rgba(15, 23, 42, 0.22);
+          background: #E50000;
+          box-shadow: 0 10px 22px rgba(229, 0, 0, 0.3);
         }
 
         .back-to-top:hover {
-          background: #23394f;
+          background: #CC0000;
           transform: translateY(-2px);
         }
 
