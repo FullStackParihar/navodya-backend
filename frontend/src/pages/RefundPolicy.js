@@ -25,7 +25,7 @@ const RefundPolicy = () => {
           <ul>
             <li>Wrong product received</li>
             <li>Damaged product</li>
-            <li>Printing mistake by NTz</li>
+            <li>Printing mistake by BE</li>
             <li>Defective item</li>
           </ul>
           <p>
@@ -86,7 +86,7 @@ const RefundPolicy = () => {
             <strong>Phone:</strong> <a href="tel:+918947900884">+91-8947900884</a>
           </p>
           <p>
-            <strong>Email:</strong> <a href="mailto:navodayatrendz@gmail.com">navodayatrendz@gmail.com</a>
+            <strong>Email:</strong> <a href="mailto:hello@branderra.com">hello@branderra.com</a>
           </p>
         </section>
       </div>

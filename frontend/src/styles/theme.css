@@ -1,8 +1,8 @@
-/* Theme System for React App - Black & White Only */
+/* Theme System for React App - Brand Era: Black & Red */
 
 /* CSS Variables for Light Mode */
 :root {
-  /* Light Mode Colors (Black & White) */
+  /* Light Mode Colors (Brand Era: Black + Red) */
   --bg-primary: #ffffff;
   --bg-secondary: #f9fafb;
   --bg-tertiary: #f3f4f6;
@@ -14,15 +14,25 @@
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   
-  /* Brand Colors (Black & White) */
-  --primary-color: #111111;
-  --primary-hover: #333333;
-  --primary-light: #ffffff;
+  /* Brand Colors (Brand Era: Black + Red) — Single Source of Truth */
+  --primary-color: #E50000;
+  --primary-dark: #CC0000;
+  --primary-hover: #CC0000;
+  --primary-light: #FFE5E5;
+  --brand-red: #E50000;
+  --brand-red-hover: #CC0000;
+  --brand-red-light: #FFE5E5;
+  --brand-black: #000000;
+  --brand-black-soft: #111111;
   --success-color: #10b981;
   --warning-color: #f59e0b;
-  --danger-color: #ef4444;
+  --danger-color: #E50000;
   --info-color: #3b82f6;
-  
+
+  /* Amazon-orange alias mapped to brand red for hero & legacy components */
+  --amazon-orange: #E50000;
+  --amazon-orange-hover: #CC0000;
+
   /* Header Colors */
   --header-bg: #ffffff;
   --header-text: #000000;
@@ -30,9 +40,10 @@
   
   /* Footer Colors */
   --footer-primary: #000000;
-  --footer-secondary: #1a1a1a;
+  --footer-secondary: #0a0a0a;
   --footer-text: #ffffff;
   --footer-text-light: #aaaaaa;
+  --footer-accent: #E50000;
   
   /* Card Colors */
   --card-bg: #ffffff;
@@ -40,63 +51,74 @@
   --card-shadow: 0 2px 12px rgba(0,0,0,0.08);
   
   /* Button Colors */
-  --btn-primary-bg: #111111;
+  --btn-primary-bg: #E50000;
   --btn-primary-text: #ffffff;
-  --btn-primary-hover: #333333;
+  --btn-primary-hover: #CC0000;
   --btn-secondary-bg: #ffffff;
-  --btn-secondary-text: #111111;
+  --btn-secondary-text: #000000;
   --btn-secondary-hover: #f3f4f6;
   
   /* Transition */
   --theme-transition: all 0.3s ease;
 }
 
-/* Dark Mode Variables (Black & White) */
+/* Dark Mode Variables (Brand Era: Black + Red) */
 [data-theme="dark"] {
-  /* Dark Mode Colors (Black & White) */
-  --bg-primary: #111827;
-  --bg-secondary: #1f2937;
-  --bg-tertiary: #374151;
+  /* Dark Mode Colors (Brand Era: Black + Red) */
+  --bg-primary: #0a0a0a;
+  --bg-secondary: #141414;
+  --bg-tertiary: #1f1f1f;
   --text-primary: #f9fafb;
   --text-secondary: #d1d5db;
   --text-muted: #9ca3af;
-  --border-color: #374151;
+  --border-color: #2d2d2d;
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
-  
-  /* Brand Colors (Black & White) */
-  --primary-color: #ffffff;
-  --primary-hover: #e5e7eb;
-  --primary-light: #111827;
+
+  /* Brand Colors (Brand Era: Black + Red) */
+  --primary-color: #E50000;
+  --primary-dark: #CC0000;
+  --primary-hover: #CC0000;
+  --primary-light: #331111;
+  --brand-red: #E50000;
+  --brand-red-hover: #CC0000;
+  --brand-red-light: #331111;
+  --brand-black: #000000;
+  --brand-black-soft: #111111;
   --success-color: #10b981;
   --warning-color: #f59e0b;
-  --danger-color: #ef4444;
+  --danger-color: #E50000;
   --info-color: #3b82f6;
-  
+
+  /* Amazon-orange alias mapped to brand red for hero & legacy components */
+  --amazon-orange: #E50000;
+  --amazon-orange-hover: #CC0000;
+
   /* Header Colors */
   --header-bg: #000000;
   --header-text: #ffffff;
-  --header-border: #333333;
-  
+  --header-border: #1a1a1a;
+
   /* Footer Colors */
   --footer-primary: #000000;
-  --footer-secondary: #1a1a1a;
+  --footer-secondary: #0a0a0a;
   --footer-text: #ffffff;
   --footer-text-light: #cccccc;
-  
+  --footer-accent: #E50000;
+
   /* Card Colors */
-  --card-bg: #000000;
-  --card-border: #333333;
-  --card-shadow: 0 2px 12px rgba(255,255,255,0.08);
-  
+  --card-bg: #0f0f0f;
+  --card-border: #1f1f1f;
+  --card-shadow: 0 2px 12px rgba(229, 0, 0, 0.08);
+
   /* Button Colors */
-  --btn-primary-bg: #ffffff;
-  --btn-primary-text: #111827;
-  --btn-primary-hover: #f3f4f6;
+  --btn-primary-bg: #E50000;
+  --btn-primary-text: #ffffff;
+  --btn-primary-hover: #CC0000;
   --btn-secondary-bg: transparent;
   --btn-secondary-text: #ffffff;
-  --btn-secondary-hover: #374151;
+  --btn-secondary-hover: #1f1f1f;
 }
 
 /* Global Unified Button Styles (Overrides local fragmentation) */
@@ -181,8 +203,8 @@ body {
 }
 
 .search-bar input:focus {
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.2);
+  border-color: var(--brand-red);
+  box-shadow: 0 0 0 2px rgba(229, 0, 0, 0.2);
 }
 
 /* Product Cards Theme */
@@ -371,8 +393,8 @@ select {
 input:focus,
 textarea:focus,
 select:focus {
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.2);
+  border-color: var(--brand-red);
+  box-shadow: 0 0 0 2px rgba(229, 0, 0, 0.2);
 }
 
 /* Filter and Sort Components */

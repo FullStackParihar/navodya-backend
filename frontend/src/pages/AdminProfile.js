@@ -125,7 +125,7 @@ const AdminProfile = () => {
       return;
     }
     
-    if (userRole === 'admin' || userEmail === 'admin@navodaya.com') {
+    if (userRole === 'admin' || userEmail === 'admin@branderra.com') {
       setIsAdmin(true);
     } else {
       navigate('/user-profile');

@@ -3,12 +3,12 @@ import React, { useMemo, useState } from 'react';
 const FAQ = () => {
   const faqs = useMemo(() => ([
     {
-      q: '1. What is Navodaya Trendz?',
-      a: 'Navodaya Trendz (NTz) is an exclusive merchandise brand for Jawahar Navodaya Vidyalaya (JNV) alumni, students, schools, and Navodayans worldwide. We specialize in customized T-shirts, hoodies, alumni meet kits, banners, trophies, and corporate gifts.'
+      q: '1. What is Brand Era?',
+      a: 'Brand Era (BE) is a premier branding and custom merchandise platform for schools, colleges, corporates, institutions, and communities across India. We specialize in customized T-shirts, hoodies, event kits, banners, trophies, and corporate gifts.'
     },
     {
-      q: '2. Do you have merchandise for all JNV schools?',
-      a: 'Yes! We provide designs for all 650+ JNVs across India. You can also request custom school/batch designs anytime.'
+      q: '2. Do you have merchandise for all schools and colleges?',
+      a: 'Yes! We provide custom designs for all schools and colleges across India. You can also request custom school/batch/organization designs anytime.'
     },
     {
       q: '3. Can I order customized products with school name or batch year?',
@@ -52,15 +52,15 @@ const FAQ = () => {
     },
     {
       q: '13. How do I get support or ask questions?',
-      a: 'You can contact us via Phone (+91-8947900884), Email (navodayatrendz@gmail.com), WhatsApp (available on website), or our social media (Instagram, Facebook, LinkedIn).'
+      a: 'You can contact us via Phone (+91-8947900884), Email (hello@branderra.com), WhatsApp (available on website), or our social media (Instagram, Facebook, LinkedIn).'
     },
     {
-      q: '14. Do you work with JNV schools for official events?',
-      a: 'Yes. We supply trophies, certificates, event banners, and uniform T-shirts. We also support GeM Orders for principals and purchase officers.'
+      q: '14. Do you work with schools and colleges for official events?',
+      a: 'Yes. We supply trophies, certificates, event banners, and uniform T-shirts. We also support official orders for principals and purchase officers.'
     },
     {
       q: '15. Do you take corporate or office orders?',
-      a: 'Yes! We provide customized merchandise for Navodayan professionals working in corporates, startups, alumni associations, and NGOs. Bulk corporate pricing is available.'
+      a: 'Yes! We provide customized merchandise for professionals working in corporates, startups, associations, and NGOs. Bulk corporate pricing is available.'
     },
     {
       q: '16. Can I get help in designing my merchandise?',
@@ -75,8 +75,8 @@ const FAQ = () => {
       a: 'Yes. We offer attractive discounts for alumni meets, corporate orders, school orders, and 100+ quantity bookings. The discount depends on the item type and quantity.'
     },
     {
-      q: '19. Is this an official JNV/NVS store?',
-      a: 'Navodaya Trendz is founded by Navodayans for the Navodaya community. We are not officially affiliated with NVS, but we serve all Navodayans and alumni groups worldwide.'
+      q: '19. Is this an official institution store?',
+      a: 'Brand Era is an independent branding and merchandise platform. We work with schools, colleges, corporates, and communities to create custom-branded products. All designs are created with client approval and do not imply official affiliation unless explicitly stated.'
     },
     {
       q: '20. Do you keep customer data secure?',
@@ -140,7 +140,7 @@ const FAQ = () => {
                   <a className="btn-secondary" href="tel:+918947900884">
                     <i className="fas fa-phone"></i> Call
                   </a>
-                  <a className="btn-secondary" href="mailto:navodayatrendz@gmail.com?subject=FAQ%20Help">
+                  <a className="btn-secondary" href="mailto:hello@branderra.com?subject=FAQ%20Help">
                     <i className="fas fa-envelope"></i> Email
                   </a>
                   <a className="btn-primary" href="https://wa.me/918947900884?text=Hi%2C%20I%20need%20help%20with%20my%20order">

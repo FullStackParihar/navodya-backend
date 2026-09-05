@@ -20,14 +20,14 @@ const HeaderAmazon = () => {
           <div className="top-nav-content">
             <Link to="/" className="logo animate-fadeIn">
               <i className="fas fa-graduation-cap"></i>
-              Navodaya<span>Trendz</span>
+              Brand<span>Era</span>
             </Link>
             
             <div className="delivery-info animate-slideDown">
               <i className="fas fa-map-marker-alt"></i>
               <div>
                 <div>Deliver to</div>
-                <strong>JNV Campus</strong>
+                <strong>Your Campus</strong>
               </div>
             </div>
             

@@ -60,7 +60,7 @@
 
 .about-subtitle {
   margin: 0 auto clamp(24px, 4vw, 36px);
-  color: #2f4a67;
+  color: #E50000;
   font-size: clamp(1rem, 2vw, 1.35rem);
   font-weight: 700;
 }
@@ -133,7 +133,7 @@
   padding: 10px 14px;
   border-radius: 999px;
   background: #eef5fb;
-  color: #2f4a67;
+  color: #E50000;
   font-size: clamp(1rem, 1.8vw, 1.25rem);
   font-weight: 800;
 }
@@ -142,7 +142,7 @@
   margin: 24px 0;
   padding: 20px 22px;
   border: 1px solid #dbe2ea;
-  border-left: 5px solid #2f4a67;
+  border-left: 5px solid #E50000;
   border-radius: 16px;
   background: #f8fafc;
   color: #1e293b;
@@ -209,7 +209,7 @@
   position: absolute;
   left: 8px;
   top: 0;
-  color: #2f4a67;
+  color: #E50000;
   font-weight: 900;
 }
 
@@ -251,7 +251,7 @@
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: #2f4a67;
+  background: #E50000;
   color: #ffffff;
   font-size: 12px;
   font-weight: 900;

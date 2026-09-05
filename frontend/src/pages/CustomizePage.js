@@ -41,8 +41,8 @@ const CustomizePage = () => {
       {/* Header */}
       <div className="page-header">
         <div className="container">
-          <h1>Customize Your JNV Gear</h1>
-          <p>Create personalized JNV apparel with your custom designs and text</p>
+          <h1>Customize Your Brand Gear</h1>
+          <p>Create personalized custom-branded apparel with your custom designs and text</p>
         </div>
       </div>
 

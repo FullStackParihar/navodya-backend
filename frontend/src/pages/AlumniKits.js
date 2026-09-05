@@ -37,7 +37,7 @@ const AlumniKits = () => {
     <div className="alumni-kits-page">
       <div className="alumni-kits-hero">
         <h1>Alumni Kits</h1>
-        <p>Premium quality kits for Navodaya alumni to show your pride.</p>
+        <p>Premium quality kits for alumni to show your institutional pride.</p>
       </div>
 
       <div className="alumni-kits-container">
@@ -75,7 +75,7 @@ const AlumniKits = () => {
                     </div>
                     <div className="kit-info">
                       <h3 className="kit-name">{kit.title}</h3>
-                      <span className="kit-type">Navodaya Alumni Kit</span>
+                      <span className="kit-type">Premium Alumni Kit</span>
                     </div>
                   </div>
 

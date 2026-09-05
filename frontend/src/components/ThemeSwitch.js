@@ -54,7 +54,7 @@ const ThemeSwitch = () => {
   }, []);
 
   const updateMetaThemeColor = (theme) => {
-    let themeColor = '#2f4a67'; // Default to muted brand color
+    let themeColor = '#E50000'; // Default to Brand Era red
     
     if (theme === 'dark') {
       themeColor = '#0f1419'; // Dark background
@@ -126,7 +126,7 @@ const ThemeSwitch = () => {
       <style>{`
         /* Theme Switch Container */
         .theme-switch-container {
-          display: none !important;
+          display: flex;
           position: fixed;
           bottom: 20px;
           left: 20px;
@@ -176,7 +176,7 @@ const ThemeSwitch = () => {
           left: 0;
           right: 0;
           bottom: 0;
-          background: var(--switch-active-bg, linear-gradient(135deg, #2f4a67, #23394f));
+          background: var(--switch-active-bg, linear-gradient(135deg, #E50000, #CC0000));
           transform: scaleX(0);
           transform-origin: left;
           transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -210,7 +210,7 @@ const ThemeSwitch = () => {
           left: 43px;
           background: var(--switch-active-knob, #ffffff);
           box-shadow: var(--switch-active-knob-shadow, 0 2px 12px rgba(47, 74, 103, 0.4));
-          color: var(--primary-color, #2f4a67);
+          color: var(--primary-color, #E50000);
         }
 
         /* Icons inside the switch */
@@ -243,14 +243,31 @@ const ThemeSwitch = () => {
         }
 
         .theme-label.active {
-          color: var(--primary-color, #2f4a67);
+          color: var(--primary-color, #E50000);
           font-weight: 600;
         }
 
-        /* Responsive Design */
+        /* Responsive Design - keep visible on mobile via smaller footprint */
         @media (max-width: 768px) {
           .theme-switch-container {
-            display: none !important;
+            bottom: 14px;
+            left: 14px;
+            padding: 8px 10px;
+          }
+          .theme-switch-label,
+          .theme-labels {
+            display: none;
+          }
+          .theme-switch {
+            width: 62px;
+            height: 32px;
+          }
+          .theme-switch-knob {
+            width: 24px;
+            height: 24px;
+          }
+          .theme-switch.active .theme-switch-knob {
+            left: 32px;
           }
         }
       `}</style>

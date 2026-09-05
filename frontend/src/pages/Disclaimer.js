@@ -19,7 +19,7 @@ const Disclaimer = () => {
         <section className="info-section">
           <h2>Limitation of Liability</h2>
           <p>
-            Navodaya Trendz (NTz) is not responsible for:
+            Brand Era (BE) is not responsible for:
           </p>
           <ul>
             <li>Delays caused by courier partners</li>
@@ -27,14 +27,14 @@ const Disclaimer = () => {
             <li>Third-party technical issues</li>
           </ul>
           <p>
-            By using this website, you agree that NTz is not liable for indirect, incidental, or consequential damages.
+            By using this website, you agree that BE is not liable for indirect, incidental, or consequential damages.
           </p>
         </section>
 
         <section className="info-section">
-          <h2>Community Branding Disclaimer</h2>
+          <h2>Custom Branding Disclaimer</h2>
           <p>
-            All logos and school names used for alumni merchandise are for community use and do not imply official endorsements by the Jawahar Navodaya Vidyalaya (JNV) administration or Navodaya Vidyalaya Samiti (NVS) unless explicitly stated.
+            All logos, school names, college names, and organizational brands used for custom merchandise are for client-approved use and do not imply official endorsements by any institution or administration unless explicitly stated.
           </p>
         </section>
 
@@ -45,7 +45,7 @@ const Disclaimer = () => {
             <strong>Phone:</strong> <a href="tel:+918947900884">+91-8947900884</a>
           </p>
           <p>
-            <strong>Email:</strong> <a href="mailto:navodayatrendz@gmail.com">navodayatrendz@gmail.com</a>
+            <strong>Email:</strong> <a href="mailto:hello@branderra.com">hello@branderra.com</a>
           </p>
         </section>
       </div>

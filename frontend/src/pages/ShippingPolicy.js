@@ -62,7 +62,7 @@ const ShippingPolicy = () => {
         <section className="info-section">
           <h2>5. Delays</h2>
           <p>
-            Navodaya Trendz (NTz) is not responsible for delays caused by:
+            Brand Era (BE) is not responsible for delays caused by:
           </p>
           <ul>
             <li>Courier company issues</li>
@@ -77,7 +77,7 @@ const ShippingPolicy = () => {
           <p>If your package arrives in a damaged condition, please follow these steps:</p>
           <ol style={{ paddingLeft: '1.5rem', lineHeight: '1.7', color: 'var(--text-secondary)' }}>
             <li style={{ marginBottom: '0.5rem' }}>Record a continuous unboxing video showing the shipping label clearly.</li>
-            <li style={{ marginBottom: '0.5rem' }}>Send photos of the packaging and product to the NTz team.</li>
+            <li style={{ marginBottom: '0.5rem' }}>Send photos of the packaging and product to the BE team.</li>
             <li style={{ marginBottom: '0.5rem' }}>We will provide a replacement as per our policy.</li>
           </ol>
         </section>
@@ -89,7 +89,7 @@ const ShippingPolicy = () => {
             <strong>Phone:</strong> <a href="tel:+918947900884">+91-8947900884</a>
           </p>
           <p>
-            <strong>Email:</strong> <a href="mailto:navodayatrendz@gmail.com">navodayatrendz@gmail.com</a>
+            <strong>Email:</strong> <a href="mailto:hello@branderra.com">hello@branderra.com</a>
           </p>
         </section>
       </div>
