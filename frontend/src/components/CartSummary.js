@@ -216,7 +216,7 @@ const CartSummary = ({
 
         .checkout-btn {
           width: 100%;
-          background: var(--gradient-primary, linear-gradient(135deg, #E50000, #CC0000));
+          background: var(--gradient-primary, linear-gradient(135deg, #2f4a67, #23394f));
           color: white;
           border: none;
           padding: 1rem;

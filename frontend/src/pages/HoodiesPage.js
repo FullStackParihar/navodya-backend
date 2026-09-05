@@ -16,12 +16,12 @@ const HoodiesPage = () => {
   const products = [
     {
       id: 1,
-      name: 'Classic Brand Hoodie',
+      name: 'JNV Classic Hoodie',
       style: 'pullover',
       price: 1299,
       originalPrice: 1599,
       image: 'https://via.placeholder.com/300x400?text=Hoodie1',
-      description: 'Premium cotton blend hoodie with embroidered custom logo',
+      description: 'Premium cotton blend hoodie with embroidered JNV logo',
       colors: ['black', 'navy', 'gray'],
       sizes: ['S', 'M', 'L', 'XL', 'XXL'],
       featured: true
@@ -52,12 +52,12 @@ const HoodiesPage = () => {
     },
     {
       id: 4,
-      name: 'Brand Graphic Hoodie',
+      name: 'JNV Graphic Hoodie',
       style: 'graphic',
       price: 1599,
       originalPrice: 1999,
       image: 'https://via.placeholder.com/300x400?text=Hoodie4',
-      description: 'Bold graphic designs featuring custom branding themes and artwork',
+      description: 'Bold graphic designs featuring JNV themes and artwork',
       colors: ['black', 'navy', 'gray', 'red', 'blue'],
       sizes: ['S', 'M', 'L', 'XL', 'XXL'],
       featured: false

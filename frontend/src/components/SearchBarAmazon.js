@@ -145,7 +145,7 @@ const SearchBarAmazon = () => {
           <input
             type="text"
             className="search-input"
-            placeholder="Search Brand Era — T-Shirts, Hoodies, Brand Kits..."
+            placeholder="Search Navodaya Trendz..."
             value={query}
             onChange={handleInputChange}
             onFocus={handleFocus}

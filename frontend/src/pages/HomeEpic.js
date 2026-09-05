@@ -63,44 +63,44 @@ const categories = [
 
 const regionsData = [
   {
-    name: 'Central Region – Bhopal',
+    name: 'Navodaya Region Bhopal',
     image: 'https://i.ytimg.com/vi/IEt-J7q7I_4/sddefault.jpg',
-    caption: 'Our Central Region office based in Bhopal serves schools and colleges across Madhya Pradesh, Chhattisgarh, and Odisha. We are committed to delivering quality branding, custom merchandise, and printing solutions to institutions, nurturing student talent, and promoting holistic development across the region.'
+    caption: 'Navodaya Region Bhopal oversees the functioning of Jawahar Navodaya Vidyalayas across Madhya Pradesh, Chhattisgarh, and Odisha. It is committed to providing quality education, nurturing talent, and promoting holistic student development. Through academics, sports, and cultural activities, it helps shape future leaders of the nation.'
   },
   {
-    name: 'North Region – Chandigarh',
+    name: 'Chandigarh Region',
     image: 'https://www.studyiq.com/articles/wp-content/uploads/2025/02/04133805/Chandigarh-City-blog.png',
     caption: 'Chandigarh – The City Beautiful, known for its modern architecture, clean surroundings, and vibrant culture. A symbol of planned urban development, Chandigarh blends natural beauty, rich heritage, and contemporary lifestyle, making it one of India\'s most admired cities.'
   },
   {
-    name: 'South Region – Hyderabad',
+    name: 'Navodaya Region Hyderabad',
     image: 'https://img.freepik.com/premium-vector/outline-hyderabad-india-city-skyline-with-orange-buildings-business-travel-concept-with-modern-architecture-hyderabad-cityscape-with-landmarks_119523-14916.jpg',
     caption: 'Hyderabad – The City of Pearls, renowned for its rich history, iconic landmarks, world-famous cuisine, and thriving technology sector. From the grandeur of historic monuments to modern innovation hubs, Hyderabad offers a unique blend of tradition, culture, and progress.'
   },
   {
-    name: 'West Region – Jaipur',
+    name: 'Navodaya Region Jaipur',
     image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTEpl4dSglW4zv9fcHl0_JLRkNmqGhp5wsaBQ&s',
-    caption: 'Our West Region office based in Jaipur serves schools and colleges across Rajasthan, Haryana, and Delhi. We are dedicated to providing premium custom branding solutions, fostering academic excellence, and nurturing talented students from diverse backgrounds across North and West India.'
+    caption: 'Navodaya Region Jaipur oversees the functioning of Jawahar Navodaya Vidyalayas across Rajasthan, Haryana, and Delhi. It is dedicated to providing quality education, fostering academic excellence, and nurturing talented students from diverse backgrounds. Through academics, sports, cultural activities, and leadership programs, it contributes to the holistic development of future citizens.'
   },
   {
-    name: 'North Region – Lucknow',
+    name: 'Navodaya Region Lucknow',
     image: 'https://i.ytimg.com/vi/VvPvfd6NQOg/maxresdefault.jpg',
-    caption: 'Our North Region office based in Lucknow serves schools and colleges across Uttar Pradesh and Uttarakhand. We are committed to providing quality custom merchandise and branding services, promoting academic excellence, and nurturing talented students from diverse communities.'
+    caption: 'Navodaya Region Lucknow oversees the functioning of Jawahar Navodaya Vidyalayas across Uttar Pradesh and Uttarakhand. It is committed to providing quality residential education, promoting academic excellence, and nurturing talented students, especially from rural areas. Through academics, sports, cultural activities, and leadership development programs, it helps shape responsible and future-ready citizens.'
   },
   {
-    name: 'East Region – Patna',
+    name: 'Navodaya Region Patna',
     image: 'https://i.ytimg.com/vi/yGp_o04GYF8/maxresdefault.jpg',
-    caption: 'Our East Region office based in Patna serves schools and colleges across Bihar, Jharkhand, and West Bengal. We are dedicated to providing quality residential branding and custom printing solutions, and nurturing young talent from rural communities through premium branding services.'
+    caption: 'Navodaya Region Patna oversees the functioning of Jawahar Navodaya Vidyalayas across Bihar, Jharkhand, and West Bengal. It is dedicated to providing quality residential education, fostering academic excellence, and nurturing young talent from rural communities. Through academics, sports, cultural activities, and leadership programs, it supports the holistic development of future leaders.'
   },
   {
-    name: 'West Region – Pune',
+    name: 'Navodaya Region Pune',
     image: 'https://i.ytimg.com/vi/SCeSlwJxRKU/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLBd9ZqhYaJ_VKoOdJ-kSWR30k4lKg',
-    caption: 'Our West Region office based in Pune serves schools and colleges across Maharashtra, Goa, Gujarat, and the Union Territories of Dadra & Nagar Haveli and Daman & Diu. We are committed to providing quality custom merchandise, branding, and printing solutions for institutions across Western India.'
+    caption: 'Navodaya Region Pune oversees the functioning of Jawahar Navodaya Vidyalayas across Maharashtra, Goa, Gujarat, and the Union Territories of Dadra & Nagar Haveli and Daman & Diu. It is committed to providing quality residential education, promoting academic excellence, and nurturing talented students from diverse backgrounds. Through academics, sports, cultural activities, and leadership development, it helps shape future-ready citizens.'
   },
   {
-    name: 'Northeast Region – Shillong',
+    name: 'Navodaya Region Shillong',
     image: 'https://5.imimg.com/data5/SELLER/Default/2022/1/BS/LI/BO/43641836/shilong-tour-package-500x500.jpg',
-    caption: 'Our Northeast Region office based in Shillong serves schools and colleges across the Northeastern states of India. We are dedicated to providing quality branding, custom merchandise, and printing solutions among students from diverse cultural backgrounds across the Northeast.'
+    caption: 'Navodaya Region Shillong oversees the functioning of Jawahar Navodaya Vidyalayas across the Northeastern states of India. It is dedicated to providing quality residential education, nurturing talent, and promoting academic excellence among students from diverse cultural backgrounds. Through academics, sports, cultural exchange, and leadership programs, it supports the holistic development of future leaders.'
   }
 ];
 
@@ -391,7 +391,7 @@ const HomeEpic = () => {
         <div className="container">
           <div className="section-header">
             <span className="section-tag">Store</span>
-            <h2 className="section-title">Popular Branded <span className="highlight">Merchandise</span></h2>
+            <h2 className="section-title">Popular JNV <span className="highlight">Merchandise</span></h2>
           </div>
 
           <div className="merch-grid">
@@ -480,12 +480,12 @@ const HomeEpic = () => {
         </div>
       </section>
 
-      {/* Our Service Regions Section */}
+      {/* Navodaya Regions Section */}
       <section className="region-section">
         <div className="container">
           <div className="section-header">
-            <span className="section-tag">Nationwide Presence</span>
-            <h2 className="section-title">Our Service <span className="highlight">Regions</span></h2>
+            <span className="section-tag">Our Community</span>
+            <h2 className="section-title">Navodaya <span className="highlight">Regions</span></h2>
           </div>
           
           <div className="regions-wrapper">

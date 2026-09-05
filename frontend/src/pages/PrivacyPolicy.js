@@ -12,7 +12,7 @@ const PrivacyPolicy = () => {
         <section className="info-section">
           <h2>Introduction</h2>
           <p>
-            Brand Era (&ldquo;BE&rdquo;, &ldquo;we&rdquo;, &ldquo;our&rdquo;, &ldquo;us&rdquo;) is committed to protecting your personal information. This Privacy Policy explains how we collect, use, store, and protect your data when you visit <a href="https://www.branderra.com" target="_blank" rel="noopener noreferrer">www.branderra.com</a>.
+            Navodaya Trendz (&ldquo;NTz&rdquo;, &ldquo;we&rdquo;, &ldquo;our&rdquo;, &ldquo;us&rdquo;) is committed to protecting your personal information. This Privacy Policy explains how we collect, use, store, and protect your data when you visit <a href="https://www.navodayatrendz.com" target="_blank" rel="noopener noreferrer">www.navodayatrendz.com</a>.
           </p>
         </section>
 
@@ -97,7 +97,7 @@ const PrivacyPolicy = () => {
           <h2>Contact Us</h2>
           <p>If you have any questions about our Privacy Policy, please reach out:</p>
           <p>
-            <strong>Email:</strong> <a href="mailto:hello@branderra.com">hello@branderra.com</a>
+            <strong>Email:</strong> <a href="mailto:navodayatrendz@gmail.com">navodayatrendz@gmail.com</a>
           </p>
           <p>
             <strong>Phone:</strong> <a href="tel:+918947900884">+91-8947900884</a>

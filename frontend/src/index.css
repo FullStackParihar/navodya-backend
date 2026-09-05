@@ -1,4 +1,4 @@
-/* Brand Era: Black & Red Merch UI */
+/* Modern Black & White JNV Merch UI */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
 @import './styles/theme.css';
 
@@ -32,44 +32,21 @@ main {
     padding: 0 24px;
 }
 
-/* Brand Era Utility Variables (Black & Red) */
+/* Black & White Variables */
 :root {
-    --be-primary: #E50000;
-    --be-primary-hover: #CC0000;
-    --be-accent: #000000;
-    --be-accent-hover: #1a1a1a;
-    --be-success: #10b981;
-    --be-danger: #E50000;
-    --be-dark: #000000;
-    --be-gray: #666666;
-    --be-light: #f5f5f5;
-    --be-white: #ffffff;
-    --be-gradient-1: #E50000;
-    --be-gradient-2: #CC0000;
-    --be-gradient-3: #000000;
-    --be-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
-    --be-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
-    --be-shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.16);
-    --be-shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.2);
-    --be-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --be-radius-sm: 8px;
-    --be-radius-md: 16px;
-    --be-radius-lg: 24px;
-
-    /* Legacy aliases — keep existing selectors working */
     --jnv-primary: #000000;
-    --jnv-primary-hover: #1a1a1a;
-    --jnv-accent: #E50000;
-    --jnv-accent-hover: #CC0000;
-    --jnv-success: #10b981;
-    --jnv-danger: #E50000;
+    --jnv-primary-hover: #333333;
+    --jnv-accent: #000000;
+    --jnv-accent-hover: #333333;
+    --jnv-success: #000000;
+    --jnv-danger: #000000;
     --jnv-dark: #000000;
     --jnv-gray: #666666;
     --jnv-light: #f5f5f5;
     --jnv-white: #ffffff;
     --jnv-gradient-1: #000000;
-    --jnv-gradient-2: #E50000;
-    --jnv-gradient-3: #CC0000;
+    --jnv-gradient-2: #000000;
+    --jnv-gradient-3: #000000;
     --jnv-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
     --jnv-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
     --jnv-shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.16);
@@ -80,7 +57,7 @@ main {
     --jnv-radius-lg: 24px;
 }
 
-/* Brand Era Animations */
+/* Amazon-style Animations */
 @keyframes slideDown {
     from { opacity: 0; transform: translateY(-20px); }
     to { opacity: 1; transform: translateY(0); }
@@ -1120,7 +1097,7 @@ main {
     height: 100%;
     padding: 0;
     border-radius: 0 8px 8px 0;
-    background: #E50000;
+    background: #2f4a67;
 }
 
 .nav-icons {
@@ -1144,7 +1121,7 @@ main {
 
 .nav-item:hover,
 .nav-item.active {
-    background: #E50000;
+    background: #2f4a67;
     color: #ffffff;
     transform: translateY(-2px);
 }
@@ -1213,7 +1190,7 @@ main {
 .menu-toggle:hover,
 .nav-links a:hover,
 .nav-links a.active {
-    background: #E50000;
+    background: #2f4a67;
     color: #ffffff !important;
     transform: translateY(-1px);
     box-shadow: 0 8px 18px rgba(47, 74, 103, 0.16);
@@ -1466,7 +1443,7 @@ main {
 }
 
 .public-app .search-wrapper:focus-within {
-    border-color: #E50000;
+    border-color: #2f4a67;
     box-shadow: 0 0 0 3px rgba(47, 74, 103, 0.13);
 }
 
@@ -1510,7 +1487,7 @@ main {
     height: 44px;
     padding: 0;
     border-radius: 0 12px 12px 0;
-    background: #E50000;
+    background: #2f4a67;
     color: #ffffff;
     box-shadow: none;
 }
@@ -1560,9 +1537,9 @@ main {
 
 .public-app .nav-item:hover,
 .public-app .nav-item.active {
-    background: #E50000;
+    background: #2f4a67;
     color: #ffffff;
-    border-color: #E50000;
+    border-color: #2f4a67;
     transform: translateY(-1px);
     box-shadow: 0 8px 18px rgba(47, 74, 103, 0.15);
 }
@@ -1579,7 +1556,7 @@ main {
     height: 18px;
     font-size: 10px;
     color: #ffffff;
-    background: #E50000;
+    background: #2f4a67;
     border: 2px solid #ffffff;
 }
 
@@ -1644,9 +1621,9 @@ main {
 .public-app .menu-toggle:hover,
 .public-app .nav-links a:hover,
 .public-app .nav-links a.active {
-    background: #E50000;
+    background: #2f4a67;
     color: #ffffff !important;
-    border-color: #E50000;
+    border-color: #2f4a67;
     transform: translateY(-1px);
     box-shadow: 0 8px 18px rgba(47, 74, 103, 0.15);
 }

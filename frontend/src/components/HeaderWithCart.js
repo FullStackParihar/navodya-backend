@@ -21,7 +21,7 @@ const HeaderWithCart = () => {
       <header className="header">
         <nav className="nav container">
           <Link to="/" className="logo">
-            <i className="fas fa-graduation-cap"></i> Brand Era
+            <i className="fas fa-graduation-cap"></i> Navodaya Trendz
           </Link>
           
           <ul className="nav-links">

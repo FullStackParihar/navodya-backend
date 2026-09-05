@@ -7,16 +7,16 @@ const AboutUs = () => {
       <div className="container">
         {/* Intro Section */}
         <section className="about-intro">
-          <h1 className="about-title">❤️ ABOUT BRAND ERA</h1>
-          <p className="about-subtitle">More Than Merchandise. Design. Print. Brand. Deliver.</p>
+          <h1 className="about-title">❤️ ABOUT NAVODAYA TRENDZ</h1>
+          <p className="about-subtitle">More Than Merchandise. A Community. A Legacy.</p>
           
           <div className="intro-text">
-            <p>Every brand carries a story.</p>
-            <p>A story of vision, passion, and purpose.</p>
-            <p>A story of creative designs, quality craftsmanship, memorable campaigns, shared successes, and partnerships that last a lifetime.</p>
-            <p>No matter where your journey takes you—whether you're building a startup, growing an institution, leading a corporation, or expressing personal style—we all share one pursuit:</p>
-            <h2 className="identity-text"># We Build Brands.</h2>
-            <p>Brand Era was born from this pursuit.</p>
+            <p>Every Navodayan carries a story.</p>
+            <p>A story of leaving home at a young age.</p>
+            <p>A story of hostel life, friendships, morning assemblies, house competitions, late-night conversations, shared dreams, and memories that last a lifetime.</p>
+            <p>No matter where life takes us—whether we become entrepreneurs, engineers, teachers, doctors, civil servants, artists, or professionals—we all share one identity:</p>
+            <h2 className="identity-text"># We Are Navodayans.</h2>
+            <p>Navodaya Trendz was born from this identity.</p>
           </div>
         </section>
 
@@ -25,24 +25,24 @@ const AboutUs = () => {
         {/* Our Story */}
         <section className="about-section">
           <h2 className="section-heading">🎓 Our Story</h2>
-          <p>Brand Era (BE) is India's premier dedicated branding, merchandise, and printing platform built for schools, colleges, corporates, and communities nationwide.</p>
+          <p>Navodaya Trendz (NTz) is India's first dedicated merchandise and community platform built exclusively for the Jawahar Navodaya Vidyalaya ecosystem.</p>
           <p>We started with a simple belief:</p>
           <blockquote className="blockquote">
-            Every organization and individual deserves a way to celebrate their identity, showcase their brand, and proudly wear the designs that represent their journey.
+            Every Navodayan deserves a way to celebrate their journey, reconnect with their community, and proudly wear the identity that shaped them.
           </blockquote>
-          <p>What began as a vision to create meaningful, custom-branded merchandise has evolved into something much bigger—a full-service platform that connects institutions, organizations, event organizers, and professionals across India with end-to-end branding solutions.</p>
+          <p>What began as a vision to create meaningful JNV merchandise has evolved into something much bigger—a platform that connects alumni, students, schools, organizers, and professionals across the Navodaya family.</p>
         </section>
 
         <hr className="divider" />
 
-        {/* Platform for Everyone */}
+        {/* Platform for Every Navodayan */}
         <section className="about-section">
-          <h2 className="section-heading">🌍 A Platform for Every Brand</h2>
-          <p>Today, institutions and organizations across India are making an impact in their communities and around the world.</p>
+          <h2 className="section-heading">🌍 A Platform for Every Navodayan</h2>
+          <p>Today, Navodayans are making an impact across India and around the world.</p>
           <p>Yet one thing remains constant:</p>
-          <p className="highlight-text">The power of great branding.</p>
-          <p>Brand Era exists to strengthen brands by creating products, experiences, and opportunities that bring communities together.</p>
-          <p>Whether you're hosting an annual event, organizing a college fest, launching a corporate identity, or simply looking for custom apparel that represents your institution—we're here to help you showcase your story.</p>
+          <p className="highlight-text">The bond we built inside JNV.</p>
+          <p>Navodaya Trendz exists to strengthen that bond by creating products, experiences, and opportunities that bring the community together.</p>
+          <p>Whether you're attending your first alumni meet, organizing a reunion, launching a regional alumni chapter, or simply looking for a T-shirt that reminds you of your school days—we're here to help you celebrate your story.</p>
         </section>
 
         <hr className="divider" />
@@ -50,7 +50,7 @@ const AboutUs = () => {
         {/* What We Create */}
         <section className="about-section">
           <h2 className="section-heading">👕 What We Create</h2>
-          <p>We design and deliver premium merchandise and branding solutions inspired by your unique identity.</p>
+          <p>We design and deliver premium merchandise inspired by the Navodaya spirit.</p>
           
           <div className="products-grid">
             <div className="product-category">
@@ -89,7 +89,7 @@ const AboutUs = () => {
             </div>
           </div>
           
-          <p className="product-footer">Every product is thoughtfully designed to represent the pride, values, and unique identity of your brand or community.</p>
+          <p className="product-footer">Every product is thoughtfully designed to represent the pride, values, and memories of being a Navodayan.</p>
         </section>
 
         <hr className="divider" />
@@ -97,22 +97,22 @@ const AboutUs = () => {
         {/* Beyond Merchandise */}
         <section className="about-section">
           <h2 className="section-heading">🤝 Beyond Merchandise</h2>
-          <p>Brand Era is not just an e-commerce brand.</p>
-          <p>We are building a complete branding ecosystem where you can:</p>
+          <p>Navodaya Trendz is not just an e-commerce brand.</p>
+          <p>We are building a digital ecosystem where Navodayans can:</p>
           
           <ul className="features-list">
-            <li>Discover Branding Solutions</li>
+            <li>Discover Alumni Meets</li>
             <li>Register for Events</li>
-            <li>Connect with Communities</li>
-            <li>Join Institutional Networks</li>
-            <li>Attend Design & Branding Workshops</li>
-            <li>Learn from Industry Experts</li>
-            <li>Celebrate Milestones & Achievements</li>
+            <li>Connect with Batchmates</li>
+            <li>Join Regional Alumni Networks</li>
+            <li>Attend Career Guidance Sessions</li>
+            <li>Learn from Successful Alumni</li>
+            <li>Celebrate Achievements</li>
             <li>Build Meaningful Professional Connections</li>
           </ul>
           
           <p>Our goal is simple:</p>
-          <h2 className="identity-text"># Design. Print. Brand. Deliver.</h2>
+          <h2 className="identity-text"># To bring every Navodayan closer together.</h2>
         </section>
 
         <hr className="divider" />
@@ -120,8 +120,8 @@ const AboutUs = () => {
         {/* Our Vision */}
         <section className="about-section">
           <h2 className="section-heading">🚀 Our Vision</h2>
-          <p>To become India's largest branding and merchandise platform—connecting students, institutions, corporates, and professionals through custom apparel, printing, networking, events, and shared experiences.</p>
-          <p>We envision a future where every school and college has a stronger identity, every organization has access to world-class branding, and every institution benefits from the strength of connected communities.</p>
+          <p>To become the world's largest Navodayan community platform—connecting students, alumni, educators, and professionals through merchandise, networking, events, and shared experiences.</p>
+          <p>We envision a future where every JNV has a stronger alumni network, every alumnus stays connected, and every student benefits from the strength of the Navodaya community.</p>
         </section>
 
         <hr className="divider" />
@@ -129,15 +129,15 @@ const AboutUs = () => {
         {/* Why We Do This */}
         <section className="about-section">
           <h2 className="section-heading">💙 Why We Do This</h2>
-          <p>Because a brand is not just a logo.</p>
+          <p>Because Navodaya is not just a school.</p>
           <p>It is:</p>
           <ul className="why-list">
-            <li>Your identity</li>
-            <li>A lifelong connection</li>
-            <li>A shared story</li>
-            <li>A community brought together by purpose</li>
+            <li>A second home</li>
+            <li>A lifelong network</li>
+            <li>A shared identity</li>
+            <li>A family spread across the world</li>
           </ul>
-          <p>And some stories deserve to be told beautifully.</p>
+          <p>And some memories deserve to be carried forever.</p>
         </section>
 
         <hr className="divider" />
@@ -145,13 +145,13 @@ const AboutUs = () => {
         {/* Our Promise */}
         <section className="about-section">
           <h2 className="section-heading">✨ Our Promise</h2>
-          <p>At Brand Era, we are committed to:</p>
+          <p>At Navodaya Trendz, we are committed to:</p>
           <ul className="promises-list">
             <li>✔ Premium Quality Products</li>
             <li>✔ Meaningful & Original Designs</li>
             <li>✔ Reliable Service & Timely Delivery</li>
-            <li>✔ Dedicated Event & Bulk Order Support</li>
-            <li>✔ Continuous Innovation for Schools, Colleges & Brands</li>
+            <li>✔ Dedicated Alumni Meet Support</li>
+            <li>✔ Continuous Innovation for the Navodaya Community</li>
           </ul>
         </section>
 
@@ -159,13 +159,13 @@ const AboutUs = () => {
 
         {/* Stats Section */}
         <section className="about-section stats-section">
-          <h2 className="section-heading">🏆 1000+ Institutions. One Platform.</h2>
-          <p>Thousands of happy customers.</p>
-          <p>Millions of impressions.</p>
-          <p>One branding partner.</p>
-          <h2 className="identity-text"># Design. Print. Brand. Deliver.</h2>
-          <p className="tagline">Build Your Brand. Create Memories. Deliver Excellence.</p>
-          <h3 className="welcome-text">Welcome to Brand Era. ❤️🎓</h3>
+          <h2 className="section-heading">🏆 650+ Schools. One Identity.</h2>
+          <p>Thousands of alumni.</p>
+          <p>Millions of memories.</p>
+          <p>One community.</p>
+          <h2 className="identity-text"># Made by Navodayans. For Navodayans.</h2>
+          <p className="tagline">Wear Your Identity. Relive Your Memories. Stay Connected.</p>
+          <h3 className="welcome-text">Welcome to Navodaya Trendz. ❤️🎓</h3>
         </section>
 
         <hr className="divider" />
@@ -173,7 +173,7 @@ const AboutUs = () => {
         {/* Hero Quote */}
         <section className="about-section quote-section">
           <blockquote className="hero-quote">
-            "Every great brand deserves to be showcased. Brand Era helps you do it with style."
+            "Navodaya gave us memories. Navodaya Trendz helps us carry them forward."
           </blockquote>
         </section>
       </div>

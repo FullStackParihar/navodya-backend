@@ -7,7 +7,7 @@ import './TShirtsEnhanced.css';
 const todayDealsProducts = [
   {
     id: 55,
-    name: 'BE Flash Sale T-Shirt',
+    name: 'JNV Flash Sale T-Shirt',
     description: 'Limited Time | 60% Off | Premium Cotton',
     price: 199,
     originalPrice: 499,
@@ -23,7 +23,7 @@ const todayDealsProducts = [
   },
   {
     id: 56,
-    name: 'BE Lightning Deal Hoodie',
+    name: 'JNV Lightning Deal Hoodie',
     description: 'Lightning Deal | 50% Off | Fleece Lined',
     price: 399,
     originalPrice: 799,
@@ -39,7 +39,7 @@ const todayDealsProducts = [
   },
   {
     id: 57,
-    name: 'BE Deal of the Day Backpack',
+    name: 'JNV Deal of the Day Backpack',
     description: 'Deal of the Day | 40% Off | Waterproof',
     price: 539,
     originalPrice: 899,
@@ -55,7 +55,7 @@ const todayDealsProducts = [
   },
   {
     id: 58,
-    name: 'BE Prime Special Watch',
+    name: 'JNV Prime Special Watch',
     description: 'Prime Special | 35% Off | Premium Quality',
     price: 649,
     originalPrice: 999,
@@ -71,7 +71,7 @@ const todayDealsProducts = [
   },
   {
     id: 59,
-    name: 'BE Early Bird Cap',
+    name: 'JNV Early Bird Cap',
     description: 'Early Bird | 55% Off | Adjustable',
     price: 89,
     originalPrice: 199,
@@ -87,7 +87,7 @@ const todayDealsProducts = [
   },
   {
     id: 60,
-    name: 'BE Midnight Sale Water Bottle',
+    name: 'JNV Midnight Sale Water Bottle',
     description: 'Midnight Sale | 45% Off | Insulated',
     price: 109,
     originalPrice: 199,
@@ -103,7 +103,7 @@ const todayDealsProducts = [
   },
   {
     id: 61,
-    name: 'BE Happy Hour Phone Case',
+    name: 'JNV Happy Hour Phone Case',
     description: 'Happy Hour | 50% Off | Shockproof',
     price: 74,
     originalPrice: 149,
@@ -119,7 +119,7 @@ const todayDealsProducts = [
   },
   {
     id: 62,
-    name: 'BE Weekend Special Alumni Kit',
+    name: 'JNV Weekend Special Alumni Kit',
     description: 'Weekend Special | 30% Off | Complete Set',
     price: 1399,
     originalPrice: 1999,
@@ -135,7 +135,7 @@ const todayDealsProducts = [
   },
   {
     id: 63,
-    name: 'BE Rush Hour Sunglasses',
+    name: 'JNV Rush Hour Sunglasses',
     description: 'Rush Hour | 40% Off | UV Protected',
     price: 239,
     originalPrice: 399,
@@ -151,7 +151,7 @@ const todayDealsProducts = [
   },
   {
     id: 64,
-    name: 'BE Bonanza Wallet',
+    name: 'JNV Bonanza Wallet',
     description: 'Bonanza | 35% Off | Genuine Leather',
     price: 324,
     originalPrice: 499,
@@ -167,7 +167,7 @@ const todayDealsProducts = [
   },
   {
     id: 65,
-    name: 'BE Fiesta Socks Set',
+    name: 'JNV Fiesta Socks Set',
     description: 'Fiesta | 60% Off | Pack of 3',
     price: 59,
     originalPrice: 149,
@@ -183,7 +183,7 @@ const todayDealsProducts = [
   },
   {
     id: 66,
-    name: 'BE Mega Sale Belt',
+    name: 'JNV Mega Sale Belt',
     description: 'Mega Sale | 42% Off | Genuine Leather',
     price: 289,
     originalPrice: 499,
@@ -319,7 +319,7 @@ const TodayDeals = () => {
           <div className="hero-content">
             <h1 className="animate-slideDown">Today's Deals</h1>
             <p className="animate-slideUp" style={{ animationDelay: '0.2s' }}>
-              Limited time offers - Save up to 60% on exclusive BE merchandise
+              Limited time offers - Save up to 60% on exclusive JNV merchandise
             </p>
             <div className="hero-stats animate-slideUp" style={{ animationDelay: '0.4s' }}>
               <div className="stat">
