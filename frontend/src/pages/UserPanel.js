@@ -252,11 +252,9 @@ const UserPanel = () => {
   };
 
   const handleLogout = () => {
-    // Clear authentication
     localStorage.removeItem('isAuthenticated');
     localStorage.removeItem('userEmail');
-    
-    // Show toast and redirect to login
+
     success('Logged out successfully');
     navigate('/login');
   };
@@ -272,7 +270,7 @@ const UserPanel = () => {
         }
 
         const mode = process.env.REACT_APP_CASHFREE_MODE || 'sandbox';
-        
+
         if (window.Cashfree) {
           const cashfree = window.Cashfree({
             mode: mode.toLowerCase() === 'production' ? 'production' : 'sandbox'
@@ -282,7 +280,6 @@ const UserPanel = () => {
             redirectTarget: '_self'
           });
         } else {
-          // Fallback to manual redirect if Cashfree SDK script is not loaded
           const baseUrl = mode.toLowerCase() === 'production'
             ? 'https://payments.cashfree.com/pg/view/checkout'
             : 'https://sandbox.cashfree.com/pg/view/checkout';
@@ -297,473 +294,626 @@ const UserPanel = () => {
     }
   };
 
+  const navItems = [
+    { key: 'overview', label: 'Dashboard', icon: 'fa-gauge-high' },
+    { key: 'orders', label: 'My Orders', icon: 'fa-box', badge: orders.length > 0 ? orders.length : null },
+    { key: 'designs', label: 'My Designs', icon: 'fa-palette' },
+    { key: 'brand-kits', label: 'My Brand Kits', icon: 'fa-briefcase' },
+    { key: 'quotes', label: 'My Quotes / Bulk Orders', icon: 'fa-file-invoice-dollar' },
+    { key: 'wishlist', label: 'Wishlist', icon: 'fa-heart' },
+    { key: 'addresses', label: 'Addresses', icon: 'fa-location-dot' },
+    { key: 'account', label: 'Account Settings', icon: 'fa-gear' },
+    { key: 'support', label: 'Contact Support', icon: 'fa-headset' }
+  ];
+
   return (
-    <div className="user-panel">
-      <section className="user-panel-hero">
-        <div className="container">
-          <div className="hero-content profile-card">
-            <div className="hero-user">
-              <div className="avatar-frame">
-                <img className="avatar" src={user.avatar} alt="User" />
-              </div>
-              <div className="hero-user-info">
-                {/* <div className="profile-kicker">User Profile</div> */}
-                <h1>{user.firstName || 'Navodayan'} {user.lastName || 'User'}</h1>
-                <p className="subtitle">{user.jnvSchool || 'JNV'} {user.batchYear ? `• Batch ${user.batchYear}` : ''}</p>
-                <p className="submeta">{user.email || ''} {user.phone ? `• ${user.phone}` : ''}</p>
-              </div>
+    <div className="era-dashboard">
+      <aside className="era-sidebar">
+        <div className="era-sidebar-inner">
+          <div className="era-profile-card">
+            <div className="era-avatar-ring">
+              <img className="era-avatar" src={user.avatar} alt="User" />
             </div>
-
-            <div className="hero-actions">
-              <button className="btn-primary" onClick={() => navigate('/checkout')}>
-                <i className="fas fa-bolt"></i> Checkout Center
-              </button>
-              <button className="btn-secondary" onClick={openEditProfile}>
-                <i className="fas fa-user-edit"></i> Edit Profile
-              </button>
-              <button className="btn-logout" onClick={handleLogout}>
-                <i className="fas fa-sign-out-alt"></i> Logout
-              </button>
+            <div className="era-profile-info">
+              <h3 className="era-profile-name">{user.firstName || 'Navodayan'} {user.lastName || 'User'}</h3>
+              <p className="era-profile-email">{user.email || 'no-email@example.com'}</p>
+              <span className="era-user-badge">
+                <i className="fas fa-user-check"></i> Verified Member
+              </span>
             </div>
           </div>
+
+          <nav className="era-nav">
+            {navItems.map((item) => (
+              <button
+                key={item.key}
+                className={`era-nav-link ${activeTab === item.key ? 'active' : ''}`}
+                onClick={() => {
+                  if (item.key === 'quotes') {
+                    navigate('/my-bulk-orders');
+                  } else {
+                    setActiveTab(item.key);
+                  }
+                }}
+              >
+                <i className={`fas ${item.icon} era-nav-icon`}></i>
+                <span className="era-nav-label">{item.label}</span>
+                {item.badge !== null && <span className="era-nav-badge">{item.badge}</span>}
+              </button>
+            ))}
+          </nav>
         </div>
-      </section>
 
-      <section className="user-panel-body">
-        <div className="container">
-          <div className="panel-layout">
-            <aside className="panel-sidebar">
-              <button className={`side-link ${activeTab === 'overview' ? 'active' : ''}`} onClick={() => setActiveTab('overview')}>
-                <i className="fas fa-border-all"></i>
-                <span>Overview</span>
-              </button>
-              <button className={`side-link ${activeTab === 'orders' ? 'active' : ''}`} onClick={() => setActiveTab('orders')}>
-                <i className="fas fa-shopping-bag"></i>
-                <span>My Orders</span>
-              </button>
-              <button className="side-link" onClick={() => navigate('/my-bulk-orders')}>
-                <i className="fas fa-clipboard-list"></i>
-                <span>My Bulk Orders</span>
-              </button>
-              <button className={`side-link ${activeTab === 'addresses' ? 'active' : ''}`} onClick={() => setActiveTab('addresses')}>
-                <i className="fas fa-map-marker-alt"></i>
-                <span>Addresses</span>
-              </button>
-              <button className={`side-link ${activeTab === 'wishlist' ? 'active' : ''}`} onClick={() => setActiveTab('wishlist')}>
-                <i className="fas fa-heart"></i>
-                <span>Wishlist</span>
-              </button>
-              <button className={`side-link ${activeTab === 'support' ? 'active' : ''}`} onClick={() => setActiveTab('support')}>
-                <i className="fas fa-headset"></i>
-                <span>Support</span>
-              </button>
+        <div className="era-sidebar-footer">
+          <button className="era-logout-btn" onClick={handleLogout}>
+            <i className="fas fa-right-from-bracket"></i>
+            <span>Logout</span>
+          </button>
+        </div>
+      </aside>
 
-              <div className="sidebar-card">
-                <div className="mini-stat">
-                  <span className="mini-stat-label">Cart</span>
-                  <span className="mini-stat-value">{totalItems} items</span>
+      <main className="era-main">
+        <div className="era-main-inner">
+
+          {activeTab === 'overview' && (
+            <div className="era-tab-content">
+              <div className="era-welcome-header">
+                <div>
+                  <h1 className="era-welcome-title">Welcome back, {user.firstName || 'Navodayan'}! 👋</h1>
+                  <p className="era-welcome-subtitle">Here's what's happening with your orders, designs, and brand kits today.</p>
                 </div>
-                <div className="mini-stat">
-                  <span className="mini-stat-label">Wishlist</span>
-                  <span className="mini-stat-value">{wishlistCount} items</span>
-                </div>
-                <div className="mini-stat">
-                  <span className="mini-stat-label">Spent</span>
-                  <span className="mini-stat-value">₹{totalAmount}</span>
-                </div>
-                <div className="mini-actions">
-                  <Link className="mini-btn" to="/cart">
-                    <i className="fas fa-shopping-cart"></i> Cart
-                  </Link>
-                  <Link className="mini-btn" to="/payment">
-                    <i className="fas fa-lock"></i> Pay
-                  </Link>
+                <div className="era-welcome-actions">
+                  <button className="era-btn era-btn-outline" onClick={openEditProfile}>
+                    <i className="fas fa-user-edit"></i> Edit Profile
+                  </button>
+                  <button className="era-btn era-btn-primary" onClick={() => navigate('/tshirts')}>
+                    <i className="fas fa-bag-shopping"></i> Shop Now
+                  </button>
                 </div>
               </div>
-            </aside>
 
-            <main className="panel-content">
-              {activeTab === 'overview' && (
-                <div className="tab-content">
-                  <div className="grid">
-                    <div className="card stats-card">
-                      <div className="stats">
-                        <div className="stat">
-                          <div className="stat-icon">
-                            <i className="fas fa-shopping-bag"></i>
-                          </div>
-                          <div>
-                            <div className="stat-value">{orders.length}</div>
-                            <div className="stat-label">Orders</div>
-                          </div>
+              <div className="era-stat-grid">
+                <div className="era-stat-card">
+                  <div className="era-stat-icon era-stat-icon-red">
+                    <i className="fas fa-box"></i>
+                  </div>
+                  <div className="era-stat-content">
+                    <div className="era-stat-value">{orders.length}</div>
+                    <div className="era-stat-label">Total Orders</div>
+                  </div>
+                </div>
+                <div className="era-stat-card">
+                  <div className="era-stat-icon era-stat-icon-black">
+                    <i className="fas fa-palette"></i>
+                  </div>
+                  <div className="era-stat-content">
+                    <div className="era-stat-value">0</div>
+                    <div className="era-stat-label">Saved Designs</div>
+                  </div>
+                </div>
+                <div className="era-stat-card">
+                  <div className="era-stat-icon era-stat-icon-red">
+                    <i className="fas fa-briefcase"></i>
+                  </div>
+                  <div className="era-stat-content">
+                    <div className="era-stat-value">0</div>
+                    <div className="era-stat-label">Brand Kits</div>
+                  </div>
+                </div>
+                <div className="era-stat-card">
+                  <div className="era-stat-icon era-stat-icon-black">
+                    <i className="fas fa-heart"></i>
+                  </div>
+                  <div className="era-stat-content">
+                    <div className="era-stat-value">{wishlistCount}</div>
+                    <div className="era-stat-label">Wishlist Items</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="era-section">
+                <div className="era-section-header">
+                  <h2 className="era-section-title">Recent Orders</h2>
+                  <button className="era-text-link" onClick={() => setActiveTab('orders')}>
+                    View All <i className="fas fa-arrow-right"></i>
+                  </button>
+                </div>
+                <div className="era-recent-orders">
+                  {!latestOrder ? (
+                    <div className="era-empty">
+                      <i className="fas fa-box-open"></i>
+                      <p>No orders yet.</p>
+                      <Link className="era-btn era-btn-primary" to="/tshirts">Start Shopping</Link>
+                    </div>
+                  ) : (
+                    orders.slice(0, 5).map((o) => (
+                      <div key={o.id} className="era-order-row-card">
+                        <div className="era-order-row-info">
+                          <div className="era-order-id">#{o.id.slice(-8).toUpperCase()}</div>
+                          <div className="era-order-meta">{o.date}</div>
                         </div>
-                        <div className="stat">
-                          <div className="stat-icon">
-                            <i className="fas fa-shopping-cart"></i>
-                          </div>
-                          <div>
-                            <div className="stat-value">{totalItems}</div>
-                            <div className="stat-label">Cart Items</div>
-                          </div>
+                        <div className="era-order-row-items">{o.items} items</div>
+                        <div className="era-order-row-amount">₹{o.total}</div>
+                        <span className={`era-badge era-badge-${statusBadgeClass(o.status)}`}>{o.status}</span>
+                        <button className="era-view-link" onClick={() => navigate(`/order/${o.id}`)}>
+                          View <i className="fas fa-chevron-right"></i>
+                        </button>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+
+              <div className="era-quick-section">
+                <div className="era-section-header">
+                  <h2 className="era-section-title">Quick Actions</h2>
+                </div>
+                <div className="era-quick-actions">
+                  <button className="era-action-card" onClick={() => setActiveTab('orders')}>
+                    <div className="era-action-icon era-action-red">
+                      <i className="fas fa-rotate-right"></i>
+                    </div>
+                    <div className="era-action-title">Reorder</div>
+                    <div className="era-action-sub">Buy previous items</div>
+                  </button>
+                  <button className="era-action-card" onClick={() => navigate('/customize')}>
+                    <div className="era-action-icon era-action-black">
+                      <i className="fas fa-floppy-disk"></i>
+                    </div>
+                    <div className="era-action-title">Save Design</div>
+                    <div className="era-action-sub">Customize & save</div>
+                  </button>
+                  <button className="era-action-card" onClick={() => setActiveTab('brand-kits')}>
+                    <div className="era-action-icon era-action-red">
+                      <i className="fas fa-plus"></i>
+                    </div>
+                    <div className="era-action-title">Create Kit</div>
+                    <div className="era-action-sub">Build a brand kit</div>
+                  </button>
+                  <button className="era-action-card" onClick={() => navigate('/bulk-order')}>
+                    <div className="era-action-icon era-action-black">
+                      <i className="fas fa-quote-right"></i>
+                    </div>
+                    <div className="era-action-title">Request Quote</div>
+                    <div className="era-action-sub">Bulk order pricing</div>
+                  </button>
+                </div>
+              </div>
+
+              <div className="era-support-banner">
+                <div className="era-support-banner-content">
+                  <div className="era-support-icon-wrap">
+                    <i className="fas fa-headset"></i>
+                  </div>
+                  <div>
+                    <h3>Need Help with Your Order?</h3>
+                    <p>Our support team is available 24/7 to assist you with any questions.</p>
+                  </div>
+                </div>
+                <button className="era-btn era-btn-primary" onClick={() => setActiveTab('support')}>
+                  Contact Support <i className="fas fa-arrow-right"></i>
+                </button>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'orders' && (
+            <div className="era-tab-content">
+              <div className="era-page-header">
+                <div>
+                  <h1 className="era-page-title">My Orders</h1>
+                  <p className="era-page-subtitle">Track, manage, and reorder your purchases</p>
+                </div>
+                <div className="era-page-actions">
+                  <button className="era-btn era-btn-outline" onClick={() => navigate('/tshirts')}>
+                    <i className="fas fa-bag-shopping"></i> Continue Shopping
+                  </button>
+                </div>
+              </div>
+
+              <div className="era-orders-list">
+                {isLoadingOrders ? (
+                  <div className="era-loading">Loading your orders...</div>
+                ) : orders.length === 0 ? (
+                  <div className="era-empty-state">
+                    <div className="era-empty-icon era-empty-icon-red">
+                      <i className="fas fa-box"></i>
+                    </div>
+                    <h2>No orders yet</h2>
+                    <p>Start exploring our collection and place your first order.</p>
+                    <Link className="era-btn era-btn-primary" to="/tshirts">
+                      <i className="fas fa-bag-shopping"></i> Start Shopping
+                    </Link>
+                  </div>
+                ) : (
+                  orders.map((o) => (
+                    <div key={o.id} className="era-order-card">
+                      <div className="era-order-card-top">
+                        <div>
+                          <div className="era-order-card-id">Order #{o.id.slice(-8).toUpperCase()}</div>
+                          <div className="era-order-card-date"><i className="fas fa-calendar"></i> {o.date}</div>
                         </div>
-                        <div className="stat">
-                          <div className="stat-icon">
-                            <i className="fas fa-heart"></i>
-                          </div>
-                          <div>
-                            <div className="stat-value">{wishlistCount}</div>
-                            <div className="stat-label">Wishlist</div>
-                          </div>
+                        <span className={`era-badge era-badge-${statusBadgeClass(o.status)}`}>
+                          {o.status === 'processing' && <i className="fas fa-hourglass-half"></i>}
+                          {o.status === 'shipped' && <i className="fas fa-truck-fast"></i>}
+                          {o.status === 'out-for-delivery' && <i className="fas fa-truck"></i>}
+                          {o.status === 'delivered' && <i className="fas fa-circle-check"></i>}
+                          {o.status}
+                        </span>
+                      </div>
+
+                      <div className="era-order-card-mid">
+                        <div className="era-product-thumbs">
+                          {cartItems.length > 0 ? (
+                            cartItems.slice(0, 4).map((p, i) => (
+                              <img key={i} src={p.image} alt="" className="era-thumb" />
+                            ))
+                          ) : (
+                            <div className="era-thumb-placeholder">
+                              <i className="fas fa-shirt"></i>
+                            </div>
+                          )}
+                          {o.items > 4 && <div className="era-thumb-more">+{o.items - 4}</div>}
                         </div>
-                        <div className="stat">
-                          <div className="stat-icon">
-                            <i className="fas fa-rupee-sign"></i>
-                          </div>
-                          <div>
-                            <div className="stat-value">₹{totalAmount}</div>
-                            <div className="stat-label">Cart Total</div>
-                          </div>
+                        <div className="era-order-card-total">
+                          <span className="era-total-label">Total</span>
+                          <span className="era-total-amount">₹{o.total}</span>
                         </div>
+                      </div>
+
+                      <div className="era-order-card-actions">
+                        <button className="era-action-btn" onClick={() => navigate(`/order/${o.id}`)}>
+                          <i className="fas fa-eye"></i> View Details
+                        </button>
+                        <button className="era-action-btn" onClick={() => navigate(`/order/${o.id}`)}>
+                          <i className="fas fa-location-dot"></i> Track
+                        </button>
+                        {o.paymentStatus !== 'paid' && o.paymentMethod !== 'cod' && (
+                          <button
+                            className="era-action-btn era-action-btn-orange"
+                            onClick={() => handleRetryPayment(o.id)}
+                          >
+                            <i className="fas fa-credit-card"></i> Pay Now
+                          </button>
+                        )}
+                        <button
+                          className="era-action-btn"
+                          onClick={() => window.open(`${API_URL}/orders/${o.id}/invoice?token=${localStorage.getItem('token')}`, '_blank')}
+                        >
+                          <i className="fas fa-file-invoice"></i> Invoice
+                        </button>
+                        <button className="era-action-btn era-action-btn-red">
+                          <i className="fas fa-rotate-right"></i> Reorder
+                        </button>
                       </div>
                     </div>
+                  ))
+                )}
+              </div>
+            </div>
+          )}
 
-                    <div className="card">
-                      <div className="card-head">
-                        <h2>Quick Links</h2>
-                      </div>
-                      <div className="quick-links">
-                        <Link className="quick-link" to="/checkout">
-                          <i className="fas fa-tachometer-alt"></i>
-                          <span>Checkout Center</span>
-                        </Link>
-                        <Link className="quick-link" to="/payment">
-                          <i className="fas fa-credit-card"></i>
-                          <span>Payment</span>
-                        </Link>
-                        <Link className="quick-link" to="/bulk-order">
-                          <i className="fas fa-users"></i>
-                          <span>Bulk Order</span>
-                        </Link>
-                        <Link className="quick-link" to="/my-bulk-orders">
-                          <i className="fas fa-clipboard-list"></i>
-                          <span>My Bulk Orders</span>
-                        </Link>
-                        <Link className="quick-link" to="/wishlist">
+          {activeTab === 'designs' && (
+            <div className="era-tab-content">
+              <div className="era-page-header">
+                <div>
+                  <h1 className="era-page-title">My Designs</h1>
+                  <p className="era-page-subtitle">Your saved custom designs</p>
+                </div>
+                <button className="era-btn era-btn-primary" onClick={() => navigate('/customize')}>
+                  <i className="fas fa-plus"></i> New Design
+                </button>
+              </div>
+
+              <div className="era-designs-grid">
+                <div className="era-empty-state">
+                  <div className="era-empty-icon era-empty-icon-black">
+                    <i className="fas fa-palette"></i>
+                  </div>
+                  <h2>No saved designs yet</h2>
+                  <p>Create and save custom designs for your apparel.</p>
+                  <button className="era-btn era-btn-primary" onClick={() => navigate('/customize')}>
+                    <i className="fas fa-paint-brush"></i> Start Designing
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'brand-kits' && (
+            <div className="era-tab-content">
+              <div className="era-page-header">
+                <div>
+                  <h1 className="era-page-title">My Brand Kits</h1>
+                  <p className="era-page-subtitle">Curated collections for your brand</p>
+                </div>
+                <button className="era-btn era-btn-primary">
+                  <i className="fas fa-plus"></i> New Kit
+                </button>
+              </div>
+
+              <div className="era-kits-grid">
+                <div className="era-empty-state">
+                  <div className="era-empty-icon era-empty-icon-red">
+                    <i className="fas fa-briefcase"></i>
+                  </div>
+                  <h2>No brand kits yet</h2>
+                  <p>Build custom brand kits with your logo, colors, and designs.</p>
+                  <button className="era-btn era-btn-primary">
+                    <i className="fas fa-plus"></i> Create Brand Kit
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'quotes' && (
+            <div className="era-tab-content">
+              <div className="era-page-header">
+                <div>
+                  <h1 className="era-page-title">My Quotes & Bulk Orders</h1>
+                  <p className="era-page-subtitle">Track your bulk order quote requests</p>
+                </div>
+                <button className="era-btn era-btn-primary" onClick={() => navigate('/bulk-order')}>
+                  <i className="fas fa-plus"></i> New Quote
+                </button>
+              </div>
+
+              <div className="era-quotes-list">
+                <button className="era-text-link" onClick={() => navigate('/my-bulk-orders')}>
+                  <i className="fas fa-arrow-up-right-from-square"></i> View All Bulk Orders on Dedicated Page
+                </button>
+                <div className="era-empty-state" style={{ marginTop: '24px' }}>
+                  <div className="era-empty-icon era-empty-icon-black">
+                    <i className="fas fa-file-invoice-dollar"></i>
+                  </div>
+                  <h2>No quote requests yet</h2>
+                  <p>Request a custom quote for bulk orders and special pricing.</p>
+                  <button className="era-btn era-btn-primary" onClick={() => navigate('/bulk-order')}>
+                    <i className="fas fa-quote-right"></i> Request a Quote
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'wishlist' && (
+            <div className="era-tab-content">
+              <div className="era-page-header">
+                <div>
+                  <h1 className="era-page-title">Wishlist</h1>
+                  <p className="era-page-subtitle">Items you've saved for later</p>
+                </div>
+                <div className="era-page-actions">
+                  {wishlistItems.length > 0 && (
+                    <button className="era-btn era-btn-outline" onClick={onClearWishlist}>
+                      <i className="fas fa-trash"></i> Clear All
+                    </button>
+                  )}
+                  <button className="era-btn era-btn-primary" onClick={() => navigate('/tshirts')}>
+                    <i className="fas fa-bag-shopping"></i> Shop
+                  </button>
+                </div>
+              </div>
+
+              {wishlistItems.length === 0 ? (
+                <div className="era-empty-state">
+                  <div className="era-empty-icon era-empty-icon-red">
+                    <i className="fas fa-heart"></i>
+                  </div>
+                  <h2>Your wishlist is empty</h2>
+                  <p>Save your favorite products for quick access later.</p>
+                  <Link className="era-btn era-btn-primary" to="/tshirts">
+                    <i className="fas fa-bag-shopping"></i> Browse Products
+                  </Link>
+                </div>
+              ) : (
+                <div className="era-wishlist-grid">
+                  {wishlistItems.map((p) => (
+                    <div key={p.id} className="era-wishlist-card">
+                      <div className="era-wishlist-img-wrap">
+                        <img src={p.image} alt={p.name} />
+                        <span className="era-wishlist-heart">
                           <i className="fas fa-heart"></i>
-                          <span>Wishlist</span>
+                        </span>
+                      </div>
+                      <div className="era-wishlist-info">
+                        <h3 className="era-wishlist-name">{p.name}</h3>
+                        <div className="era-wishlist-price">₹{p.price}</div>
+                      </div>
+                      <div className="era-wishlist-actions">
+                        <Link className="era-btn era-btn-outline era-btn-sm" to={`/product/${p.id}`}>
+                          <i className="fas fa-eye"></i> View
+                        </Link>
+                        <Link className="era-btn era-btn-primary era-btn-sm" to="/cart">
+                          <i className="fas fa-cart-shopping"></i> Cart
                         </Link>
                       </div>
                     </div>
-
-                    <div className="card">
-                      <div className="card-head">
-                        <h2>Latest Order</h2>
-                        <button className="ghost" onClick={() => setActiveTab('orders')}>View All</button>
-                      </div>
-
-                      {!latestOrder ? (
-                        <div className="empty">
-                          <i className="fas fa-box"></i>
-                          <p>No orders yet.</p>
-                          <Link className="btn-primary" to="/tshirts">Start Shopping</Link>
-                        </div>
-                      ) : (
-                        <div className="latest-order">
-                          <div className="order-row">
-                            <div>
-                              <div className="order-id">Order #{latestOrder.id}</div>
-                              <div className="order-meta">{latestOrder.date} • {latestOrder.items} items</div>
-                            </div>
-                            <span className={`badge ${statusBadgeClass(latestOrder.status)}`}>{latestOrder.status}</span>
-                          </div>
-                          <div className="order-row">
-                            <span className="muted">Total</span>
-                            <span className="strong">₹{latestOrder.total}</span>
-                          </div>
-                          <div className="order-row">
-                            <span className="muted">ETA</span>
-                            <span className="strong">{latestOrder.etaDays} days</span>
-                          </div>
-                          <div className="order-actions">
-                            <button className="btn-primary" onClick={() => navigate(`/order/${latestOrder.id}`)}>
-                              <i className="fas fa-map-marker-alt"></i> Track
-                            </button>
-                            <button className="btn-secondary" onClick={() => navigate('/payment')}>
-                              <i className="fas fa-lock"></i> Pay
-                            </button>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="card">
-                      <div className="card-head">
-                        <h2>Cart Preview</h2>
-                        <Link className="ghost" to="/cart">Open Cart</Link>
-                      </div>
-                      {cartItems.length === 0 ? (
-                        <div className="empty">
-                          <i className="fas fa-shopping-cart"></i>
-                          <p>Your cart is empty.</p>
-                          <Link className="btn-primary" to="/tshirts">Browse Products</Link>
-                        </div>
-                      ) : (
-                        <div className="list">
-                          {cartItems.slice(0, 3).map((p) => (
-                            <div key={p.id} className="list-item">
-                              <img src={p.image} alt={p.name} />
-                              <div>
-                                <div className="strong">{p.name}</div>
-                                <div className="muted">Qty {p.quantity} • ₹{p.price}</div>
-                              </div>
-                            </div>
-                          ))}
-                          <div className="order-actions">
-                            <Link className="btn-secondary" to="/cart">
-                              <i className="fas fa-shopping-cart"></i> View Cart
-                            </Link>
-                            <Link className="btn-primary" to="/payment">
-                              <i className="fas fa-lock"></i> Checkout
-                            </Link>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="card">
-                      <div className="card-head">
-                        <h2>Wishlist</h2>
-                        <Link className="ghost" to="/wishlist">Open</Link>
-                      </div>
-                      {wishlistItems.length === 0 ? (
-                        <div className="empty">
-                          <i className="fas fa-heart"></i>
-                          <p>Your wishlist is empty.</p>
-                          <Link className="btn-secondary" to="/tshirts">Browse Products</Link>
-                        </div>
-                      ) : (
-                        <div className="list">
-                          {wishlistItems.slice(0, 3).map((p) => (
-                            <div key={p.id} className="list-item">
-                              <img src={p.image} alt={p.name} />
-                              <div>
-                                <div className="strong">{p.name}</div>
-                                <div className="muted">₹{p.price}</div>
-                              </div>
-                            </div>
-                          ))}
-                          <button className="btn-secondary" onClick={onClearWishlist}>Clear Wishlist</button>
-                        </div>
-                      )}
-                    </div>
-                  </div>
+                  ))}
                 </div>
               )}
+            </div>
+          )}
 
-              {activeTab === 'orders' && (
-                <div className="tab-content">
-                  <div className="card">
-                    <div className="card-head">
-                      <h2>My Orders</h2>
-                      <div className="head-actions">
-                        <button className="btn-secondary" onClick={() => navigate('/checkout')}>
-                          <i className="fas fa-bolt"></i> Checkout Center
+          {activeTab === 'addresses' && (
+            <div className="era-tab-content">
+              <div className="era-page-header">
+                <div>
+                  <h1 className="era-page-title">Addresses</h1>
+                  <p className="era-page-subtitle">Manage your shipping and billing addresses</p>
+                </div>
+                <button className="era-btn era-btn-primary" onClick={() => navigate('/payment')}>
+                  <i className="fas fa-plus"></i> Add New Address
+                </button>
+              </div>
+
+              <div className="era-addresses-grid">
+                {addresses.map((a) => (
+                  <div key={a.id} className={`era-address-card ${a.isDefault ? 'era-address-default' : ''}`}>
+                    <div className="era-address-top">
+                      <div className="era-address-type">
+                        <i className="fas fa-home"></i>
+                        <span>{a.type}</span>
+                        {a.isDefault && (
+                          <span className="era-default-tag">
+                            <i className="fas fa-check"></i> Default
+                          </span>
+                        )}
+                      </div>
+                      <div className="era-address-edit">
+                        <button className="era-icon-btn" title="Edit">
+                          <i className="fas fa-pen"></i>
                         </button>
-                        <button className="btn-primary" onClick={() => navigate('/payment')}>
-                          <i className="fas fa-credit-card"></i> Payment
+                        <button className="era-icon-btn era-icon-btn-danger" title="Delete">
+                          <i className="fas fa-trash"></i>
                         </button>
                       </div>
                     </div>
-
-                    <div className="orders">
-                      {isLoadingOrders ? (
-                        <div className="loading-state">Loading your orders...</div>
-                      ) : orders.length === 0 ? (
-                        <div className="empty-state">No orders yet.</div>
-                      ) : (
-                        orders.map((o) => (
-                          <div key={o.id} className="order-card">
-                            <div className="order-top">
-                              <div>
-                                <div className="order-id">Order #{o.id.slice(-8).toUpperCase()}</div>
-                                <div className="order-meta">{o.date} • {o.items} items</div>
-                              </div>
-                              <span className={`badge ${statusBadgeClass(o.status)}`}>{o.status}</span>
-                            </div>
-
-                            <div className="order-bottom">
-                              <div className="order-amount">
-                                <span className="muted">Total</span>
-                                <span className="strong">₹{o.total}</span>
-                              </div>
-                              <div className="order-amount">
-                                <span className="muted">ETA</span>
-                                <span className="strong">{o.etaDays} days</span>
-                              </div>
-                               <div className="order-cta">
-                                <button className="btn-primary" onClick={() => navigate(`/order/${o.id}`)}>
-                                  <i className="fas fa-map-marker-alt"></i> Track
-                                </button>
-                                {o.paymentStatus !== 'paid' && o.paymentMethod !== 'cod' && (
-                                  <button 
-                                    className="btn-primary" 
-                                    onClick={() => handleRetryPayment(o.id)}
-                                    style={{ marginLeft: '10px', backgroundColor: '#e28743', borderColor: '#e28743' }}
-                                  >
-                                    <i className="fas fa-credit-card"></i> Pay Now
-                                  </button>
-                                )}
-                                <button 
-                                  className="btn-secondary" 
-                                  onClick={() => window.open(`${API_URL}/orders/${o.id}/invoice?token=${localStorage.getItem('token')}`, '_blank')}
-                                  style={{ marginLeft: '10px' }}
-                                >
-                                  <i className="fas fa-file-invoice"></i> Invoice
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                        ))
-                      )}
+                    <div className="era-address-body">
+                      <div className="era-address-name">{a.name}</div>
+                      <div className="era-address-phone"><i className="fas fa-phone"></i> {a.phone || 'Not set'}</div>
+                      <div className="era-address-line">{a.addressLine}</div>
+                      <div className="era-address-city">{a.city}, {a.state} - {a.pincode}</div>
                     </div>
                   </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'account' && (
+            <div className="era-tab-content">
+              <div className="era-page-header">
+                <div>
+                  <h1 className="era-page-title">Account Settings</h1>
+                  <p className="era-page-subtitle">Update your profile and account preferences</p>
                 </div>
-              )}
+              </div>
 
-              {activeTab === 'addresses' && (
-                <div className="tab-content">
-                  <div className="card">
-                    <div className="card-head">
-                      <h2>Addresses</h2>
-                      <button className="btn-primary" onClick={() => navigate('/payment')}>
-                        <i className="fas fa-plus"></i> Add Address (Checkout)
-                      </button>
-                    </div>
-
-                    <div className="addresses">
-                      {addresses.map((a) => (
-                        <div key={a.id} className={`address ${a.isDefault ? 'default' : ''}`}>
-                          <div className="address-top">
-                              <div className="address-title">
-                                <i className="fas fa-home"></i>
-                                <span>{a.type}</span>
-                                {a.isDefault && (
-                                  <span className="default-pill">
-                                    <i className="fas fa-check"></i> Default
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                          <div className="address-body">
-                            <div className="strong">{a.name}</div>
-                            <div className="muted">{a.phone}</div>
-                            <div className="muted">{a.addressLine}</div>
-                            <div className="muted">{a.city}, {a.state} - {a.pincode}</div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {activeTab === 'wishlist' && (
-                <div className="tab-content">
-                  <div className="card">
-                    <div className="card-head">
-                      <h2>Wishlist</h2>
-                      <div className="head-actions">
-                        <Link className="btn-secondary" to="/wishlist">
-                          <i className="fas fa-heart"></i> Open Wishlist Page
-                        </Link>
-                        <button className="btn-primary" onClick={() => navigate('/tshirts')}>
-                          <i className="fas fa-shopping-bag"></i> Shop
-                        </button>
+              <div className="era-account-card">
+                <div className="era-account-section">
+                  <h2 className="era-account-section-title">
+                    <i className="fas fa-user"></i> Profile Information
+                  </h2>
+                  <div className="era-account-profile">
+                    <div className="era-account-avatar-wrap">
+                      <div className="era-avatar-ring era-avatar-ring-lg">
+                        <img className="era-avatar" src={user.avatar} alt="Profile" />
                       </div>
                     </div>
-
-                    {wishlistItems.length === 0 ? (
-                      <div className="empty">
-                        <i className="fas fa-heart"></i>
-                        <p>Your wishlist is empty.</p>
-                        <Link className="btn-primary" to="/tshirts">Browse Products</Link>
+                    <div className="era-account-fields">
+                      <div className="era-field-grid">
+                        <div className="era-field">
+                          <label>First Name</label>
+                          <div className="era-field-value">{user.firstName || '—'}</div>
+                        </div>
+                        <div className="era-field">
+                          <label>Last Name</label>
+                          <div className="era-field-value">{user.lastName || '—'}</div>
+                        </div>
+                        <div className="era-field">
+                          <label>Email</label>
+                          <div className="era-field-value">{user.email || '—'}</div>
+                        </div>
+                        <div className="era-field">
+                          <label>Phone</label>
+                          <div className="era-field-value">{user.phone || 'Not set'}</div>
+                        </div>
+                        <div className="era-field">
+                          <label>JNV / School</label>
+                          <div className="era-field-value">{user.jnvSchool || 'Not set'}</div>
+                        </div>
+                        <div className="era-field">
+                          <label>Batch Year</label>
+                          <div className="era-field-value">{user.batchYear || 'Not set'}</div>
+                        </div>
                       </div>
-                    ) : (
-                      <div className="wishlist-grid">
-                        {wishlistItems.map((p) => (
-                          <div key={p.id} className="wishlist-item">
-                            <img src={p.image} alt={p.name} />
-                            <div className="wishlist-meta">
-                              <div className="strong">{p.name}</div>
-                              <div className="muted">₹{p.price}</div>
-                            </div>
-                            <div className="wishlist-actions">
-                              <Link className="btn-secondary" to={`/product/${p.id}`}>
-                                <i className="fas fa-eye"></i> View
-                              </Link>
-                              <Link className="btn-primary" to="/cart">
-                                <i className="fas fa-shopping-cart"></i> Cart
-                              </Link>
-                            </div>
-                          </div>
-                        ))}
-                        <button className="btn-secondary" onClick={onClearWishlist}>Clear Wishlist</button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {activeTab === 'support' && (
-                <div className="tab-content">
-                  <div className="card">
-                    <div className="card-head">
-                      <h2>Support</h2>
-                      <button className="btn-secondary" onClick={() => navigate('/checkout')}>
-                        <i className="fas fa-bolt"></i> Checkout Center
-                      </button>
-                    </div>
-
-                    <div className="support-grid">
-                      <button className="support-card" onClick={() => window.open('tel:+9118001234567')}>
-                        <div className="support-icon">
-                          <i className="fas fa-phone"></i>
-                        </div>
-                        <div className="support-title">Call Support</div>
-                        <div className="muted">+91 1800-123-4567</div>
-                      </button>
-
-                      <button className="support-card" onClick={() => window.open('mailto:support@navodayatrendz.com?subject=Help%20Request')}>
-                        <div className="support-icon">
-                          <i className="fas fa-envelope"></i>
-                        </div>
-                        <div className="support-title">Email</div>
-                        <div className="muted">support@navodayatrendz.com</div>
-                      </button>
-
-                      <button className="support-card" onClick={() => window.open('https://wa.me/919284490206?text=Hi%2C%20I%20need%20help%20with%20my%20order')}>
-                        <div className="support-icon whatsapp">
-                          <i className="fab fa-whatsapp"></i>
-                        </div>
-                        <div className="support-title">WhatsApp</div>
-                        <div className="muted">Instant chat</div>
-                      </button>
-
-                      <button className="support-card" onClick={() => navigate('/bulk-order')}>
-                        <div className="support-icon">
-                          <i className="fas fa-users"></i>
-                        </div>
-                        <div className="support-title">Bulk Order Help</div>
-                        <div className="muted">Custom requests</div>
+                      <button className="era-btn era-btn-primary" onClick={openEditProfile}>
+                        <i className="fas fa-user-edit"></i> Edit Profile
                       </button>
                     </div>
                   </div>
                 </div>
-              )}
-            </main>
-          </div>
+
+                <div className="era-account-divider"></div>
+
+                <div className="era-account-section">
+                  <h2 className="era-account-section-title">
+                    <i className="fas fa-lock"></i> Change Password
+                  </h2>
+                  <div className="era-field-grid">
+                    <div className="era-field">
+                      <label>Current Password</label>
+                      <input type="password" className="era-input" placeholder="••••••••" />
+                    </div>
+                    <div className="era-field"></div>
+                    <div className="era-field">
+                      <label>New Password</label>
+                      <input type="password" className="era-input" placeholder="••••••••" />
+                    </div>
+                    <div className="era-field">
+                      <label>Confirm New Password</label>
+                      <input type="password" className="era-input" placeholder="••••••••" />
+                    </div>
+                  </div>
+                  <div style={{ marginTop: '16px' }}>
+                    <button className="era-btn era-btn-primary">
+                      <i className="fas fa-key"></i> Update Password
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'support' && (
+            <div className="era-tab-content">
+              <div className="era-page-header">
+                <div>
+                  <h1 className="era-page-title">Contact Support</h1>
+                  <p className="era-page-subtitle">We're here to help with anything you need</p>
+                </div>
+              </div>
+
+              <div className="era-support-grid">
+                <button className="era-support-card" onClick={() => window.open('tel:+9118001234567')}>
+                  <div className="era-support-card-icon era-support-red">
+                    <i className="fas fa-phone"></i>
+                  </div>
+                  <div className="era-support-card-title">Call Support</div>
+                  <div className="era-support-card-desc">+91 1800-123-4567</div>
+                </button>
+
+                <button className="era-support-card" onClick={() => window.open('mailto:support@navodayatrendz.com?subject=Help%20Request')}>
+                  <div className="era-support-card-icon era-support-black">
+                    <i className="fas fa-envelope"></i>
+                  </div>
+                  <div className="era-support-card-title">Email Us</div>
+                  <div className="era-support-card-desc">support@navodayatrendz.com</div>
+                </button>
+
+                <button className="era-support-card" onClick={() => window.open('https://wa.me/919284490206?text=Hi%2C%20I%20need%20help%20with%20my%20order')}>
+                  <div className="era-support-card-icon era-support-red">
+                    <i className="fab fa-whatsapp"></i>
+                  </div>
+                  <div className="era-support-card-title">WhatsApp</div>
+                  <div className="era-support-card-desc">Instant chat support</div>
+                </button>
+
+                <button className="era-support-card" onClick={() => navigate('/bulk-order')}>
+                  <div className="era-support-card-icon era-support-black">
+                    <i className="fas fa-users"></i>
+                  </div>
+                  <div className="era-support-card-title">Bulk Order Help</div>
+                  <div className="era-support-card-desc">Custom requests & quotes</div>
+                </button>
+              </div>
+            </div>
+          )}
+
         </div>
-      </section>
+      </main>
 
       {isEditProfileOpen && (
         <div className="edit-profile-backdrop" role="presentation" onClick={() => closeEditProfile()}>
@@ -869,611 +1019,1220 @@ const UserPanel = () => {
       )}
 
       <style>{`
-        .user-panel {
-          background: #f0f0f0;
-          min-height: 100vh;
-          padding-bottom: 2rem;
-        }
+        * { box-sizing: border-box; }
 
-        .container {
-          max-width: 1200px;
-          margin: 0 auto;
-          padding: 0 1rem;
-        }
-
-        .user-panel-hero {
-          padding: 1.25rem 0;
-          background: #000000;
-        }
-
-        .hero-content.profile-card {
-          background: #ffffff;
-          color: #111827;
-          border: 1px solid #e5e5e5;
-          border-radius: 1rem;
-          padding: 1rem 1.15rem;
-          box-shadow: 0 14px 34px rgba(0, 0, 0, 0.18);
+        .era-dashboard {
           display: grid;
-          grid-template-columns: minmax(0, 1fr) auto;
-          align-items: center;
-          gap: 1.1rem;
+          grid-template-columns: 260px 1fr;
+          min-height: 100vh;
+          background: #f5f5f5;
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
 
-        .hero-user {
+        /* ============ SIDEBAR ============ */
+        .era-sidebar {
+          background: #0A0A0A;
+          color: #fff;
           display: flex;
-          align-items: center;
-          gap: 1rem;
-          min-width: 0;
-          max-width: 100%;
+          flex-direction: column;
+          position: sticky;
+          top: 0;
+          height: 100vh;
+          border-right: 3px solid #DC2626;
         }
 
-        .avatar-frame {
-          flex: 0 0 auto;
-          width: 108px;
-          height: 108px;
+        .era-sidebar-inner {
+          flex: 1;
+          padding: 24px 16px;
+          overflow-y: auto;
+        }
+
+        .era-profile-card {
+          background: linear-gradient(180deg, rgba(220,38,38,0.1) 0%, rgba(10,10,10,1) 100%);
+          border: 1px solid rgba(220,38,38,0.3);
+          border-radius: 16px;
+          padding: 20px 16px;
+          margin-bottom: 28px;
+          text-align: center;
+        }
+
+        .era-avatar-ring {
+          width: 72px;
+          height: 72px;
           border-radius: 50%;
-          padding: 5px;
-          background: #ffffff;
-          border: 2px solid #000000;
-          box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+          padding: 3px;
+          background: linear-gradient(135deg, #DC2626 0%, #F87171 100%);
+          margin: 0 auto 12px;
+          box-shadow: 0 0 20px rgba(220,38,38,0.3);
         }
 
-        .avatar {
+        .era-avatar-ring-lg {
+          width: 100px;
+          height: 100px;
+        }
+
+        .era-avatar {
           width: 100%;
           height: 100%;
           border-radius: 50%;
           object-fit: cover;
+          border: 2px solid #0A0A0A;
           display: block;
-          border: 2px solid #f3f4f6;
         }
 
-        .hero-user-info {
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          gap: 0;
+        .era-profile-info {
           min-width: 0;
-          color: #111827;
-          text-align: left;
-          mix-blend-mode: normal;
-          isolation: isolate;
         }
 
-        .profile-card .hero-user-info,
-        .profile-card .hero-user-info * {
-          -webkit-text-fill-color: currentColor;
-          background-clip: border-box;
-          -webkit-background-clip: border-box;
-          text-shadow: none;
-          mix-blend-mode: normal;
+        .era-profile-name {
+          margin: 0 0 4px;
+          font-size: 15px;
+          font-weight: 800;
+          color: #fff;
+          line-height: 1.2;
         }
 
-        .profile-kicker {
-          color: #4b5563;
-          font-size: 0.75rem;
-          font-weight: 900;
-          text-transform: uppercase;
-          letter-spacing: 0;
-          line-height: 1;
-          margin: 0 0 0.35rem;
-        }
-
-        h1 {
-          margin: 0;
-          color: #000000;
-        }
-
-        .hero-user-info h1 {
-          max-width: 100%;
-          color: #0f172a;
-          font-size: clamp(1.7rem, 2.5vw, 2.25rem);
-          font-weight: 900;
-          line-height: 1;
+        .era-profile-email {
+          margin: 0 0 10px;
+          font-size: 12px;
+          color: #9CA3AF;
+          font-weight: 500;
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
-          letter-spacing: 0;
-          margin: 0 0 0.55rem;
         }
 
-        .subtitle {
-          display: flex;
-          align-items: center;
-          gap: 0.45rem;
-          flex-wrap: wrap;
-          margin: 0;
-          color: #374151;
-          font-weight: 800;
-          font-size: 0.95rem;
-          line-height: 1.2;
-          min-height: 0;
-          margin-bottom: 0.45rem;
-        }
-
-        .subtitle i {
-          color: #000000;
-        }
-
-        .profile-dot {
+        .era-user-badge {
           display: inline-flex;
           align-items: center;
-          padding: 0.18rem 0.55rem;
+          gap: 5px;
+          padding: 4px 10px;
+          background: rgba(220,38,38,0.15);
+          border: 1px solid rgba(220,38,38,0.4);
           border-radius: 999px;
-          background: #f0f0f0;
-          color: #000000;
-          font-size: 0.78rem;
-          font-weight: 900;
-        }
-
-        .submeta {
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-          flex-wrap: wrap;
-          margin: 0;
-          color: #64748b;
+          font-size: 11px;
           font-weight: 700;
-          font-size: 0.9rem;
-          line-height: 1.2;
-          min-height: 0;
+          color: #F87171;
         }
 
-        .submeta span {
-          display: inline-flex;
-          align-items: center;
-          gap: 0.35rem;
-          min-width: 0;
-          max-width: 100%;
-        }
-
-        .submeta i {
-          color: #333333;
-        }
-
-        .hero-actions {
-          display: flex;
-          justify-content: flex-end;
-          gap: 0.55rem;
-          flex-wrap: wrap;
-          align-items: center;
-        }
-
-        .btn-primary, .btn-secondary {
-          border: none;
-          border-radius: 0.65rem;
-          font-weight: 800;
-          cursor: pointer;
-          padding: 0.68rem 1rem;
-          display: inline-flex;
-          align-items: center;
-          gap: 0.5rem;
-          transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
-          text-decoration: none;
-          min-height: 42px;
-        }
-
-        .btn-primary {
-          background: #000000;
-          color: #ffffff;
-        }
-
-        .btn-primary:hover,
-        .btn-primary:focus-visible {
-          transform: translateY(-1px);
-          box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.3);
-          background: #333333;
-        }
-
-        .btn-primary:active,
-        .btn-secondary:active,
-        .btn-logout:active {
-          transform: translateY(0);
-        }
-
-        .btn-secondary {
-          background: #f0f0f0;
-          color: #000000;
-          border: 2px solid #000000;
-        }
-
-        .btn-secondary:hover,
-        .btn-secondary:focus-visible {
-          background: #000000;
-          color: #ffffff;
-          transform: translateY(-1px);
-          box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.22);
-        }
-
-        .btn-primary:focus-visible,
-        .btn-secondary:focus-visible,
-        .btn-logout:focus-visible {
-          outline: 3px solid rgba(0, 0, 0, 0.18);
-          outline-offset: 2px;
-        }
-
-        .user-panel-body {
-          padding: 1rem 0;
-        }
-
-        .panel-layout {
-          display: grid;
-          grid-template-columns: 280px 1fr;
-          gap: 1.5rem;
-          align-items: start;
-        }
-
-        .panel-sidebar {
-          position: sticky;
-          top: 110px;
+        .era-nav {
           display: flex;
           flex-direction: column;
-          gap: 0.5rem;
+          gap: 4px;
         }
 
-        .side-link {
+        .era-nav-link {
           width: 100%;
-          background: #ffffff;
-          border: 2px solid #e0e0e0;
-          border-radius: 1rem;
-          padding: 0.9rem 1rem;
+          background: transparent;
+          border: none;
+          border-left: 3px solid transparent;
+          padding: 12px 14px;
           cursor: pointer;
           display: flex;
           align-items: center;
-          gap: 0.75rem;
-          color: #000000;
-          font-weight: 700;
-          transition: all 0.2s ease;
+          gap: 12px;
+          color: #9CA3AF;
+          font-weight: 600;
+          font-size: 14px;
           text-align: left;
+          border-radius: 8px;
+          transition: all 0.18s ease;
         }
 
-        .side-link:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.2);
-          border-color: #000000;
+        .era-nav-link:hover {
+          background: rgba(255,255,255,0.05);
+          color: #fff;
         }
 
-        .side-link.active {
-          background: #f0f0f0;
-          border-color: #000000;
+        .era-nav-link.active {
+          background: rgba(220,38,38,0.12);
+          border-left-color: #DC2626;
+          color: #fff;
         }
 
-        .stats-card {
-          padding: 1.25rem;
+        .era-nav-link.active .era-nav-icon {
+          color: #DC2626;
         }
 
-        .stats {
-          display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          gap: 0.75rem;
+        .era-nav-icon {
+          width: 18px;
+          flex-shrink: 0;
+          font-size: 15px;
+          transition: color 0.18s ease;
         }
 
-        .stat {
-          border: 2px solid #e0e0e0;
-          background: #f9f9f9;
-          border-radius: 1rem;
-          padding: 0.9rem;
+        .era-nav-label {
+          flex: 1;
+          min-width: 0;
+        }
+
+        .era-nav-badge {
+          background: #DC2626;
+          color: #fff;
+          font-size: 11px;
+          font-weight: 800;
+          padding: 2px 7px;
+          border-radius: 999px;
+          min-width: 20px;
+          text-align: center;
+        }
+
+        .era-sidebar-footer {
+          padding: 16px;
+          border-top: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .era-logout-btn {
+          width: 100%;
+          background: transparent;
+          border: 1.5px solid rgba(220,38,38,0.5);
+          color: #F87171;
+          padding: 12px 14px;
+          border-radius: 10px;
+          cursor: pointer;
           display: flex;
           align-items: center;
-          gap: 0.75rem;
+          gap: 10px;
+          font-weight: 700;
+          font-size: 14px;
+          transition: all 0.18s ease;
         }
 
-        .stat-icon {
-          width: 40px;
-          height: 40px;
-          border-radius: 1rem;
-          background: #000000;
-          color: #ffffff;
+        .era-logout-btn:hover {
+          background: rgba(220,38,38,0.15);
+          border-color: #DC2626;
+          color: #fff;
+        }
+
+        /* ============ MAIN CONTENT ============ */
+        .era-main {
+          background: #ffffff;
+          min-width: 0;
+        }
+
+        .era-main-inner {
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 32px;
+        }
+
+        .era-tab-content {
+          animation: fadeIn 0.25s ease;
+        }
+
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(4px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ============ WELCOME HEADER ============ */
+        .era-welcome-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          gap: 24px;
+          margin-bottom: 28px;
+          padding-bottom: 24px;
+          border-bottom: 1px solid #E5E7EB;
+        }
+
+        .era-welcome-title {
+          margin: 0 0 8px;
+          font-size: 28px;
+          font-weight: 900;
+          color: #0A0A0A;
+          letter-spacing: -0.5px;
+        }
+
+        .era-welcome-subtitle {
+          margin: 0;
+          font-size: 14px;
+          color: #6B7280;
+          font-weight: 500;
+        }
+
+        .era-welcome-actions {
+          display: flex;
+          gap: 10px;
+          flex-shrink: 0;
+        }
+
+        /* ============ BUTTONS ============ */
+        .era-btn {
+          border: none;
+          border-radius: 10px;
+          font-weight: 700;
+          cursor: pointer;
+          padding: 11px 18px;
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          transition: all 0.18s ease;
+          text-decoration: none;
+          font-size: 14px;
+          white-space: nowrap;
+        }
+
+        .era-btn-sm {
+          padding: 8px 12px;
+          font-size: 13px;
+          border-radius: 8px;
+        }
+
+        .era-btn-primary {
+          background: #DC2626;
+          color: #fff;
+        }
+
+        .era-btn-primary:hover {
+          background: #B91C1C;
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(220,38,38,0.3);
+        }
+
+        .era-btn-outline {
+          background: #fff;
+          color: #0A0A0A;
+          border: 1.5px solid #E5E7EB;
+        }
+
+        .era-btn-outline:hover {
+          border-color: #0A0A0A;
+          background: #fafafa;
+        }
+
+        /* ============ PAGE HEADER ============ */
+        .era-page-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-end;
+          gap: 20px;
+          margin-bottom: 28px;
+          padding-bottom: 20px;
+          border-bottom: 1px solid #E5E7EB;
+        }
+
+        .era-page-title {
+          margin: 0 0 6px;
+          font-size: 26px;
+          font-weight: 900;
+          color: #0A0A0A;
+          letter-spacing: -0.5px;
+        }
+
+        .era-page-subtitle {
+          margin: 0;
+          font-size: 14px;
+          color: #6B7280;
+          font-weight: 500;
+        }
+
+        .era-page-actions {
+          display: flex;
+          gap: 10px;
+          flex-shrink: 0;
+          flex-wrap: wrap;
+        }
+
+        /* ============ STAT CARDS ============ */
+        .era-stat-grid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 20px;
+          margin-bottom: 32px;
+        }
+
+        .era-stat-card {
+          background: #fff;
+          border: 1px solid #E5E7EB;
+          border-radius: 16px;
+          padding: 20px;
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          transition: all 0.2s ease;
+        }
+
+        .era-stat-card:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+        }
+
+        .era-stat-icon {
+          width: 52px;
+          height: 52px;
+          border-radius: 14px;
           display: flex;
           align-items: center;
           justify-content: center;
           flex-shrink: 0;
+          color: #fff;
+          font-size: 22px;
         }
 
-        .stat-value {
-          color: #000000;
+        .era-stat-icon-red {
+          background: linear-gradient(135deg, #DC2626 0%, #EF4444 100%);
+          box-shadow: 0 4px 12px rgba(220,38,38,0.3);
+        }
+
+        .era-stat-icon-black {
+          background: linear-gradient(135deg, #0A0A0A 0%, #374151 100%);
+          box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+        }
+
+        .era-stat-content { min-width: 0; }
+
+        .era-stat-value {
+          font-size: 26px;
           font-weight: 900;
+          color: #0A0A0A;
           line-height: 1.1;
+          margin-bottom: 4px;
         }
 
-        .stat-label {
-          color: #666666;
-          font-weight: 700;
-          font-size: 0.8rem;
-          margin-top: 0.1rem;
-        }
-
-        .sidebar-card {
-          margin-top: 0.75rem;
-          background: #ffffff;
-          border: 2px solid #e0e0e0;
-          border-radius: 1.5rem;
-          padding: 1rem;
-          box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.2);
-        }
-
-        .mini-stat {
-          display: flex;
-          justify-content: space-between;
-          padding: 0.4rem 0;
-          color: #666666;
+        .era-stat-label {
+          font-size: 13px;
+          color: #6B7280;
           font-weight: 600;
         }
 
-        .mini-stat-value {
-          color: #000000;
+        /* ============ SECTIONS ============ */
+        .era-section { margin-bottom: 32px; }
+        .era-quick-section { margin-bottom: 32px; }
+
+        .era-section-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 16px;
+        }
+
+        .era-section-title {
+          margin: 0;
+          font-size: 18px;
+          font-weight: 800;
+          color: #0A0A0A;
+        }
+
+        .era-text-link {
+          background: none;
+          border: none;
+          cursor: pointer;
+          color: #DC2626;
+          font-weight: 700;
+          font-size: 14px;
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          text-decoration: none;
+          transition: color 0.18s ease;
+          padding: 0;
+        }
+
+        .era-text-link:hover {
+          color: #B91C1C;
+        }
+
+        /* ============ RECENT ORDERS ============ */
+        .era-recent-orders {
+          background: #fff;
+          border: 1px solid #E5E7EB;
+          border-radius: 16px;
+          overflow: hidden;
+        }
+
+        .era-order-row-card {
+          display: grid;
+          grid-template-columns: 1.2fr 1fr 1fr 1fr auto;
+          gap: 16px;
+          align-items: center;
+          padding: 16px 20px;
+          border-bottom: 1px solid #F3F4F6;
+          transition: background 0.15s ease;
+        }
+
+        .era-order-row-card:last-child { border-bottom: none; }
+        .era-order-row-card:hover { background: #FAFAFA; }
+
+        .era-order-row-info { min-width: 0; }
+
+        .era-order-id {
+          font-weight: 800;
+          font-size: 14px;
+          color: #0A0A0A;
+          letter-spacing: 0.3px;
+        }
+
+        .era-order-meta {
+          font-size: 12px;
+          color: #6B7280;
+          margin-top: 3px;
+          font-weight: 500;
+        }
+
+        .era-order-row-items {
+          font-size: 14px;
+          color: #374151;
+          font-weight: 600;
+        }
+
+        .era-order-row-amount {
+          font-size: 16px;
+          font-weight: 900;
+          color: #0A0A0A;
+        }
+
+        .era-view-link {
+          background: none;
+          border: none;
+          cursor: pointer;
+          color: #DC2626;
+          font-weight: 800;
+          font-size: 13px;
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+          padding: 6px 10px;
+          border-radius: 6px;
+          transition: background 0.15s ease;
+        }
+
+        .era-view-link:hover {
+          background: rgba(220,38,38,0.08);
+        }
+
+        /* ============ BADGES ============ */
+        .era-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 5px 11px;
+          border-radius: 999px;
+          font-size: 11px;
+          font-weight: 800;
+          text-transform: capitalize;
+          letter-spacing: 0.3px;
+        }
+
+        .era-badge-processing {
+          background: #FEF3C7;
+          color: #92400E;
+        }
+
+        .era-badge-shipped {
+          background: #0A0A0A;
+          color: #fff;
+        }
+
+        .era-badge-out {
+          background: #DC2626;
+          color: #fff;
+        }
+
+        .era-badge-delivered {
+          background: #059669;
+          color: #fff;
+        }
+
+        .era-badge-cancelled {
+          background: #E5E7EB;
+          color: #4B5563;
+        }
+
+        /* ============ QUICK ACTIONS ============ */
+        .era-quick-actions {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 16px;
+        }
+
+        .era-action-card {
+          background: #fff;
+          border: 1px solid #E5E7EB;
+          border-radius: 16px;
+          padding: 24px 18px;
+          cursor: pointer;
+          text-align: left;
+          transition: all 0.2s ease;
+        }
+
+        .era-action-card:hover {
+          transform: translateY(-2px);
+          border-color: #DC2626;
+          box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+        }
+
+        .era-action-icon {
+          width: 48px;
+          height: 48px;
+          border-radius: 12px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #fff;
+          font-size: 20px;
+          margin-bottom: 14px;
+        }
+
+        .era-action-red {
+          background: linear-gradient(135deg, #DC2626 0%, #EF4444 100%);
+        }
+
+        .era-action-black {
+          background: linear-gradient(135deg, #0A0A0A 0%, #374151 100%);
+        }
+
+        .era-action-title {
+          font-size: 15px;
+          font-weight: 800;
+          color: #0A0A0A;
+          margin-bottom: 4px;
+        }
+
+        .era-action-sub {
+          font-size: 12px;
+          color: #6B7280;
+          font-weight: 500;
+        }
+
+        /* ============ SUPPORT BANNER ============ */
+        .era-support-banner {
+          background: linear-gradient(135deg, #0A0A0A 0%, #1F2937 100%);
+          border-radius: 20px;
+          padding: 28px 32px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 24px;
+          margin-bottom: 16px;
+        }
+
+        .era-support-banner-content {
+          display: flex;
+          align-items: center;
+          gap: 20px;
+        }
+
+        .era-support-icon-wrap {
+          width: 56px;
+          height: 56px;
+          border-radius: 14px;
+          background: linear-gradient(135deg, #DC2626 0%, #EF4444 100%);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #fff;
+          font-size: 24px;
+          flex-shrink: 0;
+        }
+
+        .era-support-banner h3 {
+          margin: 0 0 6px;
+          color: #fff;
+          font-size: 18px;
           font-weight: 800;
         }
 
-        .mini-actions {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 0.5rem;
-          margin-top: 0.75rem;
+        .era-support-banner p {
+          margin: 0;
+          color: #9CA3AF;
+          font-size: 14px;
         }
 
-        .mini-btn {
-          background: #f0f0f0;
-          border: 2px solid #e0e0e0;
-          border-radius: 0.75rem;
-          padding: 0.6rem 0.75rem;
+        /* ============ EMPTY STATE ============ */
+        .era-empty {
+          padding: 48px 20px;
+          text-align: center;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 12px;
+          border-top: none;
+        }
+
+        .era-empty i {
+          font-size: 36px;
+          color: #9CA3AF;
+        }
+
+        .era-empty p {
+          margin: 0;
+          color: #6B7280;
+          font-weight: 600;
+        }
+
+        .era-empty-state {
+          background: #fff;
+          border: 1px solid #E5E7EB;
+          border-radius: 20px;
+          padding: 56px 32px;
+          text-align: center;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 12px;
+        }
+
+        .era-empty-icon {
+          width: 80px;
+          height: 80px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 32px;
+          margin-bottom: 12px;
+          color: #fff;
+        }
+
+        .era-empty-icon-red {
+          background: linear-gradient(135deg, rgba(220,38,38,0.15) 0%, rgba(220,38,38,0.25) 100%);
+          color: #DC2626;
+        }
+
+        .era-empty-icon-black {
+          background: linear-gradient(135deg, rgba(10,10,10,0.08) 0%, rgba(10,10,10,0.15) 100%);
+          color: #0A0A0A;
+        }
+
+        .era-empty-state h2 {
+          margin: 0;
+          font-size: 20px;
+          font-weight: 800;
+          color: #0A0A0A;
+        }
+
+        .era-empty-state p {
+          margin: 0;
+          color: #6B7280;
+          font-size: 14px;
+          max-width: 360px;
+        }
+
+        .era-empty-state > *:last-child {
+          margin-top: 12px;
+        }
+
+        .era-loading {
+          padding: 48px;
+          text-align: center;
+          color: #6B7280;
+          font-weight: 600;
+        }
+
+        /* ============ ORDER CARD ============ */
+        .era-orders-list {
+          display: grid;
+          gap: 20px;
+        }
+
+        .era-order-card {
+          background: #fff;
+          border: 1px solid #E5E7EB;
+          border-radius: 18px;
+          overflow: hidden;
+          transition: all 0.2s ease;
+        }
+
+        .era-order-card:hover {
+          box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+        }
+
+        .era-order-card-top {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          gap: 16px;
+          padding: 20px 24px;
+          border-bottom: 1px solid #F3F4F6;
+          background: #FAFAFA;
+        }
+
+        .era-order-card-id {
+          font-size: 16px;
+          font-weight: 900;
+          color: #0A0A0A;
+          letter-spacing: 0.5px;
+        }
+
+        .era-order-card-date {
+          margin-top: 5px;
+          font-size: 13px;
+          color: #6B7280;
+          font-weight: 600;
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+        }
+
+        .era-order-card-mid {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 20px;
+          padding: 20px 24px;
+          border-bottom: 1px solid #F3F4F6;
+        }
+
+        .era-product-thumbs {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .era-thumb {
+          width: 56px;
+          height: 56px;
+          border-radius: 10px;
+          object-fit: cover;
+          border: 2px solid #fff;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        .era-thumb-placeholder {
+          width: 56px;
+          height: 56px;
+          border-radius: 10px;
+          background: #F3F4F6;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #9CA3AF;
+          font-size: 22px;
+        }
+
+        .era-thumb-more {
+          width: 56px;
+          height: 56px;
+          border-radius: 10px;
+          background: #E5E7EB;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: 800;
+          color: #374151;
+          font-size: 14px;
+        }
+
+        .era-order-card-total {
+          text-align: right;
+        }
+
+        .era-total-label {
+          display: block;
+          font-size: 12px;
+          color: #6B7280;
+          font-weight: 600;
+          margin-bottom: 4px;
+        }
+
+        .era-total-amount {
+          font-size: 24px;
+          font-weight: 900;
+          color: #DC2626;
+          letter-spacing: -0.5px;
+        }
+
+        .era-order-card-actions {
+          display: flex;
+          gap: 8px;
+          flex-wrap: wrap;
+          padding: 16px 24px;
+        }
+
+        .era-action-btn {
+          background: #fff;
+          border: 1.5px solid #E5E7EB;
+          border-radius: 8px;
+          padding: 9px 14px;
+          cursor: pointer;
+          display: inline-flex;
+          align-items: center;
+          gap: 7px;
           font-weight: 700;
-          color: #000000;
+          font-size: 13px;
+          color: #374151;
+          transition: all 0.18s ease;
+        }
+
+        .era-action-btn:hover {
+          border-color: #0A0A0A;
+          color: #0A0A0A;
+        }
+
+        .era-action-btn-red {
+          background: #DC2626;
+          border-color: #DC2626;
+          color: #fff;
+        }
+
+        .era-action-btn-red:hover {
+          background: #B91C1C;
+          border-color: #B91C1C;
+          color: #fff;
+        }
+
+        .era-action-btn-orange {
+          background: #D97706;
+          border-color: #D97706;
+          color: #fff;
+        }
+
+        .era-action-btn-orange:hover {
+          background: #B45309;
+          border-color: #B45309;
+          color: #fff;
+        }
+
+        /* ============ GRIDS ============ */
+        .era-designs-grid,
+        .era-kits-grid {
+          display: grid;
+          gap: 20px;
+        }
+
+        .era-wishlist-grid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 20px;
+        }
+
+        .era-wishlist-card {
+          background: #fff;
+          border: 1px solid #E5E7EB;
+          border-radius: 16px;
+          overflow: hidden;
+          transition: all 0.2s ease;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .era-wishlist-card:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+        }
+
+        .era-wishlist-img-wrap {
+          position: relative;
+          background: #F3F4F6;
+          aspect-ratio: 1;
+        }
+
+        .era-wishlist-img-wrap img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+        }
+
+        .era-wishlist-heart {
+          position: absolute;
+          top: 10px;
+          right: 10px;
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          background: rgba(220,38,38,0.12);
+          color: #DC2626;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 14px;
+          backdrop-filter: blur(4px);
+        }
+
+        .era-wishlist-info {
+          padding: 14px 16px 0;
+          flex: 1;
+        }
+
+        .era-wishlist-name {
+          margin: 0 0 6px;
+          font-size: 14px;
+          font-weight: 800;
+          color: #0A0A0A;
+          line-height: 1.3;
+        }
+
+        .era-wishlist-price {
+          font-size: 16px;
+          font-weight: 900;
+          color: #DC2626;
+        }
+
+        .era-wishlist-actions {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 8px;
+          padding: 12px 16px 16px;
+        }
+
+        /* ============ ADDRESSES ============ */
+        .era-addresses-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 20px;
+        }
+
+        .era-address-card {
+          background: #fff;
+          border: 1.5px solid #E5E7EB;
+          border-radius: 16px;
+          padding: 22px;
+          transition: all 0.2s ease;
+          position: relative;
+        }
+
+        .era-address-card:hover {
+          border-color: #9CA3AF;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .era-address-default {
+          border-color: #DC2626;
+          background: linear-gradient(180deg, rgba(220,38,38,0.03) 0%, #fff 30%);
+        }
+
+        .era-address-top {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 14px;
+        }
+
+        .era-address-type {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-weight: 800;
+          color: #0A0A0A;
+          font-size: 15px;
+        }
+
+        .era-default-tag {
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+          padding: 3px 9px;
+          background: #DC2626;
+          color: #fff;
+          font-size: 11px;
+          font-weight: 800;
+          border-radius: 999px;
+          margin-left: 4px;
+        }
+
+        .era-address-edit {
+          display: flex;
+          gap: 6px;
+        }
+
+        .era-icon-btn {
+          width: 34px;
+          height: 34px;
+          border-radius: 8px;
+          border: 1px solid #E5E7EB;
+          background: #fff;
+          cursor: pointer;
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          gap: 0.5rem;
-          text-decoration: none;
-          transition: all 0.2s ease;
+          color: #6B7280;
+          transition: all 0.18s ease;
         }
 
-        .mini-btn:hover {
-          background: #000000;
-          color: #ffffff;
-          border-color: #000000;
+        .era-icon-btn:hover {
+          border-color: #0A0A0A;
+          color: #0A0A0A;
         }
 
-        .panel-content {
+        .era-icon-btn-danger:hover {
+          border-color: #DC2626;
+          color: #DC2626;
+        }
+
+        .era-address-body {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+        }
+
+        .era-address-name {
+          font-weight: 800;
+          font-size: 15px;
+          color: #0A0A0A;
+        }
+
+        .era-address-phone {
+          font-size: 13px;
+          color: #374151;
+          font-weight: 600;
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+        }
+
+        .era-address-line,
+        .era-address-city {
+          font-size: 13px;
+          color: #6B7280;
+          font-weight: 500;
+        }
+
+        /* ============ ACCOUNT SETTINGS ============ */
+        .era-account-card {
+          background: #fff;
+          border: 1px solid #E5E7EB;
+          border-radius: 20px;
+          padding: 32px;
+        }
+
+        .era-account-section + .era-account-section {
+          padding-top: 0;
+        }
+
+        .era-account-section-title {
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          margin: 0 0 20px;
+          font-size: 17px;
+          font-weight: 800;
+          color: #0A0A0A;
+        }
+
+        .era-account-section-title i {
+          color: #DC2626;
+        }
+
+        .era-account-profile {
+          display: flex;
+          gap: 28px;
+          align-items: flex-start;
+        }
+
+        .era-account-avatar-wrap {
+          flex-shrink: 0;
+        }
+
+        .era-account-fields {
+          flex: 1;
           min-width: 0;
         }
 
-        .grid {
-          display: grid;
-          grid-template-columns: repeat(12, 1fr);
-          gap: 1rem;
-        }
-
-        .card {
-          grid-column: span 12;
-          background: #ffffff;
-          border-radius: 1.5rem;
-          padding: 1.5rem;
-          box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.2);
-          border: 2px solid #e0e0e0;
-        }
-
-        .card-head {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          gap: 1rem;
-          margin-bottom: 1rem;
-        }
-
-        .card-head h2 {
-          margin: 0;
-          color: #000000;
-          font-size: 1.25rem;
-        }
-
-        .ghost {
-          background: transparent;
-          border: none;
-          cursor: pointer;
-          font-weight: 700;
-          color: #000000;
-          text-decoration: none;
-        }
-
-        .ghost:hover {
-          text-decoration: underline;
-        }
-
-        .head-actions {
-          display: flex;
-          gap: 0.5rem;
-          flex-wrap: wrap;
-        }
-
-        .quick-links {
+        .era-field-grid {
           display: grid;
           grid-template-columns: repeat(2, 1fr);
-          gap: 0.75rem;
+          gap: 18px;
+          margin-bottom: 20px;
         }
 
-        .quick-link {
-          border: 2px solid #e0e0e0;
-          background: #f9f9f9;
-          border-radius: 1rem;
-          padding: 1rem;
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-          text-decoration: none;
-          color: #000000;
-          font-weight: 800;
+        .era-field label {
+          display: block;
+          font-size: 12px;
+          font-weight: 700;
+          color: #6B7280;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          margin-bottom: 6px;
+        }
+
+        .era-field-value {
+          font-size: 15px;
+          font-weight: 700;
+          color: #0A0A0A;
+          padding: 10px 12px;
+          background: #F9FAFB;
+          border: 1px solid #E5E7EB;
+          border-radius: 8px;
+        }
+
+        .era-input {
+          width: 100%;
+          min-height: 42px;
+          padding: 10px 12px;
+          border: 1.5px solid #E5E7EB;
+          border-radius: 8px;
+          font-size: 14px;
+          font-family: inherit;
+          transition: all 0.15s ease;
+        }
+
+        .era-input:focus {
+          outline: none;
+          border-color: #DC2626;
+          box-shadow: 0 0 0 3px rgba(220,38,38,0.1);
+        }
+
+        .era-account-divider {
+          height: 1px;
+          background: #E5E7EB;
+          margin: 28px 0;
+        }
+
+        /* ============ SUPPORT GRID ============ */
+        .era-support-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 20px;
+        }
+
+        .era-support-card {
+          background: #fff;
+          border: 1px solid #E5E7EB;
+          border-radius: 18px;
+          padding: 28px;
+          cursor: pointer;
+          text-align: left;
           transition: all 0.2s ease;
         }
 
-        .quick-link:hover {
+        .era-support-card:hover {
           transform: translateY(-2px);
-          border-color: #000000;
-          background: #000000;
-          color: #ffffff;
+          box-shadow: 0 8px 24px rgba(0,0,0,0.08);
         }
 
-        .latest-order {
-          display: grid;
-          gap: 0.75rem;
+        .era-support-card:hover.era-support-card .era-support-card-icon {
+          transform: scale(1.08);
         }
 
-        .order-row {
+        .era-support-card-icon {
+          width: 56px;
+          height: 56px;
+          border-radius: 14px;
           display: flex;
-          justify-content: space-between;
           align-items: center;
-          gap: 1rem;
-        }
-
-        .order-id {
-          font-weight: 900;
-          color: #000000;
-        }
-
-        .order-meta {
-          color: #666666;
-          font-weight: 600;
-          font-size: 0.875rem;
-          margin-top: 0.25rem;
-        }
-
-        .muted {
-          color: #666666;
-          font-weight: 600;
-        }
-
-        .strong {
-          color: #000000;
-          font-weight: 900;
-        }
-
-        .badge {
-          padding: 0.25rem 0.75rem;
-          border-radius: 9999px;
-          font-size: 0.75rem;
-          font-weight: 900;
-          text-transform: uppercase;
-          display: inline-flex;
-          align-items: center;
-          gap: 0.5rem;
-        }
-
-        .badge.processing {
-          background: #666666;
-          color: #ffffff;
-        }
-
-        .badge.shipped {
-          background: #333333;
+          justify-content: center;
           color: #fff;
+          font-size: 24px;
+          margin-bottom: 18px;
+          transition: transform 0.2s ease;
         }
 
-        .badge.out {
-          background: #000000;
-          color: #fff;
+        .era-support-red {
+          background: linear-gradient(135deg, #DC2626 0%, #EF4444 100%);
+          box-shadow: 0 4px 14px rgba(220,38,38,0.3);
         }
 
-        .badge.delivered {
-          background: #000000;
-          color: #fff;
+        .era-support-black {
+          background: linear-gradient(135deg, #0A0A0A 0%, #374151 100%);
+          box-shadow: 0 4px 14px rgba(0,0,0,0.25);
         }
 
-        .order-actions {
-          display: flex;
-          gap: 0.75rem;
-          flex-wrap: wrap;
-          margin-top: 0.5rem;
-        }
-
-        .orders {
-          display: grid;
-          gap: 1rem;
-        }
-
-        .order-card {
-          background: #f9f9f9;
-          border: 2px solid #e0e0e0;
-          border-radius: 1.5rem;
-          padding: 1.25rem;
-        }
-
-        .order-top {
-          display: flex;
-          justify-content: space-between;
-          align-items: start;
-          gap: 1rem;
-        }
-
-        .order-bottom {
-          display: grid;
-          grid-template-columns: 1fr 1fr auto;
-          gap: 1rem;
-          align-items: center;
-          margin-top: 1rem;
-        }
-
-        .order-cta {
-          display: flex;
-          justify-content: flex-end;
-          gap: 0.5rem;
-          flex-wrap: wrap;
-        }
-
-        .addresses {
-          display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 1rem;
-        }
-
-        .address {
-          border: 2px solid #e0e0e0;
-          background: #f9f9f9;
-          border-radius: 1.5rem;
-          padding: 1.25rem;
-        }
-
-        .address.default {
-          border-color: #000000;
-          box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
-        }
-
-        .address-top {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 0.75rem;
-        }
-
-        .address-title {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          font-weight: 900;
-          color: #000000;
-        }
-
-        .btn-logout {
-          background: #333333;
-          color: white;
-          border: 1px solid #333333;
-          padding: 0.68rem 1rem;
-          border-radius: 0.65rem;
-          min-height: 42px;
-          font-size: 0.95rem;
+        .era-support-card-title {
+          font-size: 17px;
           font-weight: 800;
-          cursor: pointer;
-          display: inline-flex;
-          align-items: center;
-          gap: 0.5rem;
-          transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+          color: #0A0A0A;
+          margin-bottom: 6px;
         }
 
-        .btn-logout:hover,
-        .btn-logout:focus-visible {
-          background: #000000;
-          border-color: #000000;
-          transform: translateY(-1px);
-          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+        .era-support-card-desc {
+          font-size: 14px;
+          color: #6B7280;
+          font-weight: 500;
         }
 
+        /* ============ EDIT PROFILE MODAL (ORIGINAL STYLES PRESERVED) ============ */
         .edit-profile-backdrop {
           position: fixed;
           inset: 0;
@@ -1613,8 +2372,8 @@ const UserPanel = () => {
 
         .edit-field input:focus {
           outline: none;
-          border-color: #000000;
-          box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.08);
+          border-color: #DC2626;
+          box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
         }
 
         .edit-profile-actions {
@@ -1624,302 +2383,223 @@ const UserPanel = () => {
           margin-top: 0.5rem;
         }
 
-.default-pill {
-          margin-left: 0.5rem;
-          background: #000000;
+        .btn-primary, .btn-secondary {
           border: none;
-          padding: 0.2rem 0.5rem;
-          border-radius: 9999px;
-          font-size: 0.75rem;
-          font-weight: 900;
-          color: #ffffff;
+          border-radius: 0.65rem;
+          font-weight: 800;
+          cursor: pointer;
+          padding: 0.68rem 1rem;
           display: inline-flex;
           align-items: center;
-          gap: 0.35rem;
+          gap: 0.5rem;
+          transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+          text-decoration: none;
+          min-height: 42px;
         }
 
-        .address-body {
-          display: grid;
-          gap: 0.25rem;
+        .btn-primary {
+          background: #DC2626;
+          color: #ffffff;
         }
 
-        .empty {
-          padding: 1.25rem;
-          border: 2px dashed #e0e0e0;
-          border-radius: 1.5rem;
-          text-align: center;
-          color: #666666;
+        .btn-primary:hover,
+        .btn-primary:focus-visible {
+          transform: translateY(-1px);
+          box-shadow: 0 4px 6px -1px rgba(220, 38, 38, 0.3);
+          background: #B91C1C;
         }
 
-        .empty i {
-          font-size: 1.5rem;
+        .btn-secondary {
+          background: #f0f0f0;
           color: #000000;
-          margin-bottom: 0.75rem;
+          border: 2px solid #000000;
         }
 
-        .list {
-          display: grid;
-          gap: 0.75rem;
+        .btn-secondary:hover,
+        .btn-secondary:focus-visible {
+          background: #000000;
+          color: #ffffff;
+          transform: translateY(-1px);
+          box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.22);
         }
 
-        .list-item {
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-          padding: 0.75rem;
-          border-radius: 1rem;
-          background: #f9f9f9;
-          border: 2px solid #e0e0e0;
-        }
-
-        .list-item img {
-          width: 44px;
-          height: 44px;
-          border-radius: 0.75rem;
-          object-fit: cover;
-        }
-
-        .wishlist-grid {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 1rem;
-        }
-
-        .wishlist-item {
-          background: #f9f9f9;
-          border: 2px solid #e0e0e0;
-          border-radius: 1.5rem;
-          overflow: hidden;
+        /* ============ QUOTES LIST ============ */
+        .era-quotes-list {
           display: flex;
           flex-direction: column;
         }
 
-        .wishlist-item img {
-          width: 100%;
-          height: 140px;
-          object-fit: cover;
-        }
-
-        .wishlist-meta {
-          padding: 1rem;
-          display: grid;
-          gap: 0.25rem;
-        }
-
-        .wishlist-actions {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 0.5rem;
-          padding: 0 1rem 1rem;
-        }
-
-        .support-grid {
-          display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 1rem;
-        }
-
-        .support-card {
-          border: 2px solid #e0e0e0;
-          background: #f9f9f9;
-          border-radius: 1.5rem;
-          padding: 1.25rem;
-          cursor: pointer;
-          transition: all 0.2s ease;
-          text-align: left;
-        }
-
-        .support-card:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.2);
-          border-color: #000000;
-          background: #000000;
-          color: #ffffff;
-        }
-
-        .support-icon {
-          width: 44px;
-          height: 44px;
-          border-radius: 1rem;
-          background: #000000;
-          color: #fff;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          margin-bottom: 0.75rem;
-        }
-
-        .support-icon.whatsapp {
-          background: #000000;
-        }
-
-        .support-title {
-          font-weight: 900;
-          color: #000000;
-          margin-bottom: 0.25rem;
-        }
-
-        @media (max-width: 1024px) {
-          .hero-content.profile-card {
-            grid-template-columns: 1fr;
-            align-items: start;
-          }
-
-          .hero-actions {
-            justify-content: flex-start;
-          }
-
-          .panel-layout {
+        /* ============ RESPONSIVE ============ */
+        @media (max-width: 1100px) {
+          .era-dashboard {
             grid-template-columns: 1fr;
           }
 
-          .panel-sidebar {
+          .era-sidebar {
             position: static;
+            height: auto;
+            border-right: none;
+            border-bottom: 3px solid #DC2626;
+          }
+
+          .era-sidebar-inner {
+            padding: 20px;
+          }
+
+          .era-sidebar-footer {
+            padding: 16px 20px;
+          }
+
+          .era-profile-card {
+            max-width: 340px;
+            margin: 0 auto 24px;
+          }
+
+          .era-nav {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
+            gap: 6px;
           }
 
-          .sidebar-card {
-            grid-column: span 2;
-          }
-
-          .wishlist-grid {
+          .era-stat-grid {
             grid-template-columns: repeat(2, 1fr);
           }
 
-          .addresses {
+          .era-quick-actions {
+            grid-template-columns: repeat(2, 1fr);
+          }
+
+          .era-wishlist-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
+
+          .era-order-row-card {
+            grid-template-columns: repeat(3, 1fr) auto;
+          }
+
+          .era-order-row-items {
+            display: none;
+          }
+        }
+
+        @media (max-width: 700px) {
+          .era-main-inner {
+            padding: 20px 16px;
+          }
+
+          .era-welcome-header {
+            flex-direction: column;
+            align-items: stretch;
+          }
+
+          .era-welcome-actions {
+            width: 100%;
+          }
+
+          .era-welcome-actions .era-btn {
+            flex: 1;
+            justify-content: center;
+          }
+
+          .era-page-header {
+            flex-direction: column;
+            align-items: stretch;
+          }
+
+          .era-page-actions {
+            width: 100%;
+          }
+
+          .era-page-actions .era-btn {
+            flex: 1;
+            justify-content: center;
+          }
+
+          .era-stat-grid {
             grid-template-columns: 1fr;
           }
 
-          .stats {
-            grid-template-columns: repeat(2, 1fr);
-          }
-        }
-
-        @media (prefers-color-scheme: dark) {
-          .hero-content.profile-card {
-            background: #ffffff;
-            color: #111827;
+          .era-quick-actions {
+            grid-template-columns: 1fr;
           }
 
-          .profile-card .profile-kicker {
-            color: #4b5563;
+          .era-order-row-card {
+            grid-template-columns: 1fr auto;
+            grid-template-rows: auto auto;
+            gap: 10px;
           }
 
-          .profile-card .hero-user-info h1 {
-            color: #0f172a;
+          .era-order-row-amount {
+            grid-column: 1;
           }
 
-          .profile-card .subtitle {
-            color: #374151;
-          }
-
-          .profile-card .submeta {
-            color: #64748b;
-          }
-        }
-
-        @media (max-width: 640px) {
-          .user-panel-hero {
-            padding: 0.85rem 0;
-          }
-
-          .hero-content.profile-card {
-            padding: 1rem;
-            gap: 0.9rem;
+          .era-support-banner {
+            flex-direction: column;
+            align-items: stretch;
             text-align: center;
+            padding: 24px 20px;
           }
 
-          .hero-user {
+          .era-support-banner-content {
+            flex-direction: column;
+          }
+
+          .era-addresses-grid {
+            grid-template-columns: 1fr;
+          }
+
+          .era-account-profile {
             flex-direction: column;
             align-items: center;
-            text-align: center;
-            gap: 0.8rem;
           }
 
-          .avatar-frame {
-            width: 104px;
-            height: 104px;
+          .era-field-grid {
+            grid-template-columns: 1fr;
           }
 
-          .hero-user-info h1 {
-            white-space: normal;
+          .era-wishlist-grid {
+            grid-template-columns: 1fr;
           }
 
-          .hero-user-info {
-            text-align: center;
+          .era-support-grid {
+            grid-template-columns: 1fr;
           }
 
-          .subtitle,
-          .submeta {
-            justify-content: center;
-          }
-
-          .submeta span {
-            justify-content: center;
-            overflow-wrap: anywhere;
-          }
-
-          .hero-actions,
-          .edit-profile-actions {
-            width: 100%;
+          .era-order-card-top {
             flex-direction: column;
+            align-items: stretch;
           }
 
-          .hero-actions .btn-primary,
-          .hero-actions .btn-secondary,
-          .hero-actions .btn-logout,
-          .edit-profile-actions .btn-primary,
-          .edit-profile-actions .btn-secondary {
-            width: 100%;
-            justify-content: center;
-          }
-
-          .edit-profile-backdrop {
-            padding: 12px 10px;
-          }
-
-          .edit-profile-modal {
-            padding: 1rem;
-            border-radius: 0.85rem;
-          }
-
-          .edit-avatar-row {
-            align-items: flex-start;
+          .era-order-card-mid {
             flex-direction: column;
+            align-items: stretch;
+          }
+
+          .era-order-card-total {
+            text-align: left;
+          }
+
+          .era-nav {
+            grid-template-columns: 1fr;
           }
 
           .edit-profile-grid {
             grid-template-columns: 1fr;
           }
 
-          .quick-links {
-            grid-template-columns: 1fr;
+          .edit-avatar-row {
+            flex-direction: column;
+            align-items: flex-start;
           }
 
-          .panel-sidebar {
-            grid-template-columns: 1fr;
+          .edit-profile-actions {
+            flex-direction: column;
           }
 
-          .sidebar-card {
-            grid-column: span 1;
-          }
-
-          .order-bottom {
-            grid-template-columns: 1fr;
-            align-items: start;
-          }
-
-          .order-cta {
-            justify-content: flex-start;
-          }
-
-          .wishlist-grid {
-            grid-template-columns: 1fr;
-          }
-
-          .support-grid {
-            grid-template-columns: 1fr;
+          .edit-profile-actions .btn-primary,
+          .edit-profile-actions .btn-secondary {
+            width: 100%;
+            justify-content: center;
           }
         }
       `}</style>

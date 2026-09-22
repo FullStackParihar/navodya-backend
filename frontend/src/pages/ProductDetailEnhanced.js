@@ -8,7 +8,7 @@ import ProductCard from '../components/ProductCard';
 import SkeletonLoader from '../components/SkeletonLoader';
 import './ProductDetailEnhanced.css';
 
-const fallbackImage = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="800" viewBox="0 0 600 800"><rect width="600" height="800" fill="%23f1f5f9"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="24" fill="%2394a3b8">Navodaya Trendz</text></svg>`;
+const fallbackImage = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="800" viewBox="0 0 600 800"><rect width="600" height="800" fill="%23f4f1eb"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="24" fill="%23e63322">Brand Era</text></svg>`;
 const objectIdPattern = /^[a-f\d]{24}$/i;
 const getFabricPrice = (fabric) => fabric ? (fabric.salePrice ?? fabric.price) : null;
 
@@ -81,7 +81,7 @@ const ProductDetailEnhanced = () => {
             inStock: p.is_active && (!hasSizeVariants || stockCount > 0),
             stockCount: hasSizeVariants ? stockCount : null,
             features: p.features && p.features.length > 0 ? p.features : [
-              '100% Premium Quality', 'Official Alumni Merchandise', 'Durable and Comfortable', 'Easy Care Fabric'
+              'Premium print quality', 'Customizable for your brand', 'Durable, comfortable finish', 'Made to order in India'
             ],
             specifications: p.specifications || { material: 'Premium Cotton/Fleece', origin: 'Made in India', fit: 'Standard Fit' },
             images: p.images.length > 0 ? p.images.map(img => resolveImageUrl(img)) : [resolveImageUrl('https://via.placeholder.com/600x800?text=No+Image')]
@@ -224,6 +224,56 @@ const ProductDetailEnhanced = () => {
     }
   };
 
+  const handleQuantityChange = (delta) => {
+    if (delta === 'decrease') {
+      setQuantity(Math.max(1, quantity - 1));
+    } else if (delta === 'increase') {
+      setQuantity(Math.min(10, quantity + 1));
+    } else {
+      setQuantity(Math.max(1, Math.min(10, parseInt(delta) || 1)));
+    }
+  };
+
+  const handleImageSelect = (idx) => {
+    setSelectedImage(idx);
+  };
+
+  const handleAddToQuote = () => {
+    success('Product added to quote!');
+    navigate('/quote');
+  };
+
+  const handleBulkOrder = () => {
+    success('Redirecting to bulk order form...');
+    navigate('/bulk-order');
+  };
+
+  const handleCustomize = () => {
+    success('Opening Print Studio...');
+    navigate('/print-studio');
+  };
+
+  const handleSaveDesign = () => {
+    success('Design saved to your collection!');
+  };
+
+  const handleAddToKit = () => {
+    success('Product added to your kit!');
+  };
+
+  const handleShare = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: product.name,
+        text: `Check out ${product.name} from Brand Era`,
+        url: window.location.href
+      });
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      success('Link copied to clipboard!');
+    }
+  };
+
   const renderStars = (rating) => {
     const stars = [];
     for (let i = 0; i < 5; i++) {
@@ -234,6 +284,13 @@ const ProductDetailEnhanced = () => {
     return stars;
   };
 
+  const brandEraFeatures = [
+    { icon: 'fa-check-circle', text: 'Best Quality' },
+    { icon: 'fa-palette', text: 'Custom Design' },
+    { icon: 'fa-tags', text: 'Bulk Pricing' },
+    { icon: 'fa-shipping-fast', text: 'On-Time Delivery' }
+  ];
+
   if (isLoading) return <div className="product-detail-page"><div className="container"><SkeletonLoader type="product" count={1} /></div></div>;
   if (!product) {
     return (
@@ -243,12 +300,14 @@ const ProductDetailEnhanced = () => {
             <i className="fas fa-box-open"></i>
             <h2>Product Not Found</h2>
             <p>This item may be unavailable or has been removed.</p>
-            <Link to="/alumni-kits" className="back-to-kits-btn">Back to Alumni Kits</Link>
+            <Link to="/alumni-kits" className="back-to-kits-btn">Explore brand solutions</Link>
           </div>
         </div>
       </div>
     );
   }
+
+  const imageGallery = product.colorImages?.[selectedColor] || product.images;
 
   return (
     <div className="product-detail-page">
@@ -262,14 +321,17 @@ const ProductDetailEnhanced = () => {
           <span className="current">{product.name}</span>
         </nav>
 
-        {/* Main Content */}
+        {/* Main Content - Two Column Layout */}
         <div className="product-detail-layout">
-          {/* Image Gallery */}
+          {/* LEFT COLUMN: Product Gallery */}
           <div className="product-images-section">
             <div className="main-image-wrapper">
+              {product.badge && (
+                <span className="product-badge">{product.badge}</span>
+              )}
               <div className="main-image-container">
                 <img 
-                  src={(product.colorImages?.[selectedColor] || product.images)[selectedImage]} 
+                  src={imageGallery[selectedImage]} 
                   alt={product.name} 
                   className="main-image" 
                   onError={(e) => {
@@ -279,13 +341,51 @@ const ProductDetailEnhanced = () => {
                 />
               </div>
 
+              {imageGallery.length > 1 && (
+                <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginBottom: '16px' }}>
+                  <button 
+                    type="button"
+                    onClick={() => handleImageSelect(0)}
+                    style={{
+                      padding: '6px 14px',
+                      borderRadius: '999px',
+                      border: selectedImage === 0 ? '2px solid #dc2626' : '2px solid var(--border-color)',
+                      background: selectedImage === 0 ? '#fef2f2' : 'var(--bg-primary)',
+                      color: selectedImage === 0 ? '#dc2626' : 'var(--text-secondary)',
+                      fontWeight: 600,
+                      fontSize: '13px',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease'
+                    }}
+                  >
+                    <i className="fas fa-tshirt" style={{ marginRight: '6px' }}></i>Front
+                  </button>
+                  <button 
+                    type="button"
+                    onClick={() => handleImageSelect(Math.min(1, imageGallery.length - 1))}
+                    style={{
+                      padding: '6px 14px',
+                      borderRadius: '999px',
+                      border: selectedImage !== 0 ? '2px solid #dc2626' : '2px solid var(--border-color)',
+                      background: selectedImage !== 0 ? '#fef2f2' : 'var(--bg-primary)',
+                      color: selectedImage !== 0 ? '#dc2626' : 'var(--text-secondary)',
+                      fontWeight: 600,
+                      fontSize: '13px',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease'
+                    }}
+                  >
+                    <i className="fas fa-tshirt" style={{ marginRight: '6px', transform: 'scaleX(-1)', display: 'inline-block' }}></i>Back
+                  </button>
+                </div>
+              )}
             </div>
             <div className="thumbnail-container">
-              {(product.colorImages?.[selectedColor] || product.images).map((img, idx) => (
+              {imageGallery.map((img, idx) => (
                 <button 
                   key={idx} 
                   className={`thumbnail ${selectedImage === idx ? 'active' : ''}`} 
-                  onClick={() => setSelectedImage(idx)}
+                  onClick={() => handleImageSelect(idx)}
                   aria-label={`View image ${idx + 1}`}
                 >
                   <img 
@@ -301,10 +401,19 @@ const ProductDetailEnhanced = () => {
             </div>
           </div>
 
-          {/* Product Info */}
+          {/* RIGHT COLUMN: Product Details */}
           <div className="product-info-section">
             <div className="product-header-info">
               <h1 className="product-title">{product.name}</h1>
+              
+              {/* SKU */}
+              <div style={{ marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '16px' }}>
+                <span style={{ fontSize: '13px', color: 'var(--text-muted)', fontWeight: 500, letterSpacing: '0.5px' }}>
+                  SKU: <span style={{ color: 'var(--text-secondary)', fontFamily: 'monospace' }}>{selectedFabric?.sku || product.dbId?.slice(-8)?.toUpperCase()}</span>
+                </span>
+              </div>
+
+              {/* Rating Stars with Count */}
               <div className="product-rating">
                 {renderStars(product.rating)}
                 <span className="rating-text">{product.rating.toFixed(1)}</span>
@@ -312,28 +421,120 @@ const ProductDetailEnhanced = () => {
               </div>
             </div>
 
+            {/* Price Section */}
             <div className="price-section">
-              <span className="current-price">₹{getFabricPrice(selectedFabric) ?? product.price}</span>
+              <span className="current-price" style={{ color: '#dc2626' }}>₹{getFabricPrice(selectedFabric) ?? product.price}</span>
               {(selectedFabric?.salePrice !== undefined || (!selectedFabric && product.originalPrice)) && (
                 <>
                   <span className="original-price" style={{ textDecoration: 'line-through', color: '#94a3b8', marginLeft: '12px', fontSize: '1.2rem' }}>₹{selectedFabric?.price ?? product.originalPrice}</span>
-                  <span className="discount-badge" style={{ backgroundColor: '#fee2e2', color: '#ef4444', padding: '4px 8px', borderRadius: '4px', marginLeft: '12px', fontSize: '14px', fontWeight: 'bold' }}>
+                  <span className="discount-badge" style={{ backgroundColor: '#dc2626', color: '#ffffff', padding: '6px 12px', borderRadius: '6px', marginLeft: '12px', fontSize: '14px', fontWeight: 700, letterSpacing: '0.5px' }}>
                     {Math.round((1 - (getFabricPrice(selectedFabric) ?? product.price) / (selectedFabric?.price ?? product.originalPrice)) * 100)}% OFF
                   </span>
                 </>
               )}
             </div>
 
+            {/* Stock Status */}
             <div className="stock-status">
               <span className={`stock-indicator ${product.inStock && (selectedFabric?.stock === undefined || selectedFabric.stock > 0) ? 'in-stock' : 'out-of-stock'}`}>
                 <i className={`fas ${product.inStock && (selectedFabric?.stock === undefined || selectedFabric.stock > 0) ? 'fa-check-circle' : 'fa-times-circle'}`}></i>
                 {product.inStock && (selectedFabric?.stock === undefined || selectedFabric.stock > 0) ? 'In Stock' : 'Out of Stock'}
               </span>
               {selectedFabric?.stock !== undefined && <span className="fabric-meta">{selectedFabric.stock} available</span>}
-              {selectedFabric?.sku && <span className="fabric-meta">SKU: {selectedFabric.sku}</span>}
             </div>
 
+            {/* Brand Era Key Features - Icon Chips */}
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginBottom: '32px', marginTop: '8px' }}>
+              {brandEraFeatures.map((f, idx) => (
+                <div key={idx} style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '8px 14px',
+                  borderRadius: '999px',
+                  border: '1px solid var(--border-color)',
+                  background: 'var(--bg-secondary)',
+                  fontSize: '13px',
+                  fontWeight: 600,
+                  color: 'var(--text-primary)'
+                }}>
+                  <span style={{ color: '#16a34a', fontSize: '14px' }}>✅</span>
+                  <span>{f.text}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Product Options */}
             <div className="product-options">
+              {/* Color Selection - Swatches with Name Label */}
+              {product.colors.length > 0 && (
+                <div className="color-selection">
+                  <h3 className="option-title">Select Color: <span style={{ color: 'var(--text-secondary)', textTransform: 'none', fontWeight: 500, letterSpacing: '0' }}>{selectedColor}</span></h3>
+                  <div className="color-options-grid">
+                    {product.colors.map(color => (
+                      <button
+                        key={color}
+                        className={`color-option ${selectedColor === color ? 'active' : ''}`}
+                        onClick={() => {
+                          setSelectedColor(color);
+                          setSelectedImage(0);
+                        }}
+                        style={{ 
+                          backgroundColor: product.colorMap[color] || '#000',
+                          border: selectedColor === color ? '3px solid #dc2626' : '3px solid var(--border-color)',
+                          boxShadow: selectedColor === color ? '0 0 0 2px var(--bg-primary), 0 0 0 4px rgba(220, 38, 38, 0.2)' : 'none'
+                        }}
+                        title={color}
+                      >
+                        {selectedColor === color && <i className="fas fa-check"></i>}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Size Selection - with Stock Availability */}
+              {product.sizes.length > 0 && (
+                <div className="size-selection">
+                  <div className="option-header">
+                    <h3 className="option-title">Select Size</h3>
+                    <button className="size-guide-btn">Size Guide</button>
+                  </div>
+                  <div className="size-options-grid">
+                    {product.sizes.map(size => {
+                      const stock = product.sizeStocks?.[size] !== undefined ? product.sizeStocks[size] : 0;
+                      const isOutOfStock = stock <= 0;
+                      return (
+                        <button
+                          key={size}
+                          className={`size-option ${selectedSize === size ? 'active' : ''}`}
+                          disabled={isOutOfStock}
+                          onClick={() => setSelectedSize(size)}
+                          title={isOutOfStock ? `${size} (Out of Stock)` : `${size} - ${stock} in stock`}
+                          style={{ position: 'relative', paddingBottom: selectedSize === size ? '0' : undefined }}
+                        >
+                          <span style={{ display: 'block' }}>{size}</span>
+                          {!isOutOfStock && product.sizeStocks && (
+                            <span style={{ 
+                              display: 'block', 
+                              fontSize: '10px', 
+                              fontWeight: 500, 
+                              marginTop: '2px',
+                              opacity: 0.7,
+                              textTransform: 'none',
+                              letterSpacing: '0'
+                            }}>
+                              {stock} left
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Fabric/Material Selection - Variant Cards with Price */}
               {product.fabricVariants.length > 0 && (
                 <div className="fabric-quality-selection">
                   <h3 className="option-title">Fabric Quality</h3>
@@ -354,63 +555,14 @@ const ProductDetailEnhanced = () => {
                   </div>
                 </div>
               )}
-              {/* Size Selection */}
-              {product.sizes.length > 0 && (
-                <div className="size-selection">
-                  <div className="option-header">
-                    <h3 className="option-title">Select Size</h3>
-                    <button className="size-guide-btn">Size Guide</button>
-                  </div>
-                  <div className="size-options-grid">
-                    {product.sizes.map(size => {
-                      const stock = product.sizeStocks?.[size] !== undefined ? product.sizeStocks[size] : 0;
-                      const isOutOfStock = stock <= 0;
-                      return (
-                        <button
-                          key={size}
-                          className={`size-option ${selectedSize === size ? 'active' : ''}`}
-                          disabled={isOutOfStock}
-                          onClick={() => setSelectedSize(size)}
-                          title={isOutOfStock ? `${size} (Out of Stock)` : ''}
-                        >
-                          {size}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
 
-              {/* Color Selection */}
-              {product.colors.length > 0 && (
-                <div className="color-selection">
-                  <h3 className="option-title">Select Color</h3>
-                  <div className="color-options-grid">
-                    {product.colors.map(color => (
-                      <button
-                        key={color}
-                        className={`color-option ${selectedColor === color ? 'active' : ''}`}
-                        onClick={() => {
-                          setSelectedColor(color);
-                          setSelectedImage(0);
-                        }}
-                        style={{ backgroundColor: product.colorMap[color] || '#000' }}
-                        title={color}
-                      >
-                        {selectedColor === color && <i className="fas fa-check"></i>}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Quantity */}
+              {/* Quantity Selector */}
               <div className="quantity-selection">
                 <h3 className="option-title">Quantity</h3>
                 <div className="quantity-controls">
                   <button 
                     className="qty-btn decrease"
-                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                    onClick={() => handleQuantityChange('decrease')}
                     disabled={quantity <= 1}
                   >
                     <i className="fas fa-minus"></i>
@@ -419,13 +571,13 @@ const ProductDetailEnhanced = () => {
                     type="number" 
                     className="qty-input" 
                     value={quantity}
-                    onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+                    onChange={(e) => handleQuantityChange(e.target.value)}
                     min="1" 
                     max="10" 
                   />
                   <button 
                     className="qty-btn increase"
-                    onClick={() => setQuantity(Math.min(10, quantity + 1))}
+                    onClick={() => handleQuantityChange('increase')}
                     disabled={quantity >= 10}
                   >
                     <i className="fas fa-plus"></i>
@@ -434,30 +586,171 @@ const ProductDetailEnhanced = () => {
               </div>
             </div>
 
-            {/* Action Buttons */}
-            <div className="action-buttons">
+            {/* Main Action Buttons - Full Width Row */}
+            <div className="action-buttons" style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '20px' }}>
+              <div style={{ display: 'flex', gap: '12px', width: '100%' }}>
+                <button 
+                  type="button"
+                  className="btn-primary"
+                  onClick={handleCustomize}
+                  style={{
+                    flex: 1,
+                    height: '56px',
+                    borderRadius: '12px',
+                    fontSize: '16px',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '10px',
+                    border: '2px solid #dc2626',
+                    background: '#dc2626',
+                    color: '#ffffff',
+                    transition: 'all 0.2s ease'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = '#b91c1c'}
+                  onMouseLeave={(e) => e.currentTarget.style.background = '#dc2626'}
+                >
+                  <i className="fas fa-paint-brush"></i>
+                  Customize Now
+                </button>
+                <button 
+                  className="add-to-cart-btn btn-primary"
+                  onClick={handleAddToCart}
+                  disabled={!product.inStock || isAddingToCart || (product.fabricVariants.length > 0 && !selectedFabric) || (selectedFabric?.stock !== undefined && selectedFabric.stock <= 0)}
+                  style={{
+                    flex: 1,
+                    height: '56px',
+                    borderRadius: '12px',
+                    fontSize: '16px',
+                    fontWeight: 700,
+                    cursor: !product.inStock || isAddingToCart ? 'not-allowed' : 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '10px',
+                    border: '2px solid #111827',
+                    background: '#111827',
+                    color: '#ffffff',
+                    opacity: !product.inStock || isAddingToCart ? 0.5 : 1,
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  {isAddingToCart ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-shopping-bag"></i>}
+                  {isAddingToCart ? 'Adding...' : 'Add to Cart'}
+                </button>
+              </div>
+
+              {/* Wishlist in quick actions row */}
+            </div>
+
+            {/* Quick Action Row */}
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: 'repeat(4, 1fr)', 
+              gap: '8px', 
+              marginBottom: '32px',
+              padding: '12px',
+              borderRadius: '12px',
+              background: 'var(--bg-secondary)',
+              border: '1px solid var(--border-color)'
+            }}>
               <button 
-                className="add-to-cart-btn btn-primary"
-                onClick={handleAddToCart}
-                disabled={!product.inStock || isAddingToCart || (product.fabricVariants.length > 0 && !selectedFabric) || (selectedFabric?.stock !== undefined && selectedFabric.stock <= 0)}
+                type="button"
+                onClick={handleSaveDesign}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '4px',
+                  padding: '10px 6px',
+                  border: 'none',
+                  background: 'transparent',
+                  cursor: 'pointer',
+                  color: 'var(--text-secondary)',
+                  fontSize: '11px',
+                  fontWeight: 600,
+                  borderRadius: '8px',
+                  transition: 'all 0.2s ease'
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--bg-primary)'; e.currentTarget.style.color = 'var(--text-primary)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
               >
-                {isAddingToCart ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-shopping-bag"></i>}
-                {isAddingToCart ? 'Adding...' : 'Add to Cart'}
+                <i className="fas fa-save" style={{ fontSize: '16px' }}></i>
+                Save Design
               </button>
               <button 
-                className="buy-now-btn btn-secondary"
-                onClick={handleBuyNow}
-                disabled={!product.inStock || (product.fabricVariants.length > 0 && !selectedFabric) || (selectedFabric?.stock !== undefined && selectedFabric.stock <= 0)}
+                type="button"
+                onClick={handleAddToKit}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '4px',
+                  padding: '10px 6px',
+                  border: 'none',
+                  background: 'transparent',
+                  cursor: 'pointer',
+                  color: 'var(--text-secondary)',
+                  fontSize: '11px',
+                  fontWeight: 600,
+                  borderRadius: '8px',
+                  transition: 'all 0.2s ease'
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--bg-primary)'; e.currentTarget.style.color = 'var(--text-primary)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
               >
-                <i className="fas fa-bolt"></i>
-                Buy Now
+                <i className="fas fa-boxes" style={{ fontSize: '16px' }}></i>
+                Add to Kit
               </button>
               <button 
-                className={`wishlist-btn ${isInWishlist(product.id) ? 'active' : ''}`}
-                onClick={handleWishlistToggle}
-                title="Add to Wishlist"
+                type="button"
+                onClick={handleAddToQuote}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '4px',
+                  padding: '10px 6px',
+                  border: 'none',
+                  background: 'transparent',
+                  cursor: 'pointer',
+                  color: 'var(--text-secondary)',
+                  fontSize: '11px',
+                  fontWeight: 600,
+                  borderRadius: '8px',
+                  transition: 'all 0.2s ease'
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--bg-primary)'; e.currentTarget.style.color = 'var(--text-primary)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
               >
-                <i className={`${isInWishlist(product.id) ? 'fas' : 'far'} fa-heart`}></i>
+                <i className="fas fa-file-invoice-dollar" style={{ fontSize: '16px' }}></i>
+                Get Quote
+              </button>
+              <button 
+                type="button"
+                onClick={handleShare}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '4px',
+                  padding: '10px 6px',
+                  border: 'none',
+                  background: 'transparent',
+                  cursor: 'pointer',
+                  color: 'var(--text-secondary)',
+                  fontSize: '11px',
+                  fontWeight: 600,
+                  borderRadius: '8px',
+                  transition: 'all 0.2s ease'
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--bg-primary)'; e.currentTarget.style.color = 'var(--text-primary)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
+              >
+                <i className="fas fa-share-alt" style={{ fontSize: '16px' }}></i>
+                Share
               </button>
             </div>
 
@@ -479,18 +772,21 @@ const ProductDetailEnhanced = () => {
             <button 
               className={`tab-nav-btn ${activeTab === 'description' ? 'active' : ''}`}
               onClick={() => setActiveTab('description')}
+              style={activeTab === 'description' ? { borderBottomColor: '#dc2626', color: '#dc2626' } : {}}
             >
               Description
             </button>
             <button 
               className={`tab-nav-btn ${activeTab === 'specifications' ? 'active' : ''}`}
               onClick={() => setActiveTab('specifications')}
+              style={activeTab === 'specifications' ? { borderBottomColor: '#dc2626', color: '#dc2626' } : {}}
             >
               Specifications
             </button>
             <button 
               className={`tab-nav-btn ${activeTab === 'reviews' ? 'active' : ''}`}
               onClick={() => setActiveTab('reviews')}
+              style={activeTab === 'reviews' ? { borderBottomColor: '#dc2626', color: '#dc2626' } : {}}
             >
               Reviews ({product.reviews})
             </button>
@@ -501,19 +797,71 @@ const ProductDetailEnhanced = () => {
               <div className="tab-pane">
                 <h3>Product Description</h3>
                 <p>{product.description}</p>
+                <div style={{ marginTop: '24px', padding: '24px', background: 'var(--bg-secondary)', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+                  <h4 style={{ margin: '0 0 16px 0', fontSize: '18px', fontWeight: 700 }}>Why Choose BRAND ERA</h4>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
+                    {[
+                      { icon: 'fa-leaf', title: 'Premium Materials', desc: 'Sourced from top mills worldwide' },
+                      { icon: 'fa-user-tie', title: 'Expert Craftsmanship', desc: 'Attention to detail in every stitch' },
+                      { icon: 'fa-recycle', title: 'Eco Friendly', desc: 'Sustainable production practices' },
+                      { icon: 'fa-award', title: 'Quality Assured', desc: '6-point QC on every product' }
+                    ].map((item, idx) => (
+                      <div key={idx} style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+                        <div style={{ 
+                          width: '40px', 
+                          height: '40px', 
+                          borderRadius: '10px', 
+                          background: '#fef2f2', 
+                          color: '#dc2626', 
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          justifyContent: 'center',
+                          flexShrink: 0
+                        }}>
+                          <i className={`fas ${item.icon}`}></i>
+                        </div>
+                        <div>
+                          <h5 style={{ margin: '0 0 4px 0', fontSize: '14px', fontWeight: 700 }}>{item.title}</h5>
+                          <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-secondary)', lineHeight: 1.5 }}>{item.desc}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             )}
 
             {activeTab === 'specifications' && (
               <div className="tab-pane">
                 <h3>Specifications</h3>
-                <div className="specs-grid">
-                  {Object.entries(product.specifications).map(([key, value]) => (
-                    <div key={key} className="spec-item">
-                      <span className="spec-label">{key}</span>
-                      <span className="spec-value">{value}</span>
-                    </div>
-                  ))}
+                <div style={{ background: 'var(--bg-secondary)', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--border-color)' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                    <tbody>
+                      {Object.entries(product.specifications).map(([key, value], idx) => (
+                        <tr key={key} style={{ borderBottom: idx < Object.keys(product.specifications).length - 1 ? '1px solid var(--border-color)' : 'none' }}>
+                          <td style={{ 
+                            padding: '16px 20px', 
+                            fontWeight: 700, 
+                            color: 'var(--text-secondary)', 
+                            width: '35%',
+                            fontSize: '14px',
+                            textTransform: 'capitalize',
+                            background: 'var(--bg-primary)'
+                          }}>
+                            {key.replace(/_/g, ' ')}
+                          </td>
+                          <td style={{ 
+                            padding: '16px 20px', 
+                            fontWeight: 500, 
+                            color: 'var(--text-primary)',
+                            fontSize: '14px'
+                          }}>
+                            {value}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               </div>
             )}
