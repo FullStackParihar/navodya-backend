@@ -63,13 +63,13 @@ const Header = () => {
           <div className="top-nav-content">
             {/* Desktop Logo */}
             <Link to="/" className="logo animate-fadeIn desktop-logo">
-              <img src="/logo2.png" alt="Navodaya Trendz" style={{ height: '95px', width: 'auto' }} />
+              <img src="/logo2.png" alt="Brand Era" style={{ height: '95px', width: 'auto' }} />
             </Link>
 
             {/* Row 1: Logo + Actions + Hamburger (Mobile only) */}
             <div className="top-nav-row-1">
               <Link to="/" className="logo animate-fadeIn">
-                <img src="/logo2.png" alt="Navodaya Trendz" style={{ height: '65px', width: 'auto' }} />
+                <img src="/logo2.png" alt="Brand Era" style={{ height: '65px', width: 'auto' }} />
               </Link>
               
               <div className="mobile-actions-wrapper">
@@ -121,8 +121,7 @@ const Header = () => {
             <div className="delivery-info animate-slideDown">
               <i className="fas fa-map-marker-alt"></i>
               <div>
-                <div>Deliver to</div>
-                <strong>JNV Campus</strong>
+                <div>Deliver to Your Address | Free shipping on orders above ₹999</div>
               </div>
             </div>
 
@@ -241,7 +240,15 @@ const Header = () => {
                   to="/contests"
                   className={location.pathname === '/contests' ? 'active' : ''}
                 >
-                  Giveaway
+                  Contests
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  to="/events"
+                  className={location.pathname === '/events' ? 'active' : ''}
+                >
+                  Events
                 </Link>
               </li>
               <li>
@@ -250,6 +257,14 @@ const Header = () => {
                   className={location.pathname === '/winners' ? 'active' : ''}
                 >
                   Winners
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/print-studio"
+                  className={location.pathname === '/print-studio' ? 'active' : ''}
+                >
+                  Print Studio
                 </Link>
               </li>
               <li>
@@ -307,7 +322,8 @@ const Header = () => {
         <Link to="/hoodies" onClick={closeMobileMenu}>Hoodies</Link>
         <Link to="/accessories" onClick={closeMobileMenu}>Accessories</Link>
         <Link to="/alumni-kits" onClick={closeMobileMenu}>Alumni Kits</Link>
-        <Link to="/contests" onClick={closeMobileMenu}>Giveaway</Link>
+        <Link to="/contests" onClick={closeMobileMenu}>Contests</Link>
+        <Link to="/events" onClick={closeMobileMenu}>Events</Link>
         <Link to="/winners" onClick={closeMobileMenu}>Winners</Link>
         <Link to="/today-deals" onClick={closeMobileMenu}>Today's Deals</Link>
         <Link to="/new-arrivals" onClick={closeMobileMenu}>New Arrivals</Link>
@@ -337,10 +353,16 @@ const Header = () => {
               <Link to="/alumni-kits" onClick={closeMobileMenu}>Alumni Kits</Link>
             </li>
             <li>
-              <Link to="/contests" onClick={closeMobileMenu}>Giveaway</Link>
+              <Link to="/contests" onClick={closeMobileMenu}>Contests</Link>
+            </li>
+            <li>
+              <Link to="/events" onClick={closeMobileMenu}>Events</Link>
             </li>
             <li>
               <Link to="/winners" onClick={closeMobileMenu}>Winners</Link>
+            </li>
+            <li>
+              <Link to="/print-studio" onClick={closeMobileMenu}>Print Studio</Link>
             </li>
             <li>
               <Link to="/bulk-order" onClick={closeMobileMenu}>Bulk Order</Link>

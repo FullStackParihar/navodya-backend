@@ -1633,6 +1633,13 @@ main {
     padding-top: 132px;
 }
 
+/* Brand Era chrome is part of normal document flow, so legacy Navodaya header offsets
+   must not leave a blank band above the new pages. */
+.public-app .public-main,
+.public-app .public-main.storefront-main {
+    padding-top: 0;
+}
+
 @media (max-width: 1240px) {
     .public-app .top-nav-content {
         grid-template-columns: auto minmax(280px, 1fr) auto;

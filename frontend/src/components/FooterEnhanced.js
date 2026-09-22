@@ -28,7 +28,7 @@ const FooterEnhanced = () => {
 
   const handleNewsletterSubmit = (e) => {
     e.preventDefault();
-    alert('Thank you for subscribing to Navodaya Trendz newsletter!');
+    alert('Thank you for subscribing to Brand Era newsletter!');
     setEmail('');
   };
 
@@ -46,8 +46,8 @@ const FooterEnhanced = () => {
         {/* Newsletter Section */}
         <div className="newsletter-section">
           <div className="newsletter-content">
-            <h3><span className="newsletter-icon" aria-hidden="true">&#127891;</span> Stay Connected with Navodayans</h3>
-            <p>Get exclusive offers, new arrivals, and alumni meet updates delivered to your inbox</p>
+            <h3><span className="newsletter-icon" aria-hidden="true">&#127891;</span> Stay Connected with Brand Era</h3>
+            <p>Get exclusive offers, new arrivals, and custom branding solutions delivered to your inbox</p>
             <form className="newsletter-form" onSubmit={handleNewsletterSubmit}>
               <input 
                 type="email" 
@@ -73,7 +73,7 @@ const FooterEnhanced = () => {
                 <li><Link to="/feedback"><i className="fas fa-chevron-right"></i> Contact Us</Link></li>
                 <li><Link to="/about-us"><i className="fas fa-chevron-right"></i> Our Story</Link></li>
                 <li><a href="#"><i className="fas fa-chevron-right"></i> Careers</a></li>
-                <li><Link to="/about-us"><i className="fas fa-chevron-right"></i> NTz Partner</Link></li>
+                <li><Link to="/about-us"><i className="fas fa-chevron-right"></i> Brand Era Partner</Link></li>
               </ul>
             </div>
 
@@ -100,7 +100,7 @@ const FooterEnhanced = () => {
                 <li><Link to="/alumni-kits"><i className="fas fa-chevron-right"></i> Alumni Meet Kits</Link></li>
                 <li><Link to="/accessories"><i className="fas fa-chevron-right"></i> Corporate Gifts</Link></li>
                 <li><Link to="/bulk-order"><i className="fas fa-chevron-right"></i> Custom Merchandise</Link></li>
-                <li><Link to="/tshirts"><i className="fas fa-chevron-right"></i> JNV School Merch</Link></li>
+                <li><Link to="/tshirts"><i className="fas fa-chevron-right"></i> Brand Era Merch</Link></li>
               </ul>
             </div>
 
@@ -110,19 +110,19 @@ const FooterEnhanced = () => {
               <ul className="footer-links contact-info-list">
                 <li>
                   <i className="fas fa-map-marker-alt"></i>
-                  <span>Navodaya Trendz (NTz)<br />India</span>
+                  <span>123 Business Park, Your City, India</span>
                 </li>
                 <li>
                   <i className="fas fa-phone"></i>
-                  <a href="tel:+918947900884">+91-8947900884</a>
+                  <a href="tel:+919876543210">+91-98765-43210</a>
                 </li>
                 <li>
                   <i className="fas fa-envelope"></i>
-                  <a href="mailto:navodayatrendz@gmail.com">navodayatrendz@gmail.com</a>
+                  <a href="mailto:support@brandera.com">support@brandera.com</a>
                 </li>
                 <li>
                   <i className="fas fa-globe"></i>
-                  <a href="https://www.navodayatrendz.com" target="_blank" rel="noopener noreferrer">www.navodayatrendz.com</a>
+                  <a href="https://www.brandera.com" target="_blank" rel="noopener noreferrer">www.brandera.com</a>
                 </li>
               </ul>
             </div>
@@ -135,9 +135,9 @@ const FooterEnhanced = () => {
             {/* Brand Section */}
             <div className="footer-brand footer-animate">
               <div className="footer-brand-mark">
-                <img src="/logo.png" alt="Navodaya Trendz" />
+                <img src="/logo.png" alt="Brand Era" />
               </div>
-              <p>Made by Navodayans, for Navodayans. Your trusted partner for JNV alumni merchandise.</p>
+              <p>Design. Print. Brand. Deliver. Your trusted partner for custom printing, branding, and merchandise solutions.</p>
               <div className="footer-social">
                 <a href="https://instagram.com" className="social-link" aria-label="Instagram" target="_blank" rel="noopener noreferrer">
                   <i className="fab fa-instagram"></i>
@@ -151,7 +151,7 @@ const FooterEnhanced = () => {
                 <a href="https://youtube.com" className="social-link" aria-label="YouTube" target="_blank" rel="noopener noreferrer">
                   <i className="fab fa-youtube"></i>
                 </a>
-                <a href="https://wa.me/918947900884" className="social-link" aria-label="WhatsApp Community" target="_blank" rel="noopener noreferrer">
+                <a href="https://wa.me/919876543210" className="social-link" aria-label="WhatsApp Community" target="_blank" rel="noopener noreferrer">
                   <i className="fab fa-whatsapp"></i>
                 </a>
               </div>
@@ -230,7 +230,7 @@ const FooterEnhanced = () => {
         {/* Footer Bottom */}
         <div className="footer-bottom">
           <div className="footer-bottom-content">
-            <p className="copyright">&copy; 2025 Navodaya Trendz – Made by Navodayans, for Navodayans. All Rights Reserved.</p>
+            <p className="copyright">&copy; 2025 Brand Era. All Rights Reserved.</p>
             <div className="bottom-links">
               <a href="#">Sitemap</a>
               <a href="#">Careers</a>

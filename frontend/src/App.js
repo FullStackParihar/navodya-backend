@@ -1,8 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import Header from './components/Header';
-import FooterEnhanced from './components/FooterEnhanced';
-import ThemeSwitch from './components/ThemeSwitch';
+import BrandEraChrome, { BrandEraFooter } from './components/BrandEraChrome';
 import HomeEpic from './pages/HomeEpic';
 import TShirts from './pages/TShirts';
 import Hoodies from './pages/Hoodies';
@@ -41,35 +39,39 @@ import Events from './pages/Events';
 import Login from './pages/Login';
 import Contests from './pages/Contests';
 import Winners from './pages/Winners';
+import PrintStudioPage from './features/print-studio/PrintStudioPage';
+import StorefrontPage from './features/storefront/StorefrontPage';
 
 const AppShell = ({ toasts, removeToast }) => {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith('/admin-profile');
+  const storefrontRoutes = ['/', '/tshirts', '/hoodies', '/accessories', '/alumni-kits', '/today-deals', '/new-arrivals'];
+  const isStorefrontRoute = storefrontRoutes.includes(location.pathname);
 
   return (
     <>
       <ScrollToTop />
       <div className={`App ${isAdminRoute ? 'admin-app' : 'public-app'}`}>
-        {!isAdminRoute && <ThemeSwitch />}
-        {!isAdminRoute && <Header />}
-        <main className={isAdminRoute ? 'admin-main' : 'public-main'}>
+        {!isAdminRoute && !isStorefrontRoute && <BrandEraChrome />}
+        <main className={`${isAdminRoute ? 'admin-main' : 'public-main'} ${isStorefrontRoute ? 'storefront-main' : ''}`}>
           <Routes>
-          <Route path="/" element={<HomeEpic />} />
+          <Route path="/" element={<StorefrontPage />} />
           <Route path="/events" element={<Events />} />
-          <Route path="/tshirts" element={<TShirts />} />
-          <Route path="/hoodies" element={<Hoodies />} />
-          <Route path="/accessories" element={<Accessories />} />
-          <Route path="/alumni-kits" element={<AlumniKits />} />
+          <Route path="/tshirts" element={<StorefrontPage />} />
+          <Route path="/hoodies" element={<StorefrontPage />} />
+          <Route path="/accessories" element={<StorefrontPage />} />
+          <Route path="/alumni-kits" element={<StorefrontPage />} />
           <Route path="/contests" element={<Contests />} />
           <Route path="/contests/:id" element={<Contests />} />
           <Route path="/winners" element={<Winners />} />
 
-          <Route path="/today-deals" element={<TodayDealsEnhanced />} />
+          <Route path="/today-deals" element={<StorefrontPage />} />
           <Route path="/today-deals-enhanced" element={<TodayDealsEnhanced />} />
-          <Route path="/new-arrivals" element={<NewArrivalsEnhanced />} />
+          <Route path="/new-arrivals" element={<StorefrontPage />} />
           <Route path="/new-arrivals-enhanced" element={<NewArrivalsEnhanced />} />
           <Route path="/about-us" element={<AboutUs />} />
           <Route path="/bulk-order" element={<BulkOrder />} />
+          <Route path="/print-studio" element={<PrintStudioPage />} />
           <Route path="/my-bulk-orders" element={<PrivateRoute><MyBulkOrders /></PrivateRoute>} />
           <Route path="/payment" element={<PrivateRoute><Payment /></PrivateRoute>} />
           <Route path="/order/:orderId" element={<PrivateRoute><OrderTracking /></PrivateRoute>} />
@@ -92,7 +94,7 @@ const AppShell = ({ toasts, removeToast }) => {
           <Route path="/search" element={<SearchPage />} />
           </Routes>
         </main>
-        {!isAdminRoute && <FooterEnhanced />}
+        {!isAdminRoute && !isStorefrontRoute && <BrandEraFooter />}
         <ToastContainer toasts={toasts} removeToast={removeToast} />
       </div>
     </>

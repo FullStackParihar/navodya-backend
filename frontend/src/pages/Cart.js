@@ -82,7 +82,7 @@ const Cart = () => {
     
     setIsLoading(true);
     setTimeout(() => {
-      if (promoCode.toUpperCase() === 'JNV2024') {
+      if (promoCode.toUpperCase() === 'BRANDERA10') {
         setDiscount(399);
         success('Promo code applied! You saved ₹399');
       } else if (promoCode.toUpperCase() === 'ALUMNI20') {
@@ -135,7 +135,7 @@ const Cart = () => {
               </div>
               <h2 className="animate-slideUp">Your cart is empty</h2>
               <p className="animate-slideUp" style={{ animationDelay: '0.1s' }}>
-                Add some JNV merchandise to get started!
+                Add custom products and make your next idea real.
               </p>
               <div className="empty-cart-actions animate-slideUp" style={{ animationDelay: '0.2s' }}>
                 <Link to="/" className="btn-primary">
@@ -294,7 +294,7 @@ const Cart = () => {
         <div className="container">
           <div className="recommended-header">
             <h2>You might also like</h2>
-            <p>Complete your JNV collection with these popular items</p>
+            <p>Complete your brand kit with these popular items</p>
           </div>
           
           <div className="recommended-products-grid">

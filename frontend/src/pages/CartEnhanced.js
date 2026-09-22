@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
 import { useToast } from '../context/ToastContext';
+import api, { resolveImageUrl } from '../utils/api';
 import ProductCard from '../components/ProductCard';
 import SkeletonLoader from '../components/SkeletonLoader';
+import './CartEnhanced.css';
 
-// Sample recommended products
 const recommendedProducts = [
   {
     id: 13,
@@ -47,16 +49,28 @@ const recommendedProducts = [
   }
 ];
 
-const Cart = () => {
-  const { items, totalAmount, updateQuantity, removeFromCart } = useCart();
+const FREE_SHIPPING_THRESHOLD = 999;
+const SHIPPING_FEE = 99;
+const GST_RATE = 0.18;
+
+const CartEnhanced = () => {
+  const { items, totalAmount, totalItems, updateQuantity, removeFromCart, clearCart } = useCart();
+  const { toggleWishlist, addToWishlist } = useWishlist();
   const { success, error } = useToast();
+  const navigate = useNavigate();
+
+  const [loading, setLoading] = useState(false);
+  const [updating, setUpdating] = useState(false);
   const [promoCode, setPromoCode] = useState('');
   const [discount, setDiscount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [couponCode, setCouponCode] = useState('');
+  const [couponError, setCouponError] = useState('');
+  const [couponDiscount, setCouponDiscount] = useState(0);
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
   const [recommendedLoading, setRecommendedLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate loading for recommended products
     const timer = setTimeout(() => {
       setRecommendedLoading(false);
     }, 1000);
@@ -70,36 +84,100 @@ const Cart = () => {
     } else if (newQuantity > 10) {
       error('Maximum quantity is 10');
     } else {
+      setUpdating(true);
       updateQuantity(id, newQuantity);
       success('Cart updated successfully');
+      setTimeout(() => setUpdating(false), 300);
     }
   };
 
-  const handleRemoveItem = (id, name) => {
+  const handleRemove = (id, name) => {
     removeFromCart(id);
     error(`${name} removed from cart`);
   };
 
-  const handleApplyPromo = () => {
-    if (!promoCode.trim()) {
-      error('Please enter a promo code');
+  const handleMoveToWishlist = (item) => {
+    const wishlistItem = {
+      id: item.productSlug || item.id,
+      dbId: item.dbId,
+      name: item.name,
+      description: item.description,
+      price: item.price,
+      originalPrice: item.originalPrice,
+      image: item.image,
+      badge: item.badge || '',
+      reviews: item.reviews || 0,
+      selectedFabric: item.selectedFabric || null
+    };
+    addToWishlist(wishlistItem);
+    removeFromCart(item.id);
+    success(`${item.name} moved to wishlist`);
+  };
+
+  const handleApplyPromo = async () => {
+    const code = (couponCode || promoCode).trim();
+    if (!code) {
+      setCouponError('Please enter a coupon code');
+      error('Please enter a coupon code');
       return;
     }
-    
+
+    setCouponError('');
     setIsLoading(true);
-    setTimeout(() => {
-      if (promoCode.toUpperCase() === 'JNV2024') {
-        setDiscount(399);
-        success('Promo code applied! You saved ₹399');
-      } else if (promoCode.toUpperCase() === 'ALUMNI20') {
-        setDiscount(Math.floor(totalAmount * 0.2));
-        success('20% discount applied!');
+
+    try {
+      const response = await api.post('/coupons/validate', { code, orderAmount: totalAmount });
+      if (response.success) {
+        const discountAmount = response.data.discountAmount || 0;
+        setCouponDiscount(discountAmount);
+        setDiscount(discountAmount);
+        setAppliedCoupon(code.toUpperCase());
+        setPromoCode(code);
+        success(`Coupon applied! You saved ₹${discountAmount}`);
       } else {
-        error('Invalid promo code');
+        setCouponError(response.message || 'Invalid coupon code');
+        setCouponDiscount(0);
         setDiscount(0);
+        setAppliedCoupon(null);
+        error(response.message || 'Invalid coupon code');
       }
-      setIsLoading(false);
-    }, 1000);
+    } catch (err) {
+      setTimeout(() => {
+        if (code.toUpperCase() === 'JNV2024') {
+          setCouponDiscount(399);
+          setDiscount(399);
+          setAppliedCoupon('JNV2024');
+          success('Promo code applied! You saved ₹399');
+        } else if (code.toUpperCase() === 'ALUMNI20') {
+          const d = Math.floor(totalAmount * 0.2);
+          setCouponDiscount(d);
+          setDiscount(d);
+          setAppliedCoupon('ALUMNI20');
+          success('20% discount applied!');
+        } else {
+          setCouponError('Invalid promo code');
+          setCouponDiscount(0);
+          setDiscount(0);
+          setAppliedCoupon(null);
+          error('Invalid promo code');
+        }
+      }, 1000);
+    } finally {
+      setTimeout(() => setIsLoading(false), 1000);
+    }
+  };
+
+  const handleClearCart = () => {
+    if (items.length === 0) return;
+    if (window.confirm('Are you sure you want to clear your entire cart?')) {
+      clearCart();
+      setCouponDiscount(0);
+      setDiscount(0);
+      setAppliedCoupon(null);
+      setCouponCode('');
+      setPromoCode('');
+      success('Cart cleared');
+    }
   };
 
   const calculateTotal = () => {
@@ -114,230 +192,284 @@ const Cart = () => {
     return originalTotal - totalAmount + discount;
   };
 
+  const calculateShipping = () => {
+    return totalAmount >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
+  };
+
+  const calculateTax = () => {
+    const beforeTax = calculateTotal();
+    return Math.floor(beforeTax * GST_RATE / (1 + GST_RATE));
+  };
+
+  const calculateGrandTotal = () => {
+    return calculateTotal() + calculateShipping();
+  };
+
+  const shippingProgress = Math.min((totalAmount / FREE_SHIPPING_THRESHOLD) * 100, 100);
+  const shippingRemaining = Math.max(FREE_SHIPPING_THRESHOLD - totalAmount, 0);
+
+  const handleCheckout = () => {
+    if (items.length === 0) return;
+    navigate('/checkout');
+  };
+
   if (items.length === 0) {
     return (
-      <div>
-        {/* Hero Section */}
-        <section className="cart-hero animate-fadeIn">
-          <div className="hero-background">
-            <div className="hero-pattern"></div>
+      <div className="era-cart-page">
+        <div className="era-cart-container">
+          <div className="era-breadcrumb">
+            <Link to="/">Home</Link>
+            <span className="era-breadcrumb-sep">/</span>
+            <span className="era-breadcrumb-current">Cart</span>
           </div>
-          <div className="container">
-            <div className="hero-content">
-              <h1 className="animate-slideDown">Shopping Cart</h1>
-              <p className="animate-slideUp" style={{ animationDelay: '0.2s' }}>
-                Your cart is currently empty
-              </p>
-            </div>
-          </div>
-        </section>
 
-        {/* Empty Cart */}
-        <section className="empty-cart-section">
-          <div className="container">
-            <div className="empty-cart-enhanced animate-fadeIn">
-              <div className="empty-cart-icon animate-bounce">
-                <i className="fas fa-shopping-cart"></i>
+          <div className="era-page-heading-wrap">
+            <h1 className="era-page-heading">Shopping Cart</h1>
+            <div className="era-heading-underline"></div>
+          </div>
+
+          <div className="era-empty-cart">
+            <div className="era-empty-cart-icon">
+              <i className="fas fa-shopping-cart"></i>
+            </div>
+            <h2 className="era-empty-title">Your cart is empty</h2>
+            <p className="era-empty-subtitle">Looks like you haven't added anything yet</p>
+            <Link to="/" className="era-btn-primary-lg">
+              <i className="fas fa-shopping-bag"></i>
+              Start Shopping
+            </Link>
+          </div>
+
+          <div className="era-features-strip">
+            <div className="era-feature-item">
+              <i className="fas fa-truck"></i>
+              <div>
+                <h4>Free Shipping</h4>
+                <p>On orders above ₹999</p>
               </div>
-              <h2 className="animate-slideUp">Your cart is empty</h2>
-              <p className="animate-slideUp" style={{ animationDelay: '0.1s' }}>
-                Add some JNV merchandise to get started!
-              </p>
-              <div className="empty-cart-actions animate-slideUp" style={{ animationDelay: '0.2s' }}>
-                <Link to="/" className="btn-primary">
-                  <i className="fas fa-shopping-bag"></i> Continue Shopping
-                </Link>
-                <Link to="/tshirts" className="btn-secondary">
-                  <i className="fas fa-tshirt"></i> Browse T-Shirts
-                </Link>
+            </div>
+            <div className="era-feature-item">
+              <i className="fas fa-lock"></i>
+              <div>
+                <h4>Secure Payment</h4>
+                <p>100% secure checkout</p>
+              </div>
+            </div>
+            <div className="era-feature-item">
+              <i className="fas fa-undo"></i>
+              <div>
+                <h4>Easy Returns</h4>
+                <p>7-day return policy</p>
+              </div>
+            </div>
+            <div className="era-feature-item">
+              <i className="fas fa-headset"></i>
+              <div>
+                <h4>24/7 Support</h4>
+                <p>Always here to help</p>
               </div>
             </div>
           </div>
-        </section>
+        </div>
       </div>
     );
   }
 
   return (
-    <div>
-      {/* Hero Section */}
-      <section className="cart-hero animate-fadeIn">
-        <div className="hero-background">
-          <div className="hero-pattern"></div>
+    <div className="era-cart-page">
+      <div className="era-cart-container">
+        <div className="era-breadcrumb">
+          <Link to="/">Home</Link>
+          <span className="era-breadcrumb-sep">/</span>
+          <span className="era-breadcrumb-current">Cart</span>
         </div>
-        <div className="container">
-          <div className="hero-content">
-            <h1 className="animate-slideDown">Shopping Cart</h1>
-            <p className="animate-slideUp" style={{ animationDelay: '0.2s' }}>
-              {items.length} {items.length === 1 ? 'item' : 'items'} in your cart
-            </p>
-          </div>
+
+        <div className="era-page-heading-wrap">
+          <h1 className="era-page-heading">Shopping Cart</h1>
+          <div className="era-heading-underline"></div>
+          <p className="era-items-subheading">
+            <strong>{items.length}</strong> {items.length === 1 ? 'item' : 'items'} in your cart
+          </p>
         </div>
-      </section>
 
-      {/* Cart Page */}
-      <section className="cart-page-enhanced">
-        <div className="container">
-          <div className="cart-layout-enhanced">
-            {/* Cart Items */}
-            <div className="cart-items-enhanced animate-slideInLeft">
-              <div className="cart-header">
-                <h2>Your Items</h2>
-                <span className="item-count">{items.length} items</span>
-              </div>
-
-              <div className="cart-items-list">
-                {items.map((item, index) => (
-                  <div key={item.id} className="cart-item-enhanced animate-fadeIn" style={{ animationDelay: `${index * 0.1}s` }}>
-                    <div className="item-image-enhanced">
-                      <img src={item.image} alt={item.name} />
-                      {item.badge && (
-                        <span className="item-badge">{item.badge}</span>
-                      )}
-                    </div>
-                    
-                    <div className="item-details-enhanced">
-                      <h3>
-                        <Link to={`/product/${item.productSlug || item.id}`}>{item.name}</Link>
-                      </h3>
-                      <p>{item.description}</p>
-                      {item.fabricName && <p className="cart-fabric-quality">Fabric: <strong>{item.fabricName}</strong></p>}
-                      <div className="item-price-enhanced">
-                        <span className="current-price">₹{item.price}</span>
-                        {item.originalPrice && (
-                          <span className="original-price">₹{item.originalPrice}</span>
-                        )}
-                      </div>
-                    </div>
-                    
-                    <div className="item-quantity-enhanced">
-                      <label className="qty-label">Quantity</label>
-                      <div className="quantity-controls-enhanced">
-                        <button 
-                          className="qty-btn decrease"
-                          onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
-                          disabled={item.quantity <= 1}
-                        >
-                          <i className="fas fa-minus"></i>
-                        </button>
-                        <input 
-                          type="number" 
-                          className="qty-input" 
-                          value={item.quantity}
-                          onChange={(e) => handleQuantityChange(item.id, parseInt(e.target.value) || 1)}
-                          min="1"
-                          max="10"
-                        />
-                        <button 
-                          className="qty-btn increase"
-                          onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
-                          disabled={item.quantity >= 10}
-                        >
-                          <i className="fas fa-plus"></i>
-                        </button>
-                      </div>
-                    </div>
-                    
-                    <div className="item-total-enhanced">
-                      <label className="total-label">Total</label>
-                      <span className="total-price">₹{item.price * item.quantity}</span>
-                      {item.originalPrice && (
-                        <span className="savings">Save ₹{(item.originalPrice - item.price) * item.quantity}</span>
-                      )}
-                    </div>
-                    
-                    <div className="item-actions-enhanced">
-                      <button 
-                        className="action-btn save"
-                        title="Save for later"
-                      >
-                        <i className="far fa-heart"></i>
-                      </button>
-                      <button 
-                        className="action-btn remove"
-                        onClick={() => handleRemoveItem(item.id, item.name)}
-                        title="Remove item"
-                      >
-                        <i className="fas fa-trash"></i>
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Cart Summary */}
-              <div className="cart-summary-mobile">
-                <div className="summary-row">
-                  <span>Subtotal ({items.length} items)</span>
-                  <span className="subtotal">₹{totalAmount}</span>
-                </div>
-                <div className="summary-row">
-                  <span>Discount</span>
-                  <span className="discount">-₹{discount}</span>
-                </div>
-                <div className="summary-row">
-                  <span>Shipping</span>
-                  <span className="shipping">FREE</span>
-                </div>
-                <div className="summary-divider"></div>
-                <div className="summary-row total">
-                  <span>Total</span>
-                  <span className="total-amount">₹{calculateTotal()}</span>
-                </div>
-                <button className="checkout-btn-mobile">
-                  <i className="fas fa-lock"></i> Proceed to Checkout
+        <div className="era-two-column-layout">
+          <div className="era-left-column">
+            <div className="era-items-header">
+              <Link to="/" className="era-continue-shopping">
+                <i className="fas fa-arrow-left"></i>
+                Continue Shopping
+              </Link>
+              {items.length > 0 && (
+                <button className="era-clear-cart-btn" onClick={handleClearCart}>
+                  <i className="fas fa-trash"></i>
+                  Clear Cart
                 </button>
-              </div>
+              )}
             </div>
 
-            {/* Order Summary */}
-            <div className="order-summary-enhanced animate-slideInRight">
-              <div className="summary-header">
+            <div className="era-cart-items-list">
+              {items.map((item, index) => {
+                const lineTotal = item.price * item.quantity;
+                return (
+                  <div key={item.id} className="era-cart-item-card" style={{ animationDelay: `${index * 0.05}s` }}>
+                    <button
+                      className="era-item-remove-btn"
+                      onClick={() => handleRemove(item.id, item.name)}
+                      title="Remove item"
+                    >
+                      <i className="fas fa-times"></i>
+                    </button>
+
+                    <div className="era-item-thumbnail">
+                      <Link to={`/product/${item.productSlug || item.id}`}>
+                        <img src={resolveImageUrl(item.image)} alt={item.name} />
+                      </Link>
+                    </div>
+
+                    <div className="era-item-content">
+                      <h3 className="era-item-name">
+                        <Link to={`/product/${item.productSlug || item.id}`}>{item.name}</Link>
+                      </h3>
+
+                      <div className="era-item-variants">
+                        {item.selectedSize && item.selectedSize !== 'Free Size' && (
+                          <span className="era-variant-pill">{item.selectedSize}</span>
+                        )}
+                        {item.selectedColor && item.selectedColor !== 'N/A' && (
+                          <span className="era-variant-pill">{item.selectedColor}</span>
+                        )}
+                        {item.fabricName && (
+                          <span className="era-variant-pill era-fabric-pill">{item.fabricName}</span>
+                        )}
+                      </div>
+
+                      <button
+                        className="era-wishlist-link"
+                        onClick={() => handleMoveToWishlist(item)}
+                      >
+                        <i className="far fa-heart"></i>
+                        Move to wishlist
+                      </button>
+
+                      <div className="era-item-price-block">
+                        <span className="era-unit-price">₹{item.price}</span>
+                        <span className="era-price-multiply">×</span>
+                        <span className="era-qty-num">{item.quantity}</span>
+                        <span className="era-price-equals">=</span>
+                        <span className="era-line-total">₹{lineTotal}</span>
+                      </div>
+
+                      <div className="era-quantity-row">
+                        <div className="era-quantity-selector">
+                          <button
+                            className="era-qty-btn era-qty-minus"
+                            onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
+                            disabled={item.quantity <= 1 || updating}
+                          >
+                            −
+                          </button>
+                          <input
+                            type="number"
+                            className="era-qty-input"
+                            value={item.quantity}
+                            onChange={(e) => handleQuantityChange(item.id, parseInt(e.target.value) || 1)}
+                            min="1"
+                            max="10"
+                            disabled={updating}
+                          />
+                          <button
+                            className="era-qty-btn era-qty-plus"
+                            onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
+                            disabled={item.quantity >= 10 || updating}
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="era-right-column">
+            <div className="era-order-summary-card">
+              <div className="era-summary-header">
                 <h3>Order Summary</h3>
-                <div className="savings-badge">
-                  <i className="fas fa-tag"></i>
-                  <span>You save ₹{calculateSavings()}</span>
-                </div>
+                {calculateSavings() > 0 && (
+                  <span className="era-savings-tag">
+                    Save ₹{calculateSavings()}
+                  </span>
+                )}
               </div>
-              
-              <div className="summary-content">
-                <div className="summary-row">
+
+              <div className="era-summary-body">
+                <div className="era-summary-row">
                   <span>Subtotal ({items.length} items)</span>
-                  <span className="subtotal">₹{totalAmount}</span>
-                </div>
-                
-                <div className="summary-row">
-                  <span>Discount</span>
-                  <span className="discount">-₹{discount}</span>
-                </div>
-                
-                <div className="summary-row">
-                  <span>Shipping</span>
-                  <span className="shipping">FREE</span>
-                </div>
-                
-                <div className="summary-divider"></div>
-                
-                <div className="summary-row total">
-                  <span>Total</span>
-                  <span className="total-amount">₹{calculateTotal()}</span>
+                  <span className="era-summary-amount">₹{totalAmount}</span>
                 </div>
 
-                {/* Promo Code */}
-                <div className="promo-code-enhanced">
-                  <h4>
-                    <i className="fas fa-tag"></i> Have a promo code?
-                  </h4>
-                  <div className="promo-form-enhanced">
-                    <input 
-                      type="text" 
-                      placeholder="Enter promo code" 
-                      value={promoCode}
-                      onChange={(e) => setPromoCode(e.target.value)}
+                {discount > 0 && (
+                  <div className="era-summary-row era-discount-row">
+                    <span>Discount {appliedCoupon && `(${appliedCoupon})`}</span>
+                    <span className="era-summary-discount">−₹{discount}</span>
+                  </div>
+                )}
+
+                <div className="era-summary-row">
+                  <span>Shipping</span>
+                  <span className="era-summary-shipping">
+                    {calculateShipping() === 0 ? (
+                      <span className="era-shipping-free">FREE</span>
+                    ) : (
+                      `₹${calculateShipping()}`
+                    )}
+                  </span>
+                </div>
+
+                {shippingRemaining > 0 && (
+                  <div className="era-shipping-progress-wrap">
+                    <div className="era-shipping-progress-bar">
+                      <div
+                        className="era-shipping-progress-fill"
+                        style={{ width: `${shippingProgress}%` }}
+                      ></div>
+                    </div>
+                    <p className="era-shipping-hint">
+                      Add <strong>₹{shippingRemaining}</strong> more to unlock <span className="era-free-red">FREE Shipping</span>
+                    </p>
+                  </div>
+                )}
+
+                <div className="era-summary-row">
+                  <span>GST (Included)</span>
+                  <span className="era-summary-tax">₹{calculateTax()}</span>
+                </div>
+
+                <div className="era-summary-divider"></div>
+
+                <div className="era-grand-total-row">
+                  <span>Grand Total</span>
+                  <span className="era-grand-total-amount">₹{calculateGrandTotal()}</span>
+                </div>
+
+                <div className="era-coupon-section">
+                  <div className="era-coupon-form">
+                    <input
+                      type="text"
+                      className="era-coupon-input"
+                      placeholder="Enter coupon code"
+                      value={couponCode || promoCode}
+                      onChange={(e) => {
+                        setCouponCode(e.target.value);
+                        setPromoCode(e.target.value);
+                        setCouponError('');
+                      }}
                       onKeyPress={(e) => e.key === 'Enter' && handleApplyPromo()}
                     />
-                    <button 
-                      className="apply-btn" 
+                    <button
+                      className="era-coupon-apply-btn"
                       onClick={handleApplyPromo}
                       disabled={isLoading}
                     >
@@ -348,56 +480,85 @@ const Cart = () => {
                       )}
                     </button>
                   </div>
-                  <div className="promo-hint">
-                    Try: <strong>JNV2024</strong> or <strong>ALUMNI20</strong>
-                  </div>
+                  {couponError && <p className="era-coupon-error">{couponError}</p>}
+                  {appliedCoupon && !couponError && (
+                    <p className="era-coupon-applied">
+                      <i className="fas fa-check-circle"></i> {appliedCoupon} applied
+                    </p>
+                  )}
                 </div>
 
-                {/* Checkout Button */}
-                <button className="checkout-btn-enhanced">
-                  <i className="fas fa-lock"></i> Proceed to Checkout
+                <button className="era-checkout-btn" onClick={handleCheckout}>
+                  <i className="fas fa-lock"></i>
+                  Proceed to Checkout
+                  <span className="era-checkout-count">({totalItems} items)</span>
                 </button>
 
-                {/* Security Badge */}
-                <div className="security-badge-enhanced">
-                  <i className="fas fa-shield-alt"></i>
-                  <div>
+                <div className="era-trust-badges-row">
+                  <div className="era-trust-item">
+                    <i className="fas fa-shield-alt"></i>
                     <span>Secure Checkout</span>
-                    <small>256-bit SSL encryption</small>
+                  </div>
+                  <div className="era-trust-item">
+                    <i className="fas fa-credit-card"></i>
+                    <span>Verified</span>
+                  </div>
+                  <div className="era-trust-item">
+                    <i className="fas fa-lock"></i>
+                    <span>SSL</span>
                   </div>
                 </div>
 
-                {/* Payment Methods */}
-                <div className="payment-methods-enhanced">
-                  <h4>We Accept</h4>
-                  <div className="payment-icons">
-                    <i className="fab fa-cc-visa"></i>
-                    <i className="fab fa-cc-mastercard"></i>
-                    <i className="fab fa-cc-amex"></i>
-                    <i className="fab fa-cc-paypal"></i>
-                    <i className="fab fa-google-pay"></i>
-                    <i className="fab fa-apple-pay"></i>
-                    <i className="fab fa-cc-stripe"></i>
-                  </div>
+                <div className="era-payment-icons-row">
+                  <i className="fab fa-cc-visa"></i>
+                  <i className="fab fa-cc-mastercard"></i>
+                  <i className="fab fa-cc-amex"></i>
+                  <i className="fab fa-cc-paypal"></i>
+                  <i className="fab fa-cc-stripe"></i>
                 </div>
 
-                {/* Customer Support */}
-                <div className="customer-support">
-                  <i className="fas fa-headset"></i>
-                  <div>
-                    <span>Need Help?</span>
-                    <small>Contact our support team</small>
-                  </div>
-                </div>
+                <Link to="/bulk-order" className="era-quote-btn">
+                  <i className="fas fa-file-alt"></i>
+                  Request a Quote
+                </Link>
               </div>
             </div>
           </div>
-
-
         </div>
-      </section>
+
+        <div className="era-features-strip">
+          <div className="era-feature-item">
+            <i className="fas fa-truck"></i>
+            <div>
+              <h4>Free Shipping</h4>
+              <p>On orders above ₹999</p>
+            </div>
+          </div>
+          <div className="era-feature-item">
+            <i className="fas fa-lock"></i>
+            <div>
+              <h4>Secure Payment</h4>
+              <p>100% secure checkout</p>
+            </div>
+          </div>
+          <div className="era-feature-item">
+            <i className="fas fa-undo"></i>
+            <div>
+              <h4>Easy Returns</h4>
+              <p>7-day return policy</p>
+            </div>
+          </div>
+          <div className="era-feature-item">
+            <i className="fas fa-headset"></i>
+            <div>
+              <h4>24/7 Support</h4>
+              <p>Always here to help</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
 
-export default Cart;
+export default CartEnhanced;
