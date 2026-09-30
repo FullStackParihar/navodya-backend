@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import api, { resolveImageUrl } from '../../utils/api';
 import { useCart } from '../../context/CartContext';
 import StorefrontStyles from './StorefrontStyles';
+import HomepageBanner from '../../components/HomepageBanner';
 
 const pageData = {
   '/tshirts': ['Custom T-shirts', 'Made to be worn, remembered, and talked about.', 'T-Shirts'],
@@ -168,29 +169,33 @@ const StorefrontPage = () => {
         {/* ── HOME vs CATEGORY ─────────────────── */}
         {isHome ? (
           <>
-            <section className="sf-hero">
-              <div className="sf-hero-copy">
-                <p className="sf-kicker">One partner. Every possibility.</p>
-                <h1>Everything your<br /><em>brand</em> needs.</h1>
-                <p>Create a brand people notice—and never forget. Print, apparel, merchandise, and gifting, made beautifully simple.</p>
-                <div>
-                  <Link className="sf-primary" to="/tshirts">Shop products <span>&rarr;</span></Link>
-                  <Link className="sf-secondary" to="/print-studio">Start designing</Link>
+            {/* Dynamic banner: shows active banners from backend.
+                When all banners are disabled/absent, shows the original sf-hero below. */}
+            <HomepageBanner fallback={
+              <section className="sf-hero">
+                <div className="sf-hero-copy">
+                  <p className="sf-kicker">One partner. Every possibility.</p>
+                  <h1>Everything your<br /><em>brand</em> needs.</h1>
+                  <p>Create a brand people notice—and never forget. Print, apparel, merchandise, and gifting, made beautifully simple.</p>
+                  <div>
+                    <Link className="sf-primary" to="/tshirts">Shop products <span>&rarr;</span></Link>
+                    <Link className="sf-secondary" to="/print-studio">Start designing</Link>
+                  </div>
+                  <section className="sf-stats">
+                    <span><b>10K+</b>happy customers</span>
+                    <span><b>4.8/5</b>average rating</span>
+                    <span><b>48 hrs</b>design turnaround</span>
+                  </section>
                 </div>
-                <section className="sf-stats">
-                  <span><b>10K+</b>happy customers</span>
-                  <span><b>4.8/5</b>average rating</span>
-                  <span><b>48 hrs</b>design turnaround</span>
-                </section>
-              </div>
-              <div className="sf-hero-art">
-                <div className="sf-dot">QUALITY<br />PRINTS</div>
-                <div className="sf-back-card">MAKE<br />YOUR<br />MARK.</div>
-                <div className="sf-shirt">be</div>
-                <div className="sf-front-card">BRAND<br /><i>ERA</i></div>
-                <div className="sf-mug">be</div>
-              </div>
-            </section>
+                <div className="sf-hero-art">
+                  <div className="sf-dot">QUALITY<br />PRINTS</div>
+                  <div className="sf-back-card">MAKE<br />YOUR<br />MARK.</div>
+                  <div className="sf-shirt">be</div>
+                  <div className="sf-front-card">BRAND<br /><i>ERA</i></div>
+                  <div className="sf-mug">be</div>
+                </div>
+              </section>
+            } />
 
             <section className="sf-strip">
               <p>Start creating</p>
