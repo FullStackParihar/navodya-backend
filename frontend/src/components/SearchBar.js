@@ -83,7 +83,6 @@ const SearchBar = () => {
     <div className="search-bar-advanced" ref={searchRef}>
       <form onSubmit={handleSearch} className="search-form">
         <div className="search-input-wrapper">
-          <i className="fas fa-search search-icon"></i>
           <input
             type="text"
             className="search-input"
@@ -92,19 +91,6 @@ const SearchBar = () => {
             onChange={handleInputChange}
             onFocus={handleFocus}
           />
-          {query && (
-            <button
-              type="button"
-              className="search-clear"
-              onClick={() => {
-                setQuery('');
-                setSuggestions([]);
-                setIsOpen(false);
-              }}
-            >
-              <i className="fas fa-times"></i>
-            </button>
-          )}
         </div>
         <button type="submit" className="search-button">
           <i className="fas fa-search"></i>

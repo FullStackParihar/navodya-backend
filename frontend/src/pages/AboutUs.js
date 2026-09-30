@@ -1,180 +1,290 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import './AboutUs.css';
 
 const AboutUs = () => {
   return (
-    <div className="about-us">
-      <div className="container">
-        {/* Intro Section */}
-        <section className="about-intro">
-          <h1 className="about-title">❤️ ABOUT NAVODAYA TRENDZ</h1>
-          <p className="about-subtitle">More Than Merchandise. A Community. A Legacy.</p>
-          
-          <div className="intro-text">
-            <p>Every Navodayan carries a story.</p>
-            <p>A story of leaving home at a young age.</p>
-            <p>A story of hostel life, friendships, morning assemblies, house competitions, late-night conversations, shared dreams, and memories that last a lifetime.</p>
-            <p>No matter where life takes us—whether we become entrepreneurs, engineers, teachers, doctors, civil servants, artists, or professionals—we all share one identity:</p>
-            <h2 className="identity-text"># We Are Navodayans.</h2>
-            <p>Navodaya Trendz was born from this identity.</p>
+    <div className="about-page">
+      <div className="about-container">
+        {/* Breadcrumb */}
+        <nav className="about-breadcrumb" aria-label="Breadcrumb">
+          <Link to="/">Home</Link>
+          <span className="sep">/</span>
+          <span>Company</span>
+          <span className="sep">/</span>
+          <span className="current">About Us</span>
+        </nav>
+
+        {/* Hero Section */}
+        <header className="about-hero">
+          <div className="about-hero-badge">
+            <span></span>
+            Brand Era &bull; Story &amp; Capabilities
+          </div>
+          <h1>
+            Empowering Brands, Creators &amp; Communities Through <em>Precision Print &amp; Custom Merchandise</em>
+          </h1>
+          <p className="about-hero-tagline">Design. Print. Brand. Deliver.</p>
+          <p className="about-hero-desc">
+            Brand Era is India&rsquo;s modern on-demand merchandise, apparel manufacturing, and print customization platform. We unite high-precision digital printing technology, luxury bio-washed fabrics, and an intuitive online Design Studio to turn your boldest ideas into wearable realities.
+          </p>
+          <div className="about-hero-actions">
+            <Link to="/tshirts" className="about-btn-primary">
+              <i className="fas fa-tshirt"></i> Explore Products
+            </Link>
+            <Link to="/print-studio" className="about-btn-secondary">
+              <i className="fas fa-magic"></i> Launch Design Studio
+            </Link>
+            <Link to="/bulk-order" className="about-btn-secondary">
+              <i className="fas fa-boxes"></i> Bulk Inquiries
+            </Link>
+          </div>
+        </header>
+
+        {/* Stats Strip */}
+        <section className="about-stats" aria-label="Brand Era Key Milestones">
+          <div className="about-stat-card">
+            <div className="about-stat-num">50<span>K+</span></div>
+            <div className="about-stat-label">Products Printed</div>
+          </div>
+          <div className="about-stat-card">
+            <div className="about-stat-num">500<span>+</span></div>
+            <div className="about-stat-label">Clients &amp; Organizations</div>
+          </div>
+          <div className="about-stat-card">
+            <div className="about-stat-num">19<span>K+</span></div>
+            <div className="about-stat-label">Pincodes Reached</div>
+          </div>
+          <div className="about-stat-card">
+            <div className="about-stat-num">100<span>%</span></div>
+            <div className="about-stat-label">Quality Guaranteed</div>
           </div>
         </section>
 
-        <hr className="divider" />
+        {/* Section 1: Our Story */}
+        <article className="about-card">
+          <div className="about-section-header">
+            <div className="about-header-icon">
+              <i className="fas fa-rocket"></i>
+            </div>
+            <h2>Our Story &amp; Journey</h2>
+          </div>
+          <p>
+            For too long, custom merchandise was a frustrating experience. Traditional print shops were hindered by rigid minimum order quantities, hidden screen-setup fees, substandard fabrics that shrunk after the first wash, and weeks of agonizing delays.
+          </p>
+          <p>
+            We founded <strong>Brand Era</strong> with a singular mission: <em>to make custom apparel and corporate merchandising effortless, transparent, and undeniably premium.</em>
+          </p>
 
-        {/* Our Story */}
-        <section className="about-section">
-          <h2 className="section-heading">🎓 Our Story</h2>
-          <p>Navodaya Trendz (NTz) is India's first dedicated merchandise and community platform built exclusively for the Jawahar Navodaya Vidyalaya ecosystem.</p>
-          <p>We started with a simple belief:</p>
-          <blockquote className="blockquote">
-            Every Navodayan deserves a way to celebrate their journey, reconnect with their community, and proudly wear the identity that shaped them.
-          </blockquote>
-          <p>What began as a vision to create meaningful JNV merchandise has evolved into something much bigger—a platform that connects alumni, students, schools, organizers, and professionals across the Navodaya family.</p>
-        </section>
+          <div className="about-mission-box">
+            <h3><i className="fas fa-bullseye"></i> Our Mission</h3>
+            <p>
+              To democratize world-class printing and merchandise production for everyone—from burgeoning college clubs and startup teams to established corporations and creative labels—delivering unmatched fabric comfort, print longevity, and punctual fulfillment.
+            </p>
+          </div>
 
-        <hr className="divider" />
+          <p>
+            Today, Brand Era serves corporate innovators, high-growth startups, alumni associations, event organizers, and creators across India. Whether you need a single bespoke hoodie crafted in our Design Studio or 5,000 custom kits dispatched across multiple regional offices, Brand Era delivers with precision.
+          </p>
+        </article>
 
-        {/* Platform for Every Navodayan */}
-        <section className="about-section">
-          <h2 className="section-heading">🌍 A Platform for Every Navodayan</h2>
-          <p>Today, Navodayans are making an impact across India and around the world.</p>
-          <p>Yet one thing remains constant:</p>
-          <p className="highlight-text">The bond we built inside JNV.</p>
-          <p>Navodaya Trendz exists to strengthen that bond by creating products, experiences, and opportunities that bring the community together.</p>
-          <p>Whether you're attending your first alumni meet, organizing a reunion, launching a regional alumni chapter, or simply looking for a T-shirt that reminds you of your school days—we're here to help you celebrate your story.</p>
-        </section>
+        {/* Section 2: What Sets Brand Era Apart */}
+        <article className="about-card">
+          <div className="about-section-header">
+            <div className="about-header-icon">
+              <i className="fas fa-gem"></i>
+            </div>
+            <h2>The Brand Era Difference</h2>
+          </div>
+          <p>
+            We don&rsquo;t simply print on blanks; we engineer comprehensive merchandising solutions built to make an indelible impression:
+          </p>
 
-        <hr className="divider" />
+          <div className="about-grid-3">
+            <div className="about-feature-box">
+              <div className="about-feature-icon">
+                <i className="fas fa-fingerprint"></i>
+              </div>
+              <h3>Precision Print Tech</h3>
+              <p>
+                Industrial Direct-to-Film (DTF), vibrant screen printing, high-density plastisol, precision computerized embroidery, and sublimation that resist cracking and fading wash after wash.
+              </p>
+            </div>
 
-        {/* What We Create */}
-        <section className="about-section">
-          <h2 className="section-heading">👕 What We Create</h2>
-          <p>We design and deliver premium merchandise inspired by the Navodaya spirit.</p>
-          
-          <div className="products-grid">
-            <div className="product-category">
-              <h3>Apparel</h3>
+            <div className="about-feature-box">
+              <div className="about-feature-icon">
+                <i className="fas fa-layer-group"></i>
+              </div>
+              <h3>Luxury Combed Fabrics</h3>
+              <p>
+                100% super-combed, bio-washed cotton (180 to 240 GSM) and heavy-gauge fleece (320+ GSM). Pre-shrunk, soft to the skin, breathable, and colorfast.
+              </p>
+            </div>
+
+            <div className="about-feature-box">
+              <div className="about-feature-icon">
+                <i className="fas fa-laptop-code"></i>
+              </div>
+              <h3>Interactive Design Studio</h3>
+              <p>
+                Visualize your concepts before production. Upload vector graphics, position logos, customize colors, and inspect digital proofs in real time.
+              </p>
+            </div>
+
+            <div className="about-feature-box">
+              <div className="about-feature-icon">
+                <i className="fas fa-tags"></i>
+              </div>
+              <h3>Transparent Pricing</h3>
+              <p>
+                No hidden plate fees or surprise charges. Volume tier discounts are calculated upfront, with GST tax invoices provided for every order.
+              </p>
+            </div>
+
+            <div className="about-feature-box">
+              <div className="about-feature-icon">
+                <i className="fas fa-shipping-fast"></i>
+              </div>
+              <h3>Express Logistics</h3>
+              <p>
+                Integrated with premier courier networks (Blue Dart, Delhivery, DTDC) with automated SMS and WhatsApp tracking from factory dispatch to doorstep.
+              </p>
+            </div>
+
+            <div className="about-feature-box">
+              <div className="about-feature-icon">
+                <i className="fas fa-headset"></i>
+              </div>
+              <h3>Dedicated Brand Specialists</h3>
+              <p>
+                Our merchandising specialists assist with design vectorization, sizing guidance, fabric swatch trials, and customized B2B kit packaging.
+              </p>
+            </div>
+          </div>
+        </article>
+
+        {/* Section 3: Product Ecosystem */}
+        <article className="about-card">
+          <div className="about-section-header">
+            <div className="about-header-icon">
+              <i className="fas fa-cubes"></i>
+            </div>
+            <h2>Our Merchandise Ecosystem</h2>
+          </div>
+          <p>
+            From everyday wardrobe staples to curated executive gift sets, our production lines span across diverse categories:
+          </p>
+
+          <div className="about-product-cards">
+            <div className="about-product-card">
+              <h3><i className="fas fa-tshirt"></i> Custom Apparel</h3>
               <ul>
-                <li>Round Neck T-Shirts</li>
-                <li>Premium Polo T-Shirts</li>
-                <li>Hoodies</li>
-                <li>Sweatshirts</li>
-                <li>Alumni Meet Collections</li>
+                <li>Classic Crewneck T-Shirts</li>
+                <li>Premium Cotton Piqu&eacute; Polos</li>
+                <li>Trendy Oversized Streetwear Tees</li>
+                <li>Cozy Fleece Hoodies &amp; Sweatshirts</li>
+                <li>Varsity &amp; Zipper Jackets</li>
+                <li>Embroidered Caps &amp; Beanies</li>
               </ul>
             </div>
-            
-            <div className="product-category">
-              <h3>Alumni Meet Essentials</h3>
+
+            <div className="about-product-card">
+              <h3><i className="fas fa-briefcase"></i> Corporate &amp; Office Swag</h3>
               <ul>
-                <li>Event Kits</li>
-                <li>Customized Badges</li>
-                <li>ID Cards & Lanyards</li>
-                <li>Selfie Frames</li>
-                <li>Banners & Standees</li>
-                <li>Welcome Kits</li>
+                <li>Employee Onboarding Welcome Kits</li>
+                <li>Branded Water Bottles &amp; Sippers</li>
+                <li>Hardbound Debossed Notebooks</li>
+                <li>Custom Lanyards &amp; RFID Badges</li>
+                <li>Laptop Sleeves &amp; Executive Backpacks</li>
+                <li>Engraved Metal Pens &amp; Tech Organizers</li>
               </ul>
             </div>
-            
-            <div className="product-category">
-              <h3>Personalized Merchandise</h3>
+
+            <div className="about-product-card">
+              <h3><i className="fas fa-users"></i> Events &amp; Alumni Kits</h3>
               <ul>
-                <li>Mugs</li>
-                <li>Bottles</li>
-                <li>Diaries</li>
-                <li>Keychains</li>
-                <li>Wristbands</li>
-                <li>Awards & Mementos</li>
+                <li>Complete Alumni Meet Packages</li>
+                <li>Batch Crest &amp; Reunion Keepsakes</li>
+                <li>Ceramic Mugs &amp; Coasters</li>
+                <li>High-Res Vinyl Banners &amp; Standees</li>
+                <li>Selfie Frames &amp; Photo Backdrops</li>
+                <li>Trophies, Medals &amp; Certificates</li>
               </ul>
             </div>
           </div>
-          
-          <p className="product-footer">Every product is thoughtfully designed to represent the pride, values, and memories of being a Navodayan.</p>
-        </section>
+        </article>
 
-        <hr className="divider" />
+        {/* Section 4: Our Core Values */}
+        <article className="about-card">
+          <div className="about-section-header">
+            <div className="about-header-icon">
+              <i className="fas fa-heart"></i>
+            </div>
+            <h2>Our Guiding Principles</h2>
+          </div>
+          <p>
+            Everything we create at Brand Era is rooted in four enduring commitments to our clients and our craft:
+          </p>
 
-        {/* Beyond Merchandise */}
-        <section className="about-section">
-          <h2 className="section-heading">🤝 Beyond Merchandise</h2>
-          <p>Navodaya Trendz is not just an e-commerce brand.</p>
-          <p>We are building a digital ecosystem where Navodayans can:</p>
-          
-          <ul className="features-list">
-            <li>Discover Alumni Meets</li>
-            <li>Register for Events</li>
-            <li>Connect with Batchmates</li>
-            <li>Join Regional Alumni Networks</li>
-            <li>Attend Career Guidance Sessions</li>
-            <li>Learn from Successful Alumni</li>
-            <li>Celebrate Achievements</li>
-            <li>Build Meaningful Professional Connections</li>
-          </ul>
-          
-          <p>Our goal is simple:</p>
-          <h2 className="identity-text"># To bring every Navodayan closer together.</h2>
-        </section>
+          <div className="about-values-list">
+            <div className="about-value-item">
+              <div className="about-value-check">&check;</div>
+              <div className="about-value-text">
+                <h4>Uncompromising Craftsmanship</h4>
+                <p>Every garment undergoes a multi-point quality check before it leaves our production facility.</p>
+              </div>
+            </div>
 
-        <hr className="divider" />
+            <div className="about-value-item">
+              <div className="about-value-check">&check;</div>
+              <div className="about-value-text">
+                <h4>Client Artwork Integrity</h4>
+                <p>We treat your corporate logos and designs as confidential assets, ensuring 100% intellectual property security.</p>
+              </div>
+            </div>
 
-        {/* Our Vision */}
-        <section className="about-section">
-          <h2 className="section-heading">🚀 Our Vision</h2>
-          <p>To become the world's largest Navodayan community platform—connecting students, alumni, educators, and professionals through merchandise, networking, events, and shared experiences.</p>
-          <p>We envision a future where every JNV has a stronger alumni network, every alumnus stays connected, and every student benefits from the strength of the Navodaya community.</p>
-        </section>
+            <div className="about-value-item">
+              <div className="about-value-check">&check;</div>
+              <div className="about-value-text">
+                <h4>Punctual Delivery Guarantee</h4>
+                <p>We respect event deadlines. Our production pipelines are optimized to ensure on-time delivery every time.</p>
+              </div>
+            </div>
 
-        <hr className="divider" />
+            <div className="about-value-item">
+              <div className="about-value-check">&check;</div>
+              <div className="about-value-text">
+                <h4>Eco-Conscious Printing</h4>
+                <p>We prioritize OEKO-TEX certified, non-toxic water-based inks and recyclable packaging materials.</p>
+              </div>
+            </div>
+          </div>
+        </article>
 
-        {/* Why We Do This */}
-        <section className="about-section">
-          <h2 className="section-heading">💙 Why We Do This</h2>
-          <p>Because Navodaya is not just a school.</p>
-          <p>It is:</p>
-          <ul className="why-list">
-            <li>A second home</li>
-            <li>A lifelong network</li>
-            <li>A shared identity</li>
-            <li>A family spread across the world</li>
-          </ul>
-          <p>And some memories deserve to be carried forever.</p>
-        </section>
-
-        <hr className="divider" />
-
-        {/* Our Promise */}
-        <section className="about-section">
-          <h2 className="section-heading">✨ Our Promise</h2>
-          <p>At Navodaya Trendz, we are committed to:</p>
-          <ul className="promises-list">
-            <li>✔ Premium Quality Products</li>
-            <li>✔ Meaningful & Original Designs</li>
-            <li>✔ Reliable Service & Timely Delivery</li>
-            <li>✔ Dedicated Alumni Meet Support</li>
-            <li>✔ Continuous Innovation for the Navodaya Community</li>
-          </ul>
-        </section>
-
-        <hr className="divider" />
-
-        {/* Stats Section */}
-        <section className="about-section stats-section">
-          <h2 className="section-heading">🏆 650+ Schools. One Identity.</h2>
-          <p>Thousands of alumni.</p>
-          <p>Millions of memories.</p>
-          <p>One community.</p>
-          <h2 className="identity-text"># Made by Navodayans. For Navodayans.</h2>
-          <p className="tagline">Wear Your Identity. Relive Your Memories. Stay Connected.</p>
-          <h3 className="welcome-text">Welcome to Navodaya Trendz. ❤️🎓</h3>
-        </section>
-
-        <hr className="divider" />
-
-        {/* Hero Quote */}
-        <section className="about-section quote-section">
-          <blockquote className="hero-quote">
-            "Navodaya gave us memories. Navodaya Trendz helps us carry them forward."
+        {/* Manifesto Quote Box */}
+        <section className="about-quote-box">
+          <blockquote>
+            &ldquo;A brand isn&rsquo;t just a logo on fabric&mdash;it&rsquo;s an identity, a community, and a shared statement. At Brand Era, we bring that identity to life with precision and pride.&rdquo;
           </blockquote>
+          <div className="about-quote-author">The Brand Era Team</div>
+        </section>
+
+        {/* Bottom CTA Banner */}
+        <section className="about-cta">
+          <div className="about-cta-text">
+            <h3>Ready to Bring Your Brand to Life?</h3>
+            <p>
+              Start designing in our interactive Studio or reach out for custom bulk merchandising and corporate quotes.
+            </p>
+          </div>
+          <div className="about-cta-actions">
+            <Link to="/print-studio" className="about-btn-primary">
+              <i className="fas fa-paint-brush"></i> Open Design Studio
+            </Link>
+            <Link to="/bulk-order" className="about-btn-secondary" style={{ background: '#18181b', color: '#fff' }}>
+              <i className="fas fa-calculator"></i> Request Bulk Quote
+            </Link>
+          </div>
         </section>
       </div>
     </div>

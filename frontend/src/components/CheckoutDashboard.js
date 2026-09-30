@@ -203,15 +203,15 @@ const CheckoutDashboard = () => {
         <div className="section support">
           <h2 className="section-title">Need Help?</h2>
           <div className="support-options">
-            <a href="tel:+9118001234567" className="support-link">
+            <a href="tel:+918947900884" className="support-link">
               <i className="fas fa-phone"></i>
               <span>Call Support</span>
             </a>
-            <a href="mailto:support@navodayatrendz.com" className="support-link">
+            <a href="mailto:support@brandera.com" className="support-link">
               <i className="fas fa-envelope"></i>
               <span>Email Us</span>
             </a>
-            <a href="https://wa.me/919284490206" target="_blank" rel="noopener noreferrer" className="support-link whatsapp">
+            <a href="https://wa.me/918947900884" target="_blank" rel="noopener noreferrer" className="support-link whatsapp">
               <i className="fab fa-whatsapp"></i>
               <span>WhatsApp</span>
             </a>

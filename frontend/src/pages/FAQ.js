@@ -3,8 +3,8 @@ import React, { useMemo, useState } from 'react';
 const FAQ = () => {
   const faqs = useMemo(() => ([
     {
-      q: '1. What is Navodaya Trendz?',
-      a: 'Navodaya Trendz (NTz) is an exclusive merchandise brand for Jawahar Navodaya Vidyalaya (JNV) alumni, students, schools, and Navodayans worldwide. We specialize in customized T-shirts, hoodies, alumni meet kits, banners, trophies, and corporate gifts.'
+      q: '1. What is Brand Era?',
+      a: 'Brand Era is a premier custom merchandise, apparel manufacturing, and print-on-demand platform. We specialize in bespoke T-shirts, premium hoodies, corporate gifts, alumni meet kits, promotional banners, and custom branding solutions for businesses, communities, and individuals.'
     },
     {
       q: '2. Do you have merchandise for all JNV schools?',
@@ -52,31 +52,31 @@ const FAQ = () => {
     },
     {
       q: '13. How do I get support or ask questions?',
-      a: 'You can contact us via Phone (+91-8947900884), Email (navodayatrendz@gmail.com), WhatsApp (available on website), or our social media (Instagram, Facebook, LinkedIn).'
+      a: 'You can contact us via Phone/WhatsApp (+91-8947900884), Email (support@brandera.com), or through our contact forms.'
     },
     {
-      q: '14. Do you work with JNV schools for official events?',
-      a: 'Yes. We supply trophies, certificates, event banners, and uniform T-shirts. We also support GeM Orders for principals and purchase officers.'
+      q: '14. Do you work with institutions and schools for official events?',
+      a: 'Yes. We supply trophies, certificates, event banners, uniform T-shirts, and custom corporate packages. Bulk quotations and tax invoices with GST are provided.'
     },
     {
       q: '15. Do you take corporate or office orders?',
-      a: 'Yes! We provide customized merchandise for Navodayan professionals working in corporates, startups, alumni associations, and NGOs. Bulk corporate pricing is available.'
+      a: 'Yes! We provide customized merchandise for corporate teams, startups, college societies, and alumni associations. Bulk corporate pricing is available.'
     },
     {
       q: '16. Can I get help in designing my merchandise?',
-      a: 'Absolutely! Our design team will create school logo designs, batch crests, alumni meet artwork, and custom branding. Design previews are shared before printing.'
+      a: 'Absolutely! Our design team helps refine logos, batch crests, event artwork, and custom branding. Digital previews and mockups are shared for approval before printing.'
     },
     {
-      q: '17. How do I place a bulk order for an alumni meet?',
-      a: 'You can place a bulk order by: Filling the Alumni Meet Form on the website, contacting us on WhatsApp, or calling directly for quick assistance. Our team will guide you through design, pricing, and delivery.'
+      q: '17. How do I place a bulk order?',
+      a: 'You can place a bulk order by filling the Bulk Order form on our website, messaging us on WhatsApp (+91-8947900884), or calling directly for a custom quote.'
     },
     {
       q: '18. Is there a discount for large orders?',
-      a: 'Yes. We offer attractive discounts for alumni meets, corporate orders, school orders, and 100+ quantity bookings. The discount depends on the item type and quantity.'
+      a: 'Yes. We offer attractive tiered discounts for 30+, 100+, and 500+ quantity bookings. The discount depends on the item type and customization technique.'
     },
     {
-      q: '19. Is this an official JNV/NVS store?',
-      a: 'Navodaya Trendz is founded by Navodayans for the Navodaya community. We are not officially affiliated with NVS, but we serve all Navodayans and alumni groups worldwide.'
+      q: '19. Is this an official store?',
+      a: 'Brand Era is an independent premium merchandise and branding platform serving corporate enterprises, alumni networks, institutions, and community groups across India.'
     },
     {
       q: '20. Do you keep customer data secure?',
@@ -140,7 +140,7 @@ const FAQ = () => {
                   <a className="btn-secondary" href="tel:+918947900884">
                     <i className="fas fa-phone"></i> Call
                   </a>
-                  <a className="btn-secondary" href="mailto:navodayatrendz@gmail.com?subject=FAQ%20Help">
+                  <a className="btn-secondary" href="mailto:support@brandera.com?subject=FAQ%20Help">
                     <i className="fas fa-envelope"></i> Email
                   </a>
                   <a className="btn-primary" href="https://wa.me/918947900884?text=Hi%2C%20I%20need%20help%20with%20my%20order">

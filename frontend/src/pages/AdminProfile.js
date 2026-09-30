@@ -11,13 +11,13 @@ const clothingCategoryPattern = /(t[\s-]?shirts?|hoodies?|polos?|jackets?|shirts
 const AdminProfile = () => {
   const navigate = useNavigate();
   const { success, error, info } = useToast();
-  
+
   const [isAdmin, setIsAdmin] = useState(false);
   const [activeTab, setActiveTab] = useState('dashboard');
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);         // full-page spinner (first load per tab)
   const [isFetching, setIsFetching] = useState(false);  // subtle indicator during pagination/search
-  
+
   // Data states
   const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
@@ -89,9 +89,9 @@ const AdminProfile = () => {
     const rawCat = product?.category_id || product?.category;
     if (rawCat) {
       const catIdStr = typeof rawCat === 'object' ? String(rawCat._id || rawCat.name || rawCat.slug || '') : String(rawCat);
-      const category = categories.find((cat) => 
-        String(cat._id) === catIdStr || 
-        (cat.slug && cat.slug.toLowerCase() === catIdStr.toLowerCase()) || 
+      const category = categories.find((cat) =>
+        String(cat._id) === catIdStr ||
+        (cat.slug && cat.slug.toLowerCase() === catIdStr.toLowerCase()) ||
         (cat.name && cat.name.toLowerCase() === catIdStr.toLowerCase())
       );
       if (category?.name) return category.name;
@@ -99,8 +99,8 @@ const AdminProfile = () => {
     }
 
     if (product?.subcategory) {
-      const catBySub = categories.find((cat) => 
-        (cat.slug && cat.slug.toLowerCase() === String(product.subcategory).toLowerCase()) || 
+      const catBySub = categories.find((cat) =>
+        (cat.slug && cat.slug.toLowerCase() === String(product.subcategory).toLowerCase()) ||
         (cat.name && cat.name.toLowerCase() === String(product.subcategory).toLowerCase())
       );
       if (catBySub?.name) return catBySub.name;
@@ -119,12 +119,12 @@ const AdminProfile = () => {
     const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
     const userRole = localStorage.getItem('userRole');
     const userEmail = localStorage.getItem('userEmail');
-    
+
     if (!isAuthenticated) {
       navigate('/login');
       return;
     }
-    
+
     if (userRole === 'admin' || userEmail === 'admin@navodaya.com') {
       setIsAdmin(true);
     } else {
@@ -364,11 +364,11 @@ const AdminProfile = () => {
         if (mappedItem.startDate) mappedItem.startDate = mappedItem.startDate.split('T')[0];
         if (mappedItem.endDate) mappedItem.endDate = mappedItem.endDate.split('T')[0];
       }
-      
+
       if (type === 'event') {
         if (mappedItem.date) mappedItem.date = mappedItem.date.split('T')[0];
       }
-      
+
       if (type === 'winner') {
         if (mappedItem.contest_id) mappedItem.contest_id = mappedItem.contest_id._id;
         if (mappedItem.user_id) mappedItem.user_id = mappedItem.user_id._id;
@@ -400,11 +400,11 @@ const AdminProfile = () => {
         });
       } else if (type === 'coupon') {
         setFormData({
-          code: '', type: 'PERCENTAGE', value: 0, minOrderAmount: 0, maxDiscountAmount: 0, validUntil: new Date(Date.now() + 30*24*60*60*1000).toISOString().split('T')[0], usageLimit: 100
+          code: '', type: 'PERCENTAGE', value: 0, minOrderAmount: 0, maxDiscountAmount: 0, validUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], usageLimit: 100
         });
       } else if (type === 'contest') {
         setFormData({
-          title: '', description: '', rules: '', startDate: new Date().toISOString().split('T')[0], endDate: new Date(Date.now() + 7*24*60*60*1000).toISOString().split('T')[0], bannerImage: '', googleFormLink: '', isActive: true, isEnabled: true
+          title: '', description: '', rules: '', startDate: new Date().toISOString().split('T')[0], endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], bannerImage: '', googleFormLink: '', isActive: true, isEnabled: true
         });
       } else if (type === 'event') {
         setFormData({
@@ -546,7 +546,7 @@ const AdminProfile = () => {
       let result;
       if (modalType === 'product' || modalType === 'alumni-kit') {
         let hasMainImage = Array.isArray(formData.images) && formData.images.length > 0 && formData.images[0];
-        
+
         if (!hasMainImage) {
           let firstColorImage = null;
           if (Array.isArray(formData.colors)) {
@@ -641,7 +641,7 @@ const AdminProfile = () => {
           result = await api.post('/winners', formData);
         }
       }
-      
+
       if (result.success) {
         success('Success!');
         setIsModalOpen(false);
@@ -655,7 +655,7 @@ const AdminProfile = () => {
       error(msg);
     }
   };
-  
+
   const compressImage = (file) => {
     return new Promise((resolve) => {
       if (!file.type.startsWith('image/')) {
@@ -690,7 +690,7 @@ const AdminProfile = () => {
           canvas.height = height;
           const ctx = canvas.getContext('2d');
           ctx.drawImage(img, 0, 0, width, height);
-          
+
           canvas.toBlob((blob) => {
             if (blob) {
               const compressedFile = new File([blob], file.name.replace(/\.[^/.]+$/, "") + ".jpg", {
@@ -831,7 +831,7 @@ const AdminProfile = () => {
         else if (type === 'event') endpoint = `/events/${id}`;
         else if (type === 'alumni-meet') endpoint = `/alumni-meets/${id}`;
         else if (type === 'winner') endpoint = `/winners/${id}`;
-        
+
         const result = await api.delete(endpoint);
         if (result.success) {
           success(`${type} deleted`);
@@ -861,13 +861,13 @@ const AdminProfile = () => {
   // Helper: color per status
   const getStatusColor = (status) => {
     switch (status) {
-      case 'PENDING':    return '#f59e0b';
-      case 'PROCESSING': return '#3b82f6';
-      case 'SHIPPED':    return '#8b5cf6';
-      case 'DELIVERED':  return '#10b981';
-      case 'CANCELLED':  return '#ef4444';
-      case 'RETURNED':   return '#f97316';
-      default:           return '#6b7280';
+      case 'PENDING': return '#f59e0b';
+      case 'PROCESSING': return '#e63322';
+      case 'SHIPPED': return '#8b5cf6';
+      case 'DELIVERED': return '#10b981';
+      case 'CANCELLED': return '#ef4444';
+      case 'RETURNED': return '#f97316';
+      default: return '#6b7280';
     }
   };
 
@@ -1301,16 +1301,16 @@ const AdminProfile = () => {
                         )}
                         <button
                           className="save-btn"
-                          style={{ 
-                            marginTop: '10px', 
-                            background: '#2563eb', 
-                            color: '#fff', 
-                            border: 'none', 
-                            padding: '6px 12px', 
-                            borderRadius: '4px', 
-                            cursor: fetchingLiveTracking ? 'not-allowed' : 'pointer', 
-                            display: 'flex', 
-                            alignItems: 'center', 
+                          style={{
+                            marginTop: '10px',
+                            background: '#e63322',
+                            color: '#fff',
+                            border: 'none',
+                            padding: '6px 12px',
+                            borderRadius: '4px',
+                            cursor: fetchingLiveTracking ? 'not-allowed' : 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
                             justifyContent: 'center',
                             gap: '6px',
                             fontSize: '12px',
@@ -1329,15 +1329,15 @@ const AdminProfile = () => {
                         <p style={{ fontSize: '13px', color: '#9ca3af', marginBottom: '6px' }}>No tracking info added yet.</p>
                         <button
                           className="save-btn"
-                          style={{ 
-                            background: '#2563eb', 
-                            color: '#fff', 
-                            border: 'none', 
-                            padding: '6px 12px', 
-                            borderRadius: '4px', 
-                            cursor: fetchingLiveTracking ? 'not-allowed' : 'pointer', 
-                            display: 'flex', 
-                            alignItems: 'center', 
+                          style={{
+                            background: '#e63322',
+                            color: '#fff',
+                            border: 'none',
+                            padding: '6px 12px',
+                            borderRadius: '4px',
+                            cursor: fetchingLiveTracking ? 'not-allowed' : 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
                             justifyContent: 'center',
                             gap: '6px',
                             fontSize: '12px',
@@ -1354,11 +1354,11 @@ const AdminProfile = () => {
                     )}
 
                     {liveTrackingInfo && (
-                      <div style={{ marginTop: '12px', padding: '10px', background: '#f8fafc', borderRadius: '6px', border: '1px solid #e2e8f0', borderLeft: '3px solid #2563eb', textAlign: 'left' }}>
-                        <div style={{ fontSize: '13px', fontWeight: 'bold', color: '#1e293b', marginBottom: '8px' }}>
-                          Shipway Live Status: <span style={{ color: '#2563eb' }}>{liveTrackingInfo.tracking_details?.shipment_details?.[0]?.current_status || liveTrackingInfo.tracking_details?.shipment_status || 'Unknown'}</span>
+                      <div style={{ marginTop: '12px', padding: '10px', background: '#f8fafc', borderRadius: '6px', border: '1px solid #e2e8f0', borderLeft: '3px solid #e63322', textAlign: 'left' }}>
+                        <div style={{ fontSize: '13px', fontWeight: 'bold', color: '#000000', marginBottom: '8px' }}>
+                          Shipway Live Status: <span style={{ color: '#e63322' }}>{liveTrackingInfo.tracking_details?.shipment_details?.[0]?.current_status || liveTrackingInfo.tracking_details?.shipment_status || 'Unknown'}</span>
                         </div>
-                        
+
                         {/* Scans Timeline */}
                         {liveTrackingInfo.tracking_details?.scans && liveTrackingInfo.tracking_details.scans.length > 0 ? (
                           <div style={{ maxHeight: '180px', overflowY: 'auto', marginTop: '6px', paddingRight: '4px' }}>
@@ -1535,68 +1535,48 @@ const AdminProfile = () => {
     const categoryNames = Object.keys(grouped);
 
     return (
-    <div className="admin-section">
-      <div className="section-header product-section-header">
-        <div className="admin-toolbar">
-          <h2>{isAlumniKits ? 'Alumni Kit Management' : 'Product Management'}</h2>
-          <button className="add-btn" onClick={() => handleOpenModal(isAlumniKits ? 'alumni-kit' : 'product')}>
-            <i className="fas fa-plus"></i> Add {isAlumniKits ? 'Alumni Kit' : 'Product'}
-          </button>
-        </div>
-        
-        {/* Search Bar */}
-        <div className="admin-filter-bar">
-          <input 
-            type="text" 
-            placeholder="Search by name or description..." 
-            value={productSearch}
-            onChange={e => setProductSearch(e.target.value)}
-            onKeyDown={e => {
-              if (e.key === 'Enter') {
+      <div className="admin-section">
+        <div className="section-header product-section-header">
+          <div className="admin-toolbar">
+            <h2>{isAlumniKits ? 'Alumni Kit Management' : 'Product Management'}</h2>
+            <button className="add-btn" onClick={() => handleOpenModal(isAlumniKits ? 'alumni-kit' : 'product')}>
+              <i className="fas fa-plus"></i> Add {isAlumniKits ? 'Alumni Kit' : 'Product'}
+            </button>
+          </div>
+
+          {/* Search Bar */}
+          <div className="admin-filter-bar">
+            <input
+              type="text"
+              placeholder="Search by name or description..."
+              value={productSearch}
+              onChange={e => setProductSearch(e.target.value)}
+              onKeyDown={e => {
+                if (e.key === 'Enter') {
+                  setProductPage(1);
+                  fetchData(activeTab);
+                }
+              }}
+            />
+            <button
+              className="add-btn search-btn"
+              onClick={() => {
                 setProductPage(1);
                 fetchData(activeTab);
-              }
-            }}
-          />
-          <button 
-            className="add-btn search-btn" 
-            onClick={() => {
-              setProductPage(1);
-              fetchData(activeTab);
-            }}
-          >
-            <i className="fas fa-search"></i> Search
-          </button>
+              }}
+            >
+              <i className="fas fa-search"></i> Search
+            </button>
+          </div>
         </div>
-      </div>
 
-      {/* Category Filter Pills */}
-      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', margin: '16px 0 24px 0' }}>
-        <button 
-          type="button"
-          style={{
-            background: selectedCategoryFilter === 'ALL' ? '#3b82f6' : '#f3f4f6',
-            color: selectedCategoryFilter === 'ALL' ? '#ffffff' : '#374151',
-            border: '1px solid #d1d5db',
-            borderRadius: '20px',
-            padding: '6px 16px',
-            fontSize: '13px',
-            fontWeight: '600',
-            cursor: 'pointer',
-            transition: 'all 0.2s ease'
-          }}
-          onClick={() => setSelectedCategoryFilter('ALL')}
-        >
-          All Categories ({products.length})
-        </button>
-
-        {categoryNames.map(catName => (
-          <button 
-            key={catName}
+        {/* Category Filter Pills */}
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', margin: '16px 0 24px 0' }}>
+          <button
             type="button"
             style={{
-              background: selectedCategoryFilter === catName ? '#3b82f6' : '#f3f4f6',
-              color: selectedCategoryFilter === catName ? '#ffffff' : '#374151',
+              background: selectedCategoryFilter === 'ALL' ? '#e63322' : '#f3f4f6',
+              color: selectedCategoryFilter === 'ALL' ? '#ffffff' : '#374151',
               border: '1px solid #d1d5db',
               borderRadius: '20px',
               padding: '6px 16px',
@@ -1605,122 +1585,142 @@ const AdminProfile = () => {
               cursor: 'pointer',
               transition: 'all 0.2s ease'
             }}
-            onClick={() => setSelectedCategoryFilter(catName)}
+            onClick={() => setSelectedCategoryFilter('ALL')}
           >
-            {catName} ({grouped[catName]?.length || 0})
+            All Categories ({products.length})
           </button>
-        ))}
-      </div>
-      
-      {products.length === 0 ? (
-        <div className="admin-table-container" style={{ padding: '40px', textAlign: 'center', color: '#9ca3af' }}>
-          No products found
+
+          {categoryNames.map(catName => (
+            <button
+              key={catName}
+              type="button"
+              style={{
+                background: selectedCategoryFilter === catName ? '#e63322' : '#f3f4f6',
+                color: selectedCategoryFilter === catName ? '#ffffff' : '#374151',
+                border: '1px solid #d1d5db',
+                borderRadius: '20px',
+                padding: '6px 16px',
+                fontSize: '13px',
+                fontWeight: '600',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
+              }}
+              onClick={() => setSelectedCategoryFilter(catName)}
+            >
+              {catName} ({grouped[catName]?.length || 0})
+            </button>
+          ))}
         </div>
-      ) : (
-        categoryNames
-          .filter(catName => selectedCategoryFilter === 'ALL' || selectedCategoryFilter === catName)
-          .map(catName => {
-            const catProds = grouped[catName] || [];
-            if (selectedCategoryFilter === 'ALL' && catProds.length === 0) return null;
-            return (
-            <div key={catName} className="category-product-group" style={{ marginBottom: '32px' }}>
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                padding: '12px 18px',
-                background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
-                color: '#ffffff',
-                borderRadius: '8px 8px 0 0',
-                fontWeight: 'bold',
-                fontSize: '15px'
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <i className="fas fa-layer-group" style={{ color: '#f59e0b' }}></i>
-                  <span>Category: {catName}</span>
+
+        {products.length === 0 ? (
+          <div className="admin-table-container" style={{ padding: '40px', textAlign: 'center', color: '#9ca3af' }}>
+            No products found
+          </div>
+        ) : (
+          categoryNames
+            .filter(catName => selectedCategoryFilter === 'ALL' || selectedCategoryFilter === catName)
+            .map(catName => {
+              const catProds = grouped[catName] || [];
+              if (selectedCategoryFilter === 'ALL' && catProds.length === 0) return null;
+              return (
+                <div key={catName} className="category-product-group" style={{ marginBottom: '32px' }}>
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '12px 18px',
+                    background: 'linear-gradient(135deg, #000000 0%, #000000 100%)',
+                    color: '#ffffff',
+                    borderRadius: '8px 8px 0 0',
+                    fontWeight: 'bold',
+                    fontSize: '15px'
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <i className="fas fa-layer-group" style={{ color: '#f59e0b' }}></i>
+                      <span>Category: {catName}</span>
+                    </div>
+                    <span style={{ background: '#334155', color: '#cbd5e1', fontSize: '12px', padding: '2px 10px', borderRadius: '12px' }}>
+                      {grouped[catName].length} Products
+                    </span>
+                  </div>
+
+                  {grouped[catName].length === 0 ? (
+                    <div style={{ padding: '20px', textAlign: 'center', color: '#9ca3af', background: '#ffffff', borderRadius: '0 0 8px 8px', border: '1px solid #e5e7eb', borderTop: 'none', fontSize: '13px' }}>
+                      No products added to "{catName}" yet.
+                    </div>
+                  ) : (
+                    <div className="admin-table-container" style={{ borderRadius: '0 0 8px 8px', marginTop: 0 }}>
+                      <table className="admin-table">
+                        <thead>
+                          <tr>
+                            <th>Image</th>
+                            <th>Name</th>
+                            <th>Subcategory</th>
+                            <th>Price</th>
+                            <th>Stock</th>
+                            <th>Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {grouped[catName].map(product => (
+                            <tr key={product._id}>
+                              <td>
+                                <img
+                                  src={getSafeImage(product.images?.[0])}
+                                  alt={product.name}
+                                  className="table-img"
+                                  onError={(e) => {
+                                    if (!e.currentTarget.src.includes('via.placeholder.com')) {
+                                      e.currentTarget.src = 'https://via.placeholder.com/120x120?text=No+Image';
+                                    }
+                                  }}
+                                />
+                              </td>
+                              <td><strong>{product.name}</strong></td>
+                              <td>{product.subcategory || '—'}</td>
+                              <td>
+                                <div style={{ fontSize: '11px', color: '#6b7280', textDecoration: product.sale_price ? 'line-through' : 'none' }}>MRP: ₹{product.price}</div>
+                                {product.sale_price ? <div style={{ fontSize: '12px', color: '#22c55e', fontWeight: 'bold' }}>Sale: ₹{product.sale_price} ({Math.round((1 - product.sale_price / product.price) * 100)}% OFF)</div> : null}
+                              </td>
+                              <td>{product.sizes?.reduce((acc, s) => acc + s.stock, 0)}</td>
+                              <td>
+                                <button className="action-icon edit" onClick={() => handleOpenModal('product', product)} title="Edit"><i className="fas fa-edit"></i></button>
+                                <button className="action-icon delete" onClick={() => deleteItem('product', product._id)} title="Delete"><i className="fas fa-trash"></i></button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
                 </div>
-                <span style={{ background: '#334155', color: '#cbd5e1', fontSize: '12px', padding: '2px 10px', borderRadius: '12px' }}>
-                  {grouped[catName].length} Products
-                </span>
-              </div>
-              
-              {grouped[catName].length === 0 ? (
-                <div style={{ padding: '20px', textAlign: 'center', color: '#9ca3af', background: '#ffffff', borderRadius: '0 0 8px 8px', border: '1px solid #e5e7eb', borderTop: 'none', fontSize: '13px' }}>
-                  No products added to "{catName}" yet.
-                </div>
-              ) : (
-                <div className="admin-table-container" style={{ borderRadius: '0 0 8px 8px', marginTop: 0 }}>
-                  <table className="admin-table">
-                    <thead>
-                      <tr>
-                        <th>Image</th>
-                        <th>Name</th>
-                        <th>Subcategory</th>
-                        <th>Price</th>
-                        <th>Stock</th>
-                        <th>Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {grouped[catName].map(product => (
-                        <tr key={product._id}>
-                          <td>
-                            <img
-                              src={getSafeImage(product.images?.[0])}
-                              alt={product.name}
-                              className="table-img"
-                              onError={(e) => {
-                                if (!e.currentTarget.src.includes('via.placeholder.com')) {
-                                  e.currentTarget.src = 'https://via.placeholder.com/120x120?text=No+Image';
-                                }
-                              }}
-                            />
-                          </td>
-                          <td><strong>{product.name}</strong></td>
-                          <td>{product.subcategory || '—'}</td>
-                          <td>
-                            <div style={{fontSize: '11px', color: '#6b7280', textDecoration: product.sale_price ? 'line-through' : 'none'}}>MRP: ₹{product.price}</div>
-                            {product.sale_price ? <div style={{fontSize: '12px', color: '#22c55e', fontWeight: 'bold'}}>Sale: ₹{product.sale_price} ({Math.round((1 - product.sale_price / product.price) * 100)}% OFF)</div> : null}
-                          </td>
-                          <td>{product.sizes?.reduce((acc, s) => acc + s.stock, 0)}</td>
-                          <td>
-                            <button className="action-icon edit" onClick={() => handleOpenModal('product', product)} title="Edit"><i className="fas fa-edit"></i></button>
-                            <button className="action-icon delete" onClick={() => deleteItem('product', product._id)} title="Delete"><i className="fas fa-trash"></i></button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </div>
-          );
-        })
-      )}
-      
-      {/* Pagination Footer */}
-      <div className="admin-pagination">
-        <span>Page {productPage} of {totalProductPages}</span>
-        <div className="admin-pagination-actions">
-          <button 
-            className="add-btn" 
-            style={{ background: productPage <= 1 ? '#d1d5db' : '#000000', cursor: productPage <= 1 ? 'not-allowed' : 'pointer' }}
-            disabled={productPage <= 1}
-            onClick={() => setProductPage(prev => Math.max(prev - 1, 1))}
-          >
-            <i className="fas fa-chevron-left"></i> Prev
-          </button>
-          <button 
-            className="add-btn" 
-            style={{ background: productPage >= totalProductPages ? '#d1d5db' : '#000000', cursor: productPage >= totalProductPages ? 'not-allowed' : 'pointer' }}
-            disabled={productPage >= totalProductPages}
-            onClick={() => setProductPage(prev => Math.min(prev + 1, totalProductPages))}
-          >
-            Next <i className="fas fa-chevron-right"></i>
-          </button>
+              );
+            })
+        )}
+
+        {/* Pagination Footer */}
+        <div className="admin-pagination">
+          <span>Page {productPage} of {totalProductPages}</span>
+          <div className="admin-pagination-actions">
+            <button
+              className="add-btn"
+              style={{ background: productPage <= 1 ? '#d1d5db' : '#000000', cursor: productPage <= 1 ? 'not-allowed' : 'pointer' }}
+              disabled={productPage <= 1}
+              onClick={() => setProductPage(prev => Math.max(prev - 1, 1))}
+            >
+              <i className="fas fa-chevron-left"></i> Prev
+            </button>
+            <button
+              className="add-btn"
+              style={{ background: productPage >= totalProductPages ? '#d1d5db' : '#000000', cursor: productPage >= totalProductPages ? 'not-allowed' : 'pointer' }}
+              disabled={productPage >= totalProductPages}
+              onClick={() => setProductPage(prev => Math.min(prev + 1, totalProductPages))}
+            >
+              Next <i className="fas fa-chevron-right"></i>
+            </button>
+          </div>
         </div>
       </div>
-    </div>
     );
   };
 
@@ -1729,7 +1729,7 @@ const AdminProfile = () => {
       const newList = [...sectionProductList];
       const targetIndex = index + direction;
       if (targetIndex < 0 || targetIndex >= newList.length) return;
-      
+
       const temp = newList[index];
       newList[index] = newList[targetIndex];
       newList[targetIndex] = temp;
@@ -1763,7 +1763,7 @@ const AdminProfile = () => {
               className="add-btn"
               onClick={handleSaveSectionPriorities}
               disabled={isSavingPriorities}
-              style={{ background: '#2563eb', gap: '8px' }}
+              style={{ background: '#e63322', gap: '8px' }}
               type="button"
             >
               <i className={isSavingPriorities ? "fas fa-spinner fa-spin" : "fas fa-save"}></i>
@@ -1773,7 +1773,7 @@ const AdminProfile = () => {
         </div>
 
         <div style={{ margin: '16px 0 24px 0', display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
-          <label style={{ fontWeight: 'bold', fontSize: '14px', color: '#1e293b' }}>
+          <label style={{ fontWeight: 'bold', fontSize: '14px', color: '#000000' }}>
             Select Target Section:
           </label>
           <select
@@ -2307,22 +2307,22 @@ const AdminProfile = () => {
       info('No participants to export');
       return;
     }
-    
+
     // Create CSV content
     const headers = ['Name', 'Email', 'Mobile', 'Participation Date'];
     const csvRows = [headers.join(',')];
-    
+
     participants.forEach(p => {
       const name = p.user_id?.name || 'N/A';
       const email = p.user_id?.email || 'N/A';
       const mobile = p.user_id?.mobile || 'N/A';
       const date = new Date(p.createdAt).toLocaleString();
-      
+
       // Escape commas and quotes for CSV
       const row = [name, email, mobile, date].map(field => `"${String(field).replace(/"/g, '""')}"`);
       csvRows.push(row.join(','));
     });
-    
+
     const csvContent = 'data:text/csv;charset=utf-8,' + csvRows.join('\n');
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
@@ -2342,7 +2342,7 @@ const AdminProfile = () => {
         <div className={`admin-sidebar-new ${isMobileSidebarOpen ? 'open' : ''}`}>
           <div className="sidebar-brand">
             <i className="fas fa-shield-alt"></i>
-            <span>Navodaya Admin</span>
+            <span>BrandEra Admin</span>
             <button className="admin-back-website-btn" onClick={() => navigate('/')} title="Back to website" aria-label="Back to website">
               <i className="fas fa-arrow-left"></i>
             </button>
@@ -2352,18 +2352,7 @@ const AdminProfile = () => {
             <button className={activeTab === 'dashboard' ? 'active' : ''} onClick={() => handleTabChange('dashboard')}>
               <i className="fas fa-chart-line"></i> Dashboard
             </button>
-            <button className={activeTab === 'contests' ? 'active' : ''} onClick={() => handleTabChange('contests')}>
-              <i className="fas fa-trophy"></i> Contests
-            </button>
-            <button className={activeTab === 'events' ? 'active' : ''} onClick={() => handleTabChange('events')}>
-              <i className="fas fa-calendar-alt"></i> Events
-            </button>
-            <button className={activeTab === 'alumni-meets' ? 'active' : ''} onClick={() => handleTabChange('alumni-meets')}>
-              <i className="fas fa-graduation-cap"></i> Alumni Meets
-            </button>
-            <button className={activeTab === 'winners' ? 'active' : ''} onClick={() => handleTabChange('winners')}>
-              <i className="fas fa-medal"></i> Winners
-            </button>
+
             <button className={activeTab === 'products' ? 'active' : ''} onClick={() => handleTabChange('products')}>
               <i className="fas fa-box"></i> Products
             </button>
@@ -2385,9 +2374,7 @@ const AdminProfile = () => {
             <button className={activeTab === 'users' ? 'active' : ''} onClick={() => handleTabChange('users')}>
               <i className="fas fa-users"></i> Users
             </button>
-            <button className={activeTab === 'coupons' ? 'active' : ''} onClick={() => handleTabChange('coupons')}>
-              <i className="fas fa-ticket-alt"></i> Coupons
-            </button>
+
             <button className={activeTab === 'banners' ? 'active' : ''} onClick={() => handleTabChange('banners')}>
               <i className="fas fa-images"></i> Banner &amp; Offers
             </button>
@@ -2398,7 +2385,7 @@ const AdminProfile = () => {
             </button>
           </div>
         </div>
-        
+
         <div className="admin-mobile-header">
           <button className="mobile-toggle-btn" onClick={() => setIsMobileSidebarOpen(true)}>
             <i className="fas fa-bars"></i>
@@ -2429,254 +2416,15 @@ const AdminProfile = () => {
               {renderOrderDetailModal()}
               {renderBulkOrderDetailModal()}
 
-              {activeTab === 'coupons' && (
-                <div className="admin-section">
-                  <div className="section-header">
-                    <h2>Coupon Management</h2>
-                    <button className="add-btn" onClick={() => handleOpenModal('coupon')}>
-                      <i className="fas fa-plus"></i> Add Coupon
-                    </button>
-                  </div>
-                  <div className="admin-table-container">
-                    <table className="admin-table">
-                      <thead>
-                        <tr>
-                          <th>Code</th>
-                          <th>Type</th>
-                          <th>Value</th>
-                          <th>Usage</th>
-                          <th>Expires</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {coupons.map(coupon => (
-                          <tr key={coupon._id}>
-                            <td><strong>{coupon.code}</strong></td>
-                            <td>{coupon.type}</td>
-                            <td>{coupon.type === 'PERCENTAGE' ? `${coupon.value}%` : `₹${coupon.value}`}</td>
-                            <td>{coupon.usage_count} / {coupon.usage_limit || '∞'}</td>
-                            <td>{new Date(coupon.valid_until).toLocaleDateString()}</td>
-                            <td>
-                               <button className="action-icon delete" onClick={() => deleteItem('coupon', coupon._id)}>
-                                 <i className="fas fa-trash"></i>
-                               </button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              )}
 
-              {activeTab === 'contests' && (
-                <div className="admin-section">
-                  <div className="section-header">
-                    <h2>Contest Management</h2>
-                    <button className="add-btn" onClick={() => handleOpenModal('contest')}>
-                      <i className="fas fa-plus"></i> Add Contest
-                    </button>
-                  </div>
-                  <div className="admin-table-container">
-                    <table className="admin-table">
-                      <thead>
-                        <tr>
-                          <th>Title</th>
-                          <th>Status</th>
-                          <th>Visibility</th>
-                          <th>Start Date</th>
-                          <th>End Date</th>
-                          <th>Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {contests.map(contest => (
-                          <tr key={contest._id}>
-                            <td><strong>{contest.title}</strong></td>
-                            <td>{contest.isActive ? <span className="status-badge success">Active</span> : <span className="status-badge pending">Inactive</span>}</td>
-                            <td>{contest.isEnabled === false ? <span className="status-badge pending">Disabled</span> : <span className="status-badge success">Enabled</span>}</td>
-                            <td>{new Date(contest.startDate).toLocaleDateString()}</td>
-                            <td>{new Date(contest.endDate).toLocaleDateString()}</td>
-                            <td>
-                              <button className="action-icon info" onClick={() => toggleContestEnabled(contest)} title={contest.isEnabled === false ? 'Enable Contest' : 'Disable Contest'}>
-                                <i className={`fas ${contest.isEnabled === false ? 'fa-toggle-off' : 'fa-toggle-on'}`}></i>
-                              </button>
-                              <button className="action-icon edit" onClick={() => handleOpenModal('contest', contest)}>
-                                <i className="fas fa-edit"></i>
-                              </button>
-                              <button className="action-icon info" onClick={() => {
-                                setSelectedContest(contest);
-                                setIsParticipantsModalOpen(true);
-                                fetchParticipants(contest._id);
-                              }} title="View Participants">
-                                <i className="fas fa-users"></i>
-                              </button>
-                              <button className="action-icon delete" onClick={() => deleteItem('contest', contest._id)}>
-                                <i className="fas fa-trash"></i>
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              )}
 
-              {activeTab === 'events' && (
-                <div className="admin-section">
-                  <div className="section-header">
-                    <h2>Event Management</h2>
-                    <button className="add-btn" onClick={() => handleOpenModal('event')}>
-                      <i className="fas fa-plus"></i> Add Event
-                    </button>
-                  </div>
-                  <div className="admin-table-container">
-                    <table className="admin-table">
-                      <thead>
-                        <tr>
-                          <th>Name</th>
-                          <th>Type</th>
-                          <th>Platform</th>
-                          <th>Date</th>
-                          <th>Time</th>
-                          <th>Visibility</th>
-                          <th>Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {events.map(event => (
-                          <tr key={event._id}>
-                            <td><strong>{event.name}</strong></td>
-                            <td>{event.type}</td>
-                            <td>{event.platform}</td>
-                            <td>{new Date(event.date).toLocaleDateString()}</td>
-                            <td>{event.time}</td>
-                            <td>{event.isEnabled === false ? <span className="status-badge pending">Disabled</span> : <span className="status-badge success">Enabled</span>}</td>
-                            <td>
-                              <button className="action-icon info" onClick={() => toggleEventEnabled(event)} title={event.isEnabled === false ? 'Enable Event' : 'Disable Event'}>
-                                <i className={`fas ${event.isEnabled === false ? 'fa-toggle-off' : 'fa-toggle-on'}`}></i>
-                              </button>
-                              <button className="action-icon edit" onClick={() => handleOpenModal('event', event)}>
-                                <i className="fas fa-edit"></i>
-                              </button>
-                              <button className="action-icon delete" onClick={() => deleteItem('event', event._id)}>
-                                <i className="fas fa-trash"></i>
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              )}
 
-              {activeTab === 'alumni-meets' && (
-                <div className="admin-section">
-                  <div className="section-header">
-                    <h2>Alumni Meet Management</h2>
-                    <button className="add-btn" onClick={() => handleOpenModal('alumni-meet')}>
-                      <i className="fas fa-plus"></i> Add Alumni Meet
-                    </button>
-                  </div>
-                  <div className="admin-table-container">
-                    <table className="admin-table">
-                      <thead>
-                        <tr>
-                          <th>Name</th>
-                          <th>JNV</th>
-                          <th>Batch</th>
-                          <th>Location</th>
-                          <th>Attendees</th>
-                          <th>Visibility</th>
-                          <th>Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {alumniMeets.map(meet => (
-                          <tr key={meet._id}>
-                            <td><strong>{meet.name}</strong></td>
-                            <td>{meet.jnv}</td>
-                            <td>{meet.batch}</td>
-                            <td>{meet.location}</td>
-                            <td>{meet.attendees}</td>
-                            <td>{meet.isEnabled === false ? <span className="status-badge pending">Disabled</span> : <span className="status-badge success">Enabled</span>}</td>
-                            <td>
-                              <button className="action-icon info" onClick={() => toggleAlumniMeetEnabled(meet)} title={meet.isEnabled === false ? 'Enable Alumni Meet' : 'Disable Alumni Meet'}>
-                                <i className={`fas ${meet.isEnabled === false ? 'fa-toggle-off' : 'fa-toggle-on'}`}></i>
-                              </button>
-                              <button className="action-icon edit" onClick={() => handleOpenModal('alumni-meet', meet)}>
-                                <i className="fas fa-edit"></i>
-                              </button>
-                              <button className="action-icon delete" onClick={() => deleteItem('alumni-meet', meet._id)}>
-                                <i className="fas fa-trash"></i>
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              )}
 
-              {activeTab === 'winners' && (
-                <div className="admin-section">
-                  <div className="section-header">
-                    <h2>Winner Management</h2>
-                    <button className="add-btn" onClick={() => handleOpenModal('winner')}>
-                      <i className="fas fa-plus"></i> Add Winner
-                    </button>
-                  </div>
-                  <div className="admin-table-container">
-                    <table className="admin-table">
-                      <thead>
-                        <tr>
-                          <th>Contest</th>
-                          <th>Winner (User)</th>
-                          <th>Prize</th>
-                          <th>Winner Photos</th>
-                          <th>Published</th>
-                          <th>Show Details</th>
-                          <th>Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {winners.map(winner => (
-                          <tr key={winner._id}>
-                            <td>{winner.contest_id?.title || 'Unknown Contest'}</td>
-                            <td>{winner.user_id?.name || 'Unknown User'} ({winner.user_id?.email})</td>
-                            <td>{winner.prize}</td>
-                            <td>
-                              {winner.images && winner.images.length > 0 ? (
-                                <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-                                  {winner.images.slice(0, 3).map((img, i) => (
-                                    <img key={i} src={getSafeImage(img)} alt="Winner photo" style={{ width: '32px', height: '32px', borderRadius: '4px', objectFit: 'cover' }} />
-                                  ))}
-                                  {winner.images.length > 3 && <span style={{ fontSize: '11px', color: '#64748b', fontWeight: 600 }}>+{winner.images.length - 3}</span>}
-                                </div>
-                              ) : (
-                                <span style={{ color: '#94a3b8', fontSize: '12px' }}>No photos</span>
-                              )}
-                            </td>
-                            <td>{winner.isPublished ? <span className="status-badge success">Yes</span> : <span className="status-badge pending">No</span>}</td>
-                            <td>{winner.showUserDetails ? <span className="status-badge success">Yes</span> : <span className="status-badge pending">No</span>}</td>
-                            <td>
-                              <button className="action-icon edit" onClick={() => handleOpenModal('winner', winner)}>
-                                <i className="fas fa-edit"></i>
-                              </button>
-                              <button className="action-icon delete" onClick={() => deleteItem('winner', winner._id)}>
-                                <i className="fas fa-trash"></i>
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              )}
+
+
+
+
+
             </>
           )}
         </main>
@@ -2695,11 +2443,11 @@ const AdminProfile = () => {
                     <>
                       <div className="form-group">
                         <label>Name</label>
-                        <input type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} required />
+                        <input type="text" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} required />
                       </div>
                       <div className="form-group">
                         <label>Slug</label>
-                        <input type="text" value={formData.slug} onChange={e => setFormData({...formData, slug: e.target.value})} required />
+                        <input type="text" value={formData.slug} onChange={e => setFormData({ ...formData, slug: e.target.value })} required />
                       </div>
                       <div className="form-group">
                         <label>Base Price</label>
@@ -2718,8 +2466,8 @@ const AdminProfile = () => {
                       </div>
                       <div className="form-group">
                         <label>Category</label>
-                        <select 
-                          value={formData.categoryId} 
+                        <select
+                          value={formData.categoryId}
                           onChange={e => {
                             const category = categories.find(cat => cat._id === e.target.value);
                             const isClothing = clothingCategoryPattern.test(`${category?.name || ''} ${category?.slug || ''}`);
@@ -2741,18 +2489,18 @@ const AdminProfile = () => {
                       </div>
                       <div className="form-group">
                         <label>Display Position / Rank Number (1 = Top Position)</label>
-                        <input 
-                          type="number" 
+                        <input
+                          type="number"
                           min="0"
-                          value={formData.displayOrder ?? formData.display_order ?? 0} 
-                          onChange={e => setFormData({...formData, displayOrder: parseInt(e.target.value, 10) || 0, display_order: parseInt(e.target.value, 10) || 0})} 
+                          value={formData.displayOrder ?? formData.display_order ?? 0}
+                          onChange={e => setFormData({ ...formData, displayOrder: parseInt(e.target.value, 10) || 0, display_order: parseInt(e.target.value, 10) || 0 })}
                           placeholder="0 (e.g. 1 for top position)"
                         />
                         <small style={{ color: '#6b7280', fontSize: '11px', marginTop: '2px' }}>Lower position numbers (e.g. 1, 2, 3...) will be displayed first at the top of shop grids.</small>
                       </div>
                       <div className="form-group">
                         <label>Subcategory</label>
-                        <input type="text" value={formData.subcategory} onChange={e => setFormData({...formData, subcategory: e.target.value})} />
+                        <input type="text" value={formData.subcategory} onChange={e => setFormData({ ...formData, subcategory: e.target.value })} />
                       </div>
                       {supportsFabricVariants && (
                         <div className="form-group fabric-variant-section">
@@ -2830,11 +2578,11 @@ const AdminProfile = () => {
                       <div className="form-group">
                         <label>Product Images (Upload Multiple)</label>
                         <div className="image-upload-wrapper">
-                          <input 
-                            type="file" 
-                            accept="image/*" 
+                          <input
+                            type="file"
+                            accept="image/*"
                             multiple
-                            onChange={e => handleImageUpload(e, 'images')} 
+                            onChange={e => handleImageUpload(e, 'images')}
                             disabled={isUploading}
                           />
                           {isUploading && <span className="upload-spinner"><i className="fas fa-spinner fa-spin"></i> Uploading...</span>}
@@ -2852,7 +2600,7 @@ const AdminProfile = () => {
                                     }
                                   }}
                                 />
-                                <button type="button" onClick={() => setFormData({...formData, images: formData.images.filter((_, i) => i !== idx)})}>&times;</button>
+                                <button type="button" onClick={() => setFormData({ ...formData, images: formData.images.filter((_, i) => i !== idx) })}>&times;</button>
                               </div>
                             ))}
                           </div>
@@ -2860,38 +2608,38 @@ const AdminProfile = () => {
                       </div>
                       <div className="form-group">
                         <label>Description</label>
-                        <textarea value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} required />
+                        <textarea value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} required />
                       </div>
                       <div className="form-group">
                         <label>Sizes & Stock</label>
                         <div className="sizes-container">
                           {formData.sizes?.map((sizeObj, idx) => (
                             <div key={idx} className="size-row">
-                              <input 
-                                type="text" 
-                                placeholder="Size (e.g. M)" 
-                                value={sizeObj.size} 
+                              <input
+                                type="text"
+                                placeholder="Size (e.g. M)"
+                                value={sizeObj.size}
                                 onChange={e => {
                                   const newSizes = [...formData.sizes];
                                   newSizes[idx].size = e.target.value;
                                   setFormData({ ...formData, sizes: newSizes });
-                                }} 
+                                }}
                                 required
                               />
-                              <input 
-                                type="number" 
-                                placeholder="Stock" 
-                                value={sizeObj.stock} 
+                              <input
+                                type="number"
+                                placeholder="Stock"
+                                value={sizeObj.stock}
                                 min="0"
                                 onChange={e => {
                                   const newSizes = [...formData.sizes];
                                   newSizes[idx].stock = Number(e.target.value);
                                   setFormData({ ...formData, sizes: newSizes });
-                                }} 
+                                }}
                                 required
                               />
-                              <button 
-                                type="button" 
+                              <button
+                                type="button"
                                 className="remove-size-btn"
                                 onClick={() => {
                                   const newSizes = formData.sizes.filter((_, i) => i !== idx);
@@ -2902,8 +2650,8 @@ const AdminProfile = () => {
                               </button>
                             </div>
                           ))}
-                          <button 
-                            type="button" 
+                          <button
+                            type="button"
                             className="add-size-btn"
                             onClick={() => {
                               const newSizes = formData.sizes ? [...formData.sizes] : [];
@@ -2921,29 +2669,29 @@ const AdminProfile = () => {
                           {formData.colors?.map((color, idx) => (
                             <div key={idx} className="color-row" style={{ border: '1px solid #e2e8f0', padding: '15px', borderRadius: '8px', marginBottom: '15px' }}>
                               <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
-                                <input 
-                                  type="text" 
-                                  placeholder="Color Name (e.g. Red)" 
-                                  value={color.name} 
+                                <input
+                                  type="text"
+                                  placeholder="Color Name (e.g. Red)"
+                                  value={color.name}
                                   onChange={e => {
                                     const newColors = [...formData.colors];
                                     newColors[idx].name = e.target.value;
                                     setFormData({ ...formData, colors: newColors });
-                                  }} 
+                                  }}
                                   required
                                 />
-                                <input 
-                                  type="color" 
-                                  value={color.hex || '#000000'} 
+                                <input
+                                  type="color"
+                                  value={color.hex || '#000000'}
                                   onChange={e => {
                                     const newColors = [...formData.colors];
                                     newColors[idx].hex = e.target.value;
                                     setFormData({ ...formData, colors: newColors });
-                                  }} 
+                                  }}
                                   style={{ width: '50px', padding: '0', height: '42px' }}
                                 />
-                                <button 
-                                  type="button" 
+                                <button
+                                  type="button"
                                   className="remove-size-btn"
                                   onClick={() => {
                                     const newColors = formData.colors.filter((_, i) => i !== idx);
@@ -2953,14 +2701,14 @@ const AdminProfile = () => {
                                   &times;
                                 </button>
                               </div>
-                              
+
                               <div className="image-upload-wrapper" style={{ marginTop: '10px' }}>
                                 <label style={{ fontSize: '12px', display: 'block', marginBottom: '5px' }}>Variant Images (Upload Multiple)</label>
-                                <input 
-                                  type="file" 
-                                  accept="image/*" 
+                                <input
+                                  type="file"
+                                  accept="image/*"
                                   multiple
-                                  onChange={e => handleImageUpload(e, 'images', idx)} 
+                                  onChange={e => handleImageUpload(e, 'images', idx)}
                                   disabled={isUploading}
                                 />
                               </div>
@@ -2980,8 +2728,8 @@ const AdminProfile = () => {
                               )}
                             </div>
                           ))}
-                          <button 
-                            type="button" 
+                          <button
+                            type="button"
                             className="add-size-btn"
                             onClick={() => {
                               const newColors = formData.colors ? [...formData.colors] : [];
@@ -2998,30 +2746,30 @@ const AdminProfile = () => {
                         <div className="sizes-container">
                           {formData.specificationsArray?.map((spec, idx) => (
                             <div key={idx} className="size-row">
-                              <input 
-                                type="text" 
-                                placeholder="Key (e.g. Material)" 
-                                value={spec.key} 
+                              <input
+                                type="text"
+                                placeholder="Key (e.g. Material)"
+                                value={spec.key}
                                 onChange={e => {
                                   const newSpecs = [...formData.specificationsArray];
                                   newSpecs[idx].key = e.target.value;
                                   setFormData({ ...formData, specificationsArray: newSpecs });
-                                }} 
+                                }}
                                 required
                               />
-                              <input 
-                                type="text" 
-                                placeholder="Value (e.g. 100% Cotton)" 
-                                value={spec.value} 
+                              <input
+                                type="text"
+                                placeholder="Value (e.g. 100% Cotton)"
+                                value={spec.value}
                                 onChange={e => {
                                   const newSpecs = [...formData.specificationsArray];
                                   newSpecs[idx].value = e.target.value;
                                   setFormData({ ...formData, specificationsArray: newSpecs });
-                                }} 
+                                }}
                                 required
                               />
-                              <button 
-                                type="button" 
+                              <button
+                                type="button"
                                 className="remove-size-btn"
                                 onClick={() => {
                                   const newSpecs = formData.specificationsArray.filter((_, i) => i !== idx);
@@ -3032,8 +2780,8 @@ const AdminProfile = () => {
                               </button>
                             </div>
                           ))}
-                          <button 
-                            type="button" 
+                          <button
+                            type="button"
                             className="add-size-btn"
                             onClick={() => {
                               const newSpecs = formData.specificationsArray ? [...formData.specificationsArray] : [];
@@ -3050,65 +2798,65 @@ const AdminProfile = () => {
                     <>
                       <div className="form-group">
                         <label>Coupon Code</label>
-                        <input type="text" value={formData.code} onChange={e => setFormData({...formData, code: e.target.value.toUpperCase()})} placeholder="E.g. SUMMER50" required />
+                        <input type="text" value={formData.code} onChange={e => setFormData({ ...formData, code: e.target.value.toUpperCase() })} placeholder="E.g. SUMMER50" required />
                       </div>
                       <div className="form-group">
                         <label>Discount Type</label>
-                        <select value={formData.type} onChange={e => setFormData({...formData, type: e.target.value})}>
+                        <select value={formData.type} onChange={e => setFormData({ ...formData, type: e.target.value })}>
                           <option value="PERCENTAGE">Percentage (%)</option>
                           <option value="FIXED">Fixed Amount (₹)</option>
                         </select>
                       </div>
                       <div className="form-group">
                         <label>Discount Value</label>
-                        <input type="number" value={formData.value} onChange={e => setFormData({...formData, value: Number(e.target.value)})} required />
+                        <input type="number" value={formData.value} onChange={e => setFormData({ ...formData, value: Number(e.target.value) })} required />
                       </div>
                       <div className="form-group">
                         <label>Min Order Amount (₹)</label>
-                        <input type="number" value={formData.minOrderAmount} onChange={e => setFormData({...formData, minOrderAmount: Number(e.target.value)})} />
+                        <input type="number" value={formData.minOrderAmount} onChange={e => setFormData({ ...formData, minOrderAmount: Number(e.target.value) })} />
                       </div>
                       <div className="form-group">
                         <label>Max Discount Amount (₹)</label>
-                        <input type="number" value={formData.maxDiscountAmount} onChange={e => setFormData({...formData, maxDiscountAmount: Number(e.target.value)})} />
+                        <input type="number" value={formData.maxDiscountAmount} onChange={e => setFormData({ ...formData, maxDiscountAmount: Number(e.target.value) })} />
                       </div>
                       <div className="form-group">
                         <label>Usage Limit</label>
-                        <input type="number" value={formData.usageLimit} onChange={e => setFormData({...formData, usageLimit: Number(e.target.value)})} />
+                        <input type="number" value={formData.usageLimit} onChange={e => setFormData({ ...formData, usageLimit: Number(e.target.value) })} />
                       </div>
                       <div className="form-group">
                         <label>Valid Until</label>
-                        <input type="date" value={formData.validUntil} onChange={e => setFormData({...formData, validUntil: e.target.value})} required />
+                        <input type="date" value={formData.validUntil} onChange={e => setFormData({ ...formData, validUntil: e.target.value })} required />
                       </div>
                     </>
                   ) : modalType === 'contest' ? (
                     <>
                       <div className="form-group">
                         <label>Contest Title</label>
-                        <input type="text" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} required />
+                        <input type="text" value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} required />
                       </div>
                       <div className="form-group">
                         <label>Description</label>
-                        <textarea value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} required />
+                        <textarea value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} required />
                       </div>
                       <div className="form-group">
                         <label>Eligibility Rules</label>
-                        <textarea value={formData.rules} onChange={e => setFormData({...formData, rules: e.target.value})} required />
+                        <textarea value={formData.rules} onChange={e => setFormData({ ...formData, rules: e.target.value })} required />
                       </div>
                       <div className="form-group">
                         <label>Start Date</label>
-                        <input type="date" value={formData.startDate} onChange={e => setFormData({...formData, startDate: e.target.value})} required />
+                        <input type="date" value={formData.startDate} onChange={e => setFormData({ ...formData, startDate: e.target.value })} required />
                       </div>
                       <div className="form-group">
                         <label>End Date</label>
-                        <input type="date" value={formData.endDate} onChange={e => setFormData({...formData, endDate: e.target.value})} required />
+                        <input type="date" value={formData.endDate} onChange={e => setFormData({ ...formData, endDate: e.target.value })} required />
                       </div>
                       <div className="form-group">
                         <label>Banner Image</label>
                         <div className="image-upload-wrapper">
-                          <input 
-                            type="file" 
-                            accept="image/*" 
-                            onChange={e => handleImageUpload(e, 'bannerImage')} 
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={e => handleImageUpload(e, 'bannerImage')}
                             disabled={isUploading}
                           />
                           {isUploading && <span className="upload-spinner"><i className="fas fa-spinner fa-spin"></i> Uploading...</span>}
@@ -3116,21 +2864,21 @@ const AdminProfile = () => {
                         {formData.bannerImage && (
                           <div className="preview-item single">
                             <img src={formData.bannerImage} alt="Preview" />
-                            <button type="button" onClick={() => setFormData({...formData, bannerImage: ''})}>&times;</button>
+                            <button type="button" onClick={() => setFormData({ ...formData, bannerImage: '' })}>&times;</button>
                           </div>
                         )}
                       </div>
                       <div className="form-group">
                         <label>Google Form / Submission Link (Optional)</label>
-                        <input 
-                          type="url" 
-                          value={formData.googleFormLink || ''} 
-                          onChange={e => setFormData({...formData, googleFormLink: e.target.value})} 
-                          placeholder="https://forms.gle/... or any submission link" 
+                        <input
+                          type="url"
+                          value={formData.googleFormLink || ''}
+                          onChange={e => setFormData({ ...formData, googleFormLink: e.target.value })}
+                          placeholder="https://forms.gle/... or any submission link"
                         />
                       </div>
                       <div className="form-group" style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <input type="checkbox" checked={formData.isActive} onChange={e => setFormData({...formData, isActive: e.target.checked})} id="is-active-checkbox" style={{ width: 'auto', marginRight: '10px' }} />
+                        <input type="checkbox" checked={formData.isActive} onChange={e => setFormData({ ...formData, isActive: e.target.checked })} id="is-active-checkbox" style={{ width: 'auto', marginRight: '10px' }} />
                         <label htmlFor="is-active-checkbox" style={{ margin: 0 }}>Enable Contest</label>
                       </div>
                     </>
@@ -3138,31 +2886,31 @@ const AdminProfile = () => {
                     <>
                       <div className="form-group">
                         <label>Event Name</label>
-                        <input type="text" value={formData.name || ''} onChange={e => setFormData({...formData, name: e.target.value})} required />
+                        <input type="text" value={formData.name || ''} onChange={e => setFormData({ ...formData, name: e.target.value })} required />
                       </div>
                       <div className="form-group">
                         <label>Event Type</label>
-                        <input type="text" value={formData.type || ''} onChange={e => setFormData({...formData, type: e.target.value})} placeholder="e.g. Career Counseling, Exam Guidance, Inspiration Talk" required />
+                        <input type="text" value={formData.type || ''} onChange={e => setFormData({ ...formData, type: e.target.value })} placeholder="e.g. Career Counseling, Exam Guidance, Inspiration Talk" required />
                       </div>
                       <div className="form-group">
                         <label>Platform</label>
-                        <input type="text" value={formData.platform || ''} onChange={e => setFormData({...formData, platform: e.target.value})} placeholder="e.g. Zoom, Google Meet, YouTube Live" required />
+                        <input type="text" value={formData.platform || ''} onChange={e => setFormData({ ...formData, platform: e.target.value })} placeholder="e.g. Zoom, Google Meet, YouTube Live" required />
                       </div>
                       <div className="form-group">
                         <label>Date</label>
-                        <input type="date" value={formData.date || ''} onChange={e => setFormData({...formData, date: e.target.value})} required />
+                        <input type="date" value={formData.date || ''} onChange={e => setFormData({ ...formData, date: e.target.value })} required />
                       </div>
                       <div className="form-group">
                         <label>Time</label>
-                        <input type="text" value={formData.time || ''} onChange={e => setFormData({...formData, time: e.target.value})} placeholder="e.g. 6:00 PM IST" required />
+                        <input type="text" value={formData.time || ''} onChange={e => setFormData({ ...formData, time: e.target.value })} placeholder="e.g. 6:00 PM IST" required />
                       </div>
                       <div className="form-group">
                         <label>Event Image</label>
                         <div className="image-upload-wrapper">
-                          <input 
-                            type="file" 
-                            accept="image/*" 
-                            onChange={e => handleImageUpload(e, 'image')} 
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={e => handleImageUpload(e, 'image')}
                             disabled={isUploading}
                           />
                           {isUploading && <span className="upload-spinner"><i className="fas fa-spinner fa-spin"></i> Uploading...</span>}
@@ -3170,21 +2918,21 @@ const AdminProfile = () => {
                         {formData.image && (
                           <div className="preview-item single">
                             <img src={formData.image} alt="Preview" />
-                            <button type="button" onClick={() => setFormData({...formData, image: ''})}>&times;</button>
+                            <button type="button" onClick={() => setFormData({ ...formData, image: '' })}>&times;</button>
                           </div>
                         )}
                       </div>
                       <div className="form-group">
                         <label>Registration Link (Optional)</label>
-                        <input 
-                          type="url" 
-                          value={formData.registrationLink || ''} 
-                          onChange={e => setFormData({...formData, registrationLink: e.target.value})} 
-                          placeholder="https://forms.gle/... or Google Form link" 
+                        <input
+                          type="url"
+                          value={formData.registrationLink || ''}
+                          onChange={e => setFormData({ ...formData, registrationLink: e.target.value })}
+                          placeholder="https://forms.gle/... or Google Form link"
                         />
                       </div>
                       <div className="form-group" style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <input type="checkbox" checked={formData.isActive !== false} onChange={e => setFormData({...formData, isActive: e.target.checked})} id="is-active-checkbox" style={{ width: 'auto', marginRight: '10px' }} />
+                        <input type="checkbox" checked={formData.isActive !== false} onChange={e => setFormData({ ...formData, isActive: e.target.checked })} id="is-active-checkbox" style={{ width: 'auto', marginRight: '10px' }} />
                         <label htmlFor="is-active-checkbox" style={{ margin: 0 }}>Active</label>
                       </div>
                     </>
@@ -3192,31 +2940,31 @@ const AdminProfile = () => {
                     <>
                       <div className="form-group">
                         <label>Alumni Meet Title/Name</label>
-                        <input type="text" value={formData.name || ''} onChange={e => setFormData({...formData, name: e.target.value})} required />
+                        <input type="text" value={formData.name || ''} onChange={e => setFormData({ ...formData, name: e.target.value })} required />
                       </div>
                       <div className="form-group">
                         <label>JNV Branch</label>
-                        <input type="text" value={formData.jnv || ''} onChange={e => setFormData({...formData, jnv: e.target.value})} placeholder="e.g. JNV Main Campus, JNV Delhi" required />
+                        <input type="text" value={formData.jnv || ''} onChange={e => setFormData({ ...formData, jnv: e.target.value })} placeholder="e.g. JNV Main Campus, JNV Delhi" required />
                       </div>
                       <div className="form-group">
                         <label>Batch</label>
-                        <input type="text" value={formData.batch || ''} onChange={e => setFormData({...formData, batch: e.target.value})} placeholder="e.g. 2000-2024, 2005 Batch" required />
+                        <input type="text" value={formData.batch || ''} onChange={e => setFormData({ ...formData, batch: e.target.value })} placeholder="e.g. 2000-2024, 2005 Batch" required />
                       </div>
                       <div className="form-group">
                         <label>Location</label>
-                        <input type="text" value={formData.location || ''} onChange={e => setFormData({...formData, location: e.target.value})} placeholder="e.g. JNV Campus, Hotel Grand Palace" required />
+                        <input type="text" value={formData.location || ''} onChange={e => setFormData({ ...formData, location: e.target.value })} placeholder="e.g. JNV Campus, Hotel Grand Palace" required />
                       </div>
                       <div className="form-group">
                         <label>Attendees Count</label>
-                        <input type="number" value={formData.attendees || 0} onChange={e => setFormData({...formData, attendees: Number(e.target.value)})} />
+                        <input type="number" value={formData.attendees || 0} onChange={e => setFormData({ ...formData, attendees: Number(e.target.value) })} />
                       </div>
                       <div className="form-group">
                         <label>Image</label>
                         <div className="image-upload-wrapper">
-                          <input 
-                            type="file" 
-                            accept="image/*" 
-                            onChange={e => handleImageUpload(e, 'image')} 
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={e => handleImageUpload(e, 'image')}
                             disabled={isUploading}
                           />
                           {isUploading && <span className="upload-spinner"><i className="fas fa-spinner fa-spin"></i> Uploading...</span>}
@@ -3224,21 +2972,21 @@ const AdminProfile = () => {
                         {formData.image && (
                           <div className="preview-item single">
                             <img src={formData.image} alt="Preview" />
-                            <button type="button" onClick={() => setFormData({...formData, image: ''})}>&times;</button>
+                            <button type="button" onClick={() => setFormData({ ...formData, image: '' })}>&times;</button>
                           </div>
                         )}
                       </div>
                       <div className="form-group">
                         <label>Registration Link (Optional)</label>
-                        <input 
-                          type="url" 
-                          value={formData.registrationLink || ''} 
-                          onChange={e => setFormData({...formData, registrationLink: e.target.value})} 
-                          placeholder="https://forms.gle/... or Google Form link" 
+                        <input
+                          type="url"
+                          value={formData.registrationLink || ''}
+                          onChange={e => setFormData({ ...formData, registrationLink: e.target.value })}
+                          placeholder="https://forms.gle/... or Google Form link"
                         />
                       </div>
                       <div className="form-group" style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <input type="checkbox" checked={formData.isActive !== false} onChange={e => setFormData({...formData, isActive: e.target.checked})} id="is-active-checkbox" style={{ width: 'auto', marginRight: '10px' }} />
+                        <input type="checkbox" checked={formData.isActive !== false} onChange={e => setFormData({ ...formData, isActive: e.target.checked })} id="is-active-checkbox" style={{ width: 'auto', marginRight: '10px' }} />
                         <label htmlFor="is-active-checkbox" style={{ margin: 0 }}>Active</label>
                       </div>
                     </>
@@ -3246,9 +2994,9 @@ const AdminProfile = () => {
                     <>
                       <div className="form-group">
                         <label>Contest</label>
-                        <select 
-                          value={formData.contest_id} 
-                          onChange={e => setFormData({...formData, contest_id: e.target.value})} 
+                        <select
+                          value={formData.contest_id}
+                          onChange={e => setFormData({ ...formData, contest_id: e.target.value })}
                           required
                           disabled={!!formData._id}
                         >
@@ -3261,24 +3009,24 @@ const AdminProfile = () => {
                       <div className="form-group">
                         <label>User ID (Winner)</label>
                         <div style={{ display: 'flex', gap: '10px' }}>
-                          <input 
-                            type="text" 
-                            value={formData.user_id} 
-                            onChange={e => setFormData({...formData, user_id: e.target.value})} 
-                            required 
+                          <input
+                            type="text"
+                            value={formData.user_id}
+                            onChange={e => setFormData({ ...formData, user_id: e.target.value })}
+                            required
                             disabled={!!formData._id}
                             style={{ flex: 1 }}
                           />
                           {!formData._id && formData.contest_id && (
-                            <button 
-                              type="button" 
+                            <button
+                              type="button"
                               className="add-btn"
                               style={{ padding: '0 15px', height: '42px', marginTop: 0 }}
                               onClick={async () => {
                                 try {
                                   const res = await api.post(`/winners/random/${formData.contest_id}`);
                                   if (res.success) {
-                                    setFormData({...formData, user_id: res.data.user_id._id || res.data.user_id});
+                                    setFormData({ ...formData, user_id: res.data.user_id._id || res.data.user_id });
                                     alert(`Randomly selected user: ${res.data.user_id?.name || res.data.user_id}`);
                                   } else {
                                     alert(res.message || 'Error picking random winner');
@@ -3295,16 +3043,16 @@ const AdminProfile = () => {
                       </div>
                       <div className="form-group">
                         <label>Prize</label>
-                        <input type="text" value={formData.prize} onChange={e => setFormData({...formData, prize: e.target.value})} required />
+                        <input type="text" value={formData.prize} onChange={e => setFormData({ ...formData, prize: e.target.value })} required />
                       </div>
                       <div className="form-group">
                         <label>Winner Images / Proof (Upload Multiple)</label>
                         <div className="image-upload-wrapper">
-                          <input 
-                            type="file" 
-                            accept="image/*" 
+                          <input
+                            type="file"
+                            accept="image/*"
                             multiple
-                            onChange={e => handleImageUpload(e, 'winnerImages')} 
+                            onChange={e => handleImageUpload(e, 'winnerImages')}
                             disabled={isUploading}
                           />
                           {isUploading && <span className="upload-spinner"><i className="fas fa-spinner fa-spin"></i> Uploading...</span>}
@@ -3322,18 +3070,18 @@ const AdminProfile = () => {
                                     }
                                   }}
                                 />
-                                <button type="button" onClick={() => setFormData({...formData, images: formData.images.filter((_, i) => i !== idx)})}>&times;</button>
+                                <button type="button" onClick={() => setFormData({ ...formData, images: formData.images.filter((_, i) => i !== idx) })}>&times;</button>
                               </div>
                             ))}
                           </div>
                         )}
                       </div>
                       <div className="form-group" style={{ flexDirection: 'row', alignItems: 'center', marginBottom: '10px' }}>
-                        <input type="checkbox" checked={formData.isPublished} onChange={e => setFormData({...formData, isPublished: e.target.checked})} id="is-published-checkbox" style={{ width: 'auto', marginRight: '10px' }} />
+                        <input type="checkbox" checked={formData.isPublished} onChange={e => setFormData({ ...formData, isPublished: e.target.checked })} id="is-published-checkbox" style={{ width: 'auto', marginRight: '10px' }} />
                         <label htmlFor="is-published-checkbox" style={{ margin: 0 }}>Publish Publicly</label>
                       </div>
                       <div className="form-group" style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <input type="checkbox" checked={formData.showUserDetails} onChange={e => setFormData({...formData, showUserDetails: e.target.checked})} id="show-user-checkbox" style={{ width: 'auto', marginRight: '10px' }} />
+                        <input type="checkbox" checked={formData.showUserDetails} onChange={e => setFormData({ ...formData, showUserDetails: e.target.checked })} id="show-user-checkbox" style={{ width: 'auto', marginRight: '10px' }} />
                         <label htmlFor="show-user-checkbox" style={{ margin: 0 }}>Show User Details Publicly (Name/Email)</label>
                       </div>
                     </>
@@ -3341,19 +3089,19 @@ const AdminProfile = () => {
                     <>
                       <div className="form-group">
                         <label>Name</label>
-                        <input type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} required />
+                        <input type="text" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} required />
                       </div>
                       <div className="form-group">
                         <label>Slug</label>
-                        <input type="text" value={formData.slug} onChange={e => setFormData({...formData, slug: e.target.value})} required />
+                        <input type="text" value={formData.slug} onChange={e => setFormData({ ...formData, slug: e.target.value })} required />
                       </div>
                       <div className="form-group">
                         <label>Category Image</label>
                         <div className="image-upload-wrapper">
-                          <input 
-                            type="file" 
-                            accept="image/*" 
-                            onChange={e => handleImageUpload(e, 'image')} 
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={e => handleImageUpload(e, 'image')}
                             disabled={isUploading}
                           />
                           {isUploading && <span className="upload-spinner"><i className="fas fa-spinner fa-spin"></i> Uploading...</span>}
@@ -3361,13 +3109,13 @@ const AdminProfile = () => {
                         {formData.image && (
                           <div className="preview-item single">
                             <img src={formData.image} alt="Preview" />
-                            <button type="button" onClick={() => setFormData({...formData, image: ''})}>&times;</button>
+                            <button type="button" onClick={() => setFormData({ ...formData, image: '' })}>&times;</button>
                           </div>
                         )}
                       </div>
                       <div className="form-group">
                         <label>Description</label>
-                        <textarea value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} />
+                        <textarea value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} />
                       </div>
                     </>
                   )}

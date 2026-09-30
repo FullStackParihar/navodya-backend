@@ -85,9 +85,14 @@ export const addToCart = asyncHandler(async (req: AuthRequest, res: Response) =>
   const activeFabricVariants = product.fabric_variants?.filter(v => v.is_active) || [];
   let fabricVariant: any;
   if (activeFabricVariants.length > 0) {
-    if (!fabricVariantId) throw new ApiError(400, 'Please select a fabric quality');
-    fabricVariant = activeFabricVariants.find(v => String(v._id) === String(fabricVariantId));
-    if (!fabricVariant) throw new ApiError(400, 'Selected fabric quality is not available');
+    if (fabricVariantId) {
+      // User explicitly selected a fabric variant
+      fabricVariant = activeFabricVariants.find(v => String(v._id) === String(fabricVariantId));
+      if (!fabricVariant) throw new ApiError(400, 'Selected fabric quality is not available');
+    } else {
+      // Auto-select the first active fabric variant (e.g. when adding from listing/storefront)
+      fabricVariant = activeFabricVariants[0];
+    }
     if (fabricVariant.stock !== undefined && fabricVariant.stock < quantity) {
       throw new ApiError(400, 'Selected fabric quality has insufficient stock');
     }
@@ -109,8 +114,9 @@ export const addToCart = asyncHandler(async (req: AuthRequest, res: Response) =>
     throw new ApiError(400, 'Selected size not available or insufficient stock');
   }
 
-  const colorData = product.colors.find((c) => c.name.toLowerCase() === requestedColor.toLowerCase());
-  const normalizedColor = colorData?.name || requestedColor || 'N/A';
+  // Trim both sides to handle DB entries with trailing/leading spaces (e.g. "WHITE " vs "WHITE")
+  const colorData = product.colors.find((c) => c.name.trim().toLowerCase() === requestedColor.toLowerCase());
+  const normalizedColor = colorData?.name?.trim() || requestedColor || 'N/A';
   const colorExists = product.colors.length === 0 || !!colorData;
   if (!colorExists) {
     console.log(`addToCart: Invalid color ${color}. Available: ${JSON.stringify(product.colors)}`);

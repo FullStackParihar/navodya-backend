@@ -53,65 +53,10 @@ const Login = () => {
     }));
   };
 
-  const handleGoogleCredentialResponse = async (response) => {
-    setError('');
-    setIsLoading(true);
-    try {
-      const result = await api.post('/auth/google-login', { token: response.credential });
 
-      if (result.success) {
-        localStorage.setItem('isAuthenticated', 'true');
-        localStorage.setItem('token', result.data.token);
-        localStorage.setItem('user', JSON.stringify(result.data.user));
-        localStorage.setItem('userEmail', result.data.user.email);
-        localStorage.setItem('userRole', result.data.user.role || 'user');
-        toastSuccess('Logged in successfully!');
-        navigate('/account');
-      } else {
-        setError(result.message || 'Google authentication failed');
-      }
-    } catch (err) {
-      setError('Google login failed');
-      console.error('Google Auth error:', err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
-  useEffect(() => {
-    const initializeGoogleSignIn = () => {
-      if (window.google) {
-        window.google.accounts.id.initialize({
-          client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID || '825946890374-placeholder.apps.googleusercontent.com',
-          callback: handleGoogleCredentialResponse
-        });
-        const buttonDiv = document.getElementById('google-signin-button');
-        if (buttonDiv) {
-          window.google.accounts.id.renderButton(
-            buttonDiv,
-            { 
-              theme: 'outline', 
-              size: 'large', 
-              width: buttonDiv.offsetWidth || '320', 
-              text: 'continue_with'
-            }
-          );
-        }
-      }
-    };
 
-    if (window.google) {
-      initializeGoogleSignIn();
-    } else {
-      const interval = setInterval(() => {
-        if (window.google) {
-          initializeGoogleSignIn();
-          clearInterval(interval);
-        }
-      }, 500);
-      return () => clearInterval(interval);
-    }
-  }, [isLogin]);
+
 
   const handleSendOTP = async () => {
     if (!formData.name || !formData.email || !formData.password) {
@@ -122,7 +67,7 @@ const Login = () => {
       setError('Please agree to Terms & Conditions to continue.');
       return;
     }
-    
+
     setError('');
     setIsLoading(true);
     try {
@@ -157,7 +102,7 @@ const Login = () => {
     newDigits[index] = newValue;
     setOtpDigits(newDigits);
     setOtp(newDigits.join(''));
-    
+
     if (newValue && index < 5) {
       if (otpInputRefs.current[index + 1]) {
         otpInputRefs.current[index + 1].focus();
@@ -192,7 +137,7 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      const result = isLogin 
+      const result = isLogin
         ? await api.post('/auth/login', { email: formData.email, password: formData.password })
         : await api.post('/auth/register', { name: formData.name, email: formData.email, password: formData.password, otp: otp });
 
@@ -293,8 +238,8 @@ const Login = () => {
           {error && <div className="be-error-box">{error}</div>}
 
           <div className="be-tabs-wrapper">
-            <button 
-              type="button" 
+            <button
+              type="button"
               className={`be-tab-btn ${isLogin ? 'active' : ''}`}
               onClick={() => {
                 setIsLogin(true);
@@ -308,8 +253,8 @@ const Login = () => {
             >
               Login
             </button>
-            <button 
-              type="button" 
+            <button
+              type="button"
               className={`be-tab-btn ${!isLogin ? 'active' : ''}`}
               onClick={() => {
                 setIsLogin(false);
@@ -339,7 +284,7 @@ const Login = () => {
                       name="name"
                       className="be-form-input"
                       placeholder="Enter your full name"
-                      onChange={(e) => setFormData(prev => ({...prev, name: e.target.value}))}
+                      onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                     />
                   </div>
                 </div>
@@ -354,13 +299,13 @@ const Login = () => {
                       name="phone"
                       className="be-form-input"
                       placeholder="Enter your phone number"
-                      onChange={(e) => setFormData(prev => ({...prev, phone: e.target.value}))}
+                      onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
                     />
                   </div>
                 </div>
               </>
             )}
-            
+
             <div className="be-form-group">
               <label htmlFor="email" className="be-form-label">
                 <i className="fas fa-envelope"></i> Email Address
@@ -378,7 +323,7 @@ const Login = () => {
                 />
               </div>
             </div>
-            
+
             <div className="be-form-group">
               <label htmlFor="password" className="be-form-label">
                 <i className="fas fa-lock"></i> Password
@@ -409,7 +354,7 @@ const Login = () => {
                     name="confirmPassword"
                     className="be-form-input"
                     placeholder="Confirm your password"
-                    onChange={(e) => setFormData(prev => ({...prev, confirmPassword: e.target.value}))}
+                    onChange={(e) => setFormData(prev => ({ ...prev, confirmPassword: e.target.value }))}
                   />
                 </div>
               </div>
@@ -433,8 +378,8 @@ const Login = () => {
             {!isLogin && (
               <div className="be-terms-wrap">
                 <label className="be-checkbox-wrap">
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     checked={agreeTerms}
                     onChange={(e) => setAgreeTerms(e.target.checked)}
                   />
@@ -455,8 +400,8 @@ const Login = () => {
                 )}
               </button>
             ) : otpSent ? (
-              <button 
-                type="button" 
+              <button
+                type="button"
                 onClick={() => {
                   setShowOtpModal(true);
                   setOtpDigits(['', '', '', '', '', '']);
@@ -466,8 +411,8 @@ const Login = () => {
                       otpInputRefs.current[0].focus();
                     }
                   }, 100);
-                }} 
-                disabled={isLoading} 
+                }}
+                disabled={isLoading}
                 className="be-submit-btn be-btn-black"
               >
                 {isLoading ? (
@@ -487,22 +432,14 @@ const Login = () => {
             )}
           </form>
 
-          <div className="be-divider">
-            <div className="be-divider-line"></div>
-            <span className="be-divider-text">OR</span>
-            <div className="be-divider-line"></div>
-          </div>
 
-          <div className="be-social-login">
-            <div id="google-signin-button" className="be-google-btn"></div>
-          </div>
 
           <div className="be-toggle-footer">
             {isLogin ? (
               <p className="be-toggle-text">
-                Don't have an account? 
-                <button 
-                  type="button" 
+                Don't have an account?
+                <button
+                  type="button"
                   className="be-toggle-link"
                   onClick={() => {
                     setIsLogin(false);
@@ -519,9 +456,9 @@ const Login = () => {
               </p>
             ) : (
               <p className="be-toggle-text">
-                Already have an account? 
-                <button 
-                  type="button" 
+                Already have an account?
+                <button
+                  type="button"
                   className="be-toggle-link"
                   onClick={() => {
                     setIsLogin(true);
@@ -550,9 +487,9 @@ const Login = () => {
       {showOtpModal && (
         <div className="be-otp-overlay">
           <div className="be-otp-modal">
-            <button 
-              type="button" 
-              className="be-otp-close" 
+            <button
+              type="button"
+              className="be-otp-close"
               onClick={() => setShowOtpModal(false)}
               aria-label="Close modal"
             >
@@ -612,9 +549,9 @@ const Login = () => {
                   Resend OTP in <strong>{resendTimer}s</strong>
                 </span>
               ) : (
-                <button 
-                  type="button" 
-                  onClick={handleResendOtp} 
+                <button
+                  type="button"
+                  onClick={handleResendOtp}
                   disabled={isLoading}
                   className="be-otp-resend-link"
                 >

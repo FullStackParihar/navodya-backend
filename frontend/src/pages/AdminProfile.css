@@ -100,8 +100,8 @@
 }
 
 .sidebar-nav button.active {
-  background: #ffffff;
-  color: #000000;
+  background: #e63322;
+  color: #ffffff;
 }
 
 .sidebar-footer {
@@ -890,7 +890,7 @@
 }
 
 .tracking-link {
-  color: #2563eb;
+  color: #e63322;
   font-size: 12px;
   font-weight: 600;
   text-decoration: none;
@@ -1085,7 +1085,7 @@
 }
 
 .tracking-link {
-  color: #2563eb;
+  color: #e63322;
   font-size: 12px;
   font-weight: 600;
   text-decoration: none;
@@ -1383,8 +1383,8 @@
   --admin-text: #111827;
   --admin-muted: #6b7280;
   --admin-subtle: #9ca3af;
-  --admin-dark: #111827;
-  --admin-dark-hover: #1f2937;
+  --admin-dark: #e63322;
+  --admin-dark-hover: #cc2d1e;
   --admin-radius: 8px;
   --admin-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
   --admin-shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.08);
@@ -1396,7 +1396,7 @@
 .admin-sidebar-new {
   top: 140px;
   height: calc(100vh - 140px);
-  background: #0f172a;
+  background: #000000;
   box-shadow: 8px 0 24px rgba(15, 23, 42, 0.14);
 }
 
@@ -1429,8 +1429,8 @@
 }
 
 .sidebar-nav button.active {
-  background: #fff;
-  color: #0f172a;
+  background: #e63322;
+  color: #ffffff;
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
 }
 
@@ -1653,7 +1653,7 @@
 }
 
 .action-icon.info {
-  color: #2563eb;
+  color: #e63322;
 }
 
 .action-icon.info:hover {

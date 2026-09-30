@@ -23,7 +23,8 @@ import PrivacyPolicy from './pages/PrivacyPolicy';
 import RefundPolicy from './pages/RefundPolicy';
 import ShippingPolicy from './pages/ShippingPolicy';
 import Disclaimer from './pages/Disclaimer';
-import Cart from './pages/Cart';
+import TermsConditions from './pages/TermsConditions';
+import CartEnhanced from './pages/CartEnhanced';
 import Wishlist from './pages/Wishlist';
 import UserProfile from './pages/UserProfile';
 import AdminProfile from './pages/AdminProfile';
@@ -41,21 +42,24 @@ import Contests from './pages/Contests';
 import Winners from './pages/Winners';
 import PrintStudioPage from './features/print-studio/PrintStudioPage';
 import StorefrontPage from './features/storefront/StorefrontPage';
+import AllProductsPage from './pages/AllProductsPage';
 
 const AppShell = ({ toasts, removeToast }) => {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith('/admin-profile');
-  const storefrontRoutes = ['/', '/tshirts', '/hoodies', '/accessories', '/alumni-kits', '/today-deals', '/new-arrivals'];
+  const isAccountRoute = location.pathname.startsWith('/account');
+  const storefrontRoutes = ['/', '/tshirts', '/hoodies', '/accessories', '/alumni-kits', '/today-deals', '/new-arrivals', '/products'];
   const isStorefrontRoute = storefrontRoutes.includes(location.pathname);
 
   return (
     <>
       <ScrollToTop />
-      <div className={`App ${isAdminRoute ? 'admin-app' : 'public-app'}`}>
+      <div className={`App ${isAdminRoute ? 'admin-app' : isAccountRoute ? 'account-app' : 'public-app'}`}>
         {!isAdminRoute && !isStorefrontRoute && <BrandEraChrome />}
-        <main className={`${isAdminRoute ? 'admin-main' : 'public-main'} ${isStorefrontRoute ? 'storefront-main' : ''}`}>
+        <main className={`${isAdminRoute ? 'admin-main' : isAccountRoute ? 'account-main' : 'public-main'} ${isStorefrontRoute ? 'storefront-main' : ''}`}>
           <Routes>
           <Route path="/" element={<StorefrontPage />} />
+          <Route path="/products" element={<AllProductsPage />} />
           <Route path="/events" element={<Events />} />
           <Route path="/tshirts" element={<StorefrontPage />} />
           <Route path="/hoodies" element={<StorefrontPage />} />
@@ -79,7 +83,7 @@ const AppShell = ({ toasts, removeToast }) => {
           <Route path="/checkout" element={<PrivateRoute><CheckoutDashboard /></PrivateRoute>} />
           <Route path="/product/:id" element={<ProductDetailEnhanced />} />
           <Route path="/product-enhanced/:id" element={<ProductDetailEnhanced />} />
-          <Route path="/cart" element={<Cart />} />
+          <Route path="/cart" element={<CartEnhanced />} />
           <Route path="/wishlist" element={<Wishlist />} />
 
           <Route path="/admin-profile" element={<PrivateRoute><AdminProfile /></PrivateRoute>} />
@@ -91,10 +95,12 @@ const AppShell = ({ toasts, removeToast }) => {
           <Route path="/refund-policy" element={<RefundPolicy />} />
           <Route path="/shipping-policy" element={<ShippingPolicy />} />
           <Route path="/disclaimer" element={<Disclaimer />} />
+          <Route path="/terms" element={<TermsConditions />} />
+          <Route path="/terms-conditions" element={<TermsConditions />} />
           <Route path="/search" element={<SearchPage />} />
           </Routes>
         </main>
-        {!isAdminRoute && !isStorefrontRoute && <BrandEraFooter />}
+        {!isAdminRoute && !isStorefrontRoute && !isAccountRoute && <BrandEraFooter />}
         <ToastContainer toasts={toasts} removeToast={removeToast} />
       </div>
     </>

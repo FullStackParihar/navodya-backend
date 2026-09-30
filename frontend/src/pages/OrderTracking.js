@@ -58,9 +58,9 @@ const OrderTracking = () => {
             })),
             tracking: getTrackingSteps(o.status),
             support: {
-              phone: '+91 1800-123-4567',
-              email: 'support@navodayatrendz.com',
-              whatsapp: '+91 92844 90206'
+              phone: '+91-8947900884',
+              email: 'support@brandera.com',
+              whatsapp: '+91 8947900884'
             }
           };
           setOrderData(mappedOrder);

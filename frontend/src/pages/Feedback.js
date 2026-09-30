@@ -54,16 +54,16 @@ const Feedback = () => {
           <div className="hero-card">
             <div>
               <h1>Feedback</h1>
-              <p>Help us improve Navodaya Trendz. Share your experience.</p>
+              <p>Help us improve Brand Era. Share your experience.</p>
             </div>
             <div className="hero-mini">
               <div className="mini">
                 <div className="mini-title">Support</div>
-                <a className="mini-link" href="mailto:support@navodayatrendz.com?subject=Feedback">support@navodayatrendz.com</a>
+                <a className="mini-link" href="mailto:support@brandera.com?subject=Feedback">support@brandera.com</a>
               </div>
               <div className="mini">
-                <div className="mini-title">Call</div>
-                <a className="mini-link" href="tel:+9118001234567">+91 1800-123-4567</a>
+                <div className="mini-title">Call / WhatsApp</div>
+                <a className="mini-link" href="tel:+918947900884">+91-8947900884</a>
               </div>
             </div>
           </div>

@@ -5,4 +5,522 @@ const styles = `
 `;
 
 const backViewStyles = `.canvas-bar{align-items:center}.view-switch{display:flex;gap:3px;background:#d3cbc0;padding:3px}.view-switch button{border:0;background:transparent;padding:7px 10px;font:700 10px Arial,sans-serif;cursor:pointer}.view-switch .active{background:#171717;color:#fff}.product-mockup.back-view:before{content:'';position:absolute;width:54px;height:29px;background:#e4ddd3;border-radius:0 0 25px 25px;top:0}.side-status{display:flex;justify-content:space-between;gap:12px;background:#f4f0e9;padding:10px 13px;font-size:11px}.side-status span{color:#706b65;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}@media(max-width:500px){.canvas-bar>span{display:none}.view-switch button{padding:7px 9px}.side-status{display:grid;gap:3px}}`;
-export default function PrintStudioStyles() { return <><style>{styles}</style><style>{backViewStyles}</style></>; }
+
+const heroEnhancement = `
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
+
+/* ── Hero left column ── */
+.studio-hero {
+  background: linear-gradient(120deg, #f0e6d6 0%, #e5d8c7 55%, #ddd0be 100%) !important;
+  min-height: 640px !important;
+  position: relative !important;
+}
+.studio-hero > div:first-child {
+  padding: 100px max(7vw, 40px) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  gap: 0 !important;
+  position: relative !important;
+  z-index: 2 !important;
+}
+.studio-eyebrow {
+  font-family: 'Inter', Arial, sans-serif !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.2em !important;
+  color: var(--red) !important;
+  background: rgba(232,43,29,0.08) !important;
+  border: 1px solid rgba(232,43,29,0.15) !important;
+  display: inline-block !important;
+  padding: 6px 14px !important;
+  border-radius: 30px !important;
+  margin-bottom: 24px !important;
+  width: fit-content !important;
+}
+.studio-hero h1 {
+  font-family: 'Inter', Arial, sans-serif !important;
+  font-size: clamp(52px, 6.5vw, 88px) !important;
+  font-weight: 900 !important;
+  letter-spacing: -3px !important;
+  line-height: 0.92 !important;
+  color: #111 !important;
+  margin: 0 0 28px !important;
+}
+.studio-hero h1 em {
+  font-family: Georgia, serif !important;
+  font-weight: 400 !important;
+  font-style: italic !important;
+  color: var(--red) !important;
+  position: relative !important;
+  display: inline-block !important;
+}
+.studio-hero p:not(.studio-eyebrow) {
+  font-family: 'Inter', Arial, sans-serif !important;
+  font-size: 16px !important;
+  line-height: 1.65 !important;
+  color: #555 !important;
+  max-width: 400px !important;
+  margin-bottom: 36px !important;
+}
+/* CTA button */
+.studio-primary {
+  font-family: 'Inter', Arial, sans-serif !important;
+  background: linear-gradient(90deg, #e82b1d, #ff2a1a) !important;
+  color: #fff !important;
+  padding: 16px 32px !important;
+  border-radius: 4px !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.04em !important;
+  box-shadow: 0 8px 24px rgba(232,43,29,0.35) !important;
+  transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  text-decoration: none !important;
+  border: none !important;
+  cursor: pointer !important;
+  width: fit-content !important;
+}
+.studio-primary:hover {
+  transform: translateY(-3px) !important;
+  box-shadow: 0 14px 32px rgba(232,43,29,0.5) !important;
+}
+.studio-primary span {
+  font-size: 20px !important;
+  margin-left: 0 !important;
+  transition: transform 0.3s ease !important;
+}
+.studio-primary:hover span {
+  transform: translateX(4px) !important;
+}
+
+/* ── Hero right art panel ── */
+.studio-hero-art {
+  background: #0f0f0f !important;
+  background-image:
+    radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px) !important;
+  background-size: 20px 20px !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+.studio-hero-art::after {
+  content: '' !important;
+  position: absolute !important;
+  inset: 0 !important;
+  background: radial-gradient(ellipse at 60% 40%, rgba(232,43,29,0.18) 0%, transparent 60%) !important;
+  pointer-events: none !important;
+}
+.studio-hero-art:before {
+  border: 90px solid var(--red) !important;
+  width: 520px !important;
+  height: 520px !important;
+  right: -220px !important;
+  top: -180px !important;
+  opacity: 0.85 !important;
+  box-shadow: 0 0 60px rgba(232,43,29,0.3) !important;
+}
+
+/* Floating card animations */
+@keyframes studioFloat1 {
+  0%, 100% { transform: rotate(-15deg) translateY(0); }
+  50% { transform: rotate(-13deg) translateY(-12px); }
+}
+@keyframes studioFloat2 {
+  0%, 100% { transform: rotate(-7deg) translateY(0); }
+  50% { transform: rotate(-5deg) translateY(-10px); }
+}
+@keyframes studioFloatShirt {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.studio-card-back {
+  background: linear-gradient(145deg, #1e1e1e, #111) !important;
+  border: 1px solid #333 !important;
+  box-shadow: 20px 24px 40px rgba(0,0,0,0.6) !important;
+  animation: studioFloat1 6s ease-in-out infinite !important;
+  padding: 30px !important;
+  font-size: 26px !important;
+  line-height: 0.85 !important;
+}
+.studio-hero-shirt {
+  box-shadow: none !important;
+  filter: drop-shadow(12px 18px 16px rgba(0,0,0,0.5)) !important;
+  animation: studioFloatShirt 5s ease-in-out infinite 0.8s !important;
+}
+.studio-card-front {
+  background: linear-gradient(115deg, #e82b1d 0%, #8f0a04 100%) !important;
+  box-shadow: 20px 24px 40px rgba(232,43,29,0.35) !important;
+  animation: studioFloat2 7s ease-in-out infinite 0.4s !important;
+}
+.studio-stamp {
+  border: 1.5px solid rgba(255,255,255,0.6) !important;
+  box-shadow: 0 0 20px rgba(255,255,255,0.08) !important;
+  font-family: 'Inter', Arial, sans-serif !important;
+  font-size: 8.5px !important;
+  letter-spacing: 0.08em !important;
+}
+
+/* ── Benefits bar — matches home page dark strip ── */
+.studio-benefits {
+  background: #050505 !important;
+  border-top: 1px solid #222 !important;
+  border-bottom: 1px solid #222 !important;
+  padding: 0 !important;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3) !important;
+}
+.studio-benefits span {
+  font-family: 'Inter', Arial, sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.04em !important;
+  color: #ccc !important;
+  border-right: 1px solid #222 !important;
+  border-radius: 0 !important;
+  padding: 26px 20px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 10px !important;
+  transition: background 0.3s, color 0.3s !important;
+  cursor: default !important;
+}
+.studio-benefits span:last-child {
+  border-right: none !important;
+}
+.studio-benefits span:hover {
+  background: #1a0000 !important;
+  color: #ff1a1a !important;
+}
+.studio-benefits span::before {
+  content: attr(data-icon) !important;
+  color: #e63322 !important;
+  font-size: 16px !important;
+  flex-shrink: 0 !important;
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+}
+.studio-benefits span:hover::before {
+  transform: translate(3px, -3px) scale(1.2) !important;
+}
+
+/* ══════════════════════════════════════
+   QUOTE & PRODUCTION — Premium Redesign
+   ══════════════════════════════════════ */
+
+.quote-section {
+  display: grid !important;
+  grid-template-columns: 40% 60% !important;
+  gap: 48px !important;
+  align-items: center !important;
+  background: #080808 !important;
+  background-image: radial-gradient(rgba(255,255,255,0.025) 1px, transparent 1px) !important;
+  background-size: 20px 20px !important;
+  padding: 56px 7vw !important;
+  position: relative !important;
+  overflow: hidden !important;
+  border-top: 1px solid #1a1a1a !important;
+}
+
+/* Subtle red glow behind the heading */
+.quote-section::before {
+  content: '' !important;
+  position: absolute !important;
+  left: -80px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  width: 320px !important;
+  height: 320px !important;
+  background: radial-gradient(circle, rgba(232,43,29,0.1) 0%, transparent 70%) !important;
+  pointer-events: none !important;
+}
+
+/* ── Left: Copy ── */
+.quote-section > div:first-child {
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+.quote-section .studio-eyebrow {
+  font-family: 'Inter', Arial, sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.15em !important;
+  text-transform: uppercase !important;
+  color: var(--red) !important;
+  background: rgba(232,43,29,0.08) !important;
+  border: 1px solid rgba(232,43,29,0.18) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 8px 16px !important;
+  border-radius: 100px !important;
+  margin-bottom: 28px !important;
+}
+
+.quote-section h2 {
+  font-family: 'Inter', Arial, sans-serif !important;
+  font-size: clamp(40px, 4.8vw, 64px) !important;
+  font-weight: 900 !important;
+  letter-spacing: -2px !important;
+  line-height: 1.0 !important;
+  color: #ffffff !important;
+  margin: 0 0 24px !important;
+}
+
+.quote-section h2 em {
+  font-family: Georgia, 'Times New Roman', serif !important;
+  font-style: italic !important;
+  font-weight: 400 !important;
+  color: var(--red) !important;
+}
+
+.quote-section > div:first-child > p {
+  font-family: 'Inter', Arial, sans-serif !important;
+  font-size: 15px !important;
+  line-height: 1.65 !important;
+  color: #999 !important;
+  max-width: 300px !important;
+  margin: 0 !important;
+}
+
+/* ── Right: Form Card ── */
+.quote-form {
+  background: #f8f5f0 !important;
+  border-radius: 12px !important;
+  padding: 24px 28px 20px !important;
+  box-shadow:
+    0 2px 0 rgba(255,255,255,0.04) inset,
+    0 24px 60px rgba(0,0,0,0.55),
+    0 0 0 1px rgba(255,255,255,0.05) !important;
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+/* Thin red accent line at top of card */
+.quote-form::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 3px !important;
+  background: linear-gradient(90deg, var(--red), #ff5a4a) !important;
+  border-radius: 12px 12px 0 0 !important;
+}
+
+.quote-form-grid {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 0 14px !important;
+}
+
+/* Labels */
+.quote-form label {
+  display: block !important;
+  font-family: 'Inter', Arial, sans-serif !important;
+  font-size: 9.5px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.1em !important;
+  text-transform: uppercase !important;
+  color: #6b6560 !important;
+  margin-bottom: 10px !important;
+}
+
+/* Inputs */
+.quote-form input,
+.quote-form textarea {
+  display: block !important;
+  width: 100% !important;
+  font-family: 'Inter', Arial, sans-serif !important;
+  font-size: 12px !important;
+  color: #1a1a1a !important;
+  background: #ffffff !important;
+  border: 1px solid #ddd7ce !important;
+  border-radius: 6px !important;
+  padding: 8px 10px !important;
+  margin-top: 4px !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+  box-sizing: border-box !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+}
+
+.quote-form input:hover {
+  border-color: #c9c0b5 !important;
+}
+
+.quote-form input:focus,
+.quote-form textarea:focus {
+  outline: none !important;
+  border-color: var(--red) !important;
+  box-shadow: 0 0 0 3px rgba(232,43,29,0.1) !important;
+}
+
+.quote-form input::placeholder,
+.quote-form textarea::placeholder {
+  color: #c8c0b7 !important;
+  font-size: 11.5px !important;
+}
+
+.quote-form textarea {
+  min-height: 52px !important;
+  resize: vertical !important;
+  line-height: 1.5 !important;
+}
+
+/* CTA Button */
+.quote-form .studio-primary {
+  display: flex !important;
+  width: 100% !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 10px !important;
+  font-family: 'Inter', Arial, sans-serif !important;
+  font-size: 12.5px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+  color: #fff !important;
+  background: linear-gradient(90deg, #e82b1d 0%, #c0180c 100%) !important;
+  border: none !important;
+  border-radius: 6px !important;
+  padding: 12px 20px !important;
+  margin-top: 6px !important;
+  cursor: pointer !important;
+  text-decoration: none !important;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s !important;
+  box-shadow: 0 4px 14px rgba(232,43,29,0.3) !important;
+}
+
+.quote-form .studio-primary:hover {
+  background: linear-gradient(90deg, #ff3322 0%, #d41a0e 100%) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 22px rgba(232,43,29,0.45) !important;
+}
+
+.quote-form .studio-primary span {
+  font-size: 16px !important;
+  margin-left: 0 !important;
+  transition: transform 0.25s ease !important;
+}
+
+.quote-form .studio-primary:hover span {
+  transform: translateX(4px) !important;
+}
+
+/* ── Responsive ── */
+@media (max-width: 850px) {
+  .quote-section {
+    grid-template-columns: 1fr !important;
+    padding: 40px 6vw !important;
+    gap: 28px !important;
+  }
+  .quote-section > div:first-child > p {
+    max-width: 100% !important;
+  }
+}
+
+@media (max-width: 500px) {
+  .quote-form {
+    padding: 18px 16px 16px !important;
+  }
+  .quote-form-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .quote-section {
+    padding: 32px 20px !important;
+  }
+}
+
+/* ── Next Section (Footer Cross-sell) ── */
+.studio-next {
+  padding: 100px 5vw !important;
+  background: #050505 !important;
+  position: relative !important;
+  overflow: hidden !important;
+  text-align: center !important;
+  border-top: 1px solid #1a1a1a !important;
+  display: block !important;
+}
+.studio-next::before {
+  content: '' !important;
+  position: absolute !important;
+  top: -100px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: 600px !important;
+  height: 600px !important;
+  background: radial-gradient(circle, rgba(232,43,29,0.08) 0%, transparent 70%) !important;
+  pointer-events: none !important;
+}
+
+.studio-next p {
+  position: relative !important;
+  z-index: 2 !important;
+  font-family: 'Inter', Arial, sans-serif !important;
+  font-size: clamp(32px, 4vw, 52px) !important;
+  font-weight: 900 !important;
+  letter-spacing: -2px !important;
+  color: #fff !important;
+  margin: 0 0 32px 0 !important;
+  display: block !important;
+}
+
+.studio-next p em {
+  font-style: normal !important;
+  color: var(--red) !important;
+}
+
+.studio-next a {
+  position: relative !important;
+  z-index: 2 !important;
+  font-family: 'Inter', Arial, sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.1em !important;
+  color: #fff !important;
+  background: rgba(255,255,255,0.05) !important;
+  text-decoration: none !important;
+  border: 1px solid rgba(255,255,255,0.15) !important;
+  padding: 16px 32px !important;
+  border-radius: 100px !important;
+  transition: all 0.3s ease !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  margin: 0 10px 10px !important;
+}
+
+.studio-next a:hover {
+  transform: translateY(-3px) !important;
+  background: var(--red) !important;
+  border-color: var(--red) !important;
+  box-shadow: 0 10px 30px rgba(232,43,29,0.4) !important;
+}
+
+.studio-next a span {
+  font-size: 18px !important;
+  transition: transform 0.3s ease !important;
+}
+
+.studio-next a:hover span {
+  transform: translateX(4px) !important;
+}
+
+@media (max-width: 850px) {
+  .studio-next {
+    padding: 70px 6vw !important;
+  }
+  .studio-next a {
+    width: 100% !important;
+    justify-content: center !important;
+    margin: 0 0 12px !important;
+  }
+}
+}`
+
+
+export default function PrintStudioStyles() { return <><style>{styles}</style><style>{backViewStyles}</style><style>{heroEnhancement}</style></>; }

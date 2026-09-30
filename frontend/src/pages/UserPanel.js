@@ -9,6 +9,34 @@ const DEFAULT_AVATAR = 'https://i.pravatar.cc/150?img=5';
 const MAX_PROFILE_IMAGE_SIZE = 5 * 1024 * 1024;
 const PROFILE_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
+const BULK_STATUSES = [
+  'New',
+  'Under Review',
+  'Contacted',
+  'Quotation Sent',
+  'Approved',
+  'In Production',
+  'Completed',
+  'Rejected',
+  'Cancelled',
+];
+
+const formatBulkDate = (val) => {
+  if (!val) return '-';
+  const d = new Date(val);
+  return Number.isNaN(d.getTime()) ? '-' : d.toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric' });
+};
+
+const formatBulkCurrency = (val) => {
+  const n = Number(val || 0);
+  return n.toLocaleString('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 });
+};
+
+const bulkStatusBadgeClass = (status) => {
+  const s = (status || '').toLowerCase().replace(/\s+/g, '-');
+  return s;
+};
+
 const UserPanel = () => {
   const navigate = useNavigate();
   const { items: cartItems, totalItems, totalAmount } = useCart();
@@ -88,6 +116,17 @@ const UserPanel = () => {
 
   const user = accountData;
 
+  useEffect(() => {
+    const prevBodyOverflow = document.body.style.overflow;
+    const prevHtmlOverflow = document.documentElement.style.overflow;
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prevBodyOverflow;
+      document.documentElement.style.overflow = prevHtmlOverflow;
+    };
+  }, []);
+
   const [orders, setOrders] = useState([]);
   const [isLoadingOrders, setIsLoadingOrders] = useState(true);
 
@@ -116,6 +155,70 @@ const UserPanel = () => {
     };
     fetchOrders();
   }, []);
+
+  const [bulkOrders, setBulkOrders] = useState([]);
+  const [isLoadingBulkOrders, setIsLoadingBulkOrders] = useState(false);
+  const [bulkSearchInput, setBulkSearchInput] = useState('');
+  const [bulkStatusFilter, setBulkStatusFilter] = useState('');
+  const [selectedBulkOrder, setSelectedBulkOrder] = useState(null);
+  const [bulkDetailLoading, setBulkDetailLoading] = useState(false);
+  const [bulkDetailError, setBulkDetailError] = useState('');
+
+  const fetchBulkOrders = async (search = '', status = '') => {
+    setIsLoadingBulkOrders(true);
+    try {
+      const params = new URLSearchParams();
+      if (search) params.set('search', search);
+      if (status) params.set('status', status);
+      const res = await api.get(`/bulk-orders/my-orders?${params.toString()}`);
+      if (res.success) {
+        setBulkOrders(res.data?.items || []);
+      }
+    } catch (err) {
+      console.error('Error fetching bulk orders:', err);
+    } finally {
+      setIsLoadingBulkOrders(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchBulkOrders();
+  }, []);
+
+  const handleBulkSearch = (e) => {
+    e.preventDefault();
+    fetchBulkOrders(bulkSearchInput.trim(), bulkStatusFilter);
+  };
+
+  const handleBulkStatusChange = (e) => {
+    const newStatus = e.target.value;
+    setBulkStatusFilter(newStatus);
+    fetchBulkOrders(bulkSearchInput.trim(), newStatus);
+  };
+
+  const openBulkDetails = async (id) => {
+    setBulkDetailLoading(true);
+    setBulkDetailError('');
+    setSelectedBulkOrder(null);
+    try {
+      const res = await api.get(`/bulk-orders/my-orders/${id}`);
+      if (res.success) {
+        setSelectedBulkOrder(res.data);
+      } else {
+        setBulkDetailError(res.message || 'Unable to load bulk order details.');
+      }
+    } catch (err) {
+      setBulkDetailError('Failed to load details. Please try again.');
+    } finally {
+      setBulkDetailLoading(false);
+    }
+  };
+
+  const closeBulkDetails = () => {
+    setSelectedBulkOrder(null);
+    setBulkDetailError('');
+    setBulkDetailLoading(false);
+  };
 
   const latestOrder = useMemo(() => (orders.length ? orders[0] : null), [orders]);
 
@@ -299,7 +402,7 @@ const UserPanel = () => {
     { key: 'orders', label: 'My Orders', icon: 'fa-box', badge: orders.length > 0 ? orders.length : null },
     { key: 'designs', label: 'My Designs', icon: 'fa-palette' },
     { key: 'brand-kits', label: 'My Brand Kits', icon: 'fa-briefcase' },
-    { key: 'quotes', label: 'My Quotes / Bulk Orders', icon: 'fa-file-invoice-dollar' },
+    { key: 'quotes', label: 'My Quotes / Bulk Orders', icon: 'fa-file-invoice-dollar', badge: bulkOrders.length > 0 ? bulkOrders.length : null },
     { key: 'wishlist', label: 'Wishlist', icon: 'fa-heart' },
     { key: 'addresses', label: 'Addresses', icon: 'fa-location-dot' },
     { key: 'account', label: 'Account Settings', icon: 'fa-gear' },
@@ -324,17 +427,21 @@ const UserPanel = () => {
           </div>
 
           <nav className="era-nav">
+            {(localStorage.getItem('userRole') === 'admin' || localStorage.getItem('userEmail') === 'admin@navodaya.com') && (
+              <button
+                className="era-nav-link"
+                onClick={() => navigate('/admin-profile')}
+                style={{ backgroundColor: '#fff0f0', color: '#e63322', border: '1px solid #ffcccc' }}
+              >
+                <i className="fas fa-crown era-nav-icon"></i>
+                <span className="era-nav-label">Admin Portal</span>
+              </button>
+            )}
             {navItems.map((item) => (
               <button
                 key={item.key}
                 className={`era-nav-link ${activeTab === item.key ? 'active' : ''}`}
-                onClick={() => {
-                  if (item.key === 'quotes') {
-                    navigate('/my-bulk-orders');
-                  } else {
-                    setActiveTab(item.key);
-                  }
-                }}
+                onClick={() => setActiveTab(item.key)}
               >
                 <i className={`fas ${item.icon} era-nav-icon`}></i>
                 <span className="era-nav-label">{item.label}</span>
@@ -652,27 +759,130 @@ const UserPanel = () => {
               <div className="era-page-header">
                 <div>
                   <h1 className="era-page-title">My Quotes & Bulk Orders</h1>
-                  <p className="era-page-subtitle">Track your bulk order quote requests</p>
+                  <p className="era-page-subtitle">Track, manage, and review your custom merchandise quote requests</p>
                 </div>
-                <button className="era-btn era-btn-primary" onClick={() => navigate('/bulk-order')}>
-                  <i className="fas fa-plus"></i> New Quote
-                </button>
-              </div>
-
-              <div className="era-quotes-list">
-                <button className="era-text-link" onClick={() => navigate('/my-bulk-orders')}>
-                  <i className="fas fa-arrow-up-right-from-square"></i> View All Bulk Orders on Dedicated Page
-                </button>
-                <div className="era-empty-state" style={{ marginTop: '24px' }}>
-                  <div className="era-empty-icon era-empty-icon-black">
-                    <i className="fas fa-file-invoice-dollar"></i>
-                  </div>
-                  <h2>No quote requests yet</h2>
-                  <p>Request a custom quote for bulk orders and special pricing.</p>
+                <div className="era-page-actions">
                   <button className="era-btn era-btn-primary" onClick={() => navigate('/bulk-order')}>
-                    <i className="fas fa-quote-right"></i> Request a Quote
+                    <i className="fas fa-plus"></i> Request New Quote
                   </button>
                 </div>
+              </div>
+
+              {/* Toolbar: Search + Filter */}
+              <div className="era-bulk-toolbar">
+                <form className="era-bulk-search-form" onSubmit={handleBulkSearch}>
+                  <i className="fas fa-search era-bulk-search-icon"></i>
+                  <input
+                    type="search"
+                    className="era-bulk-search-input"
+                    placeholder="Search by Request ID (e.g. BO-2026-0001)..."
+                    value={bulkSearchInput}
+                    onChange={(e) => setBulkSearchInput(e.target.value)}
+                  />
+                  <button type="submit" className="era-btn era-btn-outline era-btn-sm">Search</button>
+                  {bulkSearchInput && (
+                    <button
+                      type="button"
+                      className="era-btn era-btn-outline era-btn-sm"
+                      onClick={() => {
+                        setBulkSearchInput('');
+                        fetchBulkOrders('', bulkStatusFilter);
+                      }}
+                    >
+                      Clear
+                    </button>
+                  )}
+                </form>
+
+                <div className="era-bulk-filter-wrap">
+                  <label htmlFor="bulkStatusSelect" className="era-bulk-filter-label">Status:</label>
+                  <select
+                    id="bulkStatusSelect"
+                    className="era-bulk-select"
+                    value={bulkStatusFilter}
+                    onChange={handleBulkStatusChange}
+                  >
+                    <option value="">All Statuses</option>
+                    {BULK_STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
+                  </select>
+                </div>
+              </div>
+
+              {/* Quotes Content */}
+              <div className="era-quotes-list">
+                {isLoadingBulkOrders ? (
+                  <div className="era-loading">
+                    <i className="fas fa-spinner fa-spin"></i> Loading your quote requests...
+                  </div>
+                ) : bulkOrders.length === 0 ? (
+                  <div className="era-empty-state">
+                    <div className="era-empty-icon era-empty-icon-black">
+                      <i className="fas fa-file-invoice-dollar"></i>
+                    </div>
+                    <h2>No quote requests found</h2>
+                    <p>
+                      {bulkSearchInput || bulkStatusFilter
+                        ? 'No quote requests match your current search or filter.'
+                        : "You haven't submitted any bulk order quote requests yet."}
+                    </p>
+                    <button className="era-btn era-btn-primary" onClick={() => navigate('/bulk-order')}>
+                      <i className="fas fa-quote-right"></i> Request a Quote
+                    </button>
+                  </div>
+                ) : (
+                  <div className="era-bulk-cards-grid">
+                    {bulkOrders.map((quote) => (
+                      <div key={quote._id} className="era-order-card era-bulk-card">
+                        <div className="era-order-card-top">
+                          <div>
+                            <div className="era-order-card-id">
+                              <i className="fas fa-file-lines" style={{ marginRight: '6px', color: '#DC2626' }}></i>
+                              {quote.request_number}
+                            </div>
+                            <div className="era-order-card-date">
+                              <i className="fas fa-calendar"></i> Submitted {formatBulkDate(quote.created_at)}
+                            </div>
+                          </div>
+                          <span className={`era-badge era-badge-${bulkStatusBadgeClass(quote.status)}`}>
+                            {quote.status}
+                          </span>
+                        </div>
+
+                        <div className="era-bulk-card-body">
+                          <div className="era-bulk-meta-item">
+                            <span className="era-bulk-meta-label">Organization</span>
+                            <span className="era-bulk-meta-value">{quote.organization_name || 'Individual'}</span>
+                          </div>
+                          <div className="era-bulk-meta-item">
+                            <span className="era-bulk-meta-label">Products</span>
+                            <span className="era-bulk-meta-value">{quote.products?.length || 0} product(s)</span>
+                          </div>
+                          <div className="era-bulk-meta-item">
+                            <span className="era-bulk-meta-label">Total Quantity</span>
+                            <span className="era-bulk-meta-value">{quote.grand_total_quantity || 0} pcs</span>
+                          </div>
+                          <div className="era-bulk-meta-item">
+                            <span className="era-bulk-meta-label">Required Date</span>
+                            <span className="era-bulk-meta-value">{formatBulkDate(quote.required_date)}</span>
+                          </div>
+                          <div className="era-bulk-meta-item">
+                            <span className="era-bulk-meta-label">Estimated Budget</span>
+                            <span className="era-bulk-meta-value era-bulk-budget">{formatBulkCurrency(quote.estimated_budget)}</span>
+                          </div>
+                        </div>
+
+                        <div className="era-order-card-actions">
+                          <button
+                            className="era-action-btn era-action-btn-red"
+                            onClick={() => openBulkDetails(quote._id)}
+                          >
+                            <i className="fas fa-eye"></i> View Full Details
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -885,12 +1095,12 @@ const UserPanel = () => {
                   <div className="era-support-card-desc">+91 1800-123-4567</div>
                 </button>
 
-                <button className="era-support-card" onClick={() => window.open('mailto:support@navodayatrendz.com?subject=Help%20Request')}>
+                <button className="era-support-card" onClick={() => window.open('mailto:support@brandera.com?subject=Help%20Request')}>
                   <div className="era-support-card-icon era-support-black">
                     <i className="fas fa-envelope"></i>
                   </div>
                   <div className="era-support-card-title">Email Us</div>
-                  <div className="era-support-card-desc">support@navodayatrendz.com</div>
+                  <div className="era-support-card-desc">support@brandera.com</div>
                 </button>
 
                 <button className="era-support-card" onClick={() => window.open('https://wa.me/919284490206?text=Hi%2C%20I%20need%20help%20with%20my%20order')}>
@@ -1018,15 +1228,132 @@ const UserPanel = () => {
         </div>
       )}
 
+      {/* Bulk Order Details Modal */}
+      {Boolean(selectedBulkOrder || bulkDetailLoading || bulkDetailError) && (
+        <div className="edit-profile-backdrop" onClick={closeBulkDetails}>
+          <div className="edit-profile-modal era-bulk-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="edit-profile-head">
+              <div>
+                <h2>{selectedBulkOrder ? selectedBulkOrder.request_number : 'Quote Details'}</h2>
+                <p>{selectedBulkOrder?.organization_name || 'Bulk Order Details'}</p>
+              </div>
+              <button className="edit-profile-close" onClick={closeBulkDetails}>
+                <i className="fas fa-times"></i>
+              </button>
+            </div>
+
+            {bulkDetailLoading ? (
+              <div className="era-loading">
+                <i className="fas fa-spinner fa-spin"></i> Loading quote details...
+              </div>
+            ) : bulkDetailError ? (
+              <div className="edit-profile-error">{bulkDetailError}</div>
+            ) : selectedBulkOrder && (
+              <div className="era-bulk-modal-content">
+                <div className="era-bulk-modal-status-bar">
+                  <span>Current Status:</span>
+                  <span className={`era-badge era-badge-${bulkStatusBadgeClass(selectedBulkOrder.status)}`}>
+                    {selectedBulkOrder.status}
+                  </span>
+                </div>
+
+                {selectedBulkOrder.customer_message && (
+                  <div className="era-bulk-alert-info">
+                    <i className="fas fa-info-circle"></i> {selectedBulkOrder.customer_message}
+                  </div>
+                )}
+
+                <div className="era-bulk-modal-grid">
+                  <div className="era-bulk-modal-section">
+                    <h4><i className="fas fa-user"></i> Contact Information</h4>
+                    <p><strong>Contact Person:</strong> {selectedBulkOrder.contact_person}</p>
+                    <p><strong>Email:</strong> {selectedBulkOrder.email}</p>
+                    <p><strong>Phone:</strong> {selectedBulkOrder.phone}</p>
+                  </div>
+
+                  <div className="era-bulk-modal-section">
+                    <h4><i className="fas fa-location-dot"></i> Delivery Details</h4>
+                    <p><strong>Address:</strong> {selectedBulkOrder.delivery_address || '-'}</p>
+                    <p><strong>City / State / PIN:</strong> {[selectedBulkOrder.city, selectedBulkOrder.state, selectedBulkOrder.pincode].filter(Boolean).join(', ') || '-'}</p>
+                    <p><strong>Required By:</strong> {formatBulkDate(selectedBulkOrder.required_date)}</p>
+                    <p><strong>Estimated Budget:</strong> {formatBulkCurrency(selectedBulkOrder.estimated_budget)}</p>
+                  </div>
+                </div>
+
+                {selectedBulkOrder.additional_notes && (
+                  <div className="era-bulk-modal-section" style={{ marginTop: '16px' }}>
+                    <h4><i className="fas fa-comment-dots"></i> Additional Notes</h4>
+                    <p>{selectedBulkOrder.additional_notes}</p>
+                  </div>
+                )}
+
+                <div className="era-bulk-modal-section" style={{ marginTop: '16px' }}>
+                  <h4><i className="fas fa-boxes-stacked"></i> Requested Products ({(selectedBulkOrder.products || []).length})</h4>
+                  <div className="era-bulk-products-list">
+                    {(selectedBulkOrder.products || []).map((p, idx) => (
+                      <div key={idx} className="era-bulk-prod-item">
+                        <div className="era-bulk-prod-header">
+                          <strong>{p.product_name}</strong>
+                          <span className="era-bulk-prod-badge">{p.category_name} &bull; Total: {p.total_quantity} pcs</span>
+                        </div>
+                        {p.description && <p className="era-bulk-prod-desc"><strong>Description:</strong> {p.description}</p>}
+                        {p.design_requirements && <p className="era-bulk-prod-desc"><strong>Design:</strong> {p.design_requirements}</p>}
+                        <div className="era-bulk-size-pills">
+                          {Object.entries(p.size_quantities || {})
+                            .filter(([, q]) => Number(q) > 0)
+                            .map(([sz, q]) => (
+                              <span key={sz} className="era-bulk-size-pill">{sz.toUpperCase()}: {q}</span>
+                            ))}
+                          {Number(p.general_quantity) > 0 && (
+                            <span className="era-bulk-size-pill">Qty: {p.general_quantity}</span>
+                          )}
+                        </div>
+                        {p.attachments?.length > 0 && (
+                          <div className="era-bulk-prod-attachments">
+                            <span style={{ fontSize: '12px', fontWeight: 600 }}>Attachments:</span>
+                            {p.attachments.map((att, aIdx) => (
+                              <a key={aIdx} href={att.file_url} target="_blank" rel="noreferrer" className="era-bulk-att-link">
+                                <i className="fas fa-paperclip"></i> {att.original_file_name}
+                              </a>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="edit-profile-actions" style={{ marginTop: '20px' }}>
+                  <button className="btn-secondary" onClick={closeBulkDetails}>Close</button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       <style>{`
         * { box-sizing: border-box; }
 
         .era-dashboard {
-          display: grid;
-          grid-template-columns: 260px 1fr;
-          min-height: 100vh;
+          position: fixed;
+          top: 76px; /* Below Navbar */
+          left: 0;
+          right: 0;
+          bottom: 0;
+          display: flex;
+          height: calc(100vh - 76px); /* Adjust height for navbar */
+          overflow: hidden; /* Prevent body scrolling */
           background: #f5f5f5;
           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          z-index: 90; /* Keep below navbar's z-index (100) */
+        }
+
+        @media (max-width: 900px) {
+          .era-dashboard {
+            top: 68px;
+            height: calc(100vh - 68px);
+          }
         }
 
         /* ============ SIDEBAR ============ */
@@ -1035,9 +1362,10 @@ const UserPanel = () => {
           color: #fff;
           display: flex;
           flex-direction: column;
-          position: sticky;
-          top: 0;
-          height: 100vh;
+          width: 260px;
+          height: 100%;
+          max-height: 100%;
+          flex-shrink: 0;
           border-right: 3px solid #DC2626;
         }
 
@@ -1045,6 +1373,21 @@ const UserPanel = () => {
           flex: 1;
           padding: 24px 16px;
           overflow-y: auto;
+          scrollbar-width: thin;
+          scrollbar-color: #333333 #0A0A0A;
+        }
+
+        .era-sidebar-inner::-webkit-scrollbar {
+          width: 4px;
+        }
+
+        .era-sidebar-inner::-webkit-scrollbar-track {
+          background: #0A0A0A;
+        }
+
+        .era-sidebar-inner::-webkit-scrollbar-thumb {
+          background: #333333;
+          border-radius: 4px;
         }
 
         .era-profile-card {
@@ -1207,7 +1550,30 @@ const UserPanel = () => {
         /* ============ MAIN CONTENT ============ */
         .era-main {
           background: #ffffff;
+          flex: 1;
           min-width: 0;
+          height: 100%;
+          max-height: 100%;
+          overflow-y: auto; /* Independent scrolling for right side */
+          scrollbar-width: thin;
+          scrollbar-color: #cbd5e1 #f8fafc;
+        }
+
+        .era-main::-webkit-scrollbar {
+          width: 8px;
+        }
+
+        .era-main::-webkit-scrollbar-track {
+          background: #f8fafc;
+        }
+
+        .era-main::-webkit-scrollbar-thumb {
+          background: #cbd5e1;
+          border-radius: 4px;
+        }
+
+        .era-main::-webkit-scrollbar-thumb:hover {
+          background: #94a3b8;
         }
 
         .era-main-inner {
@@ -2429,17 +2795,288 @@ const UserPanel = () => {
           flex-direction: column;
         }
 
+        .era-bulk-toolbar {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          flex-wrap: wrap;
+          gap: 14px;
+          margin-bottom: 24px;
+          background: #ffffff;
+          padding: 16px 20px;
+          border-radius: 12px;
+          border: 1px solid #E5E7EB;
+        }
+
+        .era-bulk-search-form {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          flex: 1;
+          min-width: 280px;
+          max-width: 480px;
+          background: #F9FAFB;
+          border: 1.5px solid #E5E7EB;
+          border-radius: 10px;
+          padding: 4px 10px;
+        }
+
+        .era-bulk-search-icon {
+          color: #9CA3AF;
+          font-size: 24px;
+        }
+
+        .era-bulk-search-input {
+          flex: 1;
+          border: none;
+          background: transparent;
+          font-size: 14px;
+          outline: none;
+          padding: 6px 4px;
+          color: #111827;
+        }
+
+        .era-bulk-filter-wrap {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+
+        .era-bulk-filter-label {
+          font-size: 13px;
+          font-weight: 700;
+          color: #374151;
+        }
+
+        .era-bulk-select {
+          border: 1.5px solid #E5E7EB;
+          border-radius: 10px;
+          padding: 8px 14px;
+          font-size: 13px;
+          font-weight: 600;
+          color: #111827;
+          background: #ffffff;
+          outline: none;
+          cursor: pointer;
+        }
+
+        .era-bulk-cards-grid {
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+        }
+
+        .era-bulk-card {
+          margin-bottom: 0;
+        }
+
+        .era-bulk-card-body {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+          gap: 16px;
+          padding: 16px 0;
+          border-top: 1px solid #F3F4F6;
+          border-bottom: 1px solid #F3F4F6;
+          margin: 14px 0;
+        }
+
+        .era-bulk-meta-item {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+        }
+
+        .era-bulk-meta-label {
+          font-size: 11px;
+          font-weight: 800;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          color: #6B7280;
+        }
+
+        .era-bulk-meta-value {
+          font-size: 14px;
+          font-weight: 700;
+          color: #111827;
+        }
+
+        .era-bulk-budget {
+          color: #DC2626;
+          font-weight: 800;
+        }
+
+        /* Status badges */
+        .era-badge-new { background: #EFF6FF; color: #1D4ED8; border: 1px solid #BFDBFE; }
+        .era-badge-under-review { background: #FFFBEB; color: #B45309; border: 1px solid #FDE68A; }
+        .era-badge-contacted { background: #FDF4FF; color: #86198F; border: 1px solid #F5D0FE; }
+        .era-badge-quotation-sent { background: #ECFDF5; color: #047857; border: 1px solid #A7F3D0; }
+        .era-badge-approved { background: #F0FDF4; color: #15803D; border: 1px solid #BBF7D0; }
+        .era-badge-in-production { background: #EFF6FF; color: #2563EB; border: 1px solid #BFDBFE; }
+        .era-badge-completed { background: #F0FDF4; color: #166534; border: 1px solid #BBF7D0; }
+        .era-badge-rejected { background: #FEF2F2; color: #B91C1C; border: 1px solid #FECACA; }
+        .era-badge-cancelled { background: #F3F4F6; color: #4B5563; border: 1px solid #E5E7EB; }
+
+        /* Modal details */
+        .era-bulk-modal {
+          max-width: 760px;
+        }
+
+        .era-bulk-modal-status-bar {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          margin-bottom: 16px;
+          font-size: 14px;
+          font-weight: 700;
+          color: #374151;
+        }
+
+        .era-bulk-alert-info {
+          background: #EFF6FF;
+          border: 1px solid #BFDBFE;
+          border-radius: 8px;
+          padding: 12px 16px;
+          color: #1E40AF;
+          font-size: 13px;
+          font-weight: 600;
+          margin-bottom: 16px;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .era-bulk-modal-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 16px;
+        }
+
+        .era-bulk-modal-section {
+          background: #F9FAFB;
+          border: 1px solid #E5E7EB;
+          border-radius: 10px;
+          padding: 16px;
+        }
+
+        .era-bulk-modal-section h4 {
+          margin: 0 0 10px;
+          font-size: 13px;
+          font-weight: 800;
+          color: #111827;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+
+        .era-bulk-modal-section p {
+          margin: 0 0 6px;
+          font-size: 13px;
+          color: #4B5563;
+          line-height: 1.5;
+        }
+
+        .era-bulk-modal-section p strong {
+          color: #111827;
+        }
+
+        .era-bulk-products-list {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+          margin-top: 10px;
+        }
+
+        .era-bulk-prod-item {
+          background: #ffffff;
+          border: 1px solid #E5E7EB;
+          border-radius: 8px;
+          padding: 14px;
+        }
+
+        .era-bulk-prod-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: 8px;
+          margin-bottom: 6px;
+        }
+
+        .era-bulk-prod-header strong {
+          font-size: 14px;
+          color: #111827;
+        }
+
+        .era-bulk-prod-badge {
+          font-size: 12px;
+          background: #F3F4F6;
+          padding: 3px 8px;
+          border-radius: 6px;
+          color: #4B5563;
+          font-weight: 600;
+        }
+
+        .era-bulk-prod-desc {
+          font-size: 12px;
+          color: #6B7280;
+          margin: 4px 0;
+        }
+
+        .era-bulk-size-pills {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 6px;
+          margin-top: 8px;
+        }
+
+        .era-bulk-size-pill {
+          background: #F3F4F6;
+          border: 1px solid #E5E7EB;
+          border-radius: 6px;
+          padding: 2px 8px;
+          font-size: 11px;
+          font-weight: 700;
+          color: #374151;
+        }
+
+        .era-bulk-prod-attachments {
+          margin-top: 8px;
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .era-bulk-att-link {
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+          font-size: 12px;
+          color: #DC2626;
+          font-weight: 600;
+          text-decoration: underline;
+        }
+
         /* ============ RESPONSIVE ============ */
         @media (max-width: 1100px) {
           .era-dashboard {
-            grid-template-columns: 1fr;
+            flex-direction: column;
+            overflow-y: auto;
           }
 
           .era-sidebar {
+            width: 100%;
             position: static;
             height: auto;
             border-right: none;
             border-bottom: 3px solid #DC2626;
+          }
+
+          .era-main {
+            height: auto;
+            overflow-y: visible;
           }
 
           .era-sidebar-inner {

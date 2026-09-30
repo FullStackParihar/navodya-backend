@@ -141,6 +141,10 @@ body {
     transition: var(--transition);
 }
 
+.search-btn i {
+    font-size: 24px;
+}
+
 .search-btn:hover {
     background: #23394f;
 }

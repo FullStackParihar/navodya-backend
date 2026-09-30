@@ -414,268 +414,268 @@ const BulkOrder = () => {
           </section>
         ) : (
           <>
-        <header className="bulk-order-header">
-          <div>
-            <p className="bulk-eyebrow">Organization merchandise</p>
-            <h1>Bulk Order Request</h1>
-            <p>Submit one request with multiple products, sizes, files, and design requirements.</p>
-          </div>
-          <div className="bulk-total-pill">
-            <span>Grand Total</span>
-            <strong>{grandTotalQuantity}</strong>
-          </div>
-        </header>
-
-        <div className="progress-steps" aria-label="Bulk order progress">
-          {['Contact Info', 'Products', 'Design Files', 'Review'].map((label, index) => (
-            <div key={label} className={`step ${currentStep >= index + 1 ? 'active' : ''}`}>
-              <span>{index + 1}</span>
-              <p>{label}</p>
-            </div>
-          ))}
-        </div>
-
-        {submitError && <div className="bulk-error-banner">{submitError}</div>}
-
-        <form onSubmit={handleSubmit} className="bulk-form">
-          {currentStep === 1 && (
-            <section className="bulk-panel">
-              <h2>Contact & Delivery Information</h2>
-              <div className="bulk-grid">
-                {[
-                  ['organizationName', 'Organization Name *', 'Your organization name'],
-                  ['contactPerson', 'Contact Person *', 'Name of contact person'],
-                  ['email', 'Email Address *', 'your@email.com', 'email'],
-                  ['phone', 'Phone Number *', '+91 98765 43210', 'tel'],
-                  ['city', 'City *', 'City name'],
-                  ['state', 'State *', 'State name'],
-                  ['pincode', 'Pincode *', '6-digit pincode'],
-                  ['requiredDate', 'Required Date *', '', 'date'],
-                  ['estimatedBudget', 'Estimated Budget *', '50000', 'number'],
-                ].map(([name, label, placeholder, type = 'text']) => (
-                  <label className="bulk-field" key={name}>
-                    <span>{label}</span>
-                    <input
-                      type={type}
-                      name={name}
-                      value={formData[name]}
-                      onChange={handleInputChange}
-                      placeholder={placeholder}
-                      min={type === 'date' ? new Date().toISOString().split('T')[0] : type === 'number' ? '0' : undefined}
-                    />
-                    {renderError(name)}
-                  </label>
-                ))}
-                <label className="bulk-field full">
-                  <span>Delivery Address *</span>
-                  <textarea name="deliveryAddress" value={formData.deliveryAddress} onChange={handleInputChange} rows="3" placeholder="Complete delivery address" />
-                  {renderError('deliveryAddress')}
-                </label>
+            <header className="bulk-order-header">
+              <div>
+                <p className="bulk-eyebrow">Organization merchandise</p>
+                <h1>Bulk Order Request</h1>
+                <p>Submit one request with multiple products, sizes, files, and design requirements.</p>
               </div>
-            </section>
-          )}
+              <div className="bulk-total-pill">
+                <span>Grand Total</span>
+                <strong>{grandTotalQuantity}</strong>
+              </div>
+            </header>
 
-          {currentStep === 2 && (
-            <section className="bulk-panel">
-              <div className="bulk-section-title">
-                <div>
-                  <h2>Product Details</h2>
-                  <p>Add all required products under this single bulk request.</p>
+            <div className="progress-steps" aria-label="Bulk order progress">
+              {['Contact Info', 'Products', 'Design Files', 'Review'].map((label, index) => (
+                <div key={label} className={`step ${currentStep >= index + 1 ? 'active' : ''}`}>
+                  <span>{index + 1}</span>
+                  <p>{label}</p>
                 </div>
-                <button type="button" className="btn-add-product" onClick={addProduct}>
-                  <i className="fas fa-plus" /> Add Another Product
-                </button>
-              </div>
+              ))}
+            </div>
 
-              {products.map((product, index) => {
-                const productOptions = categoryProducts[product.categoryId] || [];
-                const showSizeQuantities = isApparelProduct(product);
-                return (
-                  <article className="bulk-product-card" key={product.productKey}>
-                    <div className="product-card-header">
-                      <h3>Product {index + 1}</h3>
-                      <div>
-                        <span className="product-total">Total: {getProductTotal(product)}</span>
-                        {products.length > 1 && (
-                          <button type="button" className="btn-remove-product" onClick={() => removeProduct(index)}>
-                            <i className="fas fa-trash" /> Remove
-                          </button>
-                        )}
-                      </div>
-                    </div>
+            {submitError && <div className="bulk-error-banner">{submitError}</div>}
 
-                    <div className="bulk-grid">
-                      <label className="bulk-field">
-                        <span>Category *</span>
-                        <select value={product.categoryId} onChange={(event) => handleCategoryChange(index, event.target.value)} disabled={loadingCategories}>
-                          <option value="">{loadingCategories ? 'Loading categories...' : 'Select category'}</option>
-                          {categories.map(category => (
-                            <option value={category._id} key={category._id}>{category.name}</option>
-                          ))}
-                        </select>
-                        {renderError(`products.${index}.categoryId`)}
+            <form onSubmit={handleSubmit} className="bulk-form">
+              {currentStep === 1 && (
+                <section className="bulk-panel">
+                  <h2>Contact & Delivery Information</h2>
+                  <div className="bulk-grid">
+                    {[
+                      ['organizationName', 'Organization Name *', 'Your organization name'],
+                      ['contactPerson', 'Contact Person *', 'Name of contact person'],
+                      ['email', 'Email Address *', 'your@email.com', 'email'],
+                      ['phone', 'Phone Number *', '+91 98765 43210', 'tel'],
+                      ['city', 'City *', 'City name'],
+                      ['state', 'State *', 'State name'],
+                      ['pincode', 'Pincode *', '6-digit pincode'],
+                      ['requiredDate', 'Required Date *', '', 'date'],
+                      ['estimatedBudget', 'Estimated Budget *', '50000', 'number'],
+                    ].map(([name, label, placeholder, type = 'text']) => (
+                      <label className="bulk-field" key={name}>
+                        <span>{label}</span>
+                        <input
+                          type={type}
+                          name={name}
+                          value={formData[name]}
+                          onChange={handleInputChange}
+                          placeholder={placeholder}
+                          min={type === 'date' ? new Date().toISOString().split('T')[0] : type === 'number' ? '0' : undefined}
+                        />
+                        {renderError(name)}
                       </label>
-
-                      <label className="bulk-field">
-                        <span>Product Name *</span>
-                        <select value={product.productId} onChange={(event) => handleProductSelection(index, event.target.value)} disabled={!product.categoryId || loadingProducts[product.categoryId]}>
-                          <option value="">
-                            {!product.categoryId ? 'Select category first' : loadingProducts[product.categoryId] ? 'Loading products...' : productOptions.length ? 'Select product' : 'No catalogue products found'}
-                          </option>
-                          {productOptions.map(item => (
-                            <option value={item._id} key={item._id}>{item.name}</option>
-                          ))}
-                          <option value="custom">Custom Product</option>
-                        </select>
-                        {renderError(`products.${index}.productId`)}
-                      </label>
-
-                      {product.isCustomProduct && (
-                        <label className="bulk-field">
-                          <span>Custom Product Name *</span>
-                          <input value={product.productName} onChange={(event) => updateProduct(index, { productName: event.target.value })} placeholder="Custom product name" />
-                          {renderError(`products.${index}.productName`)}
-                        </label>
-                      )}
-
-                      <label className="bulk-field full">
-                        <span>Description</span>
-                        <textarea value={product.description} onChange={(event) => updateProduct(index, { description: event.target.value })} rows="3" placeholder="Product requirements, purpose, or notes" />
-                      </label>
-
-                      <label className="bulk-field full">
-                        <span>Specifications / Size or Dimensions</span>
-                        <textarea value={product.specifications} onChange={(event) => updateProduct(index, { specifications: event.target.value })} rows="3" placeholder="Material, print method, dimensions, finish, packaging, etc." />
-                      </label>
-
-                      <div className="bulk-field full">
-                        <span>{showSizeQuantities ? 'Size-wise Quantity *' : 'Quantity *'}</span>
-                        {showSizeQuantities ? (
-                          <div className="size-grid">
-                            {SIZE_KEYS.map(size => (
-                              <label className="size-input" key={size}>
-                                <span>{size.toUpperCase()}</span>
-                                <input type="number" min="0" value={product.sizeQuantities[size]} onChange={(event) => handleSizeQuantity(index, size, event.target.value)} />
-                              </label>
-                            ))}
-                          </div>
-                        ) : (
-                          <input type="number" min="0" value={product.generalQuantity} onChange={(event) => handleGeneralQuantity(index, event.target.value)} placeholder="Total pieces" />
-                        )}
-                        {renderError(`products.${index}.quantity`)}
-                      </div>
-                    </div>
-                  </article>
-                );
-              })}
-            </section>
-          )}
-
-          {currentStep === 3 && (
-            <section className="bulk-panel">
-              <h2>Design Requirements & Attachments</h2>
-              {products.map((product, index) => (
-                <article className="bulk-product-card" key={product.productKey}>
-                  <div className="product-card-header">
-                    <h3>Product {index + 1}: {product.productName || 'Not selected'}</h3>
-                    <span className="product-total">Total: {getProductTotal(product)}</span>
-                  </div>
-
-                  <label className="bulk-field">
-                    <span>Design Requirements *</span>
-                    <textarea value={product.designRequirements} onChange={(event) => updateProduct(index, { designRequirements: event.target.value })} rows="4" placeholder="Colors, logo placement, print area, references, text, etc." />
-                    {renderError(`products.${index}.designRequirements`)}
-                  </label>
-
-                  <div className="bulk-field">
-                    <span>Upload Design / Reference Files *</span>
-                    <label className="bulk-upload">
-                      <input type="file" multiple accept=".jpg,.jpeg,.png,.webp,.pdf,.ai,.eps,.svg" onChange={(event) => handleFiles(index, event.target.files)} />
-                      <i className="fas fa-cloud-upload-alt" />
-                      <strong>Choose files</strong>
-                      <small>Images, PDF, AI, EPS, SVG | Max 10MB each | Max {MAX_FILES_PER_PRODUCT} files</small>
+                    ))}
+                    <label className="bulk-field full">
+                      <span>Delivery Address *</span>
+                      <textarea name="deliveryAddress" value={formData.deliveryAddress} onChange={handleInputChange} rows="3" placeholder="Complete delivery address" />
+                      {renderError('deliveryAddress')}
                     </label>
-                    {renderError(`products.${index}.files`)}
-                    {product.fileErrors.map(message => <div className="field-error" key={message}>{message}</div>)}
+                  </div>
+                </section>
+              )}
+
+              {currentStep === 2 && (
+                <section className="bulk-panel">
+                  <div className="bulk-section-title">
+                    <div>
+                      <h2>Product Details</h2>
+                      <p>Add all required products under this single bulk request.</p>
+                    </div>
+                    <button type="button" className="btn-add-product" onClick={addProduct}>
+                      <i className="fas fa-plus" /> Add Another Product
+                    </button>
                   </div>
 
-                  {product.files.length > 0 && (
-                    <div className="file-grid">
-                      {product.files.map((item, fileIndex) => (
-                        <div className="file-card" key={`${item.file.name}-${fileIndex}`}>
-                          <div className="file-thumb">
-                            {item.previewUrl ? <img src={item.previewUrl} alt={item.file.name} /> : <i className="fas fa-file-alt" />}
-                          </div>
+                  {products.map((product, index) => {
+                    const productOptions = categoryProducts[product.categoryId] || [];
+                    const showSizeQuantities = isApparelProduct(product);
+                    return (
+                      <article className="bulk-product-card" key={product.productKey}>
+                        <div className="product-card-header">
+                          <h3>Product {index + 1}</h3>
                           <div>
-                            <strong>{item.file.name}</strong>
-                            <span>{formatFileSize(item.file.size)}</span>
+                            <span className="product-total">Total: {getProductTotal(product)}</span>
+                            {products.length > 1 && (
+                              <button type="button" className="btn-remove-product" onClick={() => removeProduct(index)}>
+                                <i className="fas fa-trash" /> Remove
+                              </button>
+                            )}
                           </div>
-                          <button type="button" onClick={() => removeFile(index, fileIndex)} aria-label="Remove file">
-                            <i className="fas fa-times" />
-                          </button>
+                        </div>
+
+                        <div className="bulk-grid">
+                          <label className="bulk-field">
+                            <span>Category *</span>
+                            <select value={product.categoryId} onChange={(event) => handleCategoryChange(index, event.target.value)} disabled={loadingCategories}>
+                              <option value="">{loadingCategories ? 'Loading categories...' : 'Select category'}</option>
+                              {categories.map(category => (
+                                <option value={category._id} key={category._id}>{category.name}</option>
+                              ))}
+                            </select>
+                            {renderError(`products.${index}.categoryId`)}
+                          </label>
+
+                          <label className="bulk-field">
+                            <span>Product Name *</span>
+                            <select value={product.productId} onChange={(event) => handleProductSelection(index, event.target.value)} disabled={!product.categoryId || loadingProducts[product.categoryId]}>
+                              <option value="">
+                                {!product.categoryId ? 'Select category first' : loadingProducts[product.categoryId] ? 'Loading products...' : productOptions.length ? 'Select product' : 'No catalogue products found'}
+                              </option>
+                              {productOptions.map(item => (
+                                <option value={item._id} key={item._id}>{item.name}</option>
+                              ))}
+                              <option value="custom">Custom Product</option>
+                            </select>
+                            {renderError(`products.${index}.productId`)}
+                          </label>
+
+                          {product.isCustomProduct && (
+                            <label className="bulk-field">
+                              <span>Custom Product Name *</span>
+                              <input value={product.productName} onChange={(event) => updateProduct(index, { productName: event.target.value })} placeholder="Custom product name" />
+                              {renderError(`products.${index}.productName`)}
+                            </label>
+                          )}
+
+                          <label className="bulk-field full">
+                            <span>Description</span>
+                            <textarea value={product.description} onChange={(event) => updateProduct(index, { description: event.target.value })} rows="3" placeholder="Product requirements, purpose, or notes" />
+                          </label>
+
+                          <label className="bulk-field full">
+                            <span>Specifications / Size or Dimensions</span>
+                            <textarea value={product.specifications} onChange={(event) => updateProduct(index, { specifications: event.target.value })} rows="3" placeholder="Material, print method, dimensions, finish, packaging, etc." />
+                          </label>
+
+                          <div className="bulk-field full">
+                            <span>{showSizeQuantities ? 'Size-wise Quantity *' : 'Quantity *'}</span>
+                            {showSizeQuantities ? (
+                              <div className="size-grid">
+                                {SIZE_KEYS.map(size => (
+                                  <label className="size-input" key={size}>
+                                    <span>{size.toUpperCase()}</span>
+                                    <input type="number" min="0" value={product.sizeQuantities[size]} onChange={(event) => handleSizeQuantity(index, size, event.target.value)} />
+                                  </label>
+                                ))}
+                              </div>
+                            ) : (
+                              <input type="number" min="0" value={product.generalQuantity} onChange={(event) => handleGeneralQuantity(index, event.target.value)} placeholder="Total pieces" />
+                            )}
+                            {renderError(`products.${index}.quantity`)}
+                          </div>
+                        </div>
+                      </article>
+                    );
+                  })}
+                </section>
+              )}
+
+              {currentStep === 3 && (
+                <section className="bulk-panel">
+                  <h2>Design Requirements & Attachments</h2>
+                  {products.map((product, index) => (
+                    <article className="bulk-product-card" key={product.productKey}>
+                      <div className="product-card-header">
+                        <h3>Product {index + 1}: {product.productName || 'Not selected'}</h3>
+                        <span className="product-total">Total: {getProductTotal(product)}</span>
+                      </div>
+
+                      <label className="bulk-field">
+                        <span>Design Requirements *</span>
+                        <textarea value={product.designRequirements} onChange={(event) => updateProduct(index, { designRequirements: event.target.value })} rows="4" placeholder="Colors, logo placement, print area, references, text, etc." />
+                        {renderError(`products.${index}.designRequirements`)}
+                      </label>
+
+                      <div className="bulk-field">
+                        <span>Upload Design / Reference Files *</span>
+                        <label className="bulk-upload">
+                          <input type="file" multiple accept=".jpg,.jpeg,.png,.webp,.pdf,.ai,.eps,.svg" onChange={(event) => handleFiles(index, event.target.files)} />
+                          <i className="fas fa-cloud-upload-alt" />
+                          <strong>Choose files</strong>
+                          <small>Images, PDF, AI, EPS, SVG | Max 10MB each | Max {MAX_FILES_PER_PRODUCT} files</small>
+                        </label>
+                        {renderError(`products.${index}.files`)}
+                        {product.fileErrors.map(message => <div className="field-error" key={message}>{message}</div>)}
+                      </div>
+
+                      {product.files.length > 0 && (
+                        <div className="file-grid">
+                          {product.files.map((item, fileIndex) => (
+                            <div className="file-card" key={`${item.file.name}-${fileIndex}`}>
+                              <div className="file-thumb">
+                                {item.previewUrl ? <img src={item.previewUrl} alt={item.file.name} /> : <i className="fas fa-file-alt" />}
+                              </div>
+                              <div>
+                                <strong>{item.file.name}</strong>
+                                <span>{formatFileSize(item.file.size)}</span>
+                              </div>
+                              <button type="button" onClick={() => removeFile(index, fileIndex)} aria-label="Remove file">
+                                <i className="fas fa-times" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </article>
+                  ))}
+                </section>
+              )}
+
+              {currentStep === 4 && (
+                <section className="bulk-panel">
+                  <h2>Review & Submit</h2>
+                  <div className="review-layout">
+                    <div className="review-card">
+                      <h3>Customer Information</h3>
+                      <p><strong>Organization:</strong> {formData.organizationName}</p>
+                      <p><strong>Contact:</strong> {formData.contactPerson}</p>
+                      <p><strong>Email:</strong> {formData.email}</p>
+                      <p><strong>Phone:</strong> {formData.phone}</p>
+                      <p><strong>Address:</strong> {formData.deliveryAddress}, {formData.city}, {formData.state} - {formData.pincode}</p>
+                      <p><strong>Required Date:</strong> {formData.requiredDate}</p>
+                      <p><strong>Budget:</strong> ₹{Number(formData.estimatedBudget || 0).toLocaleString('en-IN')}</p>
+                    </div>
+
+                    <div className="review-card">
+                      <h3>Products Summary</h3>
+                      {products.map((product, index) => (
+                        <div className="review-product" key={product.productKey}>
+                          <h4>Product {index + 1}: {product.productName}</h4>
+                          <p><strong>Category:</strong> {product.categoryName}</p>
+                          <p><strong>Total Quantity:</strong> {getProductTotal(product)}</p>
+                          <p><strong>Files:</strong> {product.files.length}</p>
+                          <p><strong>Design:</strong> {product.designRequirements}</p>
                         </div>
                       ))}
+                      <div className="grand-total">Grand Total Quantity: {grandTotalQuantity}</div>
                     </div>
-                  )}
-                </article>
-              ))}
-            </section>
-          )}
 
-          {currentStep === 4 && (
-            <section className="bulk-panel">
-              <h2>Review & Submit</h2>
-              <div className="review-layout">
-                <div className="review-card">
-                  <h3>Customer Information</h3>
-                  <p><strong>Organization:</strong> {formData.organizationName}</p>
-                  <p><strong>Contact:</strong> {formData.contactPerson}</p>
-                  <p><strong>Email:</strong> {formData.email}</p>
-                  <p><strong>Phone:</strong> {formData.phone}</p>
-                  <p><strong>Address:</strong> {formData.deliveryAddress}, {formData.city}, {formData.state} - {formData.pincode}</p>
-                  <p><strong>Required Date:</strong> {formData.requiredDate}</p>
-                  <p><strong>Budget:</strong> ₹{Number(formData.estimatedBudget || 0).toLocaleString('en-IN')}</p>
-                </div>
+                    <label className="bulk-field">
+                      <span>Additional Notes</span>
+                      <textarea name="additionalNotes" value={formData.additionalNotes} onChange={handleInputChange} rows="4" placeholder="Any additional requirements or special instructions" />
+                    </label>
+                  </div>
+                </section>
+              )}
 
-                <div className="review-card">
-                  <h3>Products Summary</h3>
-                  {products.map((product, index) => (
-                    <div className="review-product" key={product.productKey}>
-                      <h4>Product {index + 1}: {product.productName}</h4>
-                      <p><strong>Category:</strong> {product.categoryName}</p>
-                      <p><strong>Total Quantity:</strong> {getProductTotal(product)}</p>
-                      <p><strong>Files:</strong> {product.files.length}</p>
-                      <p><strong>Design:</strong> {product.designRequirements}</p>
-                    </div>
-                  ))}
-                  <div className="grand-total">Grand Total Quantity: {grandTotalQuantity}</div>
-                </div>
-
-                <label className="bulk-field">
-                  <span>Additional Notes</span>
-                  <textarea name="additionalNotes" value={formData.additionalNotes} onChange={handleInputChange} rows="4" placeholder="Any additional requirements or special instructions" />
-                </label>
+              <div className="form-navigation">
+                {currentStep > 1 && (
+                  <button type="button" className="btn-secondary" onClick={prevStep} disabled={isSubmitting}>
+                    <i className="fas fa-arrow-left" /> Previous
+                  </button>
+                )}
+                {currentStep < 4 ? (
+                  <button type="button" className="btn-primary" onClick={nextStep}>
+                    Next <i className="fas fa-arrow-right" />
+                  </button>
+                ) : (
+                  <button type="submit" className="btn-primary" disabled={isSubmitting}>
+                    {isSubmitting ? <><i className="fas fa-spinner fa-spin" /> Submitting...</> : <><i className="fas fa-check" /> Submit Bulk Order</>}
+                  </button>
+                )}
               </div>
-            </section>
-          )}
-
-          <div className="form-navigation">
-            {currentStep > 1 && (
-              <button type="button" className="btn-secondary" onClick={prevStep} disabled={isSubmitting}>
-                <i className="fas fa-arrow-left" /> Previous
-              </button>
-            )}
-            {currentStep < 4 ? (
-              <button type="button" className="btn-primary" onClick={nextStep}>
-                Next <i className="fas fa-arrow-right" />
-              </button>
-            ) : (
-              <button type="submit" className="btn-primary" disabled={isSubmitting}>
-                {isSubmitting ? <><i className="fas fa-spinner fa-spin" /> Submitting...</> : <><i className="fas fa-check" /> Submit Bulk Order</>}
-              </button>
-            )}
-          </div>
-        </form>
+            </form>
           </>
         )}
       </div>
@@ -690,103 +690,153 @@ const BulkOrder = () => {
         .bulk-container {
           width: min(1180px, calc(100% - 32px));
           margin: 0 auto;
+          padding-top: 32px;
         }
+        /* ─── HERO HEADER ─── */
         .bulk-order-header {
           display: flex;
           justify-content: space-between;
-          align-items: flex-end;
-          gap: 24px;
-          margin-bottom: 22px;
+          align-items: center;
+          gap: 32px;
+          margin-bottom: 28px;
+          padding: 52px 56px;
+          background: #0d0d0d;
+          border-radius: 20px;
+          background-image:
+            radial-gradient(ellipse at 0% 100%, rgba(232,43,29,0.10) 0%, transparent 60%),
+            radial-gradient(rgba(255,255,255,0.025) 1px, transparent 1px);
+          background-size: auto, 22px 22px;
+          box-shadow: 0 32px 64px rgba(0,0,0,0.4);
+          position: relative;
+          overflow: hidden;
         }
         .bulk-eyebrow {
-          margin: 0 0 8px;
-          color: #2f4a67;
+          margin: 0 0 18px;
+          color: #e82b1d;
           font-weight: 800;
           text-transform: uppercase;
-          font-size: 12px;
+          font-size: 11px;
+          letter-spacing: 0.2em;
+          background: rgba(232, 43, 29, 0.1);
+          border: 1px solid rgba(232, 43, 29, 0.25);
+          padding: 6px 14px;
+          border-radius: 100px;
+          display: inline-block;
         }
         .bulk-order-header h1 {
           margin: 0;
-          font-size: 34px;
-          line-height: 1.1;
+          font-family: 'Inter', Arial, sans-serif;
+          font-size: clamp(34px, 4.5vw, 56px);
+          font-weight: 900;
+          letter-spacing: -2px;
+          line-height: 1.0;
+          color: #ffffff;
         }
         .bulk-order-header p {
-          margin: 8px 0 0;
-          color: #64748b;
+          margin: 14px 0 0;
+          color: #6b7280;
+          font-size: 15px;
+          line-height: 1.65;
+          max-width: 460px;
         }
         .bulk-total-pill {
-          min-width: 140px;
-          padding: 14px 18px;
-          border-radius: 8px;
-          background: #ffffff;
-          border: 1px solid #e5e7eb;
+          flex: 0 0 auto;
+          min-width: 160px;
+          padding: 28px 32px;
+          border-radius: 16px;
+          background: #161616;
+          border: 1px solid rgba(255,255,255,0.06);
           text-align: center;
+          box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 20px 40px rgba(0,0,0,0.5);
         }
         .bulk-total-pill span {
           display: block;
-          color: #64748b;
-          font-size: 12px;
-          font-weight: 700;
+          color: #4b5563;
+          font-size: 10px;
+          font-weight: 800;
+          text-transform: uppercase;
+          letter-spacing: 0.18em;
+          margin-bottom: 10px;
         }
         .bulk-total-pill strong {
           display: block;
-          font-size: 28px;
-          color: #2f4a67;
+          font-size: 54px;
+          line-height: 1;
+          color: #ffffff;
+          font-weight: 900;
+          letter-spacing: -2px;
         }
+        /* ─── PROGRESS STEPS ─── */
         .progress-steps {
           display: grid;
           grid-template-columns: repeat(4, 1fr);
-          gap: 10px;
-          margin-bottom: 22px;
+          gap: 0;
+          margin-bottom: 24px;
+          background: #141414;
+          border-radius: 10px;
+          overflow: hidden;
         }
         .step {
           display: flex;
           align-items: center;
-          gap: 10px;
+          gap: 12px;
           min-width: 0;
-          padding: 12px;
-          border-radius: 8px;
-          background: #ffffff;
-          border: 1px solid #e5e7eb;
+          padding: 14px 16px;
+          background: #141414;
+          border: none;
+          border-right: 1px solid rgba(255,255,255,0.06);
+          transition: border-color 0.2s ease;
+        }
+        .step:last-child {
+          border-right: none;
         }
         .step span {
-          width: 30px;
-          height: 30px;
+          width: 32px;
+          height: 32px;
           border-radius: 50%;
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          background: #e5e7eb;
-          color: #64748b;
+          background: #222;
+          color: #555;
           font-weight: 800;
+          font-size: 13px;
           flex: 0 0 auto;
+          border: 1px solid rgba(255,255,255,0.06);
         }
         .step p {
           margin: 0;
           font-weight: 700;
           font-size: 13px;
           overflow-wrap: anywhere;
+          color: #6b7280;
         }
         .step.active {
-          border-color: #2f4a67;
+          background: rgba(232, 43, 29, 0.08);
         }
         .step.active span {
-          background: #2f4a67;
+          background: #e82b1d;
+          color: #ffffff;
+          border-color: #e82b1d;
+        }
+        .step.active p {
           color: #ffffff;
         }
         .bulk-panel,
         .bulk-error-banner {
           background: #ffffff;
           border: 1px solid #e5e7eb;
-          border-radius: 8px;
+          border-radius: 12px;
           box-shadow: 0 10px 26px rgba(15, 23, 42, 0.06);
         }
         .bulk-panel {
-          padding: 24px;
+          padding: 32px;
         }
         .bulk-panel h2 {
-          margin: 0 0 18px;
+          margin: 0 0 24px;
           font-size: 22px;
+          font-weight: 800;
+          color: #111827;
         }
         .bulk-grid {
           display: grid;

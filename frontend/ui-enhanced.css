@@ -303,6 +303,7 @@ a:hover::after {
     right: var(--space-4);
     color: var(--gray-400);
     pointer-events: none;
+    font-size: 24px;
 }
 
 /* Hero Section - Modern Design */
