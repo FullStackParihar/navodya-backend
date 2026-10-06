@@ -744,7 +744,7 @@ const Payment = () => {
               <h2>Order Placed Successfully!</h2>
               <p>Thank you for your order. We'll send you order confirmation and tracking details shortly.</p>
               
-              <button className="btn-primary" onClick={() => window.location.href = '/'}>
+              <button className="order-success-button" onClick={() => window.location.href = '/'}>
                 <i className="fas fa-shopping-cart"></i> Continue Shopping
               </button>
             </div>
@@ -1235,29 +1235,80 @@ const Payment = () => {
         }
 
         .order-success {
+          min-height: min(620px, calc(100vh - 140px));
+          padding: clamp(3rem, 8vw, 6rem) 1.25rem;
+          display: grid;
+          place-items: center;
           text-align: center;
-          padding: 4rem 2rem;
         }
 
         .success-content {
-          max-width: 500px;
+          width: min(100%, 560px);
           margin: 0 auto;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
         }
 
-        .success-icon {
-          font-size: 4rem;
-          color: var(--success-color, #16a34a);
+        .order-success .success-icon {
+          width: 100px;
+          height: 100px;
           margin-bottom: 2rem;
+          border-radius: 50%;
+          display: grid;
+          place-items: center;
+          font-size: 3.25rem;
+          color: #ffffff;
+          background: #0aa36c;
+          box-shadow: 0 18px 38px rgba(10, 163, 108, 0.22);
         }
 
         .order-success h2 {
-          color: var(--text-primary, #1e293b);
+          max-width: 520px;
+          color: #090909;
+          font-size: clamp(2rem, 5vw, 2.75rem);
+          line-height: 1.1;
+          letter-spacing: -0.04em;
           margin-bottom: 1rem;
         }
 
         .order-success p {
+          max-width: 540px;
           color: var(--text-secondary, #64748b);
+          font-size: clamp(0.95rem, 2vw, 1.05rem);
+          line-height: 1.65;
           margin-bottom: 2rem;
+        }
+
+        .order-success-button {
+          min-width: 228px;
+          min-height: 48px;
+          padding: 0.8rem 1.4rem;
+          border: 0;
+          border-radius: 0.75rem;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.65rem;
+          background: #2f4a67;
+          color: #ffffff;
+          font-family: inherit;
+          font-size: 0.95rem;
+          font-weight: 700;
+          cursor: pointer;
+          box-shadow: 0 12px 28px rgba(237, 36, 30, 0.16);
+          transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .order-success-button:hover {
+          background: #23394f;
+          transform: translateY(-2px);
+          box-shadow: 0 16px 34px rgba(35, 57, 79, 0.2);
+        }
+
+        .order-success-button:focus-visible {
+          outline: 3px solid rgba(47, 74, 103, 0.3);
+          outline-offset: 3px;
         }
 
         .summary-section {
@@ -1376,6 +1427,22 @@ const Payment = () => {
 
           .payment-header h1 {
             font-size: 1.75rem;
+          }
+
+          .order-success {
+            min-height: calc(100vh - 100px);
+            padding: 2.5rem 1rem;
+          }
+
+          .order-success .success-icon {
+            width: 84px;
+            height: 84px;
+            margin-bottom: 1.5rem;
+            font-size: 2.75rem;
+          }
+
+          .order-success-button {
+            width: 100%;
           }
 
           .progress-indicator {

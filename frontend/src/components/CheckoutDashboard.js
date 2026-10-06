@@ -81,7 +81,7 @@ const CheckoutDashboard = () => {
       <div className="dashboard-content">
         {/* Payment Verification Status */}
         {verificationStatus && (
-          <div className={`section payment-status-card ${verificationStatus}`} style={{ gridColumn: '1 / -1' }}>
+          <div className={`checkout-section payment-status-card ${verificationStatus}`}>
             <div className="status-content" style={{ display: 'flex', gap: '1.5rem', alignItems: 'flex-start' }}>
               {verificationStatus === 'verifying' && (
                 <>
@@ -104,7 +104,7 @@ const CheckoutDashboard = () => {
                         <div><strong>Total Amount:</strong> ₹{verifiedOrder.pricing?.total}</div>
                       </div>
                     )}
-                    <button className="btn btn-primary" onClick={() => handleTrackOrder(verifiedOrder?._id || '')}>
+                    <button className="checkout-action-btn checkout-action-btn-primary" onClick={() => handleTrackOrder(verifiedOrder?._id || '')}>
                       <i className="fas fa-shipping-fast" style={{ marginRight: '8px' }}></i> Track Order
                     </button>
                   </div>
@@ -117,10 +117,10 @@ const CheckoutDashboard = () => {
                     <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1.5rem', color: '#dc3545' }}>Payment Verification Failed</h3>
                     <p style={{ margin: 0, color: '#666' }}>We could not verify your payment. If money was debited from your account, it will be refunded. You can try to pay again from your Account Dashboard.</p>
                     <div style={{ marginTop: '1rem', display: 'flex', gap: '0.5rem' }}>
-                      <button className="btn btn-secondary" onClick={() => setVerificationStatus(null)}>
+                      <button className="checkout-action-btn checkout-action-btn-secondary" onClick={() => setVerificationStatus(null)}>
                         Dismiss
                       </button>
-                      <button className="btn btn-primary" onClick={handleViewOrders}>
+                      <button className="checkout-action-btn checkout-action-btn-primary" onClick={handleViewOrders}>
                         Go to My Orders
                       </button>
                     </div>
@@ -131,8 +131,8 @@ const CheckoutDashboard = () => {
           </div>
         )}
         {/* Cart Summary */}
-        <div className="section cart-summary">
-          <h2 className="section-title">Your Cart</h2>
+        <div className="checkout-section cart-summary">
+          <h2 className="checkout-section-title">Your Cart</h2>
           <div className="cart-info">
             <div className="cart-items">
               <i className="fas fa-shopping-bag"></i>
@@ -144,18 +144,18 @@ const CheckoutDashboard = () => {
             </div>
           </div>
           <div className="cart-actions">
-            <button className="btn btn-secondary" onClick={handleViewCart}>
+            <button className="checkout-action-btn checkout-action-btn-secondary" onClick={handleViewCart}>
               View Cart
             </button>
-            <button className="btn btn-primary" onClick={handleViewPayment}>
+            <button className="checkout-action-btn checkout-action-btn-primary" onClick={handleViewPayment}>
               Proceed to Payment
             </button>
           </div>
         </div>
 
         {/* Quick Actions */}
-        <div className="section quick-actions">
-          <h2 className="section-title">Quick Actions</h2>
+        <div className="checkout-section quick-actions">
+          <h2 className="checkout-section-title">Quick Actions</h2>
           <div className="actions-grid">
             <button className="action-card" onClick={handleViewOrders}>
               <i className="fas fa-list-ul"></i>
@@ -169,8 +169,8 @@ const CheckoutDashboard = () => {
         </div>
 
         {/* Recent Orders */}
-        <div className="section recent-orders">
-          <h2 className="section-title">Recent Orders</h2>
+        <div className="checkout-section recent-orders">
+          <h2 className="checkout-section-title">Recent Orders</h2>
           <div className="orders-list">
             {isLoadingOrders ? (
               <div className="loading">Loading orders...</div>
@@ -200,8 +200,8 @@ const CheckoutDashboard = () => {
         </div>
 
         {/* Support */}
-        <div className="section support">
-          <h2 className="section-title">Need Help?</h2>
+        <div className="checkout-section support">
+          <h2 className="checkout-section-title">Need Help?</h2>
           <div className="support-options">
             <a href="tel:+918947900884" className="support-link">
               <i className="fas fa-phone"></i>
@@ -221,10 +221,10 @@ const CheckoutDashboard = () => {
 
       <style>{`
         .checkout-dashboard {
-          padding: 2rem 1rem;
+          width: min(100%, 1280px);
+          padding: clamp(1.5rem, 3vw, 2.5rem) clamp(1rem, 2.5vw, 2rem);
           min-height: 100vh;
           background: #f8f8f8;
-          max-width: 1200px;
           margin: 0 auto;
         }
 
@@ -234,7 +234,8 @@ const CheckoutDashboard = () => {
         }
 
         .dashboard-header h1 {
-          font-size: 2rem;
+          font-size: clamp(1.75rem, 3vw, 2.25rem);
+          line-height: 1.15;
           color: #000;
           margin-bottom: 0.5rem;
         }
@@ -246,22 +247,37 @@ const CheckoutDashboard = () => {
 
         .dashboard-content {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          align-items: start;
           gap: 1.5rem;
         }
 
-        .section {
+        .checkout-section {
+          min-width: 0;
           background: #fff;
-          border: 2px solid #000;
-          border-radius: 1.5rem;
-          padding: 1.5rem;
+          border: 1px solid #d9d9d9;
+          border-radius: 1.25rem;
+          padding: clamp(1.25rem, 2vw, 1.5rem);
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
         }
 
-        .section-title {
+        .checkout-section-title {
+          position: relative;
           font-size: 1.25rem;
           color: #000;
-          margin-bottom: 1rem;
+          margin-bottom: 1.75rem;
           margin-top: 0;
+        }
+
+        .checkout-section-title::after {
+          content: '';
+          position: absolute;
+          left: 0;
+          bottom: -0.75rem;
+          width: 3rem;
+          height: 3px;
+          border-radius: 999px;
+          background: #ed241e;
         }
 
         /* Cart Summary */
@@ -303,37 +319,50 @@ const CheckoutDashboard = () => {
 
         .cart-actions {
           display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 1rem;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 0.75rem;
         }
 
-        .btn {
-          padding: 0.875rem 1.5rem;
-          border-radius: 1rem;
-          font-weight: 600;
+        .checkout-action-btn {
+          width: 100%;
+          min-width: 0;
+          min-height: 3.25rem;
+          padding: 0.75rem;
+          border-radius: 0.875rem;
+          font-family: inherit;
+          font-weight: 700;
           cursor: pointer;
           border: none;
           transition: all 0.2s;
-          font-size: 1rem;
+          font-size: clamp(0.78rem, 1.1vw, 0.95rem);
+          line-height: 1.25;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+          text-align: center;
+          white-space: normal;
         }
 
-        .btn-primary {
+        .checkout-action-btn-primary {
           background: #000;
           color: #fff;
         }
 
-        .btn-primary:hover {
+        .checkout-action-btn-primary:hover {
           background: #333;
+          transform: translateY(-2px);
         }
 
-        .btn-secondary {
+        .checkout-action-btn-secondary {
           background: #f5f5f5;
           color: #000;
           border: 1px solid #000;
         }
 
-        .btn-secondary:hover {
+        .checkout-action-btn-secondary:hover {
           background: #e5e5e5;
+          transform: translateY(-2px);
         }
 
         /* Quick Actions */
@@ -344,6 +373,7 @@ const CheckoutDashboard = () => {
         }
 
         .action-card {
+          min-width: 0;
           background: #fff;
           border: 1px solid #000;
           border-radius: 1rem;
@@ -389,9 +419,12 @@ const CheckoutDashboard = () => {
           font-size: 1rem;
           color: #000;
           margin: 0;
+          min-width: 0;
+          overflow-wrap: anywhere;
         }
 
         .status {
+          flex: 0 0 auto;
           padding: 0.25rem 0.75rem;
           border-radius: 999px;
           font-size: 0.75rem;
@@ -474,6 +507,7 @@ const CheckoutDashboard = () => {
         }
 
         .payment-status-card {
+          grid-column: 1 / -1;
           border-width: 2px;
           transition: all 0.3s ease;
         }
@@ -502,17 +536,53 @@ const CheckoutDashboard = () => {
           padding: 2rem;
         }
 
+        @media (max-width: 1080px) {
+          .dashboard-content {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+          }
+
+          .recent-orders {
+            grid-column: 1 / -1;
+          }
+
+          .orders-list {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+          }
+        }
+
         @media (max-width: 768px) {
           .checkout-dashboard {
             padding: 1rem;
           }
 
-          .cart-actions {
+          .dashboard-content {
             grid-template-columns: 1fr;
           }
 
+          .recent-orders {
+            grid-column: auto;
+          }
+
+          .orders-list {
+            grid-template-columns: 1fr;
+          }
+        }
+
+        @media (max-width: 420px) {
+          .checkout-section {
+            padding: 1rem;
+            border-radius: 1rem;
+          }
+
+          .cart-actions,
           .actions-grid {
             grid-template-columns: 1fr;
+          }
+
+          .order-header {
+            align-items: flex-start;
+            gap: 0.75rem;
           }
         }
       `}</style>
