@@ -11,7 +11,7 @@ import api from '../utils/api';
 import './CartEnhanced.css';
 
 const Cart = () => {
-  const { items, totalAmount, updateQuantity, removeFromCart } = useCart();
+  const { items, totalAmount, updateQuantity, removeFromCart, totalItems } = useCart();
   const { addToWishlist } = useWishlist();
   const { success, error } = useToast();
   const [promoCode, setPromoCode] = useState('');

@@ -1187,6 +1187,56 @@ const AdminProfile = () => {
                       <strong>{new Date(o.updated_at).toLocaleString('en-IN')}</strong>
                     </div>
                   </div>
+
+                  {/* Custom Design Info (if provided by customer) */}
+                  {(o.design_images?.length > 0 || o.customer_note) && (
+                    <div className="order-detail-section" style={{ background: '#f8fafc', borderColor: '#bae6fd' }}>
+                      <h4 className="order-detail-section-title" style={{ color: '#0284c7' }}>
+                        <i className="fas fa-paint-brush" /> Custom Design
+                      </h4>
+                      
+                      {o.design_images?.length > 0 && (
+                        <div style={{ marginBottom: '12px' }}>
+                          <span style={{ display: 'block', fontSize: '11px', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>Uploaded Files ({o.design_images.length})</span>
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                            {o.design_images.map((img, idx) => (
+                              <a 
+                                key={idx} 
+                                href={img.url} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                style={{
+                                  display: 'block', width: '60px', height: '60px', borderRadius: '4px',
+                                  border: '1px solid #cbd5e1', overflow: 'hidden', background: '#fff',
+                                  textDecoration: 'none'
+                                }}
+                                title={img.note || 'View file'}
+                              >
+                                {!img.url.match(/\.(pdf|ai|eps|zip|doc|docx)$/i) ? (
+                                  <img src={img.url} alt={`Design ${idx + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                ) : (
+                                  <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', color: '#0284c7' }}>
+                                    <i className="fas fa-file-alt" style={{ fontSize: '18px' }} />
+                                    <span style={{ fontSize: '8px', marginTop: '4px' }}>FILE</span>
+                                  </div>
+                                )}
+                              </a>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {o.customer_note && (
+                        <div>
+                          <span style={{ display: 'block', fontSize: '11px', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>Customer Note</span>
+                          <div style={{ background: '#fff', padding: '8px 12px', borderRadius: '4px', border: '1px solid #e2e8f0', fontSize: '13px', color: '#334155', fontStyle: 'italic', whiteSpace: 'pre-wrap' }}>
+                            "{o.customer_note}"
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
                 </div>
 
                 {/* ── Right Column ── */}

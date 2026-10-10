@@ -1,5 +1,11 @@
 import mongoose, { Document } from 'mongoose';
 
+export interface IDesignImage {
+    url: string;
+    public_id?: string;
+    note?: string;
+}
+
 export interface IOrderItem {
     product_id: mongoose.Types.ObjectId;
     name: string;
@@ -68,6 +74,9 @@ export interface IOrder extends Document {
     status: 'PENDING' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED' | 'RETURNED';
     status_history: IOrderStatusHistory[];
     tracking?: IOrderTracking;
+    // Optional customer-uploaded design images for custom/printed orders
+    design_images?: IDesignImage[];
+    customer_note?: string;
     created_at: Date;
     updated_at: Date;
 }
@@ -155,7 +164,15 @@ const orderSchema = new mongoose.Schema({
         carrier: { type: String },
         tracking_number: { type: String },
         url: { type: String }
-    }
+    },
+    // Optional design images uploaded by the customer at checkout
+    design_images: [{
+        url: { type: String, required: true },
+        public_id: { type: String },
+        note: { type: String }
+    }],
+    // Optional free-text note from the customer about the design / order
+    customer_note: { type: String }
 }, {
     timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }
 });

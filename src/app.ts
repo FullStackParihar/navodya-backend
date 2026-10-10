@@ -26,6 +26,7 @@ const __dirname = path.dirname(__filename);
 
 app.use(express.static(path.join(__dirname, '../public')));
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+app.use('/uploads/designs', express.static(path.join(__dirname, '../uploads/designs')));
 app.use('/api', routes);
 
 app.use(notFound);

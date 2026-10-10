@@ -17,22 +17,47 @@ const categories = [
   ['T-Shirts', '/tshirts', 'Wear your brand'], ['Hoodies', '/hoodies', 'Layer up'], ['Accessories', '/accessories', 'Carry it everywhere'], ['Brand Kits', '/alumni-kits', 'Made for belonging']
 ];
 
-const ProductTile = ({ product, onAdd }) => (
-  <article className="sf-product">
-    <Link to={`/product/${product.slug}`} className="sf-product-image">
-      <img src={resolveImageUrl(product.images?.[0])} alt={product.name} />
-      <span>{product.sale_price ? 'Sale' : 'Customizable'}</span>
-    </Link>
-    <div>
-      <h3>{product.name}</h3>
-      <p>{product.description || 'Crafted around your idea.'}</p>
-      <div className="sf-product-bottom">
-        <strong>&#8377;{(product.sale_price || product.price || 0).toLocaleString('en-IN')}</strong>
-        <button onClick={() => onAdd(product)}>Add <b>+</b></button>
+const ProductTile = ({ product, onAdd }) => {
+  const { items, updateQuantity, removeFromCart } = useCart();
+  const cartItem = items.find(i => i.productSlug === product.slug || i.dbId === product._id);
+
+  return (
+    <article className="sf-product">
+      <Link to={`/product/${product.slug}`} className="sf-product-image">
+        <img src={resolveImageUrl(product.images?.[0])} alt={product.name} />
+        <span>{product.sale_price ? 'Sale' : 'Customizable'}</span>
+      </Link>
+      <div>
+        <h3>{product.name}</h3>
+        <p>{product.description || 'Crafted around your idea.'}</p>
+        <div className="sf-product-bottom">
+          <strong>&#8377;{(product.sale_price || product.price || 0).toLocaleString('en-IN')}</strong>
+          {cartItem ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', background: '#ffe4e1', borderRadius: '20px', padding: '4px 12px' }}>
+              <button 
+                onClick={(e) => { e.preventDefault(); cartItem.quantity > 1 ? updateQuantity(cartItem.id, cartItem.quantity - 1) : removeFromCart(cartItem.id); }}
+                style={{ background: 'transparent', border: 'none', color: '#e63322', fontWeight: 'bold', cursor: 'pointer', padding: '0', fontSize: '18px' }}
+              >
+                -
+              </button>
+              <span style={{ fontWeight: '600', fontSize: '14px', width: '20px', textAlign: 'center', color: '#e63322' }}>
+                {cartItem.quantity}
+              </span>
+              <button 
+                onClick={(e) => { e.preventDefault(); updateQuantity(cartItem.id, cartItem.quantity + 1); }}
+                style={{ background: 'transparent', border: 'none', color: '#e63322', fontWeight: 'bold', cursor: 'pointer', padding: '0', fontSize: '18px' }}
+              >
+                +
+              </button>
+            </div>
+          ) : (
+            <button onClick={(e) => { e.preventDefault(); onAdd(product); }}>Add <b>+</b></button>
+          )}
+        </div>
       </div>
-    </div>
-  </article>
-);
+    </article>
+  );
+};
 
 const ProductSection = ({ title, products, loading, onAdd }) => (
   <section className="sf-section sf-products">
@@ -162,7 +187,10 @@ const StorefrontPage = () => {
             <Link to="/search" style={{ fontSize: '24px', display: 'inline-flex', alignItems: 'center' }}>&#8981;</Link>
             {isAdmin && <Link to="/admin-profile" style={{ display: 'inline-flex', alignItems: 'center', color: '#e63322', fontWeight: 'bold' }}>👑 Admin</Link>}
             <Link to="/account" style={{ display: 'inline-flex', alignItems: 'center' }}>Account</Link>
-            <Link to="/cart" style={{ display: 'inline-flex', alignItems: 'center' }}>Cart{totalItems ? ` (${totalItems})` : ''} <b>&rarr;</b></Link>
+            <Link to="/cart" className="sf-cart-link" aria-label="Cart">
+              <i className="fas fa-shopping-cart"></i>
+              {totalItems > 0 && <span className="sf-cart-badge">{totalItems}</span>}
+            </Link>
           </div>
         </header>
 

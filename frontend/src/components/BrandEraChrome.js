@@ -27,7 +27,10 @@ const BrandEraChrome = () => {
         <Link to="/wishlist" aria-label="Saved products">Saved{wishlistItems ? ` (${wishlistItems})` : ''}</Link>
         {isAdmin && <Link to="/admin-profile" style={{ color: '#e63322', fontWeight: 'bold' }}>👑 Admin</Link>}
         <Link to="/account">Account</Link>
-        <Link className="be-cart-link" to="/cart">Cart{totalItems ? ` (${totalItems})` : ''} <b>→</b></Link>
+        <Link className="be-cart-link" to="/cart" aria-label="Cart">
+          <i className="fas fa-shopping-cart"></i>
+          {totalItems > 0 && <span className="be-cart-badge">{totalItems}</span>}
+        </Link>
       </div>
     </header>
   </>;

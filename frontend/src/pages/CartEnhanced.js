@@ -288,7 +288,7 @@ const CartEnhanced = () => {
           <h1 className="era-page-heading">Shopping Cart</h1>
           <div className="era-heading-underline"></div>
           <p className="era-items-subheading">
-            <strong>{items.length}</strong> {items.length === 1 ? 'item' : 'items'} in your cart
+            <strong>{totalItems}</strong> {totalItems === 1 ? 'item' : 'items'} in your cart
           </p>
         </div>
 
@@ -406,7 +406,7 @@ const CartEnhanced = () => {
 
               <div className="era-summary-body">
                 <div className="era-summary-row">
-                  <span>Subtotal ({items.length} items)</span>
+                  <span>Subtotal ({totalItems} items)</span>
                   <span className="era-summary-amount">₹{totalAmount}</span>
                 </div>
 

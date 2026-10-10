@@ -63,9 +63,9 @@ export const createPaymentIntent = asyncHandler(async (req: AuthRequest, res: Re
             quantity: item.quantity,
             size: item.size,
             color: item.color
-            ,fabric_variant_id: fabric?._id
-            ,fabric_name: fabric?.name
-            ,fabric_price: fabric ? (fabric.sale_price ?? fabric.price) : undefined
+            , fabric_variant_id: fabric?._id
+            , fabric_name: fabric?.name
+            , fabric_price: fabric ? (fabric.sale_price ?? fabric.price) : undefined
         });
     }
 
@@ -143,7 +143,7 @@ export const createPaymentIntent = asyncHandler(async (req: AuthRequest, res: Re
 });
 
 export const createOrder = asyncHandler(async (req: AuthRequest, res: Response) => {
-    const { paymentIntentId, shippingAddress } = req.body;
+    const { paymentIntentId, shippingAddress, design_images, customer_note } = req.body;
 
     if (!paymentIntentId) {
         throw new ApiError(400, 'Payment Intent ID is required');
@@ -222,9 +222,9 @@ export const createOrder = asyncHandler(async (req: AuthRequest, res: Response) 
             quantity: item.quantity,
             size: item.size,
             color: item.color
-            ,fabric_variant_id: fabric?._id
-            ,fabric_name: fabric?.name
-            ,fabric_price: fabric ? (fabric.sale_price ?? fabric.price) : undefined
+            , fabric_variant_id: fabric?._id
+            , fabric_name: fabric?.name
+            , fabric_price: fabric ? (fabric.sale_price ?? fabric.price) : undefined
         });
     }
 
@@ -255,6 +255,17 @@ export const createOrder = asyncHandler(async (req: AuthRequest, res: Response) 
     const tax = 0;
     const total = Math.max(0, subtotal - discount + shippingFee + tax);
 
+    // Validate and sanitise customer-supplied design images (optional)
+    const sanitisedDesignImages = Array.isArray(design_images)
+        ? design_images
+            .filter((d: any) => d && typeof d.url === 'string' && d.url.startsWith('http'))
+            .map((d: any) => ({
+                url: d.url,
+                public_id: d.public_id || undefined,
+                note: typeof d.note === 'string' ? d.note.trim().slice(0, 500) : undefined
+            }))
+        : [];
+
     const order = await Order.create({
         user_id: req.userId,
         items: orderItems,
@@ -272,7 +283,9 @@ export const createOrder = asyncHandler(async (req: AuthRequest, res: Response) 
             total
         },
         coupon_applied: couponId,
-        status: 'PROCESSING'
+        status: 'PROCESSING',
+        ...(sanitisedDesignImages.length > 0 && { design_images: sanitisedDesignImages }),
+        ...(customer_note && typeof customer_note === 'string' && { customer_note: customer_note.trim().slice(0, 1000) })
     });
 
     // Clear Cart
@@ -304,13 +317,13 @@ export const getOrderById = asyncHandler(async (req: AuthRequest, res: Response)
 
 export const downloadInvoice = asyncHandler(async (req: AuthRequest, res: Response) => {
     const { id } = req.params;
-    
+
     // Find order and verify access (must be owner or admin)
     // Note: The route should use authenticate middleware.
     // We fetch the order. If req.user is an admin (we check via a property or just assume admin route handles it differently).
     // Let's just fetch by ID, and if the user is not admin, ensure they own it.
     let order;
-    
+
     // Check if admin (Assuming req.user is set by auth middleware, but we only have req.userId)
     const user = await User.findById(req.userId);
     const isAdmin = user && user.role === 'admin';
@@ -331,15 +344,15 @@ export const downloadInvoice = asyncHandler(async (req: AuthRequest, res: Respon
     // Stream directly to response
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', `attachment; filename=invoice-${order._id}.pdf`);
-    
+
     doc.pipe(res);
 
     // Build the PDF
     // Header
-    doc.fontSize(25).font('Helvetica-Bold').text('NAVODAYA TRENDZ', { align: 'center' });
+    doc.fontSize(25).font('Helvetica-Bold').text('BrandEra', { align: 'center' });
     doc.fontSize(10).font('Helvetica').text('Premium Alumni Merchandise', { align: 'center' });
     doc.moveDown();
-    
+
     doc.fontSize(20).text('INVOICE', { align: 'center' });
     doc.moveDown();
 
@@ -362,9 +375,9 @@ export const downloadInvoice = asyncHandler(async (req: AuthRequest, res: Respon
     doc.text('Qty', 350, tableTop);
     doc.text('Price', 400, tableTop);
     doc.text('Total', 480, tableTop);
-    
+
     doc.moveTo(50, tableTop + 15).lineTo(550, tableTop + 15).stroke();
-    
+
     let yPosition = tableTop + 25;
     doc.font('Helvetica');
 
@@ -404,7 +417,7 @@ export const downloadInvoice = asyncHandler(async (req: AuthRequest, res: Respon
 
     // Footer
     doc.moveDown(4);
-    doc.fontSize(10).font('Helvetica-Oblique').text('Thank you for shopping with Navodaya Trendz!', { align: 'center' });
+    doc.fontSize(10).font('Helvetica-Oblique').text('Thank you for shopping with BrandEra!', { align: 'center' });
 
     // Finalize PDF
     doc.end();

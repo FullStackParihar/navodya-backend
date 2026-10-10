@@ -12,6 +12,7 @@ import { Product, IProduct } from '../models/product.model.js';
 import { User } from '../models/user.model.js';
 import { config } from '../config/env.js';
 import { pushOrderToShipway } from '../utils/shipway.js';
+import { uploadDesign, isCloudinaryConfigured } from '../config/cloudinary.js';
 
 // Initialize Cashfree SDK
 const pgEnv = config.cashfree.env.toUpperCase() === 'PRODUCTION'
@@ -124,9 +125,84 @@ export const completeOrder = async (order: any, cashfreeOrderDetails: any, payme
     return updatedOrder;
 };
 
+// POST /api/payments/upload-design
+// Authenticated — customer uploads 1-5 design files before (or after) placing an order.
+// Returns array of { url, public_id } objects ready to be stored on the order.
+export const uploadDesignFiles = asyncHandler(async (req: AuthRequest, res: Response) => {
+    await new Promise<void>((resolve, reject) => {
+        uploadDesign.array('designs', 5)(req, res, (err: any) => {
+            if (err) reject(err);
+            else resolve();
+        });
+    });
+
+    const files = (req.files as Express.Multer.File[]) || [];
+    if (!files.length) {
+        throw new ApiError(400, 'No design files received');
+    }
+
+    const uploaded = files.map((file: any) => {
+        // Cloudinary stores URL in file.path; local disk stores it in file.filename
+        const url = isCloudinaryConfigured
+            ? (file.path as string)   // Cloudinary URL
+            : `${req.protocol}://${req.get('host')}/uploads/designs/${file.filename}`;
+        const public_id: string | undefined = file.filename ?? file.public_id ?? undefined;
+        return { url, public_id };
+    });
+
+    res.status(200).json(new ApiResponse(200, { files: uploaded }, 'Design files uploaded successfully'));
+});
+
+// PATCH /api/payments/orders/:orderId/design
+// Customer attaches or replaces design images on their own PENDING/PROCESSING order.
+export const attachDesignToOrder = asyncHandler(async (req: AuthRequest, res: Response) => {
+    const { orderId } = req.params;
+    const { design_images, customer_note } = req.body;
+
+    const order = await Order.findOne({ _id: orderId, user_id: req.userId });
+    if (!order) {
+        throw new ApiError(404, 'Order not found');
+    }
+
+    // Allow attaching design only while order is not yet fulfilled
+    if (['DELIVERED', 'CANCELLED', 'RETURNED'].includes(order.status)) {
+        throw new ApiError(400, `Cannot update design on an order with status ${order.status}`);
+    }
+
+    if (design_images !== undefined) {
+        if (!Array.isArray(design_images)) {
+            throw new ApiError(400, 'design_images must be an array');
+        }
+        const sanitised = design_images
+            .filter((d: any) => d && typeof d.url === 'string' && d.url.startsWith('http'))
+            .map((d: any) => ({
+                url: d.url,
+                public_id: d.public_id || undefined,
+                note: typeof d.note === 'string' ? d.note.trim().slice(0, 500) : undefined
+            }));
+        (order as any).design_images = sanitised;
+    }
+
+    if (customer_note !== undefined) {
+        (order as any).customer_note = typeof customer_note === 'string'
+            ? customer_note.trim().slice(0, 1000)
+            : undefined;
+    }
+
+    await order.save();
+
+    res.status(200).json(new ApiResponse(200, {
+        orderId: order._id,
+        design_images: (order as any).design_images,
+        customer_note: (order as any).customer_note
+    }, 'Design information updated successfully'));
+});
+
 // POST /api/payments/create-order
 export const createCashfreeOrder = asyncHandler(async (req: AuthRequest, res: Response) => {
-    const { couponCode, shippingAddress, orderId } = req.body;
+    // design_images: optional array of { url, public_id, note } already uploaded via /upload-design
+    // customer_note: optional free-text note about the custom print / design
+    const { couponCode, shippingAddress, orderId, design_images, customer_note } = req.body;
     const user = await User.findById(req.userId);
     if (!user) {
         throw new ApiError(404, 'User not found');
@@ -240,6 +316,17 @@ export const createCashfreeOrder = asyncHandler(async (req: AuthRequest, res: Re
             country: shippingAddress?.country || 'India'
         };
 
+        // Validate and sanitise customer-supplied design images (optional)
+        const sanitisedDesignImages = Array.isArray(design_images)
+            ? design_images
+                .filter((d: any) => d && typeof d.url === 'string' && d.url.startsWith('http'))
+                .map((d: any) => ({
+                    url: d.url,
+                    public_id: d.public_id || undefined,
+                    note: typeof d.note === 'string' ? d.note.trim().slice(0, 500) : undefined
+                }))
+            : [];
+
         // Create the PENDING order in our DB
         order = await Order.create({
             user_id: req.userId,
@@ -258,7 +345,10 @@ export const createCashfreeOrder = asyncHandler(async (req: AuthRequest, res: Re
                 total
             },
             coupon_applied: couponId,
-            status: 'PENDING'
+            status: 'PENDING',
+            // Optional: customer design images and note
+            ...(sanitisedDesignImages.length > 0 && { design_images: sanitisedDesignImages }),
+            ...(customer_note && typeof customer_note === 'string' && { customer_note: customer_note.trim().slice(0, 1000) })
         });
 
         cfOrderId = order._id.toString();

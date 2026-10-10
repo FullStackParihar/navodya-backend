@@ -15,7 +15,13 @@ const Payment = () => {
   const [discountAmount, setDiscountAmount] = useState(0);
   const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
   const [appliedCoupon, setAppliedCoupon] = useState(null);
-  
+
+  // Design upload state (optional custom print/logo upload)
+  const [designFiles, setDesignFiles] = useState([]);
+  const [designNote, setDesignNote] = useState('');
+  const [isUploadingDesign, setIsUploadingDesign] = useState(false);
+  const [designDragOver, setDesignDragOver] = useState(false);
+
   const [addresses, setAddresses] = useState([]);
 
   const [newAddress, setNewAddress] = useState({
@@ -158,6 +164,49 @@ const Payment = () => {
     showToastSuccess('Coupon removed');
   };
 
+  // -- Design Upload Handlers --
+  const handleDesignUpload = async (files) => {
+    const fileArray = Array.from(files);
+    if (!fileArray.length) return;
+    if (designFiles.length + fileArray.length > 5) {
+      showToastError('You can upload a maximum of 5 design files.');
+      return;
+    }
+    setIsUploadingDesign(true);
+    try {
+      const formData = new FormData();
+      fileArray.forEach(f => formData.append('designs', f));
+      const token = localStorage.getItem('token');
+      const baseUrl = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
+      const response = await fetch(baseUrl + '/payments/upload-design', {
+        method: 'POST',
+        headers: { Authorization: 'Bearer ' + token },
+        body: formData
+      });
+      const result = await response.json();
+      if (result.success) {
+        const uploaded = result.data.files.map((f, i) => ({
+          url: f.url,
+          public_id: f.public_id,
+          name: fileArray[i]?.name || 'design',
+          previewUrl: fileArray[i]?.type?.startsWith('image/') ? URL.createObjectURL(fileArray[i]) : null
+        }));
+        setDesignFiles(prev => [...prev, ...uploaded]);
+        showToastSuccess(uploaded.length + ' design file(s) uploaded!');
+      } else {
+        throw new Error(result.message || 'Upload failed');
+      }
+    } catch (err) {
+      showToastError(err.message || 'Failed to upload design files');
+    } finally {
+      setIsUploadingDesign(false);
+    }
+  };
+
+  const removeDesignFile = (index) => {
+    setDesignFiles(prev => prev.filter((_, i) => i !== index));
+  };
+
   const validatePincode = (pincode) => {
     return /^\d{6}$/.test(pincode);
   };
@@ -260,11 +309,14 @@ const Payment = () => {
       if (paymentMethod === 'cod') {
         // For COD, we still use the existing backend order creation route
         const paymentIntentId = `cod_${Date.now()}`;
+        const designPayload = designFiles.length > 0 ? designFiles.map(f => ({ url: f.url, public_id: f.public_id, note: designNote || undefined })) : undefined;
         const orderResult = await api.post('/orders/create', {
           paymentIntentId,
           shippingAddress: selectedAddress,
           paymentMethod,
-          couponCode: appliedCoupon || couponCode
+          couponCode: appliedCoupon || couponCode,
+          design_images: designPayload,
+          customer_note: designNote || undefined
         });
 
         if (orderResult.success) {
@@ -277,10 +329,13 @@ const Payment = () => {
       } else {
         // Cashfree checkout flow for online payments
         const returnUrl = `${window.location.origin}/checkout`;
+        const designPayload = designFiles.length > 0 ? designFiles.map(f => ({ url: f.url, public_id: f.public_id, note: designNote || undefined })) : undefined;
         const orderResult = await api.post('/payments/create-order', {
           couponCode,
           shippingAddress: selectedAddress,
-          returnUrl
+          returnUrl,
+          design_images: designPayload,
+          customer_note: designNote || undefined
         });
 
         if (!orderResult.success) {
@@ -560,6 +615,108 @@ const Payment = () => {
                     ))}
                   </div>
 
+                  {/* ---- Design Upload Section (Optional) ---- */}
+                  <div style={{
+                    marginTop: '2rem',
+                    background: 'linear-gradient(135deg, #f0f7ff 0%, #e8f4f8 100%)',
+                    border: '2px dashed #90cdf4',
+                    borderRadius: '1rem',
+                    padding: '1.5rem'
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
+                      <i className="fas fa-paint-brush" style={{ color: '#3182ce', fontSize: '1.25rem' }}></i>
+                      <div>
+                        <h3 style={{ margin: 0, color: '#2b6cb0', fontSize: '1.05rem', fontWeight: '700' }}>
+                          Upload Your Custom Design <span style={{ color: '#718096', fontWeight: '400', fontSize: '0.85rem' }}>(Optional)</span>
+                        </h3>
+                        <p style={{ margin: '0.15rem 0 0', color: '#4a5568', fontSize: '0.8rem' }}>
+                          Have a logo or custom print? Upload it and we'll use it for your order.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div
+                      onDragOver={e => { e.preventDefault(); setDesignDragOver(true); }}
+                      onDragLeave={() => setDesignDragOver(false)}
+                      onDrop={e => { e.preventDefault(); setDesignDragOver(false); handleDesignUpload(e.dataTransfer.files); }}
+                      onClick={() => document.getElementById('design-file-input').click()}
+                      style={{
+                        border: designDragOver ? '2px dashed #3182ce' : '2px dashed #bee3f8',
+                        borderRadius: '0.75rem',
+                        padding: '1.25rem',
+                        textAlign: 'center',
+                        cursor: 'pointer',
+                        background: designDragOver ? 'rgba(49,130,206,0.06)' : 'rgba(255,255,255,0.7)',
+                        transition: 'all 0.2s',
+                        marginBottom: '1rem'
+                      }}
+                    >
+                      {isUploadingDesign ? (
+                        <div style={{ color: '#3182ce' }}>
+                          <i className="fas fa-spinner fa-spin" style={{ fontSize: '1.5rem' }}></i>
+                          <p style={{ margin: '0.5rem 0 0', fontSize: '0.875rem' }}>Uploading...</p>
+                        </div>
+                      ) : (
+                        <>
+                          <i className="fas fa-cloud-upload-alt" style={{ fontSize: '2rem', color: '#63b3ed' }}></i>
+                          <p style={{ margin: '0.5rem 0 0.25rem', color: '#2d3748', fontWeight: '600', fontSize: '0.9rem' }}>
+                            Click or drag & drop design files here
+                          </p>
+                          <p style={{ margin: 0, color: '#718096', fontSize: '0.75rem' }}>
+                            JPG, PNG, PDF, AI, SVG � Max 20MB each � Up to 5 files
+                          </p>
+                        </>
+                      )}
+                    </div>
+                    <input
+                      id="design-file-input"
+                      type="file"
+                      multiple
+                      accept="image/*,.pdf,.ai,.eps,.svg"
+                      style={{ display: 'none' }}
+                      onChange={e => handleDesignUpload(e.target.files)}
+                    />
+
+                    {designFiles.length > 0 && (
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1rem' }}>
+                        {designFiles.map((f, i) => (
+                          <div key={i} style={{
+                            position: 'relative', width: '80px', height: '80px',
+                            borderRadius: '0.5rem', overflow: 'hidden',
+                            border: '2px solid #bee3f8', background: '#ebf8ff',
+                            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'
+                          }}>
+                            {f.previewUrl
+                              ? <img src={f.previewUrl} alt={f.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                              : <><i className="fas fa-file-alt" style={{ fontSize: '1.5rem', color: '#3182ce' }}></i>
+                                  <span style={{ fontSize: '0.6rem', color: '#2d3748', textAlign: 'center', padding: '0 4px', wordBreak: 'break-all' }}>
+                                    {f.name.length > 12 ? f.name.slice(0, 10) + '�' : f.name}
+                                  </span></>
+                            }
+                            <button onClick={() => removeDesignFile(i)} style={{
+                              position: 'absolute', top: '2px', right: '2px',
+                              background: 'rgba(229,62,62,0.85)', color: '#fff',
+                              border: 'none', borderRadius: '50%', width: '18px', height: '18px',
+                              cursor: 'pointer', fontSize: '10px', lineHeight: '18px', textAlign: 'center'
+                            }}>₹</button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    <textarea
+                      placeholder="Design note (e.g. 'Print on left chest, white ink') � optional"
+                      value={designNote}
+                      onChange={e => setDesignNote(e.target.value)}
+                      rows={2}
+                      style={{
+                        width: '100%', borderRadius: '0.5rem', border: '1px solid #bee3f8',
+                        padding: '0.6rem 0.75rem', fontSize: '0.85rem', color: '#2d3748',
+                        resize: 'vertical', background: 'rgba(255,255,255,0.8)', boxSizing: 'border-box'
+                      }}
+                    />
+                  </div>
+
                   <div className="step-navigation">
                     <button className="btn-secondary" onClick={() => setCurrentStep(1)}>
                       <i className="fas fa-arrow-left"></i> Back to Address
@@ -622,6 +779,33 @@ const Payment = () => {
                       </div>
                     </div>
                   </div>
+
+                  {/* Show design files if customer uploaded any */}
+                  {designFiles.length > 0 && (
+                    <div className="summary-section">
+                      <h3>Your Custom Design</h3>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginBottom: designNote ? '0.75rem' : 0 }}>
+                        {designFiles.map((f, i) => (
+                          <div key={i} style={{
+                            width: '70px', height: '70px',
+                            borderRadius: '0.5rem',
+                            border: '2px solid #bee3f8',
+                            overflow: 'hidden',
+                            background: '#ebf8ff',
+                            display: 'flex', flexDirection: 'column',
+                            alignItems: 'center', justifyContent: 'center'
+                          }}>
+                            {f.previewUrl
+                              ? <img src={f.previewUrl} alt={f.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                              : <><i className="fas fa-file-alt" style={{ fontSize: '1.3rem', color: '#3182ce' }}></i>
+                                  <span style={{ fontSize: '0.55rem', padding: '2px 3px', wordBreak: 'break-all', textAlign: 'center' }}>{f.name.slice(0, 10)}</span></>
+                            }
+                          </div>
+                        ))}
+                      </div>
+                      {designNote && <p style={{ margin: 0, color: '#4a5568', fontSize: '0.85rem', fontStyle: 'italic' }}>₹? {designNote}</p>}
+                    </div>
+                  )}
 
                   <div className="step-navigation">
                     <button className="btn-secondary" onClick={() => setCurrentStep(2)}>
