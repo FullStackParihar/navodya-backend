@@ -55,7 +55,9 @@ const normalizeCartProduct = (product) => {
     selectedSize: sizeVal,
     selectedColor: colorVal,
     size: sizeVal,
-    color: colorVal
+    color: colorVal,
+    designImageUrl: product.designImageUrl || null,
+    designNote: product.designNote || null
   };
 };
 
@@ -172,6 +174,8 @@ export const CartProvider = ({ children }) => {
             ,fabricVariantId: item.fabric_variant_id || null
             ,fabricName: item.fabric_name || null
             ,selectedFabric: item.fabric_variant_id ? { _id: item.fabric_variant_id, name: item.fabric_name, price: item.fabric_regular_price ?? item.fabric_price, salePrice: item.fabric_sale_price } : null
+            ,designImageUrl: item.design_image_url || null
+            ,designNote: item.design_note || null
           }));
           dispatch({ type: SET_CART, payload: mappedItems });
         }
@@ -215,7 +219,9 @@ export const CartProvider = ({ children }) => {
           quantity: cartProduct.quantity || 1,
           size: cartProduct.selectedSize,
           color: cartProduct.selectedColor,
-          fabricVariantId: cartProduct.fabricVariantId || undefined
+          fabricVariantId: cartProduct.fabricVariantId || undefined,
+          designImageUrl: cartProduct.designImageUrl || undefined,
+          designNote: cartProduct.designNote || undefined
         });
         if (!result.success) {
           throw new Error(result.message || 'Failed to add item to cart');

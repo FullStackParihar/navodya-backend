@@ -54,7 +54,9 @@ const OrderTracking = () => {
               color: item.color,
               fabricName: item.fabric_name,
               fabricPrice: item.fabric_price,
-              image: item.image
+              image: item.image,
+              designImageUrl: item.design_image_url || null,
+              designNote: item.design_note || null
             })),
             tracking: getTrackingSteps(o.status),
             support: {
@@ -143,7 +145,23 @@ const OrderTracking = () => {
             {orderData.items.map(item => (
               <div className="tracking-order-item" key={`${item.id}-${item.size}-${item.fabricName || ''}`}>
                 <img src={item.image} alt={item.name} />
-                <div><h3>{item.name}</h3><p>Qty: {item.quantity}{item.size ? ` | Size: ${item.size}` : ''}{item.color ? ` | Color: ${item.color}` : ''}{item.fabricName ? ` | Fabric: ${item.fabricName}` : ''}</p></div>
+                <div>
+                  <h3>{item.name}</h3>
+                  <p>Qty: {item.quantity}{item.size ? ` | Size: ${item.size}` : ''}{item.color ? ` | Color: ${item.color}` : ''}{item.fabricName ? ` | Fabric: ${item.fabricName}` : ''}</p>
+                  {item.designImageUrl && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '6px' }}>
+                      <a href={item.designImageUrl} target="_blank" rel="noopener noreferrer" title="View custom design">
+                        <img src={item.designImageUrl} alt="Custom design" style={{ width: '32px', height: '32px', borderRadius: '4px', objectFit: 'cover', border: '1.5px solid #dc2626' }} />
+                      </a>
+                      <div style={{ fontSize: '11px', color: '#4b5563' }}>
+                        <a href={item.designImageUrl} target="_blank" rel="noopener noreferrer" style={{ color: '#dc2626', fontWeight: 600, textDecoration: 'none' }}>
+                          <i className="fas fa-paint-brush"></i> Custom Design Attached
+                        </a>
+                        {item.designNote && <div style={{ color: '#6b7280', fontStyle: 'italic' }}>Note: {item.designNote}</div>}
+                      </div>
+                    </div>
+                  )}
+                </div>
                 <strong>₹{item.price * item.quantity}</strong>
               </div>
             ))}

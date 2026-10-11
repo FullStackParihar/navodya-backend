@@ -66,6 +66,8 @@ export const createPaymentIntent = asyncHandler(async (req: AuthRequest, res: Re
             , fabric_variant_id: fabric?._id
             , fabric_name: fabric?.name
             , fabric_price: fabric ? (fabric.sale_price ?? fabric.price) : undefined
+            , design_image_url: (item as any).design_image_url || undefined
+            , design_note: (item as any).design_note || undefined
         });
     }
 
@@ -225,6 +227,8 @@ export const createOrder = asyncHandler(async (req: AuthRequest, res: Response) 
             , fabric_variant_id: fabric?._id
             , fabric_name: fabric?.name
             , fabric_price: fabric ? (fabric.sale_price ?? fabric.price) : undefined
+            , design_image_url: (item as any).design_image_url || undefined
+            , design_note: (item as any).design_note || undefined
         });
     }
 

@@ -8,6 +8,7 @@ const BrandEraChrome = () => {
   const { totalItems } = useCart();
   const { totalItems: wishlistItems } = useWishlist();
   const location = useLocation();
+  const [menuOpen, setMenuOpen] = React.useState(false);
   const active = (path) => location.pathname === path ? 'active' : '';
 
   const userRole = localStorage.getItem('userRole') || 'user';
@@ -16,11 +17,11 @@ const BrandEraChrome = () => {
   return <>
     <header className="be-chrome">
       <Link to="/" className="be-wordmark" aria-label="Brand Era home"><img src="/brlogo.png" alt="Brand Era" /></Link>
-      <nav aria-label="Brand Era navigation">
-        <Link className={active('/products')} to="/products">Products</Link>
-        <Link className={active('/alumni-kits')} to="/alumni-kits">Solutions</Link>
-        <Link className={active('/print-studio')} to="/print-studio">Design Studio</Link>
-        <Link className={active('/bulk-order')} to="/bulk-order">Bulk Orders</Link>
+      <nav className={menuOpen ? 'be-nav-open' : ''} aria-label="Brand Era navigation">
+        <Link className={active('/products')} to="/products" onClick={() => setMenuOpen(false)}>Products</Link>
+        <Link className={active('/alumni-kits')} to="/alumni-kits" onClick={() => setMenuOpen(false)}>Solutions</Link>
+        <Link className={active('/print-studio')} to="/print-studio" onClick={() => setMenuOpen(false)}>Design Studio</Link>
+        <Link className={active('/bulk-order')} to="/bulk-order" onClick={() => setMenuOpen(false)}>Bulk Orders</Link>
       </nav>
       <div className="be-chrome-actions">
         <Link to="/search" aria-label="Search">Search</Link>
@@ -31,8 +32,17 @@ const BrandEraChrome = () => {
           <i className="fas fa-shopping-cart"></i>
           {totalItems > 0 && <span className="be-cart-badge">{totalItems}</span>}
         </Link>
+        <button
+          className={`be-hamburger ${menuOpen ? 'be-hamburger-open' : ''}`}
+          onClick={() => setMenuOpen(o => !o)}
+          aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+          aria-expanded={menuOpen}
+        >
+          <span></span><span></span><span></span>
+        </button>
       </div>
     </header>
+    {menuOpen && <div className="be-nav-backdrop" onClick={() => setMenuOpen(false)} />}
   </>;
 };
 

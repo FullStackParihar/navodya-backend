@@ -42,6 +42,13 @@ const ProductDetailEnhanced = () => {
   const [reviews, setReviews] = useState([]);
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
   const [reviewFormData, setReviewFormData] = useState({ rating: 5, comment: '' });
+  // Custom design upload
+  const [showDesignUpload, setShowDesignUpload] = useState(false);
+  const [designImageFile, setDesignImageFile] = useState(null);
+  const [designImagePreview, setDesignImagePreview] = useState(null);
+  const [designImageUrl, setDesignImageUrl] = useState(null);
+  const [designNote, setDesignNote] = useState('');
+  const [isUploadingDesign, setIsUploadingDesign] = useState(false);
 
   useEffect(() => {
     const fetchProductAndRelated = async () => {
@@ -176,6 +183,40 @@ const ProductDetailEnhanced = () => {
     }
   };
 
+  const handleDesignFileChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.size > 9 * 1024 * 1024) { error('File too large. Max 9MB.'); return; }
+    setDesignImageFile(file);
+    setDesignImageUrl(null);
+    const reader = new FileReader();
+    reader.onload = (ev) => setDesignImagePreview(ev.target.result);
+    reader.readAsDataURL(file);
+  };
+
+  const handleUploadDesign = async () => {
+    if (!designImageFile) return;
+    const token = localStorage.getItem('token');
+    if (!token) { error('Please login to upload a design'); return; }
+    setIsUploadingDesign(true);
+    try {
+      const formData = new FormData();
+      formData.append('designs', designImageFile);
+      const data = await api.post('/payments/upload-design', formData);
+      
+      if (data.success && data.data?.files?.length > 0) {
+        setDesignImageUrl(data.data.files[0].url);
+        success('Design uploaded successfully!');
+      } else {
+        error(data.message || 'Upload failed');
+      }
+    } catch (err) {
+      error('Upload failed. Please try again.');
+    } finally {
+      setIsUploadingDesign(false);
+    }
+  };
+
   const handleAddToCart = async () => {
     if (product.sizes.length > 0 && !selectedSize) {
       error('Please select a size');
@@ -188,7 +229,7 @@ const ProductDetailEnhanced = () => {
     setIsAddingToCart(true);
     try {
       await new Promise(resolve => setTimeout(resolve, 500));
-      await addToCart({ ...product, price: getFabricPrice(selectedFabric) ?? product.price, originalPrice: selectedFabric?.salePrice !== undefined ? selectedFabric.price : product.originalPrice, selectedSize, selectedColor, selectedFabric, quantity });
+      await addToCart({ ...product, price: getFabricPrice(selectedFabric) ?? product.price, originalPrice: selectedFabric?.salePrice !== undefined ? selectedFabric.price : product.originalPrice, selectedSize, selectedColor, selectedFabric, quantity, designImageUrl: designImageUrl || null, designNote: designNote || null });
       success(`${product.name} added to cart!`);
     } catch (err) {
       error(err.message || 'Failed to add to cart');
@@ -249,8 +290,10 @@ const ProductDetailEnhanced = () => {
   };
 
   const handleCustomize = () => {
-    success('Opening Print Studio...');
-    navigate('/print-studio');
+    setShowDesignUpload(prev => !prev);
+    setTimeout(() => {
+      document.getElementById('design-upload-section')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100);
   };
 
   const handleSaveDesign = () => {
@@ -584,6 +627,121 @@ const ProductDetailEnhanced = () => {
                   </button>
                 </div>
               </div>
+            </div>
+
+            {/* Custom Design Upload Section */}
+            <div id="design-upload-section" style={{
+              marginBottom: '20px',
+              borderRadius: '16px',
+              border: '2px dashed ' + (showDesignUpload ? '#dc2626' : '#e5e7eb'),
+              overflow: 'hidden',
+              transition: 'all 0.3s ease',
+              background: showDesignUpload ? 'linear-gradient(135deg, #fff5f5 0%, #fff 100%)' : '#fafafa'
+            }}>
+              <button
+                type="button"
+                onClick={() => setShowDesignUpload(prev => !prev)}
+                style={{
+                  width: '100%', padding: '14px 20px', border: 'none', background: 'transparent',
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  cursor: 'pointer', color: showDesignUpload ? '#dc2626' : '#374151', fontWeight: 700, fontSize: '15px'
+                }}
+              >
+                <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <i className="fas fa-paint-brush" style={{ fontSize: '18px', color: '#dc2626' }}></i>
+                  Upload Your Custom Design
+                  {designImageUrl && <span style={{ background: '#16a34a', color: '#fff', fontSize: '11px', padding: '2px 8px', borderRadius: '999px', fontWeight: 600 }}>✓ Uploaded</span>}
+                </span>
+                <i className={`fas fa-chevron-${showDesignUpload ? 'up' : 'down'}`} style={{ fontSize: '14px' }}></i>
+              </button>
+
+              {showDesignUpload && (
+                <div style={{ padding: '0 20px 20px' }}>
+                  <p style={{ fontSize: '13px', color: '#6b7280', margin: '0 0 16px', lineHeight: 1.5 }}>
+                    Have your own logo or artwork? Upload it here and we'll print it on your product.
+                    Supported: JPG, PNG, WEBP (max 9MB)
+                  </p>
+
+                  {/* Drop Zone */}
+                  <label style={{
+                    display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                    gap: '12px', padding: '24px', border: '2px dashed #dc2626', borderRadius: '12px',
+                    cursor: 'pointer', background: '#fff', marginBottom: '16px', transition: 'all 0.2s',
+                    minHeight: designImagePreview ? 'auto' : '140px'
+                  }}>
+                    <input
+                      type="file" accept="image/*" style={{ display: 'none' }}
+                      onChange={handleDesignFileChange}
+                    />
+                    {designImagePreview ? (
+                      <div style={{ textAlign: 'center' }}>
+                        <img
+                          src={designImagePreview} alt="Design preview"
+                          style={{ maxHeight: '160px', maxWidth: '100%', borderRadius: '8px', objectFit: 'contain', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                        />
+                        <p style={{ margin: '8px 0 0', fontSize: '12px', color: '#6b7280' }}>Click to change image</p>
+                      </div>
+                    ) : (
+                      <>
+                        <i className="fas fa-cloud-upload-alt" style={{ fontSize: '36px', color: '#dc2626' }}></i>
+                        <div style={{ textAlign: 'center' }}>
+                          <p style={{ margin: 0, fontWeight: 700, color: '#111827', fontSize: '14px' }}>Click to upload design</p>
+                          <p style={{ margin: '4px 0 0', fontSize: '12px', color: '#9ca3af' }}>JPG, PNG, WEBP up to 9MB</p>
+                        </div>
+                      </>
+                    )}
+                  </label>
+
+                  {/* Design Note */}
+                  <textarea
+                    placeholder="Design note (optional) – e.g. 'Print on left chest, white ink'"
+                    value={designNote}
+                    onChange={e => setDesignNote(e.target.value)}
+                    rows={2}
+                    style={{
+                      width: '100%', borderRadius: '8px', border: '1px solid #e5e7eb',
+                      padding: '10px 12px', fontSize: '13px', resize: 'vertical',
+                      boxSizing: 'border-box', marginBottom: '12px', outline: 'none'
+                    }}
+                  />
+
+                  {/* Upload / Status */}
+                  {designImageUrl ? (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 14px', background: '#f0fdf4', borderRadius: '8px', border: '1px solid #bbf7d0' }}>
+                      <i className="fas fa-check-circle" style={{ color: '#16a34a', fontSize: '18px' }}></i>
+                      <div>
+                        <p style={{ margin: 0, fontWeight: 700, color: '#15803d', fontSize: '13px' }}>Design uploaded to cloud!</p>
+                        <p style={{ margin: 0, fontSize: '11px', color: '#6b7280' }}>It will be attached to your order.</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => { setDesignImageUrl(null); setDesignImagePreview(null); setDesignImageFile(null); }}
+                        style={{ marginLeft: 'auto', background: 'none', border: 'none', color: '#dc2626', cursor: 'pointer', fontSize: '13px', fontWeight: 700 }}
+                      >Remove</button>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={handleUploadDesign}
+                      disabled={!designImageFile || isUploadingDesign}
+                      style={{
+                        width: '100%', padding: '12px', borderRadius: '10px', border: 'none',
+                        background: designImageFile ? '#dc2626' : '#e5e7eb',
+                        color: designImageFile ? '#fff' : '#9ca3af',
+                        fontWeight: 700, fontSize: '14px', cursor: designImageFile ? 'pointer' : 'not-allowed',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                        transition: 'all 0.2s'
+                      }}
+                    >
+                      {isUploadingDesign ? (
+                        <><i className="fas fa-spinner fa-spin"></i> Uploading to Cloud...</>
+                      ) : (
+                        <><i className="fas fa-cloud-upload-alt"></i> Upload Design to Cloud</>
+                      )}
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Main Action Buttons - Full Width Row */}

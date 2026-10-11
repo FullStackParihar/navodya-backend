@@ -17,6 +17,8 @@ export interface IOrderItem {
     fabric_variant_id?: mongoose.Types.ObjectId;
     fabric_name?: string;
     fabric_price?: number;
+    design_image_url?: string;
+    design_note?: string;
 }
 
 export interface IOrderStatusHistory {
@@ -105,6 +107,8 @@ const orderSchema = new mongoose.Schema({
         ,fabric_variant_id: mongoose.Schema.Types.ObjectId
         ,fabric_name: String
         ,fabric_price: { type: Number, min: 0 }
+        ,design_image_url: { type: String }
+        ,design_note: { type: String }
     }],
     shipping_address: {
         firstname: { type: String },

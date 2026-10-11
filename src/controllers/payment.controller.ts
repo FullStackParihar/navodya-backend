@@ -274,7 +274,9 @@ export const createCashfreeOrder = asyncHandler(async (req: AuthRequest, res: Re
                 color: item.color,
                 fabric_variant_id: fabric?._id,
                 fabric_name: fabric?.name,
-                fabric_price: fabric ? (fabric.sale_price ?? fabric.price) : undefined
+                fabric_price: fabric ? (fabric.sale_price ?? fabric.price) : undefined,
+                design_image_url: (item as any).design_image_url || undefined,
+                design_note: (item as any).design_note || undefined
             });
         }
 
