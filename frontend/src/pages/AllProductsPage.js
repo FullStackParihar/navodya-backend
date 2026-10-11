@@ -69,6 +69,7 @@ const AllProductsPage = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [notice, setNotice] = useState('');
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const activeCategory = searchParams.get('category') || 'all';
   const activeSort = searchParams.get('sort') || 'default';
@@ -142,11 +143,11 @@ const AllProductsPage = () => {
       <main className="sf">
         <header className="sf-header">
           <Link to="/" className="sf-logo"><img src="/brlogo.png" alt="Brand Era" /></Link>
-          <nav>
-            <Link to="/products">Products</Link>
-            <Link to="/alumni-kits">Solutions</Link>
-            <Link to="/print-studio">Design Studio</Link>
-            <Link to="/bulk-order">Bulk Orders</Link>
+          <nav className={menuOpen ? 'sf-nav-open' : ''}>
+            <Link to="/products" onClick={() => setMenuOpen(false)}>Products</Link>
+            <Link to="/alumni-kits" onClick={() => setMenuOpen(false)}>Solutions</Link>
+            <Link to="/print-studio" onClick={() => setMenuOpen(false)}>Design Studio</Link>
+            <Link to="/bulk-order" onClick={() => setMenuOpen(false)}>Bulk Orders</Link>
           </nav>
           <div className="sf-header-actions">
             <Link to="/search" style={{ fontSize:'24px', display:'inline-flex', alignItems:'center' }}>&#8981;</Link>
@@ -156,8 +157,17 @@ const AllProductsPage = () => {
               <i className="fas fa-shopping-cart"></i>
               {totalItems > 0 && <span className="sf-cart-badge">{totalItems}</span>}
             </Link>
+            <button
+              className={`sf-hamburger ${menuOpen ? 'sf-hamburger-open' : ''}`}
+              onClick={() => setMenuOpen(o => !o)}
+              aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={menuOpen}
+            >
+              <span></span><span></span><span></span>
+            </button>
           </div>
         </header>
+        {menuOpen && <div className="sf-nav-backdrop" onClick={() => setMenuOpen(false)} />}
 
         <section className="sf-category-hero">
           <p className="sf-kicker">Brand Era Collection</p>

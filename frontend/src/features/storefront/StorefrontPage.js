@@ -134,8 +134,18 @@ const StorefrontPage = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [notice, setNotice] = useState('');
+  const [menuOpen, setMenuOpen] = useState(false);
   const isHome = location.pathname === '/';
   const current = pageData[location.pathname] || pageData['/tshirts'];
+
+  // Close mobile menu on route change
+  useEffect(() => { setMenuOpen(false); }, [location.pathname]);
+
+  // Prevent body scroll when menu open
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [menuOpen]);
 
   useEffect(() => {
     let alive = true;
@@ -177,11 +187,11 @@ const StorefrontPage = () => {
         {/* ── NAV ──────────────────────────────── */}
         <header className="sf-header">
           <Link to="/" className="sf-logo"><img src="/brlogo.png" alt="Brand Era" /></Link>
-          <nav>
-            <Link to="/products">Products</Link>
-            <Link to="/alumni-kits">Solutions</Link>
-            <Link to="/print-studio">Design studio</Link>
-            <Link to="/bulk-order">Bulk orders</Link>
+          <nav className={menuOpen ? 'sf-nav-open' : ''}>
+            <Link to="/products" onClick={() => setMenuOpen(false)}>Products</Link>
+            <Link to="/alumni-kits" onClick={() => setMenuOpen(false)}>Solutions</Link>
+            <Link to="/print-studio" onClick={() => setMenuOpen(false)}>Design studio</Link>
+            <Link to="/bulk-order" onClick={() => setMenuOpen(false)}>Bulk orders</Link>
           </nav>
           <div className="sf-header-actions">
             <Link to="/search" style={{ fontSize: '24px', display: 'inline-flex', alignItems: 'center' }}>&#8981;</Link>
@@ -191,8 +201,17 @@ const StorefrontPage = () => {
               <i className="fas fa-shopping-cart"></i>
               {totalItems > 0 && <span className="sf-cart-badge">{totalItems}</span>}
             </Link>
+            <button
+              className={`sf-hamburger ${menuOpen ? 'sf-hamburger-open' : ''}`}
+              onClick={() => setMenuOpen(o => !o)}
+              aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={menuOpen}
+            >
+              <span></span><span></span><span></span>
+            </button>
           </div>
         </header>
+        {menuOpen && <div className="sf-nav-backdrop" onClick={() => setMenuOpen(false)} />}
 
         {/* ── HOME vs CATEGORY ─────────────────── */}
         {isHome ? (

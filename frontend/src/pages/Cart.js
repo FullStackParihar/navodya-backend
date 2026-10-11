@@ -201,6 +201,16 @@ const Cart = () => {
                           <span>Color: <strong style={{ color: 'var(--text-primary, #000)' }}>{item.selectedColor || item.color}</strong></span>
                         )}
                       </div>
+                      {/* Custom Design Thumbnail */}
+                      {item.designImageUrl && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', padding: '6px 10px', background: '#fff5f5', borderRadius: '8px', border: '1px solid #fecaca' }}>
+                          <img src={item.designImageUrl} alt="Custom design" style={{ width: '36px', height: '36px', borderRadius: '4px', objectFit: 'cover', border: '1px solid #dc2626' }} />
+                          <div>
+                            <p style={{ margin: 0, fontSize: '11px', fontWeight: 700, color: '#dc2626' }}>Custom Design Attached</p>
+                            {item.designNote && <p style={{ margin: 0, fontSize: '11px', color: '#6b7280' }}>{item.designNote}</p>}
+                          </div>
+                        </div>
+                      )}
                       <div className="item-price-enhanced">
                         <span className="current-price">₹{item.price}</span>
                         {item.originalPrice && (

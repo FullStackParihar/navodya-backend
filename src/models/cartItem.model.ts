@@ -9,6 +9,8 @@ export interface ICartItem extends Document {
     fabric_variant_id?: mongoose.Types.ObjectId;
     fabric_name?: string;
     fabric_price?: number;
+    design_image_url?: string;
+    design_note?: string;
     created_at: Date;
     updated_at: Date;
 }
@@ -22,6 +24,8 @@ const cartItemSchema = new mongoose.Schema({
     ,fabric_variant_id: { type: mongoose.Schema.Types.ObjectId }
     ,fabric_name: { type: String }
     ,fabric_price: { type: Number, min: 0 }
+    ,design_image_url: { type: String }
+    ,design_note: { type: String }
 }, {
     timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
     toJSON: { virtuals: true },

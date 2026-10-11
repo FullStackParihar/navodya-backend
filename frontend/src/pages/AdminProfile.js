@@ -1252,6 +1252,7 @@ const AdminProfile = () => {
                         <tr>
                           <th>Product</th>
                           <th>Size / Color</th>
+                          <th>Custom Design</th>
                           <th>Qty</th>
                           <th>Unit Price</th>
                           <th>Line Total</th>
@@ -1276,6 +1277,30 @@ const AdminProfile = () => {
                               {item.color && <span className="item-attr-badge color-badge">{item.color}</span>}
                               {item.fabric_name && <span className="item-attr-badge">Fabric: {item.fabric_name}</span>}
                               {!item.size && !item.color && !item.fabric_name && <span style={{ color: '#9ca3af' }}>—</span>}
+                            </td>
+                            <td style={{ textAlign: 'center' }}>
+                              {item.design_image_url ? (
+                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+                                  <a href={item.design_image_url} target="_blank" rel="noopener noreferrer" title="Click to view full design">
+                                    <img
+                                      src={item.design_image_url}
+                                      alt="Custom design"
+                                      style={{ width: 52, height: 52, objectFit: 'cover', borderRadius: '6px', border: '2px solid #dc2626', cursor: 'pointer', boxShadow: '0 2px 8px rgba(220,38,38,0.2)' }}
+                                      onError={e => { e.currentTarget.style.display = 'none'; }}
+                                    />
+                                  </a>
+                                  {item.design_note && (
+                                    <span style={{ fontSize: '10px', color: '#6b7280', maxWidth: '80px', textAlign: 'center', wordBreak: 'break-word', lineHeight: 1.3 }}>
+                                      {item.design_note}
+                                    </span>
+                                  )}
+                                  <a href={item.design_image_url} target="_blank" rel="noopener noreferrer" style={{ fontSize: '10px', color: '#dc2626', fontWeight: 700, textDecoration: 'none' }}>
+                                    <i className="fas fa-external-link-alt" style={{ fontSize: '9px' }} /> View Full
+                                  </a>
+                                </div>
+                              ) : (
+                                <span style={{ color: '#d1d5db', fontSize: '12px' }}>—</span>
+                              )}
                             </td>
                             <td style={{ textAlign: 'center', fontWeight: 600 }}>{item.quantity}</td>
                             <td>₹{item.price?.toFixed(2)}</td>

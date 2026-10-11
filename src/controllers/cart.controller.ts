@@ -69,8 +69,8 @@ export const getCart = asyncHandler(async (req: AuthRequest, res: Response) => {
 });
 
 export const addToCart = asyncHandler(async (req: AuthRequest, res: Response) => {
-  const { productId, quantity, size, color, fabricVariantId } = req.body;
-  console.log(`addToCart: User ${req.userId} adding ${productId}, size=${size}, color=${color}`);
+  const { productId, quantity, size, color, fabricVariantId, designImageUrl, designNote } = req.body;
+  console.log(`addToCart: User ${req.userId} adding ${productId}, size=${size}, color=${color}, designImageUrl=${designImageUrl}`);
 
   const product = await Product.findOne({ _id: productId, is_active: true });
 
@@ -142,6 +142,8 @@ export const addToCart = asyncHandler(async (req: AuthRequest, res: Response) =>
     }
 
     cartItem.quantity = newQuantity;
+    if (designImageUrl) cartItem.design_image_url = designImageUrl;
+    if (designNote !== undefined) cartItem.design_note = designNote;
     await cartItem.save();
   } else {
     cartItem = await CartItem.create({
@@ -153,6 +155,8 @@ export const addToCart = asyncHandler(async (req: AuthRequest, res: Response) =>
       fabric_variant_id: fabricVariant?._id,
       fabric_name: fabricVariant?.name,
       fabric_price: fabricVariant ? (fabricVariant.sale_price ?? fabricVariant.price) : undefined,
+      design_image_url: designImageUrl || undefined,
+      design_note: designNote || undefined,
     });
   }
 
