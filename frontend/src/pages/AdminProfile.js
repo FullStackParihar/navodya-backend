@@ -70,6 +70,9 @@ const AdminProfile = () => {
   const [fetchingLiveTracking, setFetchingLiveTracking] = useState(false);
 
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState('ALL');
+  const [selectedUserDetail, setSelectedUserDetail] = useState(null);
+  const [userOrders, setUserOrders] = useState([]);
+  const [loadingUserOrders, setLoadingUserOrders] = useState(false);
 
 
 
@@ -1234,6 +1237,7 @@ const AdminProfile = () => {
                         ))}
                       </tbody>
                     </table>
+
                   </div>
 
                   {/* Status Update Panel */}
@@ -1476,28 +1480,28 @@ const AdminProfile = () => {
       </div>
       {stats && (
         <div className="stats-grid">
-          <div className="stat-card primary">
+          <div className="stat-card primary" onClick={() => handleTabChange('users')} style={{ cursor: 'pointer' }} title="Go to Users">
             <div className="stat-icon"><i className="fas fa-users"></i></div>
             <div className="stat-content">
               <div className="stat-number">{stats.totalUsers}</div>
               <div className="stat-label">Total Users</div>
             </div>
           </div>
-          <div className="stat-card success">
+          <div className="stat-card success" onClick={() => handleTabChange('orders')} style={{ cursor: 'pointer' }} title="Go to Orders">
             <div className="stat-icon"><i className="fas fa-shopping-bag"></i></div>
             <div className="stat-content">
               <div className="stat-number">{stats.totalOrders}</div>
               <div className="stat-label">Total Orders</div>
             </div>
           </div>
-          <div className="stat-card revenue">
+          <div className="stat-card revenue" onClick={() => handleTabChange('orders')} style={{ cursor: 'pointer' }} title="Go to Orders">
             <div className="stat-icon"><i className="fas fa-rupee-sign"></i></div>
             <div className="stat-content">
               <div className="stat-number">₹{stats.revenue?.toLocaleString()}</div>
               <div className="stat-label">Total Revenue</div>
             </div>
           </div>
-          <div className="stat-card info">
+          <div className="stat-card info" onClick={() => handleTabChange('products')} style={{ cursor: 'pointer' }} title="Go to Products">
             <div className="stat-icon"><i className="fas fa-tshirt"></i></div>
             <div className="stat-content">
               <div className="stat-number">{stats.totalProducts}</div>
@@ -1691,6 +1695,7 @@ const AdminProfile = () => {
                       ))}
                     </tbody>
                   </table>
+
                 </div>
               )}
             </div>
@@ -2253,6 +2258,33 @@ const AdminProfile = () => {
 
 
 
+  const handleOpenUserDetail = async (user) => {
+    setSelectedUserDetail(user);
+    setUserOrders([]);
+    setLoadingUserOrders(true);
+    try {
+      const res = await api.get(`/admin/users/${user._id}/orders`);
+      if (res.success && Array.isArray(res.data)) {
+        setUserOrders(res.data);
+      } else {
+        // Fallback: filter orders from state if orders already fetched
+        const userPrevOrders = orders.filter(o => {
+          const uid = typeof o.user_id === 'object' ? o.user_id?._id : o.user_id;
+          return String(uid) === String(user._id);
+        });
+        setUserOrders(userPrevOrders);
+      }
+    } catch (err) {
+      const userPrevOrders = orders.filter(o => {
+        const uid = typeof o.user_id === 'object' ? o.user_id?._id : o.user_id;
+        return String(uid) === String(user._id);
+      });
+      setUserOrders(userPrevOrders);
+    } finally {
+      setLoadingUserOrders(false);
+    }
+  };
+
   const renderUsers = () => (
     <div className="admin-section">
       <div className="section-header">
@@ -2263,7 +2295,7 @@ const AdminProfile = () => {
           <thead>
             <tr>
               <th>Name</th>
-              <th>Email</th>
+              <th>Email / Phone</th>
               <th>Role</th>
               <th>Joined At</th>
               <th>Actions</th>
@@ -2272,11 +2304,15 @@ const AdminProfile = () => {
           <tbody>
             {users.map(user => (
               <tr key={user._id}>
-                <td>{user.name}</td>
-                <td>{user.email}</td>
+                <td style={{ cursor: 'pointer', fontWeight: '600', color: '#2563eb' }} title="Click to view details and orders" onClick={() => handleOpenUserDetail(user)}>{user.name}</td>
+                <td>
+                  <div>{user.email}</div>
+                  {user.phone && <div style={{ color: '#6b7280', fontSize: '12px', marginTop: '2px' }}><i className="fas fa-phone" style={{ marginRight: '4px', fontSize: '10px' }}></i>{user.phone}</div>}
+                </td>
                 <td><span className={`role-badge ${user.role}`}>{user.role}</span></td>
                 <td>{new Date(user.created_at).toLocaleDateString()}</td>
                 <td>
+                  <button className="action-icon" title="View Details" style={{ background: '#e0f2fe', color: '#0369a1', marginRight: '6px' }} onClick={() => handleOpenUserDetail(user)}><i className="fas fa-eye"></i></button>
                   <button className="action-icon delete" onClick={() => deleteItem('user', user._id)}><i className="fas fa-trash"></i></button>
                 </td>
               </tr>
@@ -2284,6 +2320,145 @@ const AdminProfile = () => {
           </tbody>
         </table>
       </div>
+
+      {/* User Detail Modal */}
+      {selectedUserDetail && (
+        <div className="admin-modal-overlay" onClick={() => setSelectedUserDetail(null)}>
+          <div className="order-detail-modal" onClick={e => e.stopPropagation()} style={{ maxWidth: '720px', width: '92%' }}>
+            <div className="modal-header">
+              <div>
+                <h2 style={{ margin: 0 }}>User Details</h2>
+              </div>
+              <button className="modal-close-btn" onClick={() => setSelectedUserDetail(null)}><i className="fas fa-times"></i></button>
+            </div>
+            <div className="order-detail-modal-body" style={{ padding: '24px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px' }}>
+                {selectedUserDetail.avatar ? (
+                  <img src={selectedUserDetail.avatar} alt="avatar" style={{ width: '64px', height: '64px', borderRadius: '50%', objectFit: 'cover', border: '2px solid #e5e7eb' }} />
+                ) : (
+                  <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: '#e0f2fe', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '28px', color: '#0369a1' }}>
+                    <i className="fas fa-user"></i>
+                  </div>
+                )}
+                <div>
+                  <div style={{ fontWeight: '700', fontSize: '18px' }}>{selectedUserDetail.name}</div>
+                  <span className={`role-badge ${selectedUserDetail.role}`}>{selectedUserDetail.role}</span>
+                </div>
+              </div>
+              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <tbody>
+                  {[
+                    { label: 'Email', icon: 'fa-envelope', value: selectedUserDetail.email },
+                    { label: 'Phone', icon: 'fa-phone', value: selectedUserDetail.phone || '—' },
+                    { label: 'Address', icon: 'fa-map-marker-alt', value: selectedUserDetail.address || '—' },
+                    { label: 'City', icon: 'fa-city', value: selectedUserDetail.city || '—' },
+                    { label: 'State', icon: 'fa-map', value: selectedUserDetail.state || '—' },
+                    { label: 'Pincode', icon: 'fa-mail-bulk', value: selectedUserDetail.pincode || '—' },
+                    { label: 'JNV School', icon: 'fa-school', value: selectedUserDetail.jnvSchool || '—' },
+                    { label: 'Batch Year', icon: 'fa-graduation-cap', value: selectedUserDetail.batchYear || '—' },
+                    { label: 'Bio', icon: 'fa-info-circle', value: selectedUserDetail.bio || '—' },
+                    { label: 'Joined', icon: 'fa-calendar', value: new Date(selectedUserDetail.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }) },
+                  ].map(({ label, icon, value }) => (
+                    <tr key={label} style={{ borderBottom: '1px solid #f3f4f6' }}>
+                      <td style={{ padding: '10px 8px', color: '#6b7280', width: '130px', fontSize: '13px' }}>
+                        <i className={`fas ${icon}`} style={{ marginRight: '6px', width: '14px', textAlign: 'center' }}></i>{label}
+                      </td>
+                      <td style={{ padding: '10px 8px', fontWeight: '500', fontSize: '14px', wordBreak: 'break-word' }}>{value}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {/* Previous Orders Section */}
+              <div style={{ marginTop: '28px', borderTop: '2px solid #f1f5f9', paddingTop: '20px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+                  <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '700', color: '#1e293b', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <i className="fas fa-shopping-bag" style={{ color: '#6366f1' }}></i>
+                    Previous Orders ({userOrders.length})
+                  </h3>
+                  {userOrders.length > 0 && (
+                    <span style={{ fontSize: '13px', color: '#64748b' }}>
+                      Total Spend: <strong style={{ color: '#0f172a' }}>₹{userOrders.reduce((sum, o) => sum + (Number(o.total_amount) || 0), 0).toLocaleString('en-IN')}</strong>
+                    </span>
+                  )}
+                </div>
+
+                {loadingUserOrders ? (
+                  <div style={{ textAlign: 'center', padding: '24px 0', color: '#64748b' }}>
+                    <i className="fas fa-spinner fa-spin" style={{ marginRight: '8px' }}></i> Loading previous orders...
+                  </div>
+                ) : userOrders.length === 0 ? (
+                  <div style={{ textAlign: 'center', padding: '20px', background: '#f8fafc', borderRadius: '10px', color: '#64748b', fontSize: '14px' }}>
+                    <i className="fas fa-box-open" style={{ fontSize: '24px', display: 'block', marginBottom: '8px', color: '#cbd5e1' }}></i>
+                    No previous orders found for this customer.
+                  </div>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxHeight: '280px', overflowY: 'auto', paddingRight: '4px' }}>
+                    {userOrders.map((order) => (
+                      <div
+                        key={order._id}
+                        style={{
+                          background: '#f8fafc',
+                          border: '1px solid #e2e8f0',
+                          borderRadius: '10px',
+                          padding: '12px 16px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          gap: '12px',
+                          flexWrap: 'wrap',
+                          transition: 'all 0.2s ease'
+                        }}
+                      >
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                          <span style={{ fontWeight: '600', fontSize: '13px', color: '#0f172a' }}>
+                            Order #{order.order_number || order._id.slice(-6).toUpperCase()}
+                          </span>
+                          <span style={{ fontSize: '12px', color: '#64748b' }}>
+                            {new Date(order.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })} • {order.items?.length || 0} item(s)
+                          </span>
+                        </div>
+
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                          <span className={`status-pill ${(order.status || 'pending').toLowerCase()}`} style={{ fontSize: '11px', padding: '4px 10px' }}>
+                            {order.status || 'PENDING'}
+                          </span>
+                          <span style={{ fontWeight: '700', fontSize: '14px', color: '#0f172a' }}>
+                            ₹{(Number(order.total_amount) || 0).toLocaleString('en-IN')}
+                          </span>
+                          <button
+                            type="button"
+                            title="View Full Order Details"
+                            style={{
+                              background: '#e0f2fe',
+                              color: '#0369a1',
+                              border: 'none',
+                              borderRadius: '6px',
+                              padding: '6px 12px',
+                              fontSize: '12px',
+                              fontWeight: '600',
+                              cursor: 'pointer',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px'
+                            }}
+                            onClick={() => {
+                              setSelectedUserDetail(null);
+                              handleViewOrder(order._id);
+                            }}
+                          >
+                            <i className="fas fa-eye"></i> View Order
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 
@@ -2465,6 +2640,7 @@ const AdminProfile = () => {
                         ))}
                       </tbody>
                     </table>
+
                   </div>
                 </div>
               )}
@@ -2519,6 +2695,7 @@ const AdminProfile = () => {
                         ))}
                       </tbody>
                     </table>
+
                   </div>
                 </div>
               )}
@@ -2568,6 +2745,7 @@ const AdminProfile = () => {
                         ))}
                       </tbody>
                     </table>
+
                   </div>
                 </div>
               )}
@@ -2617,6 +2795,7 @@ const AdminProfile = () => {
                         ))}
                       </tbody>
                     </table>
+
                   </div>
                 </div>
               )}
@@ -2674,6 +2853,7 @@ const AdminProfile = () => {
                         ))}
                       </tbody>
                     </table>
+
                   </div>
                 </div>
               )}
@@ -3422,6 +3602,7 @@ const AdminProfile = () => {
                       )}
                     </tbody>
                   </table>
+
                 </div>
               </div>
             </div>

@@ -6,7 +6,8 @@ import {
     getAllUsers,
     updateOrderStatus,
     updateOrderTracking,
-    deleteUser
+    deleteUser,
+    getUserOrders
 } from '../controllers/admin.controller.js';
 import {
     getAdminBulkOrders,
@@ -50,6 +51,7 @@ router.get('/orders/:orderId', getAdminOrderById);
 router.get('/bulk-orders', getAdminBulkOrders);
 router.get('/bulk-orders/:id', getAdminBulkOrderById);
 router.get('/users', getAllUsers);
+router.get('/users/:userId/orders', getUserOrders);
 router.patch('/orders/:orderId/status', updateOrderStatus);
 router.patch('/orders/:orderId/tracking', updateOrderTracking);
 router.patch('/bulk-orders/:id/status', updateAdminBulkOrderStatus);

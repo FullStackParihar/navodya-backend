@@ -107,6 +107,7 @@ const regionsData = [
 const HomeEpic = () => {
   const galleryRef = useRef(null);
   const regionsRef = useRef(null);
+  const categoriesRef = useRef(null);
   const [giveaways, setGiveaways] = useState([]);
   const [giveawaysLoading, setGiveawaysLoading] = useState(true);
   const [giveawaysError, setGiveawaysError] = useState(false);
@@ -210,6 +211,16 @@ const HomeEpic = () => {
     }
   };
 
+  const scrollCategories = (direction) => {
+    if (categoriesRef.current) {
+      const scrollAmount = 320;
+      categoriesRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
+
   const scrollRegions = (direction) => {
     if (regionsRef.current) {
       const scrollAmount = 300;
@@ -231,27 +242,41 @@ const HomeEpic = () => {
           <div className="section-header">
             <span className="section-tag">Explore</span>
             <h2 className="section-title">Shop by <span className="highlight">Category</span></h2>
+            <p className="section-subtitle">Find everything from premium JNV tees to alumni kits — curated just for you</p>
           </div>
-          
-          <div className="categories-grid">
-            {categories.map((category, index) => (
-              <Link key={index} to={category.link} className="category-card" style={{ '--delay': `${index * 0.12}s` }}>
-                <div className="category-image">
-                  <img src={category.image} alt={category.name} />
-                  <div className="category-overlay"></div>
-                  <div className="category-icon">
-                    <i className={`fas ${category.icon}`}></i>
+
+          <div className="categories-wrapper">
+            <button className="scroll-btn category-scroll-btn category-scroll-left" onClick={() => scrollCategories('left')} aria-label="Scroll left">
+              <i className="fas fa-chevron-left"></i>
+            </button>
+            <div className="categories-grid" ref={categoriesRef}>
+              {categories.map((category, index) => (
+                <Link key={index} to={category.link} className="category-card" style={{ '--delay': `${index * 0.1}s` }}>
+                  <div className="category-image">
+                    <img src={category.image} alt={category.name} loading="lazy" />
+                    <div className="category-icon">
+                      <i className={`fas ${category.icon}`}></i>
+                    </div>
                   </div>
-                </div>
-                <div className="category-info">
-                  <h3>{category.name}</h3>
-                  <p>{category.description}</p>
-                  <span className="category-arrow">
-                    <i className="fas fa-arrow-right"></i>
-                  </span>
-                </div>
-              </Link>
-            ))}
+                  <div className="category-info">
+                    <h3>{category.name}</h3>
+                    <p>{category.description}</p>
+                    <span className="category-arrow">
+                      <i className="fas fa-arrow-right"></i>
+                    </span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+            <button className="scroll-btn category-scroll-btn category-scroll-right" onClick={() => scrollCategories('right')} aria-label="Scroll right">
+              <i className="fas fa-chevron-right"></i>
+            </button>
+          </div>
+
+          <div className="categories-cta">
+            <Link to="/tshirts" className="cat-cta-btn">
+              <i className="fas fa-th-large"></i> Browse All Collections
+            </Link>
           </div>
         </div>
       </section>
