@@ -140,3 +140,13 @@ export const deleteUser = asyncHandler(async (req: AuthRequest, res: Response) =
 
     res.status(200).json(new ApiResponse(200, null, 'User deleted successfully'));
 });
+
+
+export const getUserOrders = asyncHandler(async (req: AuthRequest, res: Response) => {
+    const { userId } = req.params;
+    const orders = await Order.find({ user_id: userId })
+        .populate('user_id', 'name email phone')
+        .sort({ created_at: -1 });
+
+    res.status(200).json(new ApiResponse(200, orders, 'User orders retrieved successfully'));
+});
