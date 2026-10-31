@@ -17,11 +17,13 @@ import shipwayRoutes from './shipway.routes.js';
 
 import eventRoutes from './event.routes.js';
 import alumniMeetRoutes from './alumniMeet.routes.js';
+import serviceRoutes from './service.routes.js';
 
 const router = Router();
 
 router.use('/auth', authRoutes);
 router.use('/', productRoutes);
+router.use('/services', serviceRoutes);
 router.use('/upload', uploadRoutes);
 router.use('/cart', cartRoutes);
 router.use('/favorites', favoriteRoutes);

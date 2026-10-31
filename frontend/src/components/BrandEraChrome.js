@@ -9,7 +9,10 @@ const BrandEraChrome = () => {
   const { totalItems: wishlistItems } = useWishlist();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = React.useState(false);
-  const active = (path) => location.pathname === path ? 'active' : '';
+  const active = (path) =>
+    location.pathname === path || (path !== '/' && location.pathname.startsWith(path + '/'))
+      ? 'active'
+      : '';
 
   const userRole = localStorage.getItem('userRole') || 'user';
   const isAdmin = userRole === 'admin' || localStorage.getItem('userEmail') === 'admin@navodaya.com';
@@ -19,6 +22,7 @@ const BrandEraChrome = () => {
       <Link to="/" className="be-wordmark" aria-label="Brand Era home"><img src="/brlogo.png" alt="Brand Era" /></Link>
       <nav className={menuOpen ? 'be-nav-open' : ''} aria-label="Brand Era navigation">
         <Link className={active('/products')} to="/products" onClick={() => setMenuOpen(false)}>Products</Link>
+        <Link className={active('/services')} to="/services" onClick={() => setMenuOpen(false)}>Services</Link>
         <Link className={active('/alumni-kits')} to="/alumni-kits" onClick={() => setMenuOpen(false)}>Solutions</Link>
         <Link className={active('/print-studio')} to="/print-studio" onClick={() => setMenuOpen(false)}>Design Studio</Link>
         <Link className={active('/bulk-order')} to="/bulk-order" onClick={() => setMenuOpen(false)}>Bulk Orders</Link>
@@ -64,6 +68,7 @@ export const BrandEraFooter = () => (
         </div>
         <div className="be-footer-col">
           <h4>Services</h4>
+          <Link to="/services">All Services</Link>
           <Link to="/print-studio">Design Studio</Link>
           <Link to="/bulk-order">Bulk Orders</Link>
           <Link to="/account">My Account</Link>

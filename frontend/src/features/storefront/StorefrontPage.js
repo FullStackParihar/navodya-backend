@@ -4,6 +4,8 @@ import api, { resolveImageUrl } from '../../utils/api';
 import { useCart } from '../../context/CartContext';
 import StorefrontStyles from './StorefrontStyles';
 import HomepageBanner from '../../components/HomepageBanner';
+import PrintingServicesGrid from '../../components/PrintingServicesGrid';
+import StorefrontHeader from '../../components/StorefrontHeader';
 
 const pageData = {
   '/tshirts': ['Custom T-shirts', 'Made to be worn, remembered, and talked about.', 'T-Shirts'],
@@ -130,22 +132,13 @@ const SharedFooter = () => (
 
 const StorefrontPage = () => {
   const location = useLocation();
-  const { addToCart, totalItems } = useCart();
+  const { addToCart } = useCart();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [notice, setNotice] = useState('');
-  const [menuOpen, setMenuOpen] = useState(false);
+
   const isHome = location.pathname === '/';
   const current = pageData[location.pathname] || pageData['/tshirts'];
-
-  // Close mobile menu on route change
-  useEffect(() => { setMenuOpen(false); }, [location.pathname]);
-
-  // Prevent body scroll when menu open
-  useEffect(() => {
-    document.body.style.overflow = menuOpen ? 'hidden' : '';
-    return () => { document.body.style.overflow = ''; };
-  }, [menuOpen]);
 
   useEffect(() => {
     let alive = true;
@@ -177,41 +170,12 @@ const StorefrontPage = () => {
     }
   };
 
-  const userRole = localStorage.getItem('userRole') || 'user';
-  const isAdmin = userRole === 'admin' || localStorage.getItem('userEmail') === 'admin@navodaya.com';
-
   return (
     <>
       <StorefrontStyles />
       <main className="sf">
         {/* ── NAV ──────────────────────────────── */}
-        <header className="sf-header">
-          <Link to="/" className="sf-logo"><img src="/brlogo.png" alt="Brand Era" /></Link>
-          <nav className={menuOpen ? 'sf-nav-open' : ''}>
-            <Link to="/products" onClick={() => setMenuOpen(false)}>Products</Link>
-            <Link to="/alumni-kits" onClick={() => setMenuOpen(false)}>Solutions</Link>
-            <Link to="/print-studio" onClick={() => setMenuOpen(false)}>Design studio</Link>
-            <Link to="/bulk-order" onClick={() => setMenuOpen(false)}>Bulk orders</Link>
-          </nav>
-          <div className="sf-header-actions">
-            <Link to="/search" style={{ fontSize: '24px', display: 'inline-flex', alignItems: 'center' }}>&#8981;</Link>
-            {isAdmin && <Link to="/admin-profile" style={{ display: 'inline-flex', alignItems: 'center', color: '#e63322', fontWeight: 'bold' }}>👑 Admin</Link>}
-            <Link to="/account" style={{ display: 'inline-flex', alignItems: 'center' }}>Account</Link>
-            <Link to="/cart" className="sf-cart-link" aria-label="Cart">
-              <i className="fas fa-shopping-cart"></i>
-              {totalItems > 0 && <span className="sf-cart-badge">{totalItems}</span>}
-            </Link>
-            <button
-              className={`sf-hamburger ${menuOpen ? 'sf-hamburger-open' : ''}`}
-              onClick={() => setMenuOpen(o => !o)}
-              aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-              aria-expanded={menuOpen}
-            >
-              <span></span><span></span><span></span>
-            </button>
-          </div>
-        </header>
-        {menuOpen && <div className="sf-nav-backdrop" onClick={() => setMenuOpen(false)} />}
+        <StorefrontHeader />
 
         {/* ── HOME vs CATEGORY ─────────────────── */}
         {isHome ? (
@@ -248,6 +212,11 @@ const StorefrontPage = () => {
               <p>Start creating</p>
               {categories.map(([name, path]) => <Link key={name} to={path}>{name} <span>&#8599;</span></Link>)}
             </section>
+
+            {/* Our Printing Services Grid Section */}
+            <div id="printing-services" className="bg-white border-b border-slate-100">
+              <PrintingServicesGrid />
+            </div>
 
             <section className="sf-section">
               <div className="sf-title">
