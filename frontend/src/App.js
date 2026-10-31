@@ -1,11 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import BrandEraChrome, { BrandEraFooter } from './components/BrandEraChrome';
-import HomeEpic from './pages/HomeEpic';
-import TShirts from './pages/TShirts';
-import Hoodies from './pages/Hoodies';
-import Accessories from './pages/Accessories';
-import AlumniKits from './pages/AlumniKits';
 
 import TodayDealsEnhanced from './pages/TodayDealsEnhanced';
 import NewArrivalsEnhanced from './pages/NewArrivalsEnhanced';
@@ -43,13 +38,15 @@ import Winners from './pages/Winners';
 import PrintStudioPage from './features/print-studio/PrintStudioPage';
 import StorefrontPage from './features/storefront/StorefrontPage';
 import AllProductsPage from './pages/AllProductsPage';
+import ServicesPage from './pages/ServicesPage';
+import ServiceDetailPage from './pages/ServiceDetailPage';
 
 const AppShell = ({ toasts, removeToast }) => {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith('/admin-profile');
   const isAccountRoute = location.pathname.startsWith('/account');
-  const storefrontRoutes = ['/', '/tshirts', '/hoodies', '/accessories', '/alumni-kits', '/today-deals', '/new-arrivals', '/products'];
-  const isStorefrontRoute = storefrontRoutes.includes(location.pathname);
+  const storefrontRoutes = ['/', '/home', '/services', '/tshirts', '/hoodies', '/accessories', '/alumni-kits', '/today-deals', '/new-arrivals', '/products'];
+  const isStorefrontRoute = storefrontRoutes.includes(location.pathname) || location.pathname.startsWith('/services');
 
   return (
     <>
@@ -59,6 +56,9 @@ const AppShell = ({ toasts, removeToast }) => {
         <main className={`${isAdminRoute ? 'admin-main' : isAccountRoute ? 'account-main' : 'public-main'} ${isStorefrontRoute ? 'storefront-main' : ''}`}>
           <Routes>
           <Route path="/" element={<StorefrontPage />} />
+          <Route path="/home" element={<StorefrontPage />} />
+          <Route path="/services" element={<ServicesPage />} />
+          <Route path="/services/:slug" element={<ServiceDetailPage />} />
           <Route path="/products" element={<AllProductsPage />} />
           <Route path="/events" element={<Events />} />
           <Route path="/tshirts" element={<StorefrontPage />} />

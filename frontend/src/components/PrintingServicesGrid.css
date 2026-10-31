@@ -1,0 +1,412 @@
+/* ==========================================================================
+   Brandera - Our Printing Services & Sub-Services Styles
+   (Pixel-Perfect Match for Reference UI with 100% Responsive Grid & No Text Overlap)
+   ========================================================================== */
+
+.printing-services-section {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2.5rem 1rem 3.5rem;
+}
+
+@media (min-width: 640px) {
+  .printing-services-section {
+    padding: 3rem 1.5rem 4.5rem;
+  }
+}
+
+/* 1. SECTION HEADER */
+.printing-services-header {
+  text-align: center;
+  margin-bottom: 2.25rem;
+}
+
+.printing-services-title,
+.sf .printing-services-title,
+.sf h1.printing-services-title,
+.sf h2.printing-services-title {
+  font-family: inherit !important;
+  font-size: 1.85rem !important;
+  font-weight: 800 !important;
+  color: #0f172a !important;
+  letter-spacing: -0.02em !important;
+  margin: 0 !important;
+  line-height: 1.25 !important;
+}
+
+@media (min-width: 768px) {
+  .printing-services-title,
+  .sf .printing-services-title,
+  .sf h1.printing-services-title,
+  .sf h2.printing-services-title {
+    font-size: 2.25rem !important;
+  }
+}
+
+.printing-services-accent-line {
+  width: 52px;
+  height: 3.5px;
+  background-color: #7025ec;
+  border-radius: 9999px;
+  margin: 0.65rem auto 0;
+}
+
+.printing-services-subtitle {
+  font-size: 0.925rem;
+  color: #64748b;
+  max-width: 600px;
+  margin: 0.75rem auto 0;
+  line-height: 1.5;
+}
+
+/* 2. RESPONSIVE GRID LAYOUT: 6 on desktop, 3 on tablet, 2 on mobile */
+.printing-services-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.15rem 0.875rem;
+}
+
+@media (min-width: 640px) {
+  .printing-services-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.35rem 1.1rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .printing-services-grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 1.6rem 1.2rem;
+  }
+}
+
+/* 3. CARD STYLING */
+.printing-service-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(226, 232, 240, 0.85);
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  height: 100%;
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.printing-service-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.09), 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+/* Card Top: Aspect-ratio image container */
+.printing-service-card-top {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 105 / 81;
+  background: #f1f5f9;
+  overflow: hidden;
+}
+
+.printing-service-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.printing-service-card:hover .printing-service-card-img {
+  transform: scale(1.04);
+}
+
+.printing-service-card-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #f8fafc;
+  color: #7025ec;
+  padding: 0.5rem;
+  text-align: center;
+}
+
+.printing-service-card-fallback i {
+  font-size: 1.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.printing-service-card-fallback span {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+}
+
+/* Price tag on sub-service cards */
+.printing-service-price-tag {
+  position: absolute;
+  bottom: 6px;
+  right: 6px;
+  background: rgba(15, 23, 42, 0.82);
+  backdrop-filter: blur(4px);
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 6px;
+  letter-spacing: 0.02em;
+  z-index: 5;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+/* Card Bottom: Centered uppercase/title label with NO TEXT OVERLAP */
+.printing-service-card-bottom {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 0.65rem;
+  min-height: 52px;
+  background: #ffffff;
+  border-top: 1px solid rgba(241, 245, 249, 0.9);
+  text-align: center;
+  overflow: hidden;
+}
+
+.printing-service-card-title {
+  font-size: 0.775rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+  line-height: 1.35;
+  letter-spacing: 0.015em;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  text-align: center;
+  transition: color 0.2s ease;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.printing-service-card:hover .printing-service-card-title {
+  color: #7025ec;
+}
+
+@media (min-width: 640px) {
+  .printing-service-card-title {
+    font-size: 0.8125rem;
+  }
+}
+
+/* 4. DIAGONAL CORNER RIBBON BADGE (Exact 45-degree orange NEW ribbon) */
+.brandera-ribbon-wrapper {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 76px;
+  height: 76px;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 20;
+}
+
+.brandera-ribbon-badge {
+  position: absolute;
+  display: block;
+  width: 110px;
+  padding: 3px 0;
+  background: linear-gradient(135deg, #ff5722 0%, #f4511e 50%, #e64a19 100%);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.22);
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-align: center;
+  text-transform: uppercase;
+  right: -28px;
+  top: 14px;
+  transform: rotate(45deg);
+  transform-origin: center;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 5. SUB-SERVICE DETAIL MODAL */
+.subservice-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(6px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  animation: fadeInModal 0.2s ease-out;
+}
+
+@keyframes fadeInModal {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.subservice-modal-card {
+  background: #ffffff;
+  border-radius: 24px;
+  max-width: 720px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  position: relative;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+.subservice-modal-card h2,
+.sf .subservice-modal-card h2 {
+  font-family: inherit !important;
+  letter-spacing: normal !important;
+  word-spacing: normal !important;
+  line-height: 1.3 !important;
+}
+
+.subservice-modal-close-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  border: none;
+  color: #475569;
+  font-size: 1.25rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  transition: all 0.2s;
+}
+
+.subservice-modal-close-btn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+/* 6. BULK & CUSTOM INQUIRY CTA BANNER */
+.brandera-cta-banner {
+  background: linear-gradient(135deg, #4c1d95 0%, #31104b 50%, #1e1b4b 100%) !important;
+  border-radius: 28px !important;
+  padding: 3rem 1.5rem !important;
+  box-shadow: 0 20px 45px rgba(76, 29, 149, 0.25) !important;
+  color: #ffffff !important;
+  text-align: center !important;
+  position: relative !important;
+  overflow: hidden !important;
+  max-width: 1040px !important;
+  margin: 0 auto !important;
+}
+
+@media (min-width: 640px) {
+  .brandera-cta-banner {
+    padding: 3.5rem 3rem !important;
+  }
+}
+
+.brandera-cta-banner h2,
+.sf .brandera-cta-banner h2 {
+  font-family: inherit !important;
+  font-size: clamp(1.45rem, 3.5vw, 2.25rem) !important;
+  font-weight: 800 !important;
+  color: #ffffff !important;
+  letter-spacing: normal !important;
+  line-height: 1.25 !important;
+  margin: 0 0 0.85rem !important;
+  text-transform: none !important;
+}
+
+.brandera-cta-banner p,
+.sf .brandera-cta-banner p {
+  color: #e9d5ff !important;
+  font-size: clamp(0.875rem, 2vw, 1.05rem) !important;
+  max-width: 620px !important;
+  margin: 0 auto 2.25rem !important;
+  line-height: 1.6 !important;
+  letter-spacing: normal !important;
+}
+
+.brandera-cta-banner .cta-buttons-wrap {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: center !important;
+  gap: 1rem !important;
+  align-items: center !important;
+}
+
+.brandera-cta-banner .btn-cta-primary,
+.sf .brandera-cta-banner .btn-cta-primary {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background-color: #ffffff !important;
+  color: #581c87 !important; /* Deep royal purple */
+  font-weight: 800 !important;
+  font-size: 0.9375rem !important;
+  padding: 0.85rem 2.25rem !important;
+  border-radius: 9999px !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2) !important;
+  text-decoration: none !important;
+  border: 2px solid #ffffff !important;
+  transition: all 0.25s ease !important;
+  cursor: pointer !important;
+  letter-spacing: 0.02em !important;
+  line-height: 1.4 !important;
+}
+
+.brandera-cta-banner .btn-cta-primary:hover,
+.sf .brandera-cta-banner .btn-cta-primary:hover {
+  background-color: #f5f3ff !important;
+  color: #3b0764 !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.28) !important;
+}
+
+.brandera-cta-banner .btn-cta-secondary,
+.sf .brandera-cta-banner .btn-cta-secondary {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
+  border: 1.5px solid rgba(216, 180, 254, 0.6) !important;
+  font-weight: 700 !important;
+  font-size: 0.9375rem !important;
+  padding: 0.85rem 2.25rem !important;
+  border-radius: 9999px !important;
+  text-decoration: none !important;
+  transition: all 0.25s ease !important;
+  cursor: pointer !important;
+  letter-spacing: 0.02em !important;
+  line-height: 1.4 !important;
+}
+
+.brandera-cta-banner .btn-cta-secondary:hover,
+.sf .brandera-cta-banner .btn-cta-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+  border-color: #ffffff !important;
+  transform: translateY(-2px) !important;
+}

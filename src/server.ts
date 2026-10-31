@@ -1,9 +1,11 @@
 import app from './app.js';
 import { config } from './config/env.js';
 import { connectDB } from './config/database.js';
+import { seedInitialServicesIfEmpty } from './controllers/service.controller.js';
 
 const startServer = async () => {
   await connectDB();
+  await seedInitialServicesIfEmpty();
 
   const PORT = config.port;
 

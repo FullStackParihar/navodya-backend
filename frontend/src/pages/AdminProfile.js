@@ -5,6 +5,7 @@ import PrivateRoute from '../components/PrivateRoute';
 import { useToast } from '../context/ToastContext';
 import './AdminProfile.css';
 import BannerManagement from '../components/admin/BannerManagement';
+import ServiceManagement from '../components/admin/ServiceManagement';
 
 const clothingCategoryPattern = /(t[\s-]?shirts?|hoodies?|polos?|jackets?|shirts?|sweatshirts?|clothing|apparel|wear)/i;
 
@@ -1551,33 +1552,73 @@ const AdminProfile = () => {
       </div>
       {stats && (
         <div className="stats-grid">
-          <div className="stat-card primary">
+          <div
+            className="stat-card primary clickable"
+            onClick={() => handleTabChange('users')}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => { if (e.key === 'Enter') handleTabChange('users'); }}
+            title="Click to view and manage Users"
+          >
             <div className="stat-icon"><i className="fas fa-users"></i></div>
             <div className="stat-content">
-              <div className="stat-number">{stats.totalUsers}</div>
+              <div className="stat-number" style={{ color: '#0f172a' }}>
+                {typeof stats.totalUsers === 'number' ? stats.totalUsers.toLocaleString('en-IN') : (stats.totalUsers ?? 0)}
+              </div>
               <div className="stat-label">Total Users</div>
             </div>
+            <div className="stat-arrow"><i className="fas fa-chevron-right"></i></div>
           </div>
-          <div className="stat-card success">
+          <div
+            className="stat-card success clickable"
+            onClick={() => handleTabChange('orders')}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => { if (e.key === 'Enter') handleTabChange('orders'); }}
+            title="Click to view and manage Orders"
+          >
             <div className="stat-icon"><i className="fas fa-shopping-bag"></i></div>
             <div className="stat-content">
-              <div className="stat-number">{stats.totalOrders}</div>
+              <div className="stat-number" style={{ color: '#0f172a' }}>
+                {typeof stats.totalOrders === 'number' ? stats.totalOrders.toLocaleString('en-IN') : (stats.totalOrders ?? 0)}
+              </div>
               <div className="stat-label">Total Orders</div>
             </div>
+            <div className="stat-arrow"><i className="fas fa-chevron-right"></i></div>
           </div>
-          <div className="stat-card revenue">
+          <div
+            className="stat-card revenue clickable"
+            onClick={() => handleTabChange('orders')}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => { if (e.key === 'Enter') handleTabChange('orders'); }}
+            title="Click to view Orders & Revenue"
+          >
             <div className="stat-icon"><i className="fas fa-rupee-sign"></i></div>
             <div className="stat-content">
-              <div className="stat-number">₹{stats.revenue?.toLocaleString()}</div>
+              <div className="stat-number" style={{ color: '#0f172a' }}>
+                ₹{Number(stats.revenue || 0).toLocaleString('en-IN')}
+              </div>
               <div className="stat-label">Total Revenue</div>
             </div>
+            <div className="stat-arrow"><i className="fas fa-chevron-right"></i></div>
           </div>
-          <div className="stat-card info">
+          <div
+            className="stat-card info clickable"
+            onClick={() => handleTabChange('products')}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => { if (e.key === 'Enter') handleTabChange('products'); }}
+            title="Click to view and manage Products"
+          >
             <div className="stat-icon"><i className="fas fa-tshirt"></i></div>
             <div className="stat-content">
-              <div className="stat-number">{stats.totalProducts}</div>
+              <div className="stat-number" style={{ color: '#0f172a' }}>
+                {typeof stats.totalProducts === 'number' ? stats.totalProducts.toLocaleString('en-IN') : (stats.totalProducts ?? 0)}
+              </div>
               <div className="stat-label">Products</div>
             </div>
+            <div className="stat-arrow"><i className="fas fa-chevron-right"></i></div>
           </div>
         </div>
       )}
@@ -2453,6 +2494,9 @@ const AdminProfile = () => {
             <button className={activeTab === 'banners' ? 'active' : ''} onClick={() => handleTabChange('banners')}>
               <i className="fas fa-images"></i> Banner &amp; Offers
             </button>
+            <button className={activeTab === 'services' ? 'active' : ''} onClick={() => handleTabChange('services')}>
+              <i className="fas fa-print"></i> Printing Services
+            </button>
           </nav>
           <div className="sidebar-footer">
             <button className="logout-btn" onClick={handleLogout}>
@@ -2488,6 +2532,7 @@ const AdminProfile = () => {
               {activeTab === 'bulk-orders' && renderBulkOrders()}
               {activeTab === 'users' && renderUsers()}
               {activeTab === 'banners' && <BannerManagement />}
+              {activeTab === 'services' && <ServiceManagement />}
               {renderOrderDetailModal()}
               {renderBulkOrderDetailModal()}
 

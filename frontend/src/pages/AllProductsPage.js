@@ -4,6 +4,7 @@ import api, { resolveImageUrl } from '../utils/api';
 import { useCart } from '../context/CartContext';
 import { useToast } from '../context/ToastContext';
 import StorefrontStyles from '../features/storefront/StorefrontStyles';
+import StorefrontHeader from '../components/StorefrontHeader';
 
 const CATEGORIES = [
   { key: 'all',         label: 'All Products',  filter: '',             subtitle: 'Browse our full range of custom merchandise — t-shirts, hoodies, accessories and more.' },
@@ -64,12 +65,11 @@ const ProductTile = ({ product, onAdd }) => {
 
 const AllProductsPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const { addToCart, totalItems } = useCart();
+  const { addToCart } = useCart();
   const { success, error: toastError } = useToast();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [notice, setNotice] = useState('');
-  const [menuOpen, setMenuOpen] = useState(false);
 
   const activeCategory = searchParams.get('category') || 'all';
   const activeSort = searchParams.get('sort') || 'default';
@@ -134,40 +134,12 @@ const AllProductsPage = () => {
     resetBtn:    { marginTop:'20px', padding:'10px 24px', background:'#e63322', color:'#fff', border:'none', borderRadius:'30px', fontSize:'14px', fontWeight:'700', cursor:'pointer', fontFamily:'inherit' },
   };
 
-  const userRole = localStorage.getItem('userRole') || 'user';
-  const isAdmin = userRole === 'admin' || localStorage.getItem('userEmail') === 'admin@navodaya.com';
 
   return (
     <>
       <StorefrontStyles />
       <main className="sf">
-        <header className="sf-header">
-          <Link to="/" className="sf-logo"><img src="/brlogo.png" alt="Brand Era" /></Link>
-          <nav className={menuOpen ? 'sf-nav-open' : ''}>
-            <Link to="/products" onClick={() => setMenuOpen(false)}>Products</Link>
-            <Link to="/alumni-kits" onClick={() => setMenuOpen(false)}>Solutions</Link>
-            <Link to="/print-studio" onClick={() => setMenuOpen(false)}>Design Studio</Link>
-            <Link to="/bulk-order" onClick={() => setMenuOpen(false)}>Bulk Orders</Link>
-          </nav>
-          <div className="sf-header-actions">
-            <Link to="/search" style={{ fontSize:'24px', display:'inline-flex', alignItems:'center' }}>&#8981;</Link>
-            {isAdmin && <Link to="/admin-profile" style={{ display: 'inline-flex', alignItems: 'center', color: '#e63322', fontWeight: 'bold' }}>👑 Admin</Link>}
-            <Link to="/account" style={{ display:'inline-flex', alignItems:'center' }}>Account</Link>
-            <Link to="/cart" className="sf-cart-link" aria-label="Cart">
-              <i className="fas fa-shopping-cart"></i>
-              {totalItems > 0 && <span className="sf-cart-badge">{totalItems}</span>}
-            </Link>
-            <button
-              className={`sf-hamburger ${menuOpen ? 'sf-hamburger-open' : ''}`}
-              onClick={() => setMenuOpen(o => !o)}
-              aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-              aria-expanded={menuOpen}
-            >
-              <span></span><span></span><span></span>
-            </button>
-          </div>
-        </header>
-        {menuOpen && <div className="sf-nav-backdrop" onClick={() => setMenuOpen(false)} />}
+        <StorefrontHeader />
 
         <section className="sf-category-hero">
           <p className="sf-kicker">Brand Era Collection</p>

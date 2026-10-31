@@ -21,6 +21,12 @@ import {
     createBanner, deleteBanner, getAdminBanners, reorderBanners,
     updateBanner, updateBannerStatus
 } from '../controllers/banner.controller.js';
+import {
+    getAdminServices, createService, updateService, deleteService,
+    updateServiceStatus, reorderServices,
+    getAdminSubServices, createSubService, updateSubService, deleteSubService,
+    updateSubServiceStatus
+} from '../controllers/service.controller.js';
 
 const router = Router();
 
@@ -55,5 +61,31 @@ router.patch('/orders/:orderId/tracking', updateOrderTracking);
 router.patch('/bulk-orders/:id/status', updateAdminBulkOrderStatus);
 router.patch('/bulk-orders/:id', updateAdminBulkOrder);
 router.delete('/users/:userId', deleteUser);
+
+// Services & Sub-Services Management
+router.get('/services', getAdminServices);
+router.post('/services/upload', (req, res, next) => {
+    upload.single('image')(req, res, (err) => err ? res.status(400).json(new ApiResponse(400, null, err.message)) : next());
+}, (req, res) => {
+    if (!req.file) return res.status(400).json(new ApiResponse(400, null, 'An image is required'));
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(req.file.mimetype)) {
+        return res.status(400).json(new ApiResponse(400, null, 'Only JPG, PNG, and WebP images are allowed'));
+    }
+    const file = req.file as any;
+    const url = isCloudinaryConfigured ? file.path : `${req.protocol}://${req.get('host')}/uploads/${file.filename}`;
+    return res.json(new ApiResponse(200, { url, publicId: file.filename }, 'Service image uploaded successfully'));
+});
+router.post('/services', createService);
+router.put('/services/:id', updateService);
+router.patch('/services/:id/status', updateServiceStatus);
+router.patch('/services/reorder', reorderServices);
+router.delete('/services/:id', deleteService);
+
+// Sub-Services
+router.get('/services/:serviceId/sub-services', getAdminSubServices);
+router.post('/services/:serviceId/sub-services', createSubService);
+router.put('/services/sub-services/:id', updateSubService);
+router.patch('/services/sub-services/:id/status', updateSubServiceStatus);
+router.delete('/services/sub-services/:id', deleteSubService);
 
 export default router;
