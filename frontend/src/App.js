@@ -40,13 +40,15 @@ import StorefrontPage from './features/storefront/StorefrontPage';
 import AllProductsPage from './pages/AllProductsPage';
 import ServicesPage from './pages/ServicesPage';
 import ServiceDetailPage from './pages/ServiceDetailPage';
+import CategoryPage from './pages/CategoryPage';
+import SubcategoryPage from './pages/SubcategoryPage';
 
 const AppShell = ({ toasts, removeToast }) => {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith('/admin-profile');
   const isAccountRoute = location.pathname.startsWith('/account');
   const storefrontRoutes = ['/', '/home', '/services', '/tshirts', '/hoodies', '/accessories', '/alumni-kits', '/today-deals', '/new-arrivals', '/products'];
-  const isStorefrontRoute = storefrontRoutes.includes(location.pathname) || location.pathname.startsWith('/services');
+  const isStorefrontRoute = storefrontRoutes.includes(location.pathname) || location.pathname.startsWith('/services') || location.pathname.startsWith('/category');
 
   return (
     <>
@@ -60,6 +62,8 @@ const AppShell = ({ toasts, removeToast }) => {
           <Route path="/services" element={<ServicesPage />} />
           <Route path="/services/:slug" element={<ServiceDetailPage />} />
           <Route path="/products" element={<AllProductsPage />} />
+          <Route path="/category/:categorySlug" element={<CategoryPage />} />
+          <Route path="/category/:categorySlug/:subcategorySlug" element={<SubcategoryPage />} />
           <Route path="/events" element={<Events />} />
           <Route path="/tshirts" element={<StorefrontPage />} />
           <Route path="/hoodies" element={<StorefrontPage />} />

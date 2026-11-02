@@ -4,6 +4,7 @@ import { ApiResponse } from '../utils/ApiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { Product } from '../models/product.model.js';
 import { Category } from '../models/category.model.js';
+import { Subcategory } from '../models/subcategory.model.js';
 import { CartItem } from '../models/cartItem.model.js';
 import { Favorite } from '../models/favorite.model.js';
 import mongoose from 'mongoose';
@@ -102,19 +103,52 @@ export const getProducts = asyncHandler(async (req: Request, res: Response) => {
     }
   }
 
+  let matchedCategory: any = null;
   if (category) {
-    const catDoc = await Category.findOne({ slug: category as string });
-    if (catDoc) {
-      filter.category_id = catDoc._id;
+    if (mongoose.Types.ObjectId.isValid(category as string)) {
+      matchedCategory = await Category.findById(category);
     } else {
-      // If category slug provided but not found, return empty or handle?
-      // For now, if category not found, strict filtering means no products match.
+      matchedCategory = await Category.findOne({ slug: category as string });
+    }
+    if (matchedCategory) {
+      filter.category_id = matchedCategory._id;
+    } else {
       filter.category_id = null;
     }
   }
 
   if (subcategory) {
-    filter.subcategory = subcategory;
+    const subcategoryStr = String(subcategory).trim();
+    let subDoc: any = null;
+    const subQuery: any = {};
+    if (matchedCategory) {
+      subQuery.categoryId = matchedCategory._id;
+    }
+    if (mongoose.Types.ObjectId.isValid(subcategoryStr)) {
+      subDoc = await Subcategory.findOne({ _id: subcategoryStr, ...subQuery });
+    }
+    if (!subDoc) {
+      subDoc = await Subcategory.findOne({ slug: subcategoryStr.toLowerCase(), ...subQuery });
+    }
+    if (!subDoc) {
+      subDoc = await Subcategory.findOne({ name: new RegExp(`^${subcategoryStr}$`, 'i'), ...subQuery });
+    }
+
+    if (subDoc) {
+      filter.$or = [
+        { subcategory_id: subDoc._id },
+        { subcategory: subDoc.slug },
+        { subcategory: subDoc.name },
+        { subcategory: new RegExp(`^${subDoc.name}$`, 'i') },
+        { subcategory: new RegExp(`^${subDoc.slug}$`, 'i') },
+        { slug: subDoc.slug }
+      ];
+    } else {
+      filter.$or = [
+        { subcategory: new RegExp(subcategoryStr, 'i') },
+        { slug: subcategoryStr.toLowerCase() }
+      ];
+    }
   }
 
   if (minPrice || maxPrice) {
@@ -162,7 +196,8 @@ export const getProducts = asyncHandler(async (req: Request, res: Response) => {
 
   const total = await Product.countDocuments(filter);
   let products: any[] = await Product.find(filter)
-    .populate('category_id', 'name slug')
+    .populate('category_id', 'name slug image description')
+    .populate('subcategory_id', 'name slug image description')
     .sort(sortOption)
     .skip(skip)
     .limit(limitNum)
@@ -198,8 +233,20 @@ export const getProducts = asyncHandler(async (req: Request, res: Response) => {
 
 export const getProductBySlug = asyncHandler(async (req: Request, res: Response) => {
   const { slug } = req.params;
+  const isAdmin = (req as any).user?.role === 'admin' || req.query.isAdmin === 'true';
+  const filter: any = isAdmin ? {} : { is_active: true };
 
-  const product = await Product.findOne({ slug, is_active: true }).populate('category_id', 'name slug');
+  let product: any = null;
+  if (mongoose.Types.ObjectId.isValid(slug)) {
+    product = await Product.findOne({ _id: slug, ...filter })
+      .populate('category_id', 'name slug image description')
+      .populate('subcategory_id', 'name slug image description');
+  }
+  if (!product) {
+    product = await Product.findOne({ slug, ...filter })
+      .populate('category_id', 'name slug image description')
+      .populate('subcategory_id', 'name slug image description');
+  }
 
   if (!product) {
     throw new ApiError(404, 'Product not found');
@@ -207,8 +254,6 @@ export const getProductBySlug = asyncHandler(async (req: Request, res: Response)
 
   res.status(200).json(new ApiResponse(200, product, 'Product retrieved successfully'));
 });
-
-
 
 export const createProduct = asyncHandler(async (req: Request, res: Response) => {
   const {
@@ -220,6 +265,8 @@ export const createProduct = asyncHandler(async (req: Request, res: Response) =>
     images,
     categoryId,
     subcategory,
+    subcategoryId,
+    subcategory_id,
     sizes,
     colors,
     tags,
@@ -239,9 +286,31 @@ export const createProduct = asyncHandler(async (req: Request, res: Response) =>
   }
 
   const existingProduct = await Product.findOne({ slug });
-
   if (existingProduct) {
     throw new ApiError(400, 'Product with this slug already exists');
+  }
+
+  let resolvedSubcategoryId: any = null;
+  let resolvedSubcategory = subcategory || '';
+
+  const incomingSubId = subcategoryId || subcategory_id;
+  if (incomingSubId && mongoose.Types.ObjectId.isValid(incomingSubId)) {
+    const subDoc = await Subcategory.findById(incomingSubId);
+    if (subDoc) {
+      resolvedSubcategoryId = subDoc._id;
+      if (!resolvedSubcategory) resolvedSubcategory = subDoc.name;
+    }
+  } else if (resolvedSubcategory) {
+    const subDoc = await Subcategory.findOne({
+      categoryId: category._id,
+      $or: [
+        { slug: resolvedSubcategory.toLowerCase() },
+        { name: new RegExp(`^${resolvedSubcategory}$`, 'i') }
+      ]
+    });
+    if (subDoc) {
+      resolvedSubcategoryId = subDoc._id;
+    }
   }
 
   const orderValue = displayOrder !== undefined ? Number(displayOrder) : (display_order !== undefined ? Number(display_order) : 0);
@@ -254,7 +323,8 @@ export const createProduct = asyncHandler(async (req: Request, res: Response) =>
     sale_price: salePrice,
     images,
     category_id: categoryId,
-    subcategory,
+    subcategory: resolvedSubcategory,
+    subcategory_id: resolvedSubcategoryId,
     sizes,
     colors,
     tags: tags || [],
@@ -263,7 +333,11 @@ export const createProduct = asyncHandler(async (req: Request, res: Response) =>
     display_order: orderValue,
   });
 
-  res.status(201).json(new ApiResponse(201, product, 'Product created successfully'));
+  const populated = await Product.findById(product._id)
+    .populate('category_id', 'name slug image description')
+    .populate('subcategory_id', 'name slug image description');
+
+  res.status(201).json(new ApiResponse(201, populated, 'Product created successfully'));
 });
 
 export const updateProduct = asyncHandler(async (req: Request, res: Response) => {
@@ -311,7 +385,31 @@ export const updateProduct = asyncHandler(async (req: Request, res: Response) =>
     delete updateData.displayOrder;
   }
 
-  const product = await Product.findByIdAndUpdate(id, updateData, { new: true, runValidators: true });
+  // Handle subcategory_id and subcategory
+  const incomingSubId = updateData.subcategoryId || updateData.subcategory_id;
+  if (incomingSubId && mongoose.Types.ObjectId.isValid(incomingSubId)) {
+    const subDoc = await Subcategory.findById(incomingSubId);
+    if (subDoc) {
+      updateData.subcategory_id = subDoc._id;
+      if (!updateData.subcategory) updateData.subcategory = subDoc.name;
+    }
+  } else if (updateData.subcategory) {
+    const subDoc = await Subcategory.findOne({
+      categoryId: categoryId,
+      $or: [
+        { slug: String(updateData.subcategory).toLowerCase() },
+        { name: new RegExp(`^${String(updateData.subcategory)}$`, 'i') }
+      ]
+    });
+    if (subDoc) {
+      updateData.subcategory_id = subDoc._id;
+    }
+  }
+  delete updateData.subcategoryId;
+
+  const product = await Product.findByIdAndUpdate(id, updateData, { new: true, runValidators: true })
+    .populate('category_id', 'name slug image description')
+    .populate('subcategory_id', 'name slug image description');
 
   if (!product) {
     throw new ApiError(404, 'Product not found');
@@ -338,15 +436,60 @@ export const updateDisplayOrder = asyncHandler(async (req: Request, res: Respons
     const bulkOps = items.map((item: any) => ({
       updateOne: {
         filter: { _id: item.id },
-        update: { $set: { display_order: Number(item.displayOrder || 0) } }
+        update: { $set: { display_order: item.displayOrder } }
       }
     }));
-
     await Product.bulkWrite(bulkOps);
-    return res.status(200).json(new ApiResponse(200, null, 'Product order updated successfully'));
+    return res.status(200).json(new ApiResponse(200, null, 'Product display order updated successfully'));
   }
 
-  throw new ApiError(400, 'Invalid request body. Expected orderedIds array or items array.');
+  throw new ApiError(400, 'Expected items array or orderedIds array');
+});
+
+export const updateSectionPriorities = asyncHandler(async (req: Request, res: Response) => {
+  const { sectionKey, priorities } = req.body;
+
+  if (!sectionKey || typeof sectionKey !== 'string') {
+    throw new ApiError(400, 'sectionKey is required');
+  }
+
+  if (!Array.isArray(priorities)) {
+    throw new ApiError(400, 'priorities must be an array of { productId, priority, is_visible }');
+  }
+
+  const bulkOps = priorities.map((item: { productId: string; priority: number; is_visible?: boolean }) => ({
+    updateOne: {
+      filter: { _id: item.productId, 'placements.section_key': sectionKey },
+      update: {
+        $set: {
+          'placements.$.priority': Number(item.priority) || 0,
+          'placements.$.is_visible': item.is_visible !== false,
+        }
+      }
+    }
+  }));
+
+  const upsertOps = priorities.map((item: { productId: string; priority: number; is_visible?: boolean }) => ({
+    updateOne: {
+      filter: { _id: item.productId, 'placements.section_key': { $ne: sectionKey } },
+      update: {
+        $push: {
+          placements: {
+            section_key: sectionKey,
+            priority: Number(item.priority) || 0,
+            is_visible: item.is_visible !== false,
+          }
+        }
+      }
+    }
+  }));
+
+  if (bulkOps.length > 0) {
+    await Product.bulkWrite(bulkOps);
+    await Product.bulkWrite(upsertOps);
+  }
+
+  res.status(200).json(new ApiResponse(200, null, 'Section priorities updated successfully'));
 });
 
 export const deleteProduct = asyncHandler(async (req: Request, res: Response) => {
@@ -358,46 +501,9 @@ export const deleteProduct = asyncHandler(async (req: Request, res: Response) =>
     throw new ApiError(404, 'Product not found');
   }
 
-  // Delete product from all user carts and wishlists/favorites
+  // Cleanup references in carts and favorites
   await CartItem.deleteMany({ product_id: id });
   await Favorite.deleteMany({ product_id: id });
 
   res.status(200).json(new ApiResponse(200, null, 'Product deleted successfully'));
-});
-
-export const updateSectionPriorities = asyncHandler(async (req: Request, res: Response) => {
-  const { section_key, items } = req.body;
-  if (!section_key || !Array.isArray(items)) {
-    throw new ApiError(400, 'section_key and items array are required');
-  }
-
-  const productIds = items.map((item: any) => item.product_id).filter(Boolean);
-
-  if (productIds.length > 0) {
-    // Clean up previous placement entries for this section
-    await Product.updateMany(
-      { _id: { $in: productIds } },
-      { $pull: { placements: { section_key } } } as any
-    );
-
-    // Push updated placement entries
-    const pushOps = items.map((item: { product_id: string; priority: number; is_visible?: boolean }) => ({
-      updateOne: {
-        filter: { _id: item.product_id },
-        update: {
-          $push: {
-            placements: {
-              section_key,
-              priority: Number(item.priority ?? 0),
-              is_visible: item.is_visible !== undefined ? Boolean(item.is_visible) : true
-            }
-          }
-        }
-      }
-    }));
-
-    await Product.bulkWrite(pushOps);
-  }
-
-  res.status(200).json(new ApiResponse(200, null, 'Section priorities updated successfully'));
 });

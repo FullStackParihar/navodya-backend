@@ -6,6 +6,7 @@ import { useToast } from '../context/ToastContext';
 import './AdminProfile.css';
 import BannerManagement from '../components/admin/BannerManagement';
 import ServiceManagement from '../components/admin/ServiceManagement';
+import CategoryManagement from '../components/admin/CategoryManagement';
 
 const clothingCategoryPattern = /(t[\s-]?shirts?|hoodies?|polos?|jackets?|shirts?|sweatshirts?|clothing|apparel|wear)/i;
 
@@ -2527,7 +2528,7 @@ const AdminProfile = () => {
               {activeTab === 'products' && renderProducts(false)}
               {activeTab === 'product-priorities' && renderSectionPriorities()}
               {activeTab === 'alumni-kits' && renderProducts(true)}
-              {activeTab === 'categories' && renderCategories()}
+              {activeTab === 'categories' && <CategoryManagement onCategoriesChanged={(updated) => setCategories(updated)} />}
               {activeTab === 'orders' && renderOrders()}
               {activeTab === 'bulk-orders' && renderBulkOrders()}
               {activeTab === 'users' && renderUsers()}
@@ -2620,7 +2621,41 @@ const AdminProfile = () => {
                       </div>
                       <div className="form-group">
                         <label>Subcategory</label>
-                        <input type="text" value={formData.subcategory} onChange={e => setFormData({ ...formData, subcategory: e.target.value })} />
+                        {selectedCategory?.subcategories?.length > 0 ? (
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                            <select
+                              value={formData.subcategoryId || ''}
+                              onChange={e => {
+                                const subId = e.target.value;
+                                const subObj = selectedCategory.subcategories.find(s => s._id === subId);
+                                setFormData({
+                                  ...formData,
+                                  subcategoryId: subId,
+                                  subcategory_id: subId,
+                                  subcategory: subObj ? subObj.name : ''
+                                });
+                              }}
+                            >
+                              <option value="">Select Subcategory</option>
+                              {selectedCategory.subcategories.map(s => (
+                                <option key={s._id} value={s._id}>{s.name}</option>
+                              ))}
+                            </select>
+                            <input
+                              type="text"
+                              placeholder="Or custom subcategory name..."
+                              value={formData.subcategory || ''}
+                              onChange={e => setFormData({ ...formData, subcategory: e.target.value })}
+                            />
+                          </div>
+                        ) : (
+                          <input
+                            type="text"
+                            placeholder="e.g. Diwali Hamper"
+                            value={formData.subcategory || ''}
+                            onChange={e => setFormData({ ...formData, subcategory: e.target.value })}
+                          />
+                        )}
                       </div>
                       {supportsFabricVariants && (
                         <div className="form-group fabric-variant-section">

@@ -266,12 +266,16 @@ const ProductDetailEnhanced = () => {
   };
 
   const handleQuantityChange = (delta) => {
+    const maxStock = product?.stockCount !== null && product?.stockCount !== undefined && product?.stockCount > 0
+      ? product.stockCount
+      : 99;
     if (delta === 'decrease') {
       setQuantity(Math.max(1, quantity - 1));
     } else if (delta === 'increase') {
-      setQuantity(Math.min(10, quantity + 1));
+      setQuantity(Math.min(maxStock, quantity + 1));
     } else {
-      setQuantity(Math.max(1, Math.min(10, parseInt(delta) || 1)));
+      const val = parseInt(delta) || 1;
+      setQuantity(Math.max(1, Math.min(maxStock, val)));
     }
   };
 
@@ -358,8 +362,25 @@ const ProductDetailEnhanced = () => {
         {/* Breadcrumb */}
         <nav className="breadcrumb">
           <Link to="/">Home</Link>
-          <span className="separator">/</span>
-          <Link to={getCategoryLink(product.categorySlug)}>{product.category}</Link>
+          {product.categorySlug && (
+            <>
+              <span className="separator">/</span>
+              <Link to={`/category/${product.categorySlug}`}>{product.category}</Link>
+            </>
+          )}
+          {product.subcategory && product.categorySlug ? (
+            <>
+              <span className="separator">/</span>
+              <Link to={`/category/${product.categorySlug}/${product.subcategorySlug}`}>
+                {product.subcategory}
+              </Link>
+            </>
+          ) : product.subcategory ? (
+            <>
+              <span className="separator">/</span>
+              <span>{product.subcategory}</span>
+            </>
+          ) : null}
           <span className="separator">/</span>
           <span className="current">{product.name}</span>
         </nav>
@@ -778,16 +799,17 @@ const ProductDetailEnhanced = () => {
                   onClick={handleAddToCart}
                   disabled={!product.inStock || isAddingToCart || (product.fabricVariants.length > 0 && !selectedFabric) || (selectedFabric?.stock !== undefined && selectedFabric.stock <= 0)}
                   style={{
-                    flex: 1,
+                    flex: 2,
+                    minWidth: '140px',
                     height: '56px',
                     borderRadius: '12px',
-                    fontSize: '16px',
+                    fontSize: '15px',
                     fontWeight: 700,
                     cursor: !product.inStock || isAddingToCart ? 'not-allowed' : 'pointer',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    gap: '10px',
+                    gap: '8px',
                     border: '2px solid #111827',
                     background: '#111827',
                     color: '#ffffff',
@@ -797,6 +819,58 @@ const ProductDetailEnhanced = () => {
                 >
                   {isAddingToCart ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-shopping-bag"></i>}
                   {isAddingToCart ? 'Adding...' : 'Add to Cart'}
+                </button>
+
+                <button
+                  type="button"
+                  className="buy-now-btn"
+                  onClick={handleBuyNow}
+                  disabled={!product.inStock || (product.fabricVariants.length > 0 && !selectedFabric) || (selectedFabric?.stock !== undefined && selectedFabric.stock <= 0)}
+                  style={{
+                    flex: 2,
+                    minWidth: '140px',
+                    height: '56px',
+                    borderRadius: '12px',
+                    fontSize: '15px',
+                    fontWeight: 700,
+                    cursor: !product.inStock ? 'not-allowed' : 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px',
+                    border: '2px solid #e63322',
+                    background: '#e63322',
+                    color: '#ffffff',
+                    opacity: !product.inStock ? 0.5 : 1,
+                    transition: 'all 0.2s ease'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = '#c82415'}
+                  onMouseLeave={(e) => e.currentTarget.style.background = '#e63322'}
+                >
+                  <i className="fas fa-bolt"></i>
+                  Buy Now
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleWishlistToggle}
+                  title={isInWishlist(product.id) ? 'Remove from wishlist' : 'Add to wishlist'}
+                  style={{
+                    width: '56px',
+                    height: '56px',
+                    borderRadius: '12px',
+                    border: '2px solid var(--border-color)',
+                    background: isInWishlist(product.id) ? '#fee2e2' : 'var(--bg-primary)',
+                    color: isInWishlist(product.id) ? '#e63322' : 'var(--text-secondary)',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '20px',
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  <i className={isInWishlist(product.id) ? 'fas fa-heart' : 'far fa-heart'}></i>
                 </button>
               </div>
 

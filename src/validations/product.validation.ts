@@ -20,6 +20,8 @@ export const createProductSchema = z.object({
     images: z.array(z.string()).min(1, 'At least one image is required'),
     categoryId: z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid category ID'),
     subcategory: z.string().optional(),
+    subcategoryId: z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid subcategory ID').optional(),
+    subcategory_id: z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid subcategory ID').optional(),
     sizes: z.array(
       z.object({
         size: z.string(),
@@ -50,6 +52,8 @@ export const updateProductSchema = z.object({
     images: z.array(z.string()).optional(),
     categoryId: z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid category ID').optional(),
     subcategory: z.string().optional(),
+    subcategoryId: z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid subcategory ID').optional(),
+    subcategory_id: z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid subcategory ID').optional(),
     sizes: z.array(
       z.object({
         size: z.string(),

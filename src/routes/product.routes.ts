@@ -13,8 +13,17 @@ import {
   getCategoryBySlug,
   createCategory,
   updateCategory,
+  updateCategoryStatus,
   deleteCategory,
 } from '../controllers/category.controller.js';
+import {
+  getSubcategories,
+  getSubcategoryBySlug,
+  createSubcategory,
+  updateSubcategory,
+  updateSubcategoryStatus,
+  deleteSubcategory,
+} from '../controllers/subcategory.controller.js';
 import { authenticate, requireAdmin, optionalAuth } from '../middlewares/auth.middleware.js';
 import { Product } from '../models/product.model.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
@@ -23,6 +32,7 @@ import mongoose from 'mongoose';
 
 const router = Router();
 
+// Product routes
 router.get('/products', optionalAuth, getProducts);
 
 router.get('/products/id/:id', optionalAuth, asyncHandler(async (req, res) => {
@@ -33,7 +43,9 @@ router.get('/products/id/:id', optionalAuth, asyncHandler(async (req, res) => {
   
   const isAdmin = (req as any).user?.role === 'admin';
   
-  const product = await Product.findById(id).populate('category_id', 'name slug');
+  const product = await Product.findById(id)
+    .populate('category_id', 'name slug image description')
+    .populate('subcategory_id', 'name slug image description');
   if (!product) {
     return res.status(404).json(new ApiResponse(404, null, 'Product not found'));
   }
@@ -51,10 +63,23 @@ router.patch('/products/section-priorities', authenticate, requireAdmin, updateS
 router.patch('/products/:id', authenticate, requireAdmin, updateProduct);
 router.delete('/products/:id', authenticate, requireAdmin, deleteProduct);
 
+// Category routes
 router.get('/categories', optionalAuth, getCategories);
 router.get('/categories/:slug', optionalAuth, getCategoryBySlug);
 router.post('/categories', authenticate, requireAdmin, createCategory);
+router.patch('/categories/:id/status', authenticate, requireAdmin, updateCategoryStatus);
 router.patch('/categories/:id', authenticate, requireAdmin, updateCategory);
 router.delete('/categories/:id', authenticate, requireAdmin, deleteCategory);
+
+// Subcategory routes
+router.get('/categories/:categoryId/subcategories', optionalAuth, getSubcategories);
+router.get('/categories/:categorySlug/subcategories/:slug', optionalAuth, getSubcategoryBySlug);
+router.get('/subcategories', optionalAuth, getSubcategories);
+router.get('/subcategories/:slug', optionalAuth, getSubcategoryBySlug);
+router.post('/subcategories', authenticate, requireAdmin, createSubcategory);
+router.post('/categories/:categoryId/subcategories', authenticate, requireAdmin, createSubcategory);
+router.patch('/subcategories/:id/status', authenticate, requireAdmin, updateSubcategoryStatus);
+router.patch('/subcategories/:id', authenticate, requireAdmin, updateSubcategory);
+router.delete('/subcategories/:id', authenticate, requireAdmin, deleteSubcategory);
 
 export default router;
