@@ -1,12 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import api from '../utils/api';
 
 const SIZE_KEYS = ['xs', 's', 'm', 'l', 'xl', 'xxl', '3xl', '4xl'];
 const MAX_FILES_PER_PRODUCT = 5;
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
-const createProductRow = () => ({
+const createProductRow = (overrides = {}) => ({
   productKey: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
   categoryId: '',
   categoryName: '',
@@ -22,6 +22,7 @@ const createProductRow = () => ({
   generalQuantity: 0,
   files: [],
   fileErrors: [],
+  ...overrides,
 });
 
 const initialForm = {
@@ -42,8 +43,32 @@ const formatFileSize = (size) => `${(size / 1024 / 1024).toFixed(2)} MB`;
 
 const BulkOrder = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState(initialForm);
-  const [products, setProducts] = useState([createProductRow()]);
+  const location = useLocation();
+
+  // Detect if we came from a service page (Bulk Inquiry button)
+  const serviceState = location.state?.fromService ? location.state : null;
+
+  const [formData, setFormData] = useState(() => {
+    if (serviceState?.subServicePrice) {
+      const num = String(serviceState.subServicePrice).replace(/[^0-9]/g, '');
+      if (num) return { ...initialForm, estimatedBudget: num };
+    }
+    return initialForm;
+  });
+  const [products, setProducts] = useState(() => {
+    if (serviceState) {
+      // Pre-fill service as product row — user doesn't need to fill product details manually
+      return [createProductRow({
+        productId: 'service-prefilled',
+        productName: (serviceState.subServiceName || serviceState.serviceName || '').trim(),
+        categoryName: serviceState.serviceName || '',
+        isCustomProduct: true,
+        description: serviceState.subServiceDescription || '',
+        generalQuantity: 1,
+      })];
+    }
+    return [createProductRow()];
+  });
   const [categories, setCategories] = useState([]);
   const [categoryProducts, setCategoryProducts] = useState({});
   const [loadingCategories, setLoadingCategories] = useState(false);
@@ -274,7 +299,7 @@ const BulkOrder = () => {
       }
     }
 
-    if (step >= 2) {
+    if (step >= 2 && !serviceState) {
       products.forEach((product, index) => {
         if (!product.categoryId) nextErrors[`products.${index}.categoryId`] = 'Category is required';
         if (!product.productId) nextErrors[`products.${index}.productId`] = 'Product is required';
@@ -289,10 +314,10 @@ const BulkOrder = () => {
 
     if (step >= 3) {
       products.forEach((product, index) => {
-        if (!product.designRequirements.trim()) {
+        if (!serviceState && !product.designRequirements.trim()) {
           nextErrors[`products.${index}.designRequirements`] = 'Design requirements are required';
         }
-        if (product.files.length === 0) {
+        if (!serviceState && product.files.length === 0) {
           nextErrors[`products.${index}.files`] = 'Upload at least one design/reference file';
         }
       });
@@ -304,13 +329,15 @@ const BulkOrder = () => {
 
   const nextStep = () => {
     if (validate(currentStep)) {
-      setCurrentStep(prev => Math.min(4, prev + 1));
+      const next = (serviceState && currentStep === 1) ? 3 : Math.min(4, currentStep + 1);
+      setCurrentStep(next);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
   const prevStep = () => {
-    setCurrentStep(prev => Math.max(1, prev - 1));
+    const prev = (serviceState && currentStep === 3) ? 1 : Math.max(1, currentStep - 1);
+    setCurrentStep(prev);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -327,7 +354,7 @@ const BulkOrder = () => {
       isCustomProduct: product.isCustomProduct,
       description: product.description,
       specifications: product.specifications,
-      designRequirements: product.designRequirements,
+      designRequirements: product.designRequirements || (serviceState ? `Bulk inquiry for ${serviceState.serviceName || ''} - ${serviceState.subServiceName || ''}`.trim() : ''),
       sizeQuantities: product.sizeQuantities,
       generalQuantity: product.generalQuantity,
     })),
@@ -385,6 +412,7 @@ const BulkOrder = () => {
     setSubmitError('');
     setSuccessResult(null);
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    navigate('/bulk-order', { replace: true, state: null });
   };
 
   const renderError = (key) => errors[key] ? <div className="field-error">{errors[key]}</div> : null;
@@ -426,13 +454,30 @@ const BulkOrder = () => {
               </div>
             </header>
 
-            <div className="progress-steps" aria-label="Bulk order progress">
-              {['Contact Info', 'Products', 'Design Files', 'Review'].map((label, index) => (
-                <div key={label} className={`step ${currentStep >= index + 1 ? 'active' : ''}`}>
-                  <span>{index + 1}</span>
-                  <p>{label}</p>
+            {serviceState && (
+              <div className="service-inquiry-banner">
+                <i className="fas fa-concierge-bell" />
+                <div>
+                  <strong>Bulk Inquiry for: {serviceState.serviceName}{serviceState.subServiceName ? ` – ${serviceState.subServiceName}` : ''}</strong>
+                  <span>Your service has been pre-selected. Just fill in your contact &amp; design details.</span>
                 </div>
-              ))}
+              </div>
+            )}
+
+            <div className="progress-steps" aria-label="Bulk order progress">
+              {(serviceState
+                ? ['Contact Info', 'Design Files', 'Review']
+                : ['Contact Info', 'Products', 'Design Files', 'Review']
+              ).map((label, index) => {
+                const stepNums = serviceState ? [1, 3, 4] : [1, 2, 3, 4];
+                const stepNum = stepNums[index];
+                return (
+                  <div key={label} className={`step ${currentStep >= stepNum ? 'active' : ''}`}>
+                    <span>{index + 1}</span>
+                    <p>{label}</p>
+                  </div>
+                );
+              })}
             </div>
 
             {submitError && <div className="bulk-error-banner">{submitError}</div>}
@@ -475,7 +520,7 @@ const BulkOrder = () => {
                 </section>
               )}
 
-              {currentStep === 2 && (
+              {currentStep === 2 && !serviceState && (
                 <section className="bulk-panel">
                   <div className="bulk-section-title">
                     <div>
@@ -667,7 +712,7 @@ const BulkOrder = () => {
                 )}
                 {currentStep < 4 ? (
                   <button type="button" className="btn-primary" onClick={nextStep}>
-                    Next <i className="fas fa-arrow-right" />
+                    {serviceState && currentStep === 3 ? 'Review ' : 'Next '}<i className="fas fa-arrow-right" />
                   </button>
                 ) : (
                   <button type="submit" className="btn-primary" disabled={isSubmitting}>
@@ -693,6 +738,34 @@ const BulkOrder = () => {
           padding-top: 32px;
         }
         /* ─── HERO HEADER ─── */
+        .service-inquiry-banner {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          margin-bottom: 24px;
+          padding: 18px 24px;
+          background: linear-gradient(135deg, rgba(112, 37, 236, 0.12) 0%, rgba(232, 43, 29, 0.08) 100%);
+          border: 1px solid rgba(112, 37, 236, 0.35);
+          border-radius: 14px;
+          color: #1f2937;
+        }
+        .service-inquiry-banner i {
+          font-size: 28px;
+          color: #7025ec;
+          flex-shrink: 0;
+        }
+        .service-inquiry-banner strong {
+          display: block;
+          font-size: 16px;
+          font-weight: 700;
+          color: #111827;
+          margin-bottom: 2px;
+        }
+        .service-inquiry-banner span {
+          display: block;
+          font-size: 13px;
+          color: #6b7280;
+        }
         .bulk-order-header {
           display: flex;
           justify-content: space-between;

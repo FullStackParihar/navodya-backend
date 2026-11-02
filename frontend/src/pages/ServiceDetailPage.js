@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 import StorefrontStyles from '../features/storefront/StorefrontStyles';
 import PrintingServicesGrid from '../components/PrintingServicesGrid';
@@ -64,6 +64,7 @@ const SubServiceCard = ({ sub, serviceName, onSelect }) => {
 
 export default function ServiceDetailPage() {
   const { slug } = useParams();
+  const navigate = useNavigate();
 
   const [service, setService] = useState(null);
   const [subServices, setSubServices] = useState([]);
@@ -99,6 +100,21 @@ export default function ServiceDetailPage() {
       `Hello Brandera! I am interested in ordering: ${service?.name} - ${sub.name} (₹${sub.price || 0}). Please provide quotation and timeline.`
     );
     window.open(`https://wa.me/919999999999?text=${text}`, '_blank');
+  };
+
+  // Navigate to bulk order page with service pre-filled — skips product detail step
+  const handleBulkInquiry = (sub) => {
+    navigate('/bulk-order', {
+      state: {
+        fromService: true,
+        serviceName: service?.name || '',
+        serviceSlug: service?.slug || slug,
+        subServiceName: sub?.name || '',
+        subServiceDescription: sub?.description || '',
+        subServicePrice: sub?.price || 0,
+        subServiceImage: sub?.image || ''
+      }
+    });
   };
 
   return (
@@ -141,9 +157,12 @@ export default function ServiceDetailPage() {
               <p className="text-xs text-slate-500 mt-1 mb-5">
                 We produce bespoke variations and bulk quantities for {service?.name}.
               </p>
-              <Link to="/bulk-order" className="sf-primary rounded-full text-xs">
+              <button
+                onClick={() => handleBulkInquiry({})}
+                className="sf-primary rounded-full text-xs"
+              >
                 Request Custom Order &rarr;
-              </Link>
+              </button>
             </div>
           ) : (
             <div className="printing-services-grid">
@@ -227,12 +246,15 @@ export default function ServiceDetailPage() {
                     >
                       <i className="fab fa-whatsapp text-base"></i> Order via WhatsApp
                     </button>
-                    <Link
-                      to="/bulk-order"
-                      className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded-xl text-xs sm:text-sm flex items-center justify-center transition-all text-center"
+                    <button
+                      onClick={() => {
+                        setActiveSubModal(null);
+                        handleBulkInquiry(activeSubModal);
+                      }}
+                      className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded-xl text-xs sm:text-sm flex items-center justify-center transition-all text-center cursor-pointer border-0"
                     >
                       Bulk Inquiry
-                    </Link>
+                    </button>
                   </div>
                 </div>
               </div>
