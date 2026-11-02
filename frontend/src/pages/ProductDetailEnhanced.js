@@ -183,38 +183,58 @@ const ProductDetailEnhanced = () => {
     }
   };
 
-  const handleDesignFileChange = (e) => {
+  const uploadDesignFileDirectly = async (file) => {
+    if (!file) return null;
+    setIsUploadingDesign(true);
+    try {
+      const formData = new FormData();
+      formData.append('designs', file);
+      formData.append('image', file);
+      formData.append('file', file);
+
+      let uploadRes = await api.post('/upload-design', formData).catch(() => null);
+      if (!uploadRes?.success) {
+        uploadRes = await api.post('/payments/upload-design', formData).catch(() => null);
+      }
+      if (!uploadRes?.success) {
+        uploadRes = await api.post('/upload/upload', formData).catch(() => null);
+      }
+      if (!uploadRes?.success) {
+        uploadRes = await api.post('/upload', formData).catch(() => null);
+      }
+
+      const url = uploadRes?.data?.url || uploadRes?.data?.files?.[0]?.url || null;
+      if (url) {
+        setDesignImageUrl(url);
+        success('Custom design uploaded and ready!');
+        return url;
+      }
+      error(uploadRes?.message || 'Failed to upload custom design');
+      return null;
+    } catch (err) {
+      console.error('Design upload error:', err);
+      error(err.message || 'Failed to upload custom design');
+      return null;
+    } finally {
+      setIsUploadingDesign(false);
+    }
+  };
+
+  const handleDesignFileChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
     if (file.size > 9 * 1024 * 1024) { error('File too large. Max 9MB.'); return; }
     setDesignImageFile(file);
-    setDesignImageUrl(null);
     const reader = new FileReader();
     reader.onload = (ev) => setDesignImagePreview(ev.target.result);
     reader.readAsDataURL(file);
+
+    await uploadDesignFileDirectly(file);
   };
 
   const handleUploadDesign = async () => {
     if (!designImageFile) return;
-    const token = localStorage.getItem('token');
-    if (!token) { error('Please login to upload a design'); return; }
-    setIsUploadingDesign(true);
-    try {
-      const formData = new FormData();
-      formData.append('designs', designImageFile);
-      const data = await api.post('/payments/upload-design', formData);
-      
-      if (data.success && data.data?.files?.length > 0) {
-        setDesignImageUrl(data.data.files[0].url);
-        success('Design uploaded successfully!');
-      } else {
-        error(data.message || 'Upload failed');
-      }
-    } catch (err) {
-      error('Upload failed. Please try again.');
-    } finally {
-      setIsUploadingDesign(false);
-    }
+    await uploadDesignFileDirectly(designImageFile);
   };
 
   const handleAddToCart = async () => {
@@ -228,8 +248,12 @@ const ProductDetailEnhanced = () => {
     }
     setIsAddingToCart(true);
     try {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      await addToCart({ ...product, price: getFabricPrice(selectedFabric) ?? product.price, originalPrice: selectedFabric?.salePrice !== undefined ? selectedFabric.price : product.originalPrice, selectedSize, selectedColor, selectedFabric, quantity, designImageUrl: designImageUrl || null, designNote: designNote || null });
+      let activeDesignUrl = designImageUrl;
+      if (!activeDesignUrl && designImageFile) {
+        activeDesignUrl = await uploadDesignFileDirectly(designImageFile);
+      }
+      await new Promise(resolve => setTimeout(resolve, 300));
+      await addToCart({ ...product, price: getFabricPrice(selectedFabric) ?? product.price, originalPrice: selectedFabric?.salePrice !== undefined ? selectedFabric.price : product.originalPrice, selectedSize, selectedColor, selectedFabric, quantity, designImageUrl: activeDesignUrl || designImageUrl || null, designNote: designNote || null });
       success(`${product.name} added to cart!`);
     } catch (err) {
       error(err.message || 'Failed to add to cart');
@@ -258,7 +282,11 @@ const ProductDetailEnhanced = () => {
       return;
     }
     try {
-      await addToCart({ ...product, price: getFabricPrice(selectedFabric) ?? product.price, originalPrice: selectedFabric?.salePrice !== undefined ? selectedFabric.price : product.originalPrice, selectedSize, selectedColor, selectedFabric, quantity });
+      let activeDesignUrl = designImageUrl;
+      if (!activeDesignUrl && designImageFile) {
+        activeDesignUrl = await uploadDesignFileDirectly(designImageFile);
+      }
+      await addToCart({ ...product, price: getFabricPrice(selectedFabric) ?? product.price, originalPrice: selectedFabric?.salePrice !== undefined ? selectedFabric.price : product.originalPrice, selectedSize, selectedColor, selectedFabric, quantity, designImageUrl: activeDesignUrl || designImageUrl || null, designNote: designNote || null });
       navigate('/cart');
     } catch (err) {
       error(err.message || 'Failed to add to cart');

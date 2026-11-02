@@ -130,27 +130,38 @@ export const completeOrder = async (order: any, cashfreeOrderDetails: any, payme
 // Returns array of { url, public_id } objects ready to be stored on the order.
 export const uploadDesignFiles = asyncHandler(async (req: AuthRequest, res: Response) => {
     await new Promise<void>((resolve, reject) => {
-        uploadDesign.array('designs', 5)(req, res, (err: any) => {
+        uploadDesign.any()(req, res, (err: any) => {
             if (err) reject(err);
             else resolve();
         });
     });
 
-    const files = (req.files as Express.Multer.File[]) || [];
+    const files = (req.files as Express.Multer.File[]) || (req.file ? [req.file] : []);
     if (!files.length) {
         throw new ApiError(400, 'No design files received');
     }
 
     const uploaded = files.map((file: any) => {
-        // Cloudinary stores URL in file.path; local disk stores it in file.filename
+        // Cloudinary stores URL in file.path or file.secure_url; local disk stores it in file.filename
         const url = isCloudinaryConfigured
-            ? (file.path as string)   // Cloudinary URL
+            ? (file.path || file.secure_url || file.url as string)
             : `${req.protocol}://${req.get('host')}/uploads/designs/${file.filename}`;
         const public_id: string | undefined = file.filename ?? file.public_id ?? undefined;
-        return { url, public_id };
+        return {
+            url,
+            public_id,
+            publicId: public_id,
+            name: file.originalname,
+            size: file.size
+        };
     });
 
-    res.status(200).json(new ApiResponse(200, { files: uploaded }, 'Design files uploaded successfully'));
+    res.status(200).json(new ApiResponse(200, {
+        url: uploaded[0]?.url,
+        public_id: uploaded[0]?.public_id,
+        publicId: uploaded[0]?.public_id,
+        files: uploaded
+    }, 'Design files uploaded successfully'));
 });
 
 // PATCH /api/payments/orders/:orderId/design
@@ -275,8 +286,8 @@ export const createCashfreeOrder = asyncHandler(async (req: AuthRequest, res: Re
                 fabric_variant_id: fabric?._id,
                 fabric_name: fabric?.name,
                 fabric_price: fabric ? (fabric.sale_price ?? fabric.price) : undefined,
-                design_image_url: (item as any).design_image_url || undefined,
-                design_note: (item as any).design_note || undefined
+                design_image_url: (item as any).design_image_url || (item as any).designImageUrl || undefined,
+                design_note: (item as any).design_note || (item as any).designNote || undefined
             });
         }
 
@@ -349,7 +360,15 @@ export const createCashfreeOrder = asyncHandler(async (req: AuthRequest, res: Re
             coupon_applied: couponId,
             status: 'PENDING',
             // Optional: customer design images and note
-            ...(sanitisedDesignImages.length > 0 && { design_images: sanitisedDesignImages }),
+            ...((() => {
+                const combined = [...sanitisedDesignImages];
+                if (combined.length === 0) {
+                    for (const it of orderItems) {
+                        if (it.design_image_url) combined.push({ url: it.design_image_url, public_id: undefined, note: it.design_note });
+                    }
+                }
+                return combined.length > 0 ? { design_images: combined } : {};
+            })()),
             ...(customer_note && typeof customer_note === 'string' && { customer_note: customer_note.trim().slice(0, 1000) })
         });
 

@@ -1191,53 +1191,96 @@ const AdminProfile = () => {
                   </div>
 
                   {/* Custom Design Info (if provided by customer) */}
-                  {(o.design_images?.length > 0 || o.customer_note) && (
-                    <div className="order-detail-section" style={{ background: '#f8fafc', borderColor: '#bae6fd' }}>
-                      <h4 className="order-detail-section-title" style={{ color: '#0284c7' }}>
-                        <i className="fas fa-paint-brush" /> Custom Design
-                      </h4>
-                      
-                      {o.design_images?.length > 0 && (
-                        <div style={{ marginBottom: '12px' }}>
-                          <span style={{ display: 'block', fontSize: '11px', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>Uploaded Files ({o.design_images.length})</span>
-                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                            {o.design_images.map((img, idx) => (
-                              <a 
-                                key={idx} 
-                                href={img.url} 
-                                target="_blank" 
-                                rel="noopener noreferrer"
-                                style={{
-                                  display: 'block', width: '60px', height: '60px', borderRadius: '4px',
-                                  border: '1px solid #cbd5e1', overflow: 'hidden', background: '#fff',
-                                  textDecoration: 'none'
-                                }}
-                                title={img.note || 'View file'}
-                              >
-                                {!img.url.match(/\.(pdf|ai|eps|zip|doc|docx)$/i) ? (
-                                  <img src={img.url} alt={`Design ${idx + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                ) : (
-                                  <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', color: '#0284c7' }}>
-                                    <i className="fas fa-file-alt" style={{ fontSize: '18px' }} />
-                                    <span style={{ fontSize: '8px', marginTop: '4px' }}>FILE</span>
-                                  </div>
-                                )}
-                              </a>
-                            ))}
-                          </div>
-                        </div>
-                      )}
+                  {(() => {
+                    const combinedDesigns = [
+                      ...(o.design_images || []),
+                      ...(o.items?.filter(it => it.design_image_url).map(it => ({
+                        url: it.design_image_url,
+                        note: it.design_note || `Attached to ${it.name}`
+                      })) || [])
+                    ];
+                    const uniqueDesigns = combinedDesigns.filter((v, i, a) => a.findIndex(t => t.url === v.url) === i);
 
-                      {o.customer_note && (
-                        <div>
-                          <span style={{ display: 'block', fontSize: '11px', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>Customer Note</span>
-                          <div style={{ background: '#fff', padding: '8px 12px', borderRadius: '4px', border: '1px solid #e2e8f0', fontSize: '13px', color: '#334155', fontStyle: 'italic', whiteSpace: 'pre-wrap' }}>
-                            "{o.customer_note}"
+                    if (uniqueDesigns.length === 0 && !o.customer_note) return null;
+
+                    return (
+                      <div className="order-detail-section" style={{ background: '#f8fafc', borderColor: '#0284c7', borderWidth: '2px' }}>
+                        <h4 className="order-detail-section-title" style={{ color: '#0284c7', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <i className="fas fa-paint-brush" /> Custom Design & Customer Uploads
+                        </h4>
+
+                        {uniqueDesigns.length > 0 && (
+                          <div style={{ marginBottom: '12px' }}>
+                            <span style={{ display: 'block', fontSize: '11px', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px', fontWeight: 700 }}>
+                              Uploaded Customer Designs ({uniqueDesigns.length})
+                            </span>
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+                              {uniqueDesigns.map((img, idx) => {
+                                const resolved = resolveImageUrl(img.url);
+                                const isDoc = Boolean(img.url.match(/\.(pdf|ai|eps|zip|doc|docx)$/i));
+                                return (
+                                  <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+                                    <a
+                                      href={resolved}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      style={{
+                                        display: 'block', width: '70px', height: '70px', borderRadius: '8px',
+                                        border: '2px solid #0284c7', overflow: 'hidden', background: '#fff',
+                                        textDecoration: 'none', boxShadow: '0 2px 6px rgba(2,132,199,0.2)'
+                                      }}
+                                      title={img.note || 'Click to view full design'}
+                                    >
+                                      {!isDoc ? (
+                                        <img
+                                          src={resolved}
+                                          alt={`Design ${idx + 1}`}
+                                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                          onError={(e) => {
+                                            e.currentTarget.onerror = null;
+                                            e.currentTarget.src = 'https://via.placeholder.com/70?text=Design';
+                                          }}
+                                        />
+                                      ) : (
+                                        <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', color: '#0284c7' }}>
+                                          <i className="fas fa-file-alt" style={{ fontSize: '22px' }} />
+                                          <span style={{ fontSize: '9px', marginTop: '4px', fontWeight: 700 }}>FILE</span>
+                                        </div>
+                                      )}
+                                    </a>
+                                    <a
+                                      href={resolved}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      style={{ fontSize: '11px', color: '#0284c7', fontWeight: 700, textDecoration: 'none' }}
+                                    >
+                                      <i className="fas fa-external-link-alt" style={{ fontSize: '10px' }} /> View
+                                    </a>
+                                    {img.note && (
+                                      <span style={{ fontSize: '10px', color: '#64748b', maxWidth: '80px', textAlign: 'center' }}>
+                                        {img.note}
+                                      </span>
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            </div>
                           </div>
-                        </div>
-                      )}
-                    </div>
-                  )}
+                        )}
+
+                        {o.customer_note && (
+                          <div>
+                            <span style={{ display: 'block', fontSize: '11px', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px', fontWeight: 700 }}>
+                              Customer Note
+                            </span>
+                            <div style={{ background: '#fff', padding: '8px 12px', borderRadius: '6px', border: '1px solid #e2e8f0', fontSize: '13px', color: '#334155', fontStyle: 'italic', whiteSpace: 'pre-wrap' }}>
+                              "{o.customer_note}"
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })()}
 
                 </div>
 
@@ -1281,28 +1324,43 @@ const AdminProfile = () => {
                               {!item.size && !item.color && !item.fabric_name && <span style={{ color: '#9ca3af' }}>—</span>}
                             </td>
                             <td style={{ textAlign: 'center' }}>
-                              {item.design_image_url ? (
-                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
-                                  <a href={item.design_image_url} target="_blank" rel="noopener noreferrer" title="Click to view full design">
-                                    <img
-                                      src={item.design_image_url}
-                                      alt="Custom design"
-                                      style={{ width: 52, height: 52, objectFit: 'cover', borderRadius: '6px', border: '2px solid #dc2626', cursor: 'pointer', boxShadow: '0 2px 8px rgba(220,38,38,0.2)' }}
-                                      onError={e => { e.currentTarget.style.display = 'none'; }}
-                                    />
-                                  </a>
-                                  {item.design_note && (
-                                    <span style={{ fontSize: '10px', color: '#6b7280', maxWidth: '80px', textAlign: 'center', wordBreak: 'break-word', lineHeight: 1.3 }}>
-                                      {item.design_note}
-                                    </span>
-                                  )}
-                                  <a href={item.design_image_url} target="_blank" rel="noopener noreferrer" style={{ fontSize: '10px', color: '#dc2626', fontWeight: 700, textDecoration: 'none' }}>
-                                    <i className="fas fa-external-link-alt" style={{ fontSize: '9px' }} /> View Full
-                                  </a>
-                                </div>
-                              ) : (
-                                <span style={{ color: '#d1d5db', fontSize: '12px' }}>—</span>
-                              )}
+                              {(() => {
+                                const targetUrl = item.design_image_url || o.design_images?.[0]?.url;
+                                const targetNote = item.design_note || (item.design_image_url ? '' : (o.design_images?.[0]?.note || 'Order custom file'));
+                                if (!targetUrl) {
+                                  return <span style={{ color: '#d1d5db', fontSize: '12px' }}>—</span>;
+                                }
+                                const resolved = resolveImageUrl(targetUrl);
+                                const isOrderFallback = !item.design_image_url && o.design_images?.[0]?.url;
+                                return (
+                                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+                                    <a href={resolved} target="_blank" rel="noopener noreferrer" title="Click to view full design">
+                                      <img
+                                        src={resolved}
+                                        alt="Custom design"
+                                        style={{ width: 56, height: 56, objectFit: 'cover', borderRadius: '6px', border: '2px solid #dc2626', cursor: 'pointer', boxShadow: '0 2px 8px rgba(220,38,38,0.2)' }}
+                                        onError={e => {
+                                          e.currentTarget.onerror = null;
+                                          e.currentTarget.src = 'https://via.placeholder.com/56?text=Design';
+                                        }}
+                                      />
+                                    </a>
+                                    {isOrderFallback && (
+                                      <span style={{ fontSize: '9px', background: '#e0f2fe', color: '#0369a1', padding: '1px 5px', borderRadius: '3px', fontWeight: 600 }}>
+                                        Order File
+                                      </span>
+                                    )}
+                                    {targetNote && (
+                                      <span style={{ fontSize: '10px', color: '#6b7280', maxWidth: '85px', textAlign: 'center', wordBreak: 'break-word', lineHeight: 1.3 }}>
+                                        {targetNote}
+                                      </span>
+                                    )}
+                                    <a href={resolved} target="_blank" rel="noopener noreferrer" style={{ fontSize: '10px', color: '#dc2626', fontWeight: 700, textDecoration: 'none' }}>
+                                      <i className="fas fa-external-link-alt" style={{ fontSize: '9px' }} /> View Full
+                                    </a>
+                                  </div>
+                                );
+                              })()}
                             </td>
                             <td style={{ textAlign: 'center', fontWeight: 600 }}>{item.quantity}</td>
                             <td>₹{item.price?.toFixed(2)}</td>
@@ -2108,7 +2166,14 @@ const AdminProfile = () => {
                   </div>
                   <div style={{ fontSize: '11px', color: '#9ca3af' }}>{order.user_id?.email || ''}</div>
                 </td>
-                <td style={{ textAlign: 'center' }}>{order.items?.length || 0}</td>
+                <td style={{ textAlign: 'center' }}>
+                  <div style={{ fontWeight: 600 }}>{order.items?.length || 0}</div>
+                  {(order.design_images?.length > 0 || order.items?.some(i => i.design_image_url)) && (
+                    <span style={{ display: 'inline-block', marginTop: '4px', fontSize: '10px', background: '#fee2e2', color: '#dc2626', padding: '2px 6px', borderRadius: '4px', fontWeight: 700 }}>
+                      🎨 Custom Design
+                    </span>
+                  )}
+                </td>
                 <td style={{ fontWeight: 600 }}>₹{order.pricing?.total?.toFixed(2)}</td>
                 <td>
                   <span className={`order-pay-badge ${order.payment_info?.status?.toLowerCase()}`}>

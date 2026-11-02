@@ -243,9 +243,62 @@ export const getProductBySlug = asyncHandler(async (req: Request, res: Response)
       .populate('subcategory_id', 'name slug image description');
   }
   if (!product) {
-    product = await Product.findOne({ slug, ...filter })
+    product = await Product.findOne({ slug: new RegExp(`^${slug}$`, 'i'), ...filter })
       .populate('category_id', 'name slug image description')
       .populate('subcategory_id', 'name slug image description');
+  }
+  if (!product) {
+    product = await Product.findOne({
+      $or: [
+        { subcategory: slug },
+        { subcategory: new RegExp(`^${slug}$`, 'i') }
+      ],
+      ...filter
+    })
+      .populate('category_id', 'name slug image description')
+      .populate('subcategory_id', 'name slug image description');
+  }
+
+  // Fallback: If slug matches a Subcategory, ensure a product representation exists
+  if (!product) {
+    const subDoc: any = await Subcategory.findOne({
+      $or: [
+        { slug: new RegExp(`^${slug}$`, 'i') },
+        ...(mongoose.Types.ObjectId.isValid(slug) ? [{ _id: slug }] : [])
+      ]
+    }).populate('categoryId');
+
+    if (subDoc) {
+      // Find or auto-provision associated product
+      product = await Product.findOne({
+        $or: [
+          { subcategory_id: subDoc._id },
+          { slug: subDoc.slug }
+        ]
+      })
+        .populate('category_id', 'name slug image description')
+        .populate('subcategory_id', 'name slug image description');
+
+      if (!product) {
+        const catId = subDoc.categoryId?._id || subDoc.categoryId;
+        const newProduct = await Product.create({
+          name: subDoc.name,
+          slug: subDoc.slug,
+          description: subDoc.description || `Premium ${subDoc.name} collection item.`,
+          price: subDoc.price || 999,
+          sale_price: subDoc.salePrice || 799,
+          images: subDoc.image ? [subDoc.image] : [],
+          category_id: catId,
+          subcategory_id: subDoc._id,
+          subcategory: subDoc.slug,
+          stock: subDoc.stock || 50,
+          is_active: subDoc.isActive !== false
+        });
+        product = await Product.findById(newProduct._id)
+          .populate('category_id', 'name slug image description')
+          .populate('subcategory_id', 'name slug image description');
+      }
+    }
   }
 
   if (!product) {

@@ -176,25 +176,43 @@ const Payment = () => {
     try {
       const formData = new FormData();
       fileArray.forEach(f => formData.append('designs', f));
+      fileArray.forEach(f => formData.append('image', f));
       const token = localStorage.getItem('token');
       const baseUrl = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
-      const response = await fetch(baseUrl + '/payments/upload-design', {
-        method: 'POST',
-        headers: { Authorization: 'Bearer ' + token },
-        body: formData
-      });
-      const result = await response.json();
-      if (result.success) {
-        const uploaded = result.data.files.map((f, i) => ({
+
+      // Try multiple upload endpoints in order of preference
+      const tryUpload = async (endpoint) => {
+        const headers = {};
+        if (token) headers.Authorization = 'Bearer ' + token;
+        const response = await fetch(baseUrl + endpoint, {
+          method: 'POST',
+          headers,
+          body: formData
+        });
+        return response.json();
+      };
+
+      let result = null;
+      const endpoints = ['/upload-design', '/payments/upload-design', '/upload/upload-design', '/upload'];
+      for (const ep of endpoints) {
+        try {
+          const r = await tryUpload(ep);
+          if (r.success) { result = r; break; }
+        } catch (_) {}
+      }
+
+      if (result && result.success) {
+        const filesData = result.data.files || (result.data.url ? [{ url: result.data.url, public_id: result.data.public_id }] : []);
+        const uploaded = filesData.map((f, i) => ({
           url: f.url,
-          public_id: f.public_id,
+          public_id: f.public_id || f.publicId,
           name: fileArray[i]?.name || 'design',
           previewUrl: fileArray[i]?.type?.startsWith('image/') ? URL.createObjectURL(fileArray[i]) : null
         }));
         setDesignFiles(prev => [...prev, ...uploaded]);
         showToastSuccess(uploaded.length + ' design file(s) uploaded!');
       } else {
-        throw new Error(result.message || 'Upload failed');
+        throw new Error((result && result.message) || 'Upload failed. Please try again.');
       }
     } catch (err) {
       showToastError(err.message || 'Failed to upload design files');
@@ -309,7 +327,14 @@ const Payment = () => {
       if (paymentMethod === 'cod') {
         // For COD, we still use the existing backend order creation route
         const paymentIntentId = `cod_${Date.now()}`;
-        const designPayload = designFiles.length > 0 ? designFiles.map(f => ({ url: f.url, public_id: f.public_id, note: designNote || undefined })) : undefined;
+        const cartDesigns = cartItems
+          .filter(it => it.designImageUrl || it.design_image_url)
+          .map(it => ({ url: it.designImageUrl || it.design_image_url, note: it.designNote || it.design_note || undefined }));
+        const allDesigns = [
+          ...designFiles.map(f => ({ url: f.url, public_id: f.public_id, note: designNote || undefined })),
+          ...cartDesigns
+        ];
+        const designPayload = allDesigns.length > 0 ? allDesigns : undefined;
         const orderResult = await api.post('/orders/create', {
           paymentIntentId,
           shippingAddress: selectedAddress,
@@ -329,7 +354,14 @@ const Payment = () => {
       } else {
         // Cashfree checkout flow for online payments
         const returnUrl = `${window.location.origin}/checkout`;
-        const designPayload = designFiles.length > 0 ? designFiles.map(f => ({ url: f.url, public_id: f.public_id, note: designNote || undefined })) : undefined;
+        const cartDesigns = cartItems
+          .filter(it => it.designImageUrl || it.design_image_url)
+          .map(it => ({ url: it.designImageUrl || it.design_image_url, note: it.designNote || it.design_note || undefined }));
+        const allDesigns = [
+          ...designFiles.map(f => ({ url: f.url, public_id: f.public_id, note: designNote || undefined })),
+          ...cartDesigns
+        ];
+        const designPayload = allDesigns.length > 0 ? allDesigns : undefined;
         const orderResult = await api.post('/payments/create-order', {
           couponCode,
           shippingAddress: selectedAddress,

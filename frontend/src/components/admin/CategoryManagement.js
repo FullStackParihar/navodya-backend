@@ -635,7 +635,11 @@ export default function CategoryManagement({ onCategoriesChanged }) {
                 &times;
               </button>
             </div>
-            <form onSubmit={handleSaveCategory}>
+            <form
+              onSubmit={handleSaveCategory}
+              className="cat-modal-form"
+              style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflow: 'hidden' }}
+            >
               <div className="cat-modal-body">
                 <div className="cat-form-group">
                   <label>Category Name *</label>
@@ -759,7 +763,11 @@ export default function CategoryManagement({ onCategoriesChanged }) {
                 &times;
               </button>
             </div>
-            <form onSubmit={handleSaveSubcategory}>
+            <form
+              onSubmit={handleSaveSubcategory}
+              className="cat-modal-form"
+              style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflow: 'hidden' }}
+            >
               <div className="cat-modal-body">
                 <div className="cat-form-group">
                   <label>Parent Category *</label>
