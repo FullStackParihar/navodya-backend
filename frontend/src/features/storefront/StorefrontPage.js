@@ -226,18 +226,38 @@ const StorefrontPage = () => {
             } />
 
             {activeCategories.length > 0 ? (
-              <section className="sf-strip">
-                <p>Start creating</p>
-                {activeCategories.slice(0, 5).map((cat) => (
-                  <Link key={cat._id || cat.slug} to={`/category/${cat.slug}`}>
-                    {cat.name} <span>&#8599;</span>
-                  </Link>
-                ))}
+              <section className="sf-strip" aria-label="Popular Categories">
+                <div className="sf-strip-inner">
+                  <div className="sf-strip-badge">
+                    <span className="sf-strip-dot"></span>
+                    <span>Start Creating</span>
+                  </div>
+                  <div className="sf-strip-items">
+                    {activeCategories.map((cat) => (
+                      <Link key={cat._id || cat.slug} to={`/category/${cat.slug}`} className="sf-strip-item">
+                        <span className="sf-strip-text">{cat.name}</span>
+                        <span className="sf-strip-arrow">&#8599;</span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
               </section>
             ) : (
-              <section className="sf-strip">
-                <p>Start creating</p>
-                {categories.map(([name, path]) => <Link key={name} to={path}>{name} <span>&#8599;</span></Link>)}
+              <section className="sf-strip" aria-label="Popular Categories">
+                <div className="sf-strip-inner">
+                  <div className="sf-strip-badge">
+                    <span className="sf-strip-dot"></span>
+                    <span>Start Creating</span>
+                  </div>
+                  <div className="sf-strip-items">
+                    {categories.map(([name, path]) => (
+                      <Link key={name} to={path} className="sf-strip-item">
+                        <span className="sf-strip-text">{name}</span>
+                        <span className="sf-strip-arrow">&#8599;</span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
               </section>
             )}
 
