@@ -1,4 +1,4 @@
-﻿import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 
@@ -12,6 +12,23 @@ const StorefrontHeader = () => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const close = () => setMenuOpen(false);
+
+  // Close menu on route navigation
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [location.pathname]);
+
+  // Lock body scroll while mobile menu is open
+  useEffect(() => {
+    if (menuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [menuOpen]);
 
   const userRole = localStorage.getItem("userRole") || "user";
   const isAdmin =
@@ -49,27 +66,50 @@ const StorefrontHeader = () => {
               {label}
             </Link>
           ))}
+
+          {/* Mobile-accessible links */}
+          <div className="sf-mobile-divider"></div>
+          <div className="sf-mobile-extras">
+            <Link to="/wishlist" onClick={close} className="sf-mobile-extra-link">
+              <i className="fas fa-heart"></i>
+              <span>Saved Products</span>
+            </Link>
+            <Link to="/account" onClick={close} className="sf-mobile-extra-link">
+              <i className="fas fa-user"></i>
+              <span>My Account</span>
+            </Link>
+            {isAdmin && (
+              <Link to="/admin-profile" onClick={close} className="sf-mobile-extra-link sf-admin-link">
+                <i className="fas fa-crown"></i>
+                <span>Admin Panel</span>
+              </Link>
+            )}
+          </div>
         </nav>
 
         <div className="sf-header-actions">
           <Link
             to="/search"
-            style={{ fontSize: "24px", display: "inline-flex", alignItems: "center" }}
+            className="sf-search-link"
+            aria-label="Search"
+            onClick={close}
           >
-            &#8981;
+            <i className="fas fa-search"></i>
+            <span className="sf-search-text">Search</span>
           </Link>
           {isAdmin && (
             <Link
               to="/admin-profile"
+              className="sf-desktop-action"
               style={{ display: "inline-flex", alignItems: "center", color: "#e63322", fontWeight: "bold" }}
             >
-              &#128081; Admin
+              👑 Admin
             </Link>
           )}
-          <Link to="/account" style={{ display: "inline-flex", alignItems: "center" }}>
+          <Link to="/account" className="sf-desktop-action" style={{ display: "inline-flex", alignItems: "center" }}>
             Account
           </Link>
-          <Link to="/cart" className="sf-cart-link" aria-label="Cart">
+          <Link to="/cart" className="sf-cart-link" aria-label="Cart" onClick={close}>
             <i className="fas fa-shopping-cart"></i>
             {totalItems > 0 && <span className="sf-cart-badge">{totalItems}</span>}
           </Link>
@@ -90,7 +130,7 @@ const StorefrontHeader = () => {
         <div
           className="sf-nav-backdrop"
           onClick={close}
-          style={{ position: "fixed", inset: 0, zIndex: 99 }}
+          aria-hidden="true"
         />
       )}
     </>
