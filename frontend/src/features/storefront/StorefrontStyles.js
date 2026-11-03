@@ -5,6 +5,10 @@ const logoOverrides = `@import url('https://fonts.googleapis.com/css2?family=Int
   font-family: 'Inter', sans-serif !important;
 }
 .sf-header {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 1000 !important;
+  box-sizing: border-box !important;
   background: linear-gradient(135deg, #050505 0%, #1a0000 100%);
   color: #fff;
   border-bottom: 2px solid var(--red);
@@ -109,10 +113,16 @@ const mobileNavOverrides = `
 .sf-nav-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.55);
-  backdrop-filter: blur(3px);
-  z-index: 998;
+  top: 0;
+  background: rgba(0, 0, 0, 0.65);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  z-index: 990 !important;
   animation: fadeIn 0.2s ease;
+  touch-action: none;
+}
+.sf-mobile-divider, .sf-mobile-extras {
+  display: none;
 }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
@@ -154,11 +164,14 @@ const mobileNavOverrides = `
     top: 58px;
     left: 0;
     right: 0;
+    max-height: calc(100vh - 58px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     background: linear-gradient(160deg, #0d0000 0%, #1a0000 100%);
     border-bottom: 2px solid var(--red);
-    padding: 12px 0 20px;
-    z-index: 999;
-    box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+    padding: 12px 0 24px;
+    z-index: 1001 !important;
+    box-shadow: 0 16px 36px rgba(0,0,0,0.6);
     animation: slideDown 0.25s cubic-bezier(0.22, 0.61, 0.36, 1);
     gap: 0;
     margin-left: 0 !important;
@@ -188,9 +201,47 @@ const mobileNavOverrides = `
     padding-left: 36px;
   }
 
-  /* Hide Account text on mobile (keep icon-only actions) */
+  .sf-mobile-divider {
+    display: block;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+    margin: 12px 20px;
+  }
+  .sf-mobile-extras {
+    display: flex;
+    flex-direction: column;
+  }
+  .sf-mobile-extra-link {
+    display: flex !important;
+    align-items: center;
+    gap: 12px;
+    color: #d0d0d0 !important;
+    font-size: 14px !important;
+    padding: 14px 24px !important;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .sf-mobile-extra-link i {
+    width: 20px;
+    text-align: center;
+    color: #e63322;
+  }
+  .sf-admin-link span {
+    color: #e63322;
+    font-weight: bold;
+  }
+  .sf-desktop-action {
+    display: none !important;
+  }
   .sf-header-actions a[href="/account"] {
     display: none !important;
+  }
+  .sf-search-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px !important;
+    font-weight: 600;
+    color: #eee !important;
   }
 }
 @media (max-width: 500px) {
