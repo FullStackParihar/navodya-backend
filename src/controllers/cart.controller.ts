@@ -69,7 +69,9 @@ export const getCart = asyncHandler(async (req: AuthRequest, res: Response) => {
 });
 
 export const addToCart = asyncHandler(async (req: AuthRequest, res: Response) => {
-  const { productId, quantity, size, color, fabricVariantId, designImageUrl, designNote } = req.body;
+  const { productId, quantity, size, color, fabricVariantId } = req.body;
+  const designImageUrl = req.body.designImageUrl || req.body.design_image_url;
+  const designNote = req.body.designNote !== undefined ? req.body.designNote : req.body.design_note;
   console.log(`addToCart: User ${req.userId} adding ${productId}, size=${size}, color=${color}, designImageUrl=${designImageUrl}`);
 
   const product = await Product.findOne({ _id: productId, is_active: true });

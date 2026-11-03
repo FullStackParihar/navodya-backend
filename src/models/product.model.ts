@@ -25,6 +25,7 @@ export interface IProduct extends Document {
     images: string[];
     category_id: mongoose.Types.ObjectId;
     subcategory?: string;
+    subcategory_id?: mongoose.Types.ObjectId;
     sizes: { size: string; stock: number }[];
     colors: { name: string; hex?: string; images?: string[] }[];
     fabric_variants: IFabricVariant[];
@@ -49,6 +50,7 @@ const productSchema = new mongoose.Schema({
     images: [String],
     category_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Category' },
     subcategory: { type: String },
+    subcategory_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Subcategory' },
     sizes: [{ size: String, stock: Number }],
     colors: [{ name: String, hex: String, images: [String] }],
     fabric_variants: [{

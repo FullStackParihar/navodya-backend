@@ -183,38 +183,58 @@ const ProductDetailEnhanced = () => {
     }
   };
 
-  const handleDesignFileChange = (e) => {
+  const uploadDesignFileDirectly = async (file) => {
+    if (!file) return null;
+    setIsUploadingDesign(true);
+    try {
+      const formData = new FormData();
+      formData.append('designs', file);
+      formData.append('image', file);
+      formData.append('file', file);
+
+      let uploadRes = await api.post('/upload-design', formData).catch(() => null);
+      if (!uploadRes?.success) {
+        uploadRes = await api.post('/payments/upload-design', formData).catch(() => null);
+      }
+      if (!uploadRes?.success) {
+        uploadRes = await api.post('/upload/upload', formData).catch(() => null);
+      }
+      if (!uploadRes?.success) {
+        uploadRes = await api.post('/upload', formData).catch(() => null);
+      }
+
+      const url = uploadRes?.data?.url || uploadRes?.data?.files?.[0]?.url || null;
+      if (url) {
+        setDesignImageUrl(url);
+        success('Custom design uploaded and ready!');
+        return url;
+      }
+      error(uploadRes?.message || 'Failed to upload custom design');
+      return null;
+    } catch (err) {
+      console.error('Design upload error:', err);
+      error(err.message || 'Failed to upload custom design');
+      return null;
+    } finally {
+      setIsUploadingDesign(false);
+    }
+  };
+
+  const handleDesignFileChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
     if (file.size > 9 * 1024 * 1024) { error('File too large. Max 9MB.'); return; }
     setDesignImageFile(file);
-    setDesignImageUrl(null);
     const reader = new FileReader();
     reader.onload = (ev) => setDesignImagePreview(ev.target.result);
     reader.readAsDataURL(file);
+
+    await uploadDesignFileDirectly(file);
   };
 
   const handleUploadDesign = async () => {
     if (!designImageFile) return;
-    const token = localStorage.getItem('token');
-    if (!token) { error('Please login to upload a design'); return; }
-    setIsUploadingDesign(true);
-    try {
-      const formData = new FormData();
-      formData.append('designs', designImageFile);
-      const data = await api.post('/payments/upload-design', formData);
-      
-      if (data.success && data.data?.files?.length > 0) {
-        setDesignImageUrl(data.data.files[0].url);
-        success('Design uploaded successfully!');
-      } else {
-        error(data.message || 'Upload failed');
-      }
-    } catch (err) {
-      error('Upload failed. Please try again.');
-    } finally {
-      setIsUploadingDesign(false);
-    }
+    await uploadDesignFileDirectly(designImageFile);
   };
 
   const handleAddToCart = async () => {
@@ -228,8 +248,12 @@ const ProductDetailEnhanced = () => {
     }
     setIsAddingToCart(true);
     try {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      await addToCart({ ...product, price: getFabricPrice(selectedFabric) ?? product.price, originalPrice: selectedFabric?.salePrice !== undefined ? selectedFabric.price : product.originalPrice, selectedSize, selectedColor, selectedFabric, quantity, designImageUrl: designImageUrl || null, designNote: designNote || null });
+      let activeDesignUrl = designImageUrl;
+      if (!activeDesignUrl && designImageFile) {
+        activeDesignUrl = await uploadDesignFileDirectly(designImageFile);
+      }
+      await new Promise(resolve => setTimeout(resolve, 300));
+      await addToCart({ ...product, price: getFabricPrice(selectedFabric) ?? product.price, originalPrice: selectedFabric?.salePrice !== undefined ? selectedFabric.price : product.originalPrice, selectedSize, selectedColor, selectedFabric, quantity, designImageUrl: activeDesignUrl || designImageUrl || null, designNote: designNote || null });
       success(`${product.name} added to cart!`);
     } catch (err) {
       error(err.message || 'Failed to add to cart');
@@ -258,7 +282,11 @@ const ProductDetailEnhanced = () => {
       return;
     }
     try {
-      await addToCart({ ...product, price: getFabricPrice(selectedFabric) ?? product.price, originalPrice: selectedFabric?.salePrice !== undefined ? selectedFabric.price : product.originalPrice, selectedSize, selectedColor, selectedFabric, quantity });
+      let activeDesignUrl = designImageUrl;
+      if (!activeDesignUrl && designImageFile) {
+        activeDesignUrl = await uploadDesignFileDirectly(designImageFile);
+      }
+      await addToCart({ ...product, price: getFabricPrice(selectedFabric) ?? product.price, originalPrice: selectedFabric?.salePrice !== undefined ? selectedFabric.price : product.originalPrice, selectedSize, selectedColor, selectedFabric, quantity, designImageUrl: activeDesignUrl || designImageUrl || null, designNote: designNote || null });
       navigate('/cart');
     } catch (err) {
       error(err.message || 'Failed to add to cart');
@@ -266,12 +294,16 @@ const ProductDetailEnhanced = () => {
   };
 
   const handleQuantityChange = (delta) => {
+    const maxStock = product?.stockCount !== null && product?.stockCount !== undefined && product?.stockCount > 0
+      ? product.stockCount
+      : 99;
     if (delta === 'decrease') {
       setQuantity(Math.max(1, quantity - 1));
     } else if (delta === 'increase') {
-      setQuantity(Math.min(10, quantity + 1));
+      setQuantity(Math.min(maxStock, quantity + 1));
     } else {
-      setQuantity(Math.max(1, Math.min(10, parseInt(delta) || 1)));
+      const val = parseInt(delta) || 1;
+      setQuantity(Math.max(1, Math.min(maxStock, val)));
     }
   };
 
@@ -358,8 +390,25 @@ const ProductDetailEnhanced = () => {
         {/* Breadcrumb */}
         <nav className="breadcrumb">
           <Link to="/">Home</Link>
-          <span className="separator">/</span>
-          <Link to={getCategoryLink(product.categorySlug)}>{product.category}</Link>
+          {product.categorySlug && (
+            <>
+              <span className="separator">/</span>
+              <Link to={`/category/${product.categorySlug}`}>{product.category}</Link>
+            </>
+          )}
+          {product.subcategory && product.categorySlug ? (
+            <>
+              <span className="separator">/</span>
+              <Link to={`/category/${product.categorySlug}/${product.subcategorySlug}`}>
+                {product.subcategory}
+              </Link>
+            </>
+          ) : product.subcategory ? (
+            <>
+              <span className="separator">/</span>
+              <span>{product.subcategory}</span>
+            </>
+          ) : null}
           <span className="separator">/</span>
           <span className="current">{product.name}</span>
         </nav>
@@ -778,16 +827,17 @@ const ProductDetailEnhanced = () => {
                   onClick={handleAddToCart}
                   disabled={!product.inStock || isAddingToCart || (product.fabricVariants.length > 0 && !selectedFabric) || (selectedFabric?.stock !== undefined && selectedFabric.stock <= 0)}
                   style={{
-                    flex: 1,
+                    flex: 2,
+                    minWidth: '140px',
                     height: '56px',
                     borderRadius: '12px',
-                    fontSize: '16px',
+                    fontSize: '15px',
                     fontWeight: 700,
                     cursor: !product.inStock || isAddingToCart ? 'not-allowed' : 'pointer',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    gap: '10px',
+                    gap: '8px',
                     border: '2px solid #111827',
                     background: '#111827',
                     color: '#ffffff',
@@ -797,6 +847,58 @@ const ProductDetailEnhanced = () => {
                 >
                   {isAddingToCart ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-shopping-bag"></i>}
                   {isAddingToCart ? 'Adding...' : 'Add to Cart'}
+                </button>
+
+                <button
+                  type="button"
+                  className="buy-now-btn"
+                  onClick={handleBuyNow}
+                  disabled={!product.inStock || (product.fabricVariants.length > 0 && !selectedFabric) || (selectedFabric?.stock !== undefined && selectedFabric.stock <= 0)}
+                  style={{
+                    flex: 2,
+                    minWidth: '140px',
+                    height: '56px',
+                    borderRadius: '12px',
+                    fontSize: '15px',
+                    fontWeight: 700,
+                    cursor: !product.inStock ? 'not-allowed' : 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px',
+                    border: '2px solid #e63322',
+                    background: '#e63322',
+                    color: '#ffffff',
+                    opacity: !product.inStock ? 0.5 : 1,
+                    transition: 'all 0.2s ease'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = '#c82415'}
+                  onMouseLeave={(e) => e.currentTarget.style.background = '#e63322'}
+                >
+                  <i className="fas fa-bolt"></i>
+                  Buy Now
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleWishlistToggle}
+                  title={isInWishlist(product.id) ? 'Remove from wishlist' : 'Add to wishlist'}
+                  style={{
+                    width: '56px',
+                    height: '56px',
+                    borderRadius: '12px',
+                    border: '2px solid var(--border-color)',
+                    background: isInWishlist(product.id) ? '#fee2e2' : 'var(--bg-primary)',
+                    color: isInWishlist(product.id) ? '#e63322' : 'var(--text-secondary)',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '20px',
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  <i className={isInWishlist(product.id) ? 'fas fa-heart' : 'far fa-heart'}></i>
                 </button>
               </div>
 

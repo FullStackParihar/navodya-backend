@@ -18,6 +18,8 @@ import shipwayRoutes from './shipway.routes.js';
 import eventRoutes from './event.routes.js';
 import alumniMeetRoutes from './alumniMeet.routes.js';
 import serviceRoutes from './service.routes.js';
+import { uploadDesignFiles } from '../controllers/payment.controller.js';
+import { optionalAuth } from '../middlewares/auth.middleware.js';
 
 const router = Router();
 
@@ -25,6 +27,8 @@ router.use('/auth', authRoutes);
 router.use('/', productRoutes);
 router.use('/services', serviceRoutes);
 router.use('/upload', uploadRoutes);
+// Direct alias for design uploads
+router.post('/upload-design', optionalAuth, uploadDesignFiles);
 router.use('/cart', cartRoutes);
 router.use('/favorites', favoriteRoutes);
 router.use('/coupons', couponRoutes);

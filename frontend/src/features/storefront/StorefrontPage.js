@@ -138,6 +138,23 @@ const StorefrontPage = () => {
   const [notice, setNotice] = useState('');
 
   const isHome = location.pathname === '/';
+  const [activeCategories, setActiveCategories] = useState([]);
+  const [loadingCategories, setLoadingCategories] = useState(true);
+
+  useEffect(() => {
+    let alive = true;
+    api.get('/categories')
+      .then((res) => {
+        if (alive && res.success) {
+          setActiveCategories(res.data || []);
+        }
+      })
+      .catch((err) => console.error('Error fetching categories:', err))
+      .finally(() => {
+        if (alive) setLoadingCategories(false);
+      });
+    return () => { alive = false; };
+  }, []);
   const current = pageData[location.pathname] || pageData['/tshirts'];
 
   useEffect(() => {
@@ -208,9 +225,82 @@ const StorefrontPage = () => {
               </section>
             } />
 
-            <section className="sf-strip">
-              <p>Start creating</p>
-              {categories.map(([name, path]) => <Link key={name} to={path}>{name} <span>&#8599;</span></Link>)}
+            {activeCategories.length > 0 ? (
+              <section className="sf-strip" aria-label="Popular Categories">
+                <div className="sf-strip-inner">
+                  <div className="sf-strip-badge">
+                    <span className="sf-strip-dot"></span>
+                    <span>Start Creating</span>
+                  </div>
+                  <div className="sf-strip-items">
+                    {activeCategories.map((cat) => (
+                      <Link key={cat._id || cat.slug} to={`/category/${cat.slug}`} className="sf-strip-item">
+                        <span className="sf-strip-text">{cat.name}</span>
+                        <span className="sf-strip-arrow">&#8599;</span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </section>
+            ) : (
+              <section className="sf-strip" aria-label="Popular Categories">
+                <div className="sf-strip-inner">
+                  <div className="sf-strip-badge">
+                    <span className="sf-strip-dot"></span>
+                    <span>Start Creating</span>
+                  </div>
+                  <div className="sf-strip-items">
+                    {categories.map(([name, path]) => (
+                      <Link key={name} to={path} className="sf-strip-item">
+                        <span className="sf-strip-text">{name}</span>
+                        <span className="sf-strip-arrow">&#8599;</span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </section>
+            )}
+
+            {/* Dynamic Shop by Category Section */}
+            <section className="sf-section sf-category-section" style={{ background: '#ffffff', borderBottom: '1px solid var(--line)' }}>
+              <div className="sf-title">
+                <div>
+                  <p className="sf-kicker">Explore Catalog</p>
+                  <h2>Shop by <em>Category</em></h2>
+                </div>
+                <Link to="/products">All products &rarr;</Link>
+              </div>
+              {loadingCategories ? (
+                <p className="sf-loading">Loading categories&hellip;</p>
+              ) : activeCategories.length > 0 ? (
+                <div className="sf-categories-grid">
+                  {activeCategories.map((cat) => (
+                    <Link
+                      key={cat._id || cat.slug}
+                      to={`/category/${cat.slug}`}
+                      className="sf-category-card"
+                    >
+                      <div className="sf-category-img-wrap">
+                        <img
+                          src={resolveImageUrl(cat.image) || 'https://via.placeholder.com/300x200?text=' + encodeURIComponent(cat.name)}
+                          alt={cat.name}
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = 'https://via.placeholder.com/300x200?text=' + encodeURIComponent(cat.name);
+                          }}
+                        />
+                      </div>
+                      <div className="sf-category-info">
+                        <h3>{cat.name}</h3>
+                        {cat.description && <p>{cat.description}</p>}
+                        <span className="sf-category-link">Explore subcategories &rarr;</span>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <p className="sf-loading">No categories available at the moment.</p>
+              )}
             </section>
 
             {/* Our Printing Services Grid Section */}

@@ -165,18 +165,24 @@ export const createBulkOrder = asyncHandler(async (req: Request, res: Response) 
       let productName = clean(item.productName);
       let sku = clean(item.sku);
 
-      if (!clean(item.categoryId)) {
-        productErrors.push('category is required');
-      } else if (!mongoose.Types.ObjectId.isValid(item.categoryId)) {
-        productErrors.push('category is invalid');
-      } else {
-        const category = await Category.findById(item.categoryId);
-        if (!category) {
-          productErrors.push('category was not found');
+      if (clean(item.categoryId)) {
+        if (!mongoose.Types.ObjectId.isValid(item.categoryId)) {
+          if (!isCustomProduct && !categoryName) {
+            productErrors.push('category is invalid');
+          }
         } else {
-          categoryId = category._id as mongoose.Types.ObjectId;
-          categoryName = category.name;
+          const category = await Category.findById(item.categoryId);
+          if (!category) {
+            if (!isCustomProduct && !categoryName) {
+              productErrors.push('category was not found');
+            }
+          } else {
+            categoryId = category._id as mongoose.Types.ObjectId;
+            categoryName = category.name;
+          }
         }
+      } else if (!isCustomProduct && !categoryName) {
+        productErrors.push('category is required');
       }
 
       if (isCustomProduct) {

@@ -66,8 +66,8 @@ export const createPaymentIntent = asyncHandler(async (req: AuthRequest, res: Re
             , fabric_variant_id: fabric?._id
             , fabric_name: fabric?.name
             , fabric_price: fabric ? (fabric.sale_price ?? fabric.price) : undefined
-            , design_image_url: (item as any).design_image_url || undefined
-            , design_note: (item as any).design_note || undefined
+            , design_image_url: (item as any).design_image_url || (item as any).designImageUrl || undefined
+            , design_note: (item as any).design_note || (item as any).designNote || undefined
         });
     }
 
@@ -227,8 +227,8 @@ export const createOrder = asyncHandler(async (req: AuthRequest, res: Response) 
             , fabric_variant_id: fabric?._id
             , fabric_name: fabric?.name
             , fabric_price: fabric ? (fabric.sale_price ?? fabric.price) : undefined
-            , design_image_url: (item as any).design_image_url || undefined
-            , design_note: (item as any).design_note || undefined
+            , design_image_url: (item as any).design_image_url || (item as any).designImageUrl || undefined
+            , design_note: (item as any).design_note || (item as any).designNote || undefined
         });
     }
 
@@ -269,6 +269,19 @@ export const createOrder = asyncHandler(async (req: AuthRequest, res: Response) 
                 note: typeof d.note === 'string' ? d.note.trim().slice(0, 500) : undefined
             }))
         : [];
+
+    // If no order-level design images supplied, gather from cart items automatically
+    if (sanitisedDesignImages.length === 0) {
+        for (const it of orderItems) {
+            if (it.design_image_url) {
+                sanitisedDesignImages.push({
+                    url: it.design_image_url,
+                    public_id: undefined,
+                    note: it.design_note || undefined
+                });
+            }
+        }
+    }
 
     const order = await Order.create({
         user_id: req.userId,

@@ -18,22 +18,46 @@ let upload: multer.Multer;
 let uploadDesign: multer.Multer;
 
 const imageFileFilter: multer.Options['fileFilter'] = (_req, file, cb) => {
-  if (['image/jpeg', 'image/png', 'image/webp'].includes(file.mimetype)) cb(null, true);
-  else cb(new Error('Only JPG, PNG, and WebP images are allowed'));
+  const isImageMime = [
+    'image/jpeg',
+    'image/jpg',
+    'image/png',
+    'image/webp',
+    'image/gif',
+    'image/svg+xml'
+  ].includes(file.mimetype?.toLowerCase());
+  const isImageExt = Boolean(file.originalname && file.originalname.match(/\.(jpe?g|png|webp|gif|svg)$/i));
+
+  if (isImageMime || isImageExt) {
+    cb(null, true);
+  } else {
+    cb(new Error('Only JPG, JPEG, PNG, WebP, GIF, and SVG images are allowed'));
+  }
 };
 
 // Accepts images and common design file formats
 const designFileFilter: multer.Options['fileFilter'] = (_req, file, cb) => {
   const allowedMimes = new Set([
-    'image/jpeg', 'image/png', 'image/webp', 'image/gif',
+    'image/jpeg',
+    'image/jpg',
+    'image/png',
+    'image/webp',
+    'image/gif',
     'application/pdf',
     'application/postscript',        // .ai / .eps
     'application/illustrator',
     'image/svg+xml',
     'application/octet-stream',      // generic fallback for .ai/.eps
+    'application/vnd.adobe.photoshop',
+    'image/vnd.adobe.photoshop'
   ]);
-  if (allowedMimes.has(file.mimetype)) cb(null, true);
-  else cb(new Error('Unsupported file type. Allowed: JPG, PNG, WebP, PDF, AI, EPS, SVG'));
+  const hasExt = Boolean(file.originalname && file.originalname.match(/\.(jpe?g|png|webp|gif|pdf|ai|eps|svg|psd)$/i));
+
+  if (allowedMimes.has(file.mimetype?.toLowerCase()) || hasExt) {
+    cb(null, true);
+  } else {
+    cb(new Error('Unsupported file type. Allowed: JPG, PNG, WebP, PDF, AI, EPS, SVG, PSD'));
+  }
 };
 
 if (isCloudinaryConfigured) {
@@ -50,31 +74,31 @@ if (isCloudinaryConfigured) {
     params: async (req: any, file: any) => {
       return {
         folder: 'navodaya',
-        allowed_formats: ['jpg', 'png', 'jpeg', 'webp'],
-        public_id: file.originalname.split('.')[0] + '-' + Date.now(),
+        allowed_formats: ['jpg', 'png', 'jpeg', 'webp', 'gif', 'svg'],
+        public_id: (file.originalname || 'image').replace(/[^a-zA-Z0-9]/g, '_').split('.')[0] + '-' + Date.now(),
       };
     },
   });
 
   upload = multer({
     storage: storage,
-    limits: { fileSize: 9 * 1024 * 1024 }, // 9MB limit to avoid Cloudinary free tier 10MB crash
+    limits: { fileSize: 15 * 1024 * 1024 }, // 15MB limit
     fileFilter: imageFileFilter,
   });
-  // Design uploads — Cloudinary, separate folder
+
+  // Design uploads — Cloudinary, separate folder, auto resource type
   const designCloudinaryStorage = new CloudinaryStorage({
     cloudinary: cloudinary,
     params: async (_req: any, file: any) => ({
       folder: 'navodaya/designs',
       resource_type: 'auto',
-      allowed_formats: ['jpg', 'jpeg', 'png', 'webp', 'gif', 'pdf', 'ai', 'eps', 'svg'],
-      public_id: 'design-' + Date.now() + '-' + file.originalname.replace(/[^a-zA-Z0-9.]/g, '_').split('.')[0],
+      public_id: 'design-' + Date.now() + '-' + (file.originalname || 'file').replace(/[^a-zA-Z0-9]/g, '_').split('.')[0],
     }),
   });
 
   uploadDesign = multer({
     storage: designCloudinaryStorage,
-    limits: { fileSize: 20 * 1024 * 1024 },
+    limits: { fileSize: 30 * 1024 * 1024 }, // 30MB limit
     fileFilter: designFileFilter,
   });
 } else {
@@ -97,7 +121,7 @@ if (isCloudinaryConfigured) {
 
   upload = multer({
     storage: storage,
-    limits: { fileSize: 9 * 1024 * 1024 },
+    limits: { fileSize: 15 * 1024 * 1024 },
     fileFilter: imageFileFilter,
   });
 
@@ -119,7 +143,7 @@ if (isCloudinaryConfigured) {
 
   uploadDesign = multer({
     storage: designStorage,
-    limits: { fileSize: 20 * 1024 * 1024 },
+    limits: { fileSize: 30 * 1024 * 1024 },
     fileFilter: designFileFilter,
   });
 }
